@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";
+import { BookCover } from "@/components/BookCover";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";
@@ -42,21 +43,21 @@ const trilogyParts = [
   {
     number: "I",
     title: "Yhdistyminen",
-    description: "Sisäinen konflikti ja kasvutarina. Temüün matka pojasta mieheksi.",
+    description: "Arojen maailma ja sen kansa.",
     link: "/luku/osa-1",
     variant: "primary" as const,
   },
   {
     number: "II",
     title: "Valloitus",
-    description: "Sodankäynnit ja hallinto. Taistelu vallasta ja alueista.",
+    description: "Henget, taidot ja soturin tie.",
     link: "/luku/osa-2",
     variant: "accent" as const,
   },
   {
     number: "III",
     title: "Koettelemus",
-    description: "Filosofiset kysymykset. Mitä jää jäljelle kun taistelut on käyty?",
+    description: "Johtajuus, valta ja yhteiskunnan haasteet.",
     link: "/luku/osa-3",
     variant: "default" as const,
   },
@@ -80,8 +81,48 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Synopsis */}
+      {/* Book Cover - Full Book */}
       <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+            <div className="max-w-xs mx-auto md:mx-0">
+              <BookCover />
+            </div>
+            <div>
+              <h2 className="font-display text-3xl font-bold mb-4">
+                Lue Koko Kirja
+              </h2>
+              <p className="text-muted-foreground mb-4">
+                Klikkaa kirjan kantta avataksesi koko romaanin yhtenä kokonaisuutena. 
+                Sisältää kaikki 15 lukua sisällysluetteloineen.
+              </p>
+              <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary" />
+                  15 lukua jaettuna kolmeen osaan
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-accent" />
+                  Sisällysluettelo nopeaan navigointiin
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary" />
+                  Noin 30 minuutin lukuaika
+                </li>
+              </ul>
+              <Link to="/luku/koko-kirja">
+                <Button className="font-display uppercase tracking-wide">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Avaa koko kirja
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Synopsis */}
+      <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -115,14 +156,14 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Trilogy Structure - Now with links */}
-      <section className="py-16 bg-primary/5">
+      {/* Trilogy Structure - Read by parts */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-4">
-            Trilogia
+            Lue Osissa
           </h2>
           <p className="text-center text-muted-foreground mb-12">
-            Klikkaa osaa lukeaksesi tarinan
+            Voit myös lukea tarinan osissa — klikkaa osaa aloittaaksesi
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -143,7 +184,7 @@ const Romaani = () => {
                   </p>
                   <Button variant="outline" size="sm" className="w-full font-display uppercase tracking-wide group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     <BookOpen className="w-4 h-4 mr-2" />
-                    Lue tarina
+                    Lue osa
                   </Button>
                 </ComicPanel>
               </Link>
@@ -153,7 +194,7 @@ const Romaani = () => {
       </section>
 
       {/* Characters */}
-      <section className="py-16">
+      <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-12">
             Hahmot
