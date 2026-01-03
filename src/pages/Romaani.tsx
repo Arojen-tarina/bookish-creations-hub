@@ -1,10 +1,13 @@
+import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";
 
 const characters = [
   {
-    name: "Temüü 'Baatar'",
+    name: "Temüü \"Baatar\"",
     role: "Päähenkilö",
     description: "Nuori soturi, joka kasvaa mieheksi isänsä opastuksella.",
   },
@@ -29,9 +32,33 @@ const characters = [
     description: "Sotajohtaja, joka näkee potentiaalin nuoressa Temüüssä.",
   },
   {
-    name: "Shamaani",
-    role: "Henkinen opas",
-    description: "Yliluonnollisten voimien välittäjä ja neuvonantaja.",
+    name: "Erdenetögs \"Böö\"",
+    role: "Shamaani",
+    description: "Yliluonnollisten voimien välittäjä ja henkinen opas.",
+  },
+];
+
+const trilogyParts = [
+  {
+    number: "I",
+    title: "Yhdistyminen",
+    description: "Sisäinen konflikti ja kasvutarina. Temüün matka pojasta mieheksi.",
+    link: "/luku/osa-1",
+    variant: "primary" as const,
+  },
+  {
+    number: "II",
+    title: "Valloitus",
+    description: "Sodankäynnit ja hallinto. Taistelu vallasta ja alueista.",
+    link: "/luku/osa-2",
+    variant: "accent" as const,
+  },
+  {
+    number: "III",
+    title: "Koettelemus",
+    description: "Filosofiset kysymykset. Mitä jää jäljelle kun taistelut on käyty?",
+    link: "/luku/osa-3",
+    variant: "default" as const,
   },
 ];
 
@@ -88,8 +115,45 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Characters */}
+      {/* Trilogy Structure - Now with links */}
       <section className="py-16 bg-primary/5">
+        <div className="container mx-auto px-4">
+          <h2 className="font-display text-3xl font-bold text-center mb-4">
+            Trilogia
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">
+            Klikkaa osaa lukeaksesi tarinan
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {trilogyParts.map((part) => (
+              <Link key={part.number} to={part.link} className="group">
+                <ComicPanel 
+                  variant={part.variant} 
+                  className="h-full transition-all group-hover:-translate-y-2 group-hover:shadow-lg cursor-pointer"
+                >
+                  <span className="text-4xl font-display font-bold text-primary/30">
+                    {part.number}
+                  </span>
+                  <h3 className="font-display text-lg font-semibold mt-2 mb-2">
+                    {part.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {part.description}
+                  </p>
+                  <Button variant="outline" size="sm" className="w-full font-display uppercase tracking-wide group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Lue tarina
+                  </Button>
+                </ComicPanel>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Characters */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-12">
             Hahmot
@@ -109,47 +173,6 @@ const Romaani = () => {
                 </p>
               </ComicPanel>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trilogy Structure */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl font-bold text-center mb-12">
-            Trilogia
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <ComicPanel variant="primary">
-              <span className="text-4xl font-display font-bold text-primary/30">I</span>
-              <h3 className="font-display text-lg font-semibold mt-2 mb-2">
-                Yhdistyminen
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Sisäinen konflikti ja kasvutarina. Temüün matka pojasta mieheksi.
-              </p>
-            </ComicPanel>
-
-            <ComicPanel variant="accent">
-              <span className="text-4xl font-display font-bold text-accent/30">II</span>
-              <h3 className="font-display text-lg font-semibold mt-2 mb-2">
-                Valloitus
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Sodankäynnit ja hallinto. Taistelu vallasta ja alueista.
-              </p>
-            </ComicPanel>
-
-            <ComicPanel>
-              <span className="text-4xl font-display font-bold text-muted-foreground/30">III</span>
-              <h3 className="font-display text-lg font-semibold mt-2 mb-2">
-                Koettelemus
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Filosofiset kysymykset. Mitä jää jäljelle kun taistelut on käyty?
-              </p>
-            </ComicPanel>
           </div>
         </div>
       </section>
