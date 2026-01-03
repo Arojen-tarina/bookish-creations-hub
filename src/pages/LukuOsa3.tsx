@@ -19,7 +19,7 @@ const LukuOsa3 = () => {
               Koettelemus
             </h1>
             <p className="text-muted-foreground mt-4">
-              Kolmas kirja käsittelee filosofisia kysymyksiä — mitä jää jäljelle kun taistelut on käyty?
+              Kolmas kirja — Johtajuus, valta ja yhteiskunnan haasteet
             </p>
           </div>
         </div>
@@ -28,75 +28,118 @@ const LukuOsa3 = () => {
       {/* Reading Content */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <article className="max-w-3xl mx-auto prose prose-lg">
+          <article className="max-w-3xl mx-auto">
             <div className="font-body text-foreground leading-relaxed space-y-6">
+              
+              <h2 className="font-display text-2xl font-bold mt-8 mb-4">Luku 11: Naisten Rooli</h2>
+              
               <p className="first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:mr-2 first-letter:float-left">
-                Vuodet olivat kuluneet. Temüü istui nyt valtaistuinsalissa, mutta voitto ei tuntunut sellaiselta kuin hän oli kuvitellut. Jokainen taistelu oli jättänyt jälkensä — ei vain kehoon, vaan myös sieluun.
+                Usein naisten asema ylenkatsotaan tämän ajan maailmassa pois, koska se on nimenomaisesti miehet, jotka ovat kirjoittaneet historian. Mutta se on naiset, jotka ovat antaneet kyvyn miehille lähteä pois leiristä, kun heidän omaisuudesta ja läheisistä pidetään huolta.
               </p>
 
               <p>
-                Shamaani sanoi Temüülle: "Teistähän on tullut oikea johtaja. Mutta muistakaa opetukset, joita olen teille antanut. Voima ilman viisautta on tuhoisa."
+                Kun miehet olivat pois sotaretkillä, solmittiin myös usein sisäpiirikauppoja toisten heimojen ja toisten ulkomaalaisten kanssa, koska kukaan ei ollut kotona metsästämässä ja tuomassa ruokaa ja kotitalouden pyörittämiselle välttämättömiä tarvikkeita kotiin.
               </p>
 
               <p>
-                Temüü katsoi ulos ikkunasta. Arojen horisontit ulottuivat loputtomiin, mutta hän tiesi nyt, että todellinen matka oli sisäinen. Ulkoiset valloitukset olivat vain heijastumia siitä, mitä tapahtui ihmisen sydämessä.
+                Myös paljon historiallista tutkimusta tehtiin silloin, kun miehet olivat sotaretkillä, koska nyt ulkomaalaisillakin saattoi olla pääsy leireihin, joissa heidät olisi todennäköisesti vain teloitettu, jos miehet olisivat olleet paikalla.
+              </p>
+
+              <h2 className="font-display text-2xl font-bold mt-12 mb-4">Luku 12: Ulkomaalaiset</h2>
+
+              <p>
+                Ulkomaalaisiin usein suhtauduttiin jokseenkin kielteisesti ja halveksuvasti, mutta heitä kunnioitettiin kuitenkin siinä mielessä, että heillä oli paljon sellaisia taitoja, ja joitakin näitä taitoja jopa pidettiin taikavoimina ja pakanallisina oppeina, jotka herättivät pelkoa — melkein taikauskoista pelkoa — arokansojen heimojen sydämissä ja mielissä.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  "Kuoleminen yksin nähtiin heidän kulttuurissaan häpeällisenä, koska todelliset hautajaiset kuuluivat myös heidän kulttuuriinsa. Usein heidät haudattiin nimettömiin hautoihin, ilman että kukaan välttämättä sai selville, minne heidät oli oikeasti kaivettu."
+                  Esimerkiksi sanottiin, että jotkin eteläiset heimot kykenivät luomaan piippuja ja putkia, jotka pystyivät syöksymään tulta — niin kuin länsimaalaisten tarinoissa kerrotut lohikäärmeet, jotka saattoivat viedä viatonta karjaa pois heidän paimeniensa luota.
                 </p>
               </div>
 
               <p>
-                Naran, hänen siskonsa, astui huoneeseen. "Veli, olet ollut hiljainen viime aikoina. Mitä mielessäsi liikkuu?"
+                Heimojen sotaretkillä oli kuitenkin tietynlainen kunnioitus ulkomaalaisia kohtaan siinä mielessä, että kaikki ihmiset, joilla oli jokin taito, säästettiin verisempien taisteluiden ja kaupunkien piiritysten jälkeen.
               </p>
 
               <p>
-                Temüü hymyili väsyneesti. "Mietin niitä, jotka menetimme matkalla tänne. Ja mietin, oliko kaikki sen arvoista."
+                Oli myös tunnustettu se fakta, että jokaisella ihmisellä ja ihmisyhteisellä pitää saada olla heidän oma kulttuurinsa ja oma uskontonsa. Toisten ihmisten uskomuksia ja tapoja ei niinkään pitäisi sortaa, vaan niistä pitäisi katsoa vilpittömästi, että mitä hyvää niissä on ja miten ulkomaalaisten kulttuureista voitaisiin hyötyä mahdollisimman paljon.
+              </p>
+
+              <h2 className="font-display text-2xl font-bold mt-12 mb-4">Luku 13: Johtajat</h2>
+
+              <p>
+                Heidän yhteisistä jaetuista piirteistään huolimatta he olivat kaikki ainutlaatuisia. Kaikista näistä samankaltaisuuksista huolimatta heidän riveissään silti kyti paljon epäpätevyyttä.
               </p>
 
               <p>
-                "Isä olisi ylpeä sinusta," Naran sanoi. "Hän kasvatti sinut tähän. Ja sinä teit enemmän kuin hän koskaan uskalsi unelmoida."
+                Useasti arokansoilla oli sellainen maine, että he olivat voittamattomia taistelukentillä. He olivat enemmän kuin ihmisiä. He olivat demoneita tai jumalia riippuen omasta mielipiteestään.
+              </p>
+
+              <p>
+                Heidän riveissään kuitenkin oli paljon eriävää kansaa ja eri mieltä olevia ihmisiä. Heillä oli sotilasjohtajia, jotka kykenivät johtamaan omaa tekemistään, johtamaan esimerkillä ja johtamaan edestä.
               </p>
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  "Heimot eivät välttämättä kunnioittaneet soturia, joka kuoli taistelussa, tai siviiliä, joka kuoli vanhuuteen. He kunnioittivat heimolaista, joka oli elänyt elämänsä heidän elinolojaan parantaen — elämänsä heidän kunniaansa puolesta."
+                  Heillä oli johtajia, jotka kykenivät delegoimaan omaa kuormaansa ylhäältä alaspäin ja johtajia, jotka kykenivät jalkauttamaan käskyjä ylhäältä alaspäin. Oli johtajia, joiden ei tarvinnut sanoa paljon — kun hän nosti kulmakarvaansa, oli ikään kuin maat ja taivaat olisivat alkaneet liikkumaan.
                 </p>
               </div>
 
               <p>
-                Temüü nousi ja käveli kohti parveketta. Aurinko laski arojen ylle, maalaten taivaan oranssiksi ja punaiseksi. Se oli sama taivas, jonka alla hän oli kasvanut — sama taivas, jonka alla hänen esi-isänsä olivat eläneet ja kuolleet.
+                Tämän jälkeen oli kuitenkin johtajia, jotka yliarvioivat omat vahvuutensa. Heitä ei kiinnostanut pienien asioiden tekeminen, vaan he vain ryhtyivät hegemonistiseen hedonistiseen ilakointiin monien naistensa kanssa.
               </p>
 
               <p>
-                "Shamaani opetti minulle kerran," Temüü sanoi hiljaa, "että todellinen voitto ei ole vihollisten kukistaminen. Se on oman pelon voittaminen. Oman heikkouden kohtaaminen."
+                He eivät ikinä vaivautuneet tulemaan jurtasta ulos ja silloin kun he tulivat, he juuri ja juuri pysyivät hevosensa selässä. Posket punoittivat.
+              </p>
+
+              <h2 className="font-display text-2xl font-bold mt-12 mb-4">Luku 14: Verot ja Korruptio</h2>
+
+              <p>
+                He suhtautuivat veron maksamiseen todella tiukasti ja todella hierarkkisesti. Jos kuului yhteiskunnan ylempiin kasteihin, veroa ei tarvinnut maksaa, kun taas tavalliset ihmiset maksoivat veron, tekivät kaikki ei-halutut työt ja kontribuoivat heimojen kirstoihin.
               </p>
 
               <p>
-                Erdenetögs, vanha shamaani, ilmestyi ovelle. Hänen kasvonsa olivat uurteiset vuosien viisaudesta, mutta hänen silmänsä loistivat yhä nuorekkaasti.
+                Tällä tavalla tämä loi katkeruutta. Tämä loi riitoja riveissä. Tämä sai aikaan usein jopa kapinoita heimojen sisällä, mikä saattoi olla oiva hetki vihollisille hyökätä myös ulkopuolelta ja napata ainakin osa heimon alueesta itsellensä.
               </p>
 
               <p>
-                "Dengri Hangin, Hirvi, loi maan laulullaan," shamaani aloitti. "Ja me kaikki olemme osa tuota laulua. Sinun tarinasi, Temüü, on vain yksi säe suuressa eepoksessa."
+                Korruptio oli valitettavan yleistä näihin aikoihin. Korruptio sai aikaan maaseudulla, jossa armeijat eivät pystyneet valvomaan järjestystä samalla tavalla: hevosvarkaat, maa-alueiden näkymättömät pienet kaappaukset, laitonta metsästystä, vesistöjen käyttämistä viljelysalueena, vaikka uskonnot ja pyhät lait kielsivätkin.
+              </p>
+
+              <h2 className="font-display text-2xl font-bold mt-12 mb-4">Luku 15: Kultainen Aika</h2>
+
+              <p>
+                Usein myös armeijan viranomaiset kuin myös siviilijohtajat riitelivät keskenään vaikutusvallasta. He tiesivät toistensa asiat, koska he olivat kasvaneet yhdessä, mutta armeijakenraalit olivat usein kateellisia niistä mukavista oloista, missä siviiliprinssit ja kuninkaat saivat elää.
               </p>
 
               <p>
-                Temüü nyökkäsi. Hän ymmärsi nyt, mitä hänen elämänsä todella merkitsi. Ei ollut kyse vallasta tai kunniasta — oli kyse jäljestä, jonka hän jättäisi jälkeensä. Tarinoista, joita tuleville sukupolville kerrottaisiin.
+                Kun taas he joutuivat käyttämään parhaat vuodet elämästänsä sotaretkillä palellen ja nukkuen heidän ylellisillä teltoissaan — mutta kuitenkin nimenomaan teltoissaan.
+              </p>
+
+              <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
+                <p className="italic text-muted-foreground">
+                  Oli ehkä sellainen aika heidän historiassaan, kun he pystyivät istumaan saman pöydän ääreen. Kun he pystyivät jakamaan ja murtamaan leipää ja juomaan heidän pöydissään. Tätä aikakautta kutsuttiin heidän kultaa-ajaksi ja sitä oli kestänyt satoja vuosia.
+                </p>
+              </div>
+
+              <p>
+                He olivat pystyneet valitsemaan yhden ihmisen, joka edustaisi heitä ulkomailla, joka pystyisi päättämään heidän yhteiskuntansa yleisestä linjauksista, kun he säilyttäisivät omien heimojensa kesken laajaa autonomiaa.
               </p>
 
               <p>
-                "Mitä aiot tehdä nyt?" Naran kysyi.
+                Heidän valtansa kasvaessa ja vallanhimonsa noustessa ja kehittyessä sitä syödessä, heidän erimielisyytensä kuitenkin nousivat, koska he eivät nytkään pystyneet sopimaan keskenään siitä, miten valtakuntaa pitäisi sisällään viedä eteenpäin ja mihin suuntaan.
               </p>
 
-              <p>
-                Temüü kääntyi katsomaan heitä molempia — siskoaan ja opettajaansa. "Aion varmistaa, että meidän kansamme muistaa. Muistaa mistä tulimme, mitä kestimme, ja miksi taistelemme. Koska todellinen perintö ei ole maata tai vaurautta — se on tarina."
-              </p>
+              <div className="my-12 p-8 bg-card border-2 border-border rounded-sm text-center">
+                <p className="font-display text-lg text-muted-foreground italic">
+                  — Ensimmäisen osan loppu —
+                </p>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Tarina jatkuu...
+                </p>
+              </div>
 
-              <p>
-                Ja niin Temüü "Baatar" — soturi, johtaja, legenda — aloitti viimeisen tehtävänsä: varmistaa, että arojen lasten tarinat eläisivät ikuisesti.
-              </p>
             </div>
           </article>
         </div>
