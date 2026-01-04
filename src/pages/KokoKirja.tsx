@@ -35,11 +35,6 @@ const KokoKirja = () => {
             <p className="text-xl text-muted-foreground mt-4">
               Koko romaani — Lue alusta loppuun
             </p>
-            <div className="flex justify-center gap-4 mt-6 text-sm text-muted-foreground">
-              <span>15 lukua</span>
-              <span>•</span>
-              <span>~30 min lukuaika</span>
-            </div>
           </div>
         </div>
       </section>
@@ -51,33 +46,29 @@ const KokoKirja = () => {
             <h2 className="font-display text-lg font-semibold mb-4">Sisällysluettelo</h2>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div>
-                <p className="font-semibold text-primary mb-2">Osa I: Yhdistyminen</p>
+                <p className="font-semibold text-primary mb-2">Sivut 1-20</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li><a href="#luku-1" className="hover:text-primary">1. Arojen Maa</a></li>
-                  <li><a href="#luku-2" className="hover:text-primary">2. Ruoka ja Tavat</a></li>
-                  <li><a href="#luku-3" className="hover:text-primary">3. Vapaus ja Karu Elämä</a></li>
-                  <li><a href="#luku-4" className="hover:text-primary">4. Talven Karuus</a></li>
-                  <li><a href="#luku-5" className="hover:text-primary">5. Kunnia</a></li>
+                  <li><a href="#sivu-1" className="hover:text-primary">Sivu 1-5: Arojen maa</a></li>
+                  <li><a href="#sivu-6" className="hover:text-primary">Sivu 6-10: Ruoka ja tavat</a></li>
+                  <li><a href="#sivu-11" className="hover:text-primary">Sivu 11-15: Vapaus</a></li>
+                  <li><a href="#sivu-16" className="hover:text-primary">Sivu 16-20: Talven karuus</a></li>
                 </ul>
               </div>
               <div>
-                <p className="font-semibold text-accent mb-2">Osa II: Valloitus</p>
+                <p className="font-semibold text-accent mb-2">Sivut 21-40</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li><a href="#luku-6" className="hover:text-primary">6. Uhraukset ja Henget</a></li>
-                  <li><a href="#luku-7" className="hover:text-primary">7. Soturin Ominaisuudet</a></li>
-                  <li><a href="#luku-8" className="hover:text-primary">8. Ratsastuksen Taito</a></li>
-                  <li><a href="#luku-9" className="hover:text-primary">9. Paini ja Miekkailu</a></li>
-                  <li><a href="#luku-10" className="hover:text-primary">10. Sukupuolet ja Arvot</a></li>
+                  <li><a href="#sivu-21" className="hover:text-primary">Sivu 21-25: Kunnia</a></li>
+                  <li><a href="#sivu-26" className="hover:text-primary">Sivu 26-30: Henget</a></li>
+                  <li><a href="#sivu-31" className="hover:text-primary">Sivu 31-35: Soturin taidot</a></li>
+                  <li><a href="#sivu-36" className="hover:text-primary">Sivu 36-40: Arvot</a></li>
                 </ul>
               </div>
               <div>
-                <p className="font-semibold text-primary mb-2">Osa III: Koettelemus</p>
+                <p className="font-semibold text-primary mb-2">Sivut 41-50+</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li><a href="#luku-11" className="hover:text-primary">11. Naisten Rooli</a></li>
-                  <li><a href="#luku-12" className="hover:text-primary">12. Ulkomaalaiset</a></li>
-                  <li><a href="#luku-13" className="hover:text-primary">13. Johtajat</a></li>
-                  <li><a href="#luku-14" className="hover:text-primary">14. Verot ja Korruptio</a></li>
-                  <li><a href="#luku-15" className="hover:text-primary">15. Kultainen Aika</a></li>
+                  <li><a href="#sivu-41" className="hover:text-primary">Sivu 41-45: Johtajat</a></li>
+                  <li><a href="#sivu-46" className="hover:text-primary">Sivu 46-50: Kultainen aika</a></li>
+                  <li><a href="#tulevat-sivut" className="hover:text-primary text-accent">→ Tulevat sivut (51+)</a></li>
                 </ul>
               </div>
             </div>
@@ -91,14 +82,14 @@ const KokoKirja = () => {
           <article className="max-w-3xl mx-auto">
             <div className="font-body text-foreground leading-relaxed space-y-6">
               
-              {/* OSA I */}
+              {/* ==================== SIVUT 1-10 ==================== */}
               <div className="my-12 text-center">
                 <span className="text-6xl font-display font-bold text-primary/20">I</span>
-                <h2 className="font-display text-3xl font-bold mt-2">Yhdistyminen</h2>
-                <p className="text-muted-foreground mt-2">Arojen maailma ja sen kansa</p>
+                <h2 className="font-display text-3xl font-bold mt-2">Arojen Maailma</h2>
+                <p className="text-muted-foreground mt-2">Sivut 1-10</p>
               </div>
 
-              <h3 id="luku-1" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 1: Arojen Maa</h3>
+              <h3 id="sivu-1" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 1-5: Arojen Maa</h3>
               
               <p className="first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:mr-2 first-letter:float-left">
                 Olipa kerran kaukaisessa maassa joukko keskenänsä riiteleviä heimoja. Nämä maat olivat luonnoltaan aroa eli steppejä.
@@ -124,7 +115,11 @@ const KokoKirja = () => {
                 Ulkomaalaiset näkevät tämänkin tavan barbaarisena ja karkeana, mutta niin yksinkertaisesti tehtiin ruokailun yhteydessä. Rasvaa ja laardia hierattiin omien vaatteidensa ympärillä.
               </p>
 
-              <h3 id="luku-2" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 2: Ruoka ja Tavat</h3>
+              <p>
+                Oli myös paljon vitsejä siitä, että ilma Mongoliassa oli laarin rasvan peittämä, mutta tämä ei ollut heidän mielestään hauska vitsi.
+              </p>
+
+              <h3 id="sivu-6" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 6-10: Ruoka ja Tavat</h3>
 
               <p>
                 Tässä maassa ei myöskään käytetty lehmiä niin kuin usein ulkomailla on totuttu kehittyneemmän maatalouden ja karjanhoidon takia, vaan tässä maassa käytettiin hevosten ja aasien maitoa. Siinä uskottiin olevan kehoa puhdistavia ominaisuuksia, joka sai vatsan liikkeelle.
@@ -144,7 +139,8 @@ const KokoKirja = () => {
                 </p>
               </div>
 
-              <h3 id="luku-3" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 3: Vapaus ja Karu Elämä</h3>
+              {/* ==================== SIVUT 11-20 ==================== */}
+              <h3 id="sivu-11" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 11-15: Vapaus ja Karu Elämä</h3>
 
               <p>
                 Elämä oli karua ja tämä olisi luonnostaan saanut monet ihmiset ajattelemaan, että he haluavat etsiä parempaa ja mukavampaa elämää ulkomailta. Poissa moisesta kurjuudesta, jota he kaikki ovat joutuneet sietämään.
@@ -162,18 +158,22 @@ const KokoKirja = () => {
                 Oli myös joitakin, jotka olivat tottuneet yksinäiseen ja erakoituneeseen elämään poissa laumoista ja heidän mielestään konventionaalisesta yhteiskunnasta. Nämä olivat usein ihmisiä, jotka olivat elämässään kokeneet liian paljon tai yksinkertaisesti eivät olleet tyytyväisiä heidän tapaansa elää.
               </p>
 
-              <h3 id="luku-4" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 4: Talven Karuus</h3>
+              <p>
+                Mutta eivät myöskään kokeneet, että ulkomailla asiat olisivat yhtään varsin paremmin.
+              </p>
+
+              <h3 id="sivu-16" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 16-20: Talven Karuus</h3>
 
               <p>
                 Oli myös äärimmäisissä tapauksissa rangaistu joitakin ihmisiä siitä, jos he olivat käyttäytyneet jollain tavalla kuulemattomasti tai eettisesti väärin heidän tapojansa ja lakiensa mukaisesti.
               </p>
 
               <p>
-                Elämä aroilla yksin varsinkin talvisaikaan oli todella raskasta, koska pakkaset saattoivat olla -20 tai jopa -30 celsiusasteita. Siinähän se kysymys onkin, miten pystyy pitämään teltan tai mökin lämpimänä yön ylitse, jos itse nukkuu ja kamina sen kuin vaan polttaa ja polttaa.
+                Elämä aroilla yksin varsinkin talvisaikaan oli todella raskasta, koska pakkaset saattoivat olla -20 tai jopa -30 celsiusasteita nykypäivän mittausten mukaisesti.
               </p>
 
               <p>
-                Oli monia tapauksia, että ihmiset paleltuivat kuoliaaksi yksin heidän mökeissään ilman että kukaan kuuli heidän tuskanhuutonsa, joita tuskin edes oli, koska he vain kuolivat uniinsa.
+                Siinähän se kysymys onkin, miten pystyy pitämään teltan tai mökin lämpimänä yön ylitse, jos itse nukkuu ja kamina sen kuin vaan polttaa ja polttaa. Oli monia tapauksia, että ihmiset paleltuivat kuoliaaksi yksin heidän mökeissään ilman että kukaan kuuli heidän tuskanhuutonsa, joita tuskin edes oli, koska he vain kuolivat uniinsa.
               </p>
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
@@ -182,33 +182,37 @@ const KokoKirja = () => {
                 </p>
               </div>
 
-              <h3 id="luku-5" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 5: Kunnia</h3>
-
               <p>
                 Heimot eivät välttämättä kunnioittaneet soturia, joka kuoli taistelussa, tai siviiliä, joka kuoli vanhuuteen. He kunnioittivat heimolaista, joka oli elänyt elämänsä heidän elinolojaan parantaen — elämänsä heidän kunniaansa puolesta.
               </p>
 
+              {/* ==================== SIVUT 21-30 ==================== */}
+              <div className="my-16 text-center">
+                <div className="w-full h-px bg-border mb-12"></div>
+                <span className="text-6xl font-display font-bold text-accent/20">II</span>
+                <h2 className="font-display text-3xl font-bold mt-2">Kunnia ja Henget</h2>
+                <p className="text-muted-foreground mt-2">Sivut 21-30</p>
+              </div>
+
+              <h3 id="sivu-21" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 21-25: Kunnia</h3>
+
               <p>
-                Kunnia oli toinen asia, johon uskottiin, joita tultiin puolustamaan hamaan loppuun asti. Kunnioitus ja kunnia ei pelkästään tarkoittanut sitä, että omaa kunniaa puolustettiin tai omaa perhettä. Kunnioitus tarkoitti myös sitä, että sitä piti antaa muille, jotta sitä pystyi saamaan muilta.
+                Kunnia oli toinen asia, johon uskottiin, joita tultiin puolustamaan hamaan loppuun asti. Kunnioitus ja kunnia ei pelkästään tarkoittanut sitä, että omaa kunniaa puolustettiin tai omaa perhettä.
               </p>
 
               <p>
-                Yhteisöissä uskottiin molempipuoliseen vuorovaikuttamiseen, jos tahtoi saada apua muilta. Esimerkiksi jos tiesi, että joku oli hallinnut polttopuita itselleen mielin määrin, niitä saattoi mennä kysymään. Mutta jos itse omasi esimerkiksi lihaa, jota hänellä ei ollut, sitten odotettiin myös, että itseohjautuvasti tarjoutui tätä lihaa tarjoamaan.
+                Kunnioitus tarkoitti myös sitä, että sitä piti antaa muille, jotta sitä pystyi saamaan muilta. Yhteisöissä uskottiin molempipuoliseen vuorovaikuttamiseen, jos tahtoi saada apua muilta.
+              </p>
+
+              <p>
+                Esimerkiksi jos tiesi, että joku oli hallinnut polttopuita itselleen mielin määrin, niitä saattoi mennä kysymään. Mutta jos itse omasi esimerkiksi lihaa, jota hänellä ei ollut, sitten odotettiin myös, että itseohjautuvasti tarjoutui tätä lihaa tarjoamaan.
               </p>
 
               <p>
                 Rikastumista ei nähty hyvänä tässä yhteiskunnassa. Kaikki vauraudet ja rikkaudet luovutettiin heimon yhteiseen varastoon pahoja aikoja varten.
               </p>
 
-              {/* OSA II */}
-              <div className="my-16 text-center">
-                <div className="w-full h-px bg-border mb-12"></div>
-                <span className="text-6xl font-display font-bold text-accent/20">II</span>
-                <h2 className="font-display text-3xl font-bold mt-2">Valloitus</h2>
-                <p className="text-muted-foreground mt-2">Henget, taidot ja soturin tie</p>
-              </div>
-
-              <h3 id="luku-6" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 6: Uhraukset ja Henget</h3>
+              <h3 id="sivu-26" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 26-30: Uhraukset ja Henget</h3>
               
               <p>
                 Välillä saatettiin myös tehdä uhrauksia erilaisille eläimille. Ihmisuhrauksia ei harjoitettu, mutta vähemmän palvottuja eläimiä uhrattiin eläimiä varten ja henkiä varten, joita kunnioitettiin.
@@ -228,25 +232,39 @@ const KokoKirja = () => {
                 </p>
               </div>
 
-              <h3 id="luku-7" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 7: Soturin Ominaisuudet</h3>
+              {/* ==================== SIVUT 31-40 ==================== */}
+              <div className="my-16 text-center">
+                <div className="w-full h-px bg-border mb-12"></div>
+                <span className="text-6xl font-display font-bold text-primary/20">III</span>
+                <h2 className="font-display text-3xl font-bold mt-2">Soturin Tie</h2>
+                <p className="text-muted-foreground mt-2">Sivut 31-40</p>
+              </div>
+
+              <h3 id="sivu-31" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 31-35: Soturin Ominaisuudet</h3>
 
               <p>
                 Kaikille heimoille ominaisia piirteitä olivat voima, viekkaus, nopeus, kovuus. Luontaisilta ominaisuuksiltaan arokansat olivat vahvoja johtuen rankoista sääolosuhteista myös heidän liikunnallisesta elämäntyylistään.
               </p>
 
               <p>
-                Merkittävin kontribuutio heidän vahvoille kropilleen ja mielillään oli myös heidän ruokavalio, jossa oli paljon proteiinia. He joivat paljon maitoa ja he söivät paljon lampaanlihaa. Maidossa on paljon proteiineja ja kalsiumia, jotka auttavat lihasten ja luuston vahvistamisessa.
+                Merkittävin kontribuutio heidän vahvoille kropilleen ja mielillään oli myös heidän ruokavalio, jossa oli paljon proteiinia. He joivat paljon maitoa ja he söivät paljon lampaanlihaa.
               </p>
 
               <p>
-                Lampaanlihassa on paljon rasvaa ja proteiinia ja rautaa, joka tukee hermoston ja lihaksiston kehittymistä aikaisesta iästä lähtien.
+                Maidossa on paljon proteiineja ja kalsiumia, jotka auttavat lihasten ja luuston vahvistamisessa. Lampaanlihassa on paljon rasvaa ja proteiinia ja rautaa, joka tukee hermoston ja lihaksiston kehittymistä aikaisesta iästä lähtien.
               </p>
 
               <p>
-                He olivat myös tehneet raskaita, fyysisiä töitä nuoresta iästä lähtien. Noihin aikoihin ei niinkään paljon maataloustöitä, mutta he olivat tottuneet kantamaan raskaita kuormia omien kykyjensä mukaisesti. He olivat tottuneet lypsämään hevoset ja aasit. He olivat tottuneet pystyttämään ja purkamaan teltat.
+                He olivat myös tehneet raskaita, fyysisiä töitä nuoresta iästä lähtien. Noihin aikoihin ei niinkään paljon maataloustöitä, mutta he olivat tottuneet kantamaan raskaita kuormia omien kykyjensä mukaisesti.
               </p>
 
-              <h3 id="luku-8" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 8: Ratsastuksen Taito</h3>
+              <p>
+                He olivat tottuneet lypsämään hevoset ja aasit. He olivat tottuneet pystyttämään ja purkamaan teltat. Telttakalusto saattoi olla raskasta ja epämukava kantaa.
+              </p>
+
+              <p>
+                Pienestä iästä lähtien olivat tottuneet siihen, että heidän piti vaeltaa huonoissa sääolosuhteissa niin kuin myös hyvissäkin sääolosuhteissa. Olivat tottuneet käyttämään välillä jopa tylppiä ruokailuvälineitä pilkkoakseen sitkeää ja raakaa lihaa, joka oli usein kiinni raskaasti luustossa.
+              </p>
 
               <p>
                 Heidän voimaannuttamisessaan yksi tärkeä ominaisuus oli heidän rakkaus ja tiukka kuri hevosratsastuksen taitoa koskien. Jokaisen arokansalaisen piti lapsesta asti opetella ratsastamaan.
@@ -266,7 +284,7 @@ const KokoKirja = () => {
                 </p>
               </div>
 
-              <h3 id="luku-9" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 9: Paini ja Miekkailu</h3>
+              <h3 id="sivu-36" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 36-40: Paini, Miekkailu ja Arvot</h3>
 
               <p>
                 Seuraavaksi tärkein taito, joka jokaisen piti opetella, oli heidän oma kansanpaininsa. Heidän kansanpaininsa eroaa meidän kansanpainistamme siinä, missä asennossa ja millaisia pisteytyksiä palkitaan.
@@ -284,149 +302,245 @@ const KokoKirja = () => {
                 Kun he kasvoivat vanhemmiksi, heillä oli usein tapana kilpailla keskenään erilaisissa sotilaiden kilpailuissa, koska arokansoilla kaikki taistelukykyiset miehet kuuluivat heidän armeijaansa, jota he kutsuivat suureksi laumaksi.
               </p>
 
-              <h3 id="luku-10" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 10: Sukupuolet ja Arvot</h3>
-
               <p>
                 Heidän tietäällinen suhtautumisensa sukupuoliin oli eriskummallinen ulkomaalaisten mielestä. Esimerkiksi vain naisiin viitattiin sukupuolena, koska miehillä ei heidän mielestään sellaista edes ollut.
               </p>
 
               <p>
-                He myöskin arvostivat nopeutta ja kovuutta heidän yhteiskunnassaan. Vähemmän tunnettu fakta, koska välillä olosuhteet olivat raskaat, ja jos ihminen selvisi siellä, välillä täytyi olla valmiina marssimaan pitkiä matkoja.
+                He myöskin arvostivat nopeutta ja kovuutta heidän yhteiskunnassaan. Vähemmän tunnettu fakta, koska välillä olosuhteet olivat raskaat ja ottaa ihminen selvisi siellä välillä täytyi olla valmiina marssimaan pitkiä matkoja.
               </p>
 
               <p>
-                Jos oli erottunut laumasta, navigoimaan yksin ja lukemaan luonnonantamia hienovaraisia vihjeitä. Arvostettiin myös viekkautta, koska välillä voimakomus ja nopeus ja vahvat selviytymistaidot eivät riitä.
+                Jos oli erottunut laumasta, piti osata navigoida yksin ja lukea luonnon antamia hienovaraisia vihjeitä. Arvostettiin myös viekkautta, koska välillä voima, nopeus ja vahvat selviytymistaidot eivät riitä.
               </p>
 
-              <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
-                <p className="italic text-muted-foreground">
-                  Täytyy olla ovelampi kuin luonto. Täytyy olla ovelampi kuin viekkain kettu. Tai täytyy olla ovelampi kuin se henkilö, joka haluaa elää ja pahaa sinulle.
-                </p>
-              </div>
+              <p>
+                Täytyy olla ovelampi kuin luonto. Täytyy olla ovelampi kuin viekkain kettu. Tai täytyy olla ovelampi kuin se henkilö, joka haluaa pahaa sinulle.
+              </p>
 
               <p>
                 Yleisesti ottaen miten miehen täytyy tuoda itseään esille oli näiden ominaisuuksien kautta. Miehen täytyy olla vahva. Miehen täytyy olla viekas, älykäs ja selviytymiskykyinen.
               </p>
 
               <p>
-                Naisilta taas odotettiin viehkeyttä, älyä, kykyä tuntea itsensä ja olla vaatimaton.
+                Naisilta taas odotettiin viehkeyttä, älyä, kykyä tuntea itsensä ja olla vaatimaton. Usein naisten asema ylenkatsotaan tämän ajan maailmassa pois, koska se on nimenomaisesti miehet, jotka ovat kirjoittaneet historian.
               </p>
 
-              {/* OSA III */}
+              <p>
+                Mutta se on naiset, jotka ovat antaneet kyvyn miehille lähteä pois leiristä, kun heidän omaisuudesta ja läheisistä pidetään huolta.
+              </p>
+
+              {/* ==================== SIVUT 41-50 ==================== */}
               <div className="my-16 text-center">
                 <div className="w-full h-px bg-border mb-12"></div>
-                <span className="text-6xl font-display font-bold text-primary/20">III</span>
-                <h2 className="font-display text-3xl font-bold mt-2">Koettelemus</h2>
-                <p className="text-muted-foreground mt-2">Johtajuus, valta ja yhteiskunnan haasteet</p>
+                <span className="text-6xl font-display font-bold text-accent/20">IV</span>
+                <h2 className="font-display text-3xl font-bold mt-2">Johtajuus ja Valta</h2>
+                <p className="text-muted-foreground mt-2">Sivut 41-50</p>
               </div>
 
-              <h3 id="luku-11" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 11: Naisten Rooli</h3>
-              
-              <p>
-                Usein naisten asema ylenkatsotaan tämän ajan maailmassa pois, koska se on nimenomaisesti miehet, jotka ovat kirjoittaneet historian. Mutta se on naiset, jotka ovat antaneet kyvyn miehille lähteä pois leiristä, kun heidän omaisuudesta ja läheisistä pidetään huolta.
-              </p>
+              <h3 id="sivu-41" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 41-45: Johtajat ja Korruptio</h3>
 
               <p>
-                Kun miehet olivat pois sotaretkillä, solmittiin myös usein sisäpiirikauppoja toisten heimojen ja toisten ulkomaalaisten kanssa, koska kukaan ei ollut kotona metsästämässä ja tuomassa ruokaa ja kotitalouden pyörittämiselle välttämättömiä tarvikkeita kotiin.
+                Kun miehet olivat sotaretkillä, naisilla solmittiin myös usein sisäpiirikauppoja toisten heimojen ja toisten ulkomaalaisten kanssa, koska kukaan ei ollut kotona metsästämässä ja tuomassa ruokaa ja kotitalouden pyörittämiselle välttämättömiä tarvikkeita kotiin.
               </p>
 
               <p>
                 Myös paljon historiallista tutkimusta tehtiin silloin, kun miehet olivat sotaretkillä, koska nyt ulkomaalaisillakin saattoi olla pääsy leireihin, joissa heidät olisi todennäköisesti vain teloitettu, jos miehet olisivat olleet paikalla.
               </p>
 
-              <h3 id="luku-12" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 12: Ulkomaalaiset</h3>
+              <p>
+                Ulkomaalaisiin usein suhtauduttiin jokseenkin kielteisesti ja halveksuvasti, mutta heitä kunnioitettiin kuitenkin siinä mielessä, että heillä oli paljon sellaisia taitoja ja joitakin näitä taitoja jopa pidettiin taikavoimina ja pakanallisina oppeina ja jotka herättivät pelkoa.
+              </p>
 
               <p>
-                Ulkomaalaisiin usein suhtauduttiin jokseenkin kielteisesti ja halveksuvasti, mutta heitä kunnioitettiin kuitenkin siinä mielessä, että heillä oli paljon sellaisia taitoja, ja joitakin näitä taitoja jopa pidettiin taikavoimina ja pakanallisina oppeina, jotka herättivät pelkoa — melkein taikauskoista pelkoa — arokansojen heimojen sydämissä ja mielissä.
+                Melkein taikauskoista pelkoa arokansojen heimojen sydämissä ja mielissä. Esimerkiksi sanottiin, että jotkin eteläiset heimot kykenivät luomaan piippuja ja putkia, jotka pystyivät syöksymään tulta.
+              </p>
+
+              <p>
+                Niin kuin länsimaalaisten tarinoissa kerrotut lohikäärmeet, jotka saattoivat viedä viatonta karjaa pois heidän paimeniensa luota. Heimojen sotaretkillä oli kuitenkin tietynlainen kunnioitus ulkomaalaisia kohtaan siinä mielessä, että kaikki ihmiset, joilla oli jokin taito, säästettiin verisempien taisteluiden ja kaupunkien piiritysten jälkeen.
+              </p>
+
+              <p>
+                Oli myös tunnustettu se fakta, että jokaisella ihmisellä ja ihmisyhteisöllä pitää saada olla heidän oma kulttuurinsa ja oma uskontonsa. Toisten ihmisten uskomuksia ja tapoja ei niinkään pitäisi sortaa.
+              </p>
+
+              <p>
+                Vaan niistä pitäisi katsoa vilpittömästi, että mitä hyvää niissä on ja miten ulkomaalaisten kulttuureista voitaisiin hyötyä mahdollisimman paljon.
+              </p>
+
+              <h3 id="sivu-46" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sivut 46-50: Kultainen Aika ja Sen Haasteet</h3>
+
+              <p>
+                Heidän yhteisistä jaetuista piirteistään huolimatta he olivat kaikki ainutlaatuisia keskenään. Kaikista näistä samankaltaisuuksista huolimatta heidän riveissään silti kyti paljon epäpätevyyttä.
+              </p>
+
+              <p>
+                Useasti arokansoilla oli sellainen maine, että he olivat voittamattomia taistelukentillä. He olivat enemmän kuin ihmisiä. He olivat demoneita tai jumalia riippuen omasta mielipiteestään heistä.
+              </p>
+
+              <p>
+                Heidän riveissään kuitenkin oli paljon eriävää kansaa ja eri mieltä olevia ihmisiä. Heillä oli sotilasjohtajia, jotka kykenivät johtamaan omaa tekemistään johtamaan esimerkillä ja johtamaan edestä.
+              </p>
+
+              <p>
+                Heillä oli johtajia, jotka kykenivät delegoimaan omaa kuormaansa ylhäältä alaspäin ja johtajia, jotka kykenivät jalkauttamaan käskyjä ylhäältä alaspäin. Oli johtajia, joiden ei tarvinnut sanoa paljon vaan kun he kohottivat kulmakarvaansa, oli ikään kuin maat ja taivaat olisivat alkaneet liikkumaan jo tämän jälkeen.
+              </p>
+
+              <p>
+                Oli kuitenkin johtajia, jotka yliarvioivat omat vahvuutensa. Heitä ei kiinnostanut pienien asioiden tekeminen, vaan he vain ryhtyivät hegemonistiseen hedonistiseen ilakointiin monien naistensa kanssa.
+              </p>
+
+              <p>
+                He eivät ikinä vaivautuneet tulemaan jurtasta ulos ja silloin kun he tulivat, he juuri ja juuri pysyivät hevosensa selässä. Posket punoittivat alkoholista.
+              </p>
+
+              <p>
+                He suhtautuivat veron maksamiseen todella tiukasti ja todella hierarkkisesti. Jos kuului yhteiskunnan ylempiin kasteihin, veroa ei tarvinnut maksaa, kun taas tavalliset ihmiset maksoivat veron, tekivät kaikki ei-halutut työt ja kontribuoivat heimojen kirstoihin tällä tavalla.
+              </p>
+
+              <p>
+                Tämä loi katkeruutta. Tämä loi riitoja riveissä. Tämä sai aikaan usein jopa kapinoita heimojen sisällä, mikä saattoi olla oiva hetki vihollisille hyökätä myös ulkopuolelta ja napata ainakin osa heimon alueesta itsellensä.
+              </p>
+
+              <p>
+                Korruptio oli valitettavan yleistä näihin aikoihin. Korruptio sai aikaan maaseudulta, jossa armeijat eivät pystyneet valvomaan järjestystä samalla tavalla, hevosvarkaat, maa-alueiden näkymättömät pienet kaappaukset.
+              </p>
+
+              <p>
+                Laitonta metsästystä, vesistöjen käyttämistä viljelysalueena, vaikka uskonnot ja pyhät lait kielsivätkin. Tämän kaiken hallitsevat viranomaiset ja eliitti väittivät tätä suurimmaksi korruption lähteeksi.
+              </p>
+
+              <p>
+                Vaikka nimenomaan he olivat näkymättömien näkymättömyyksissä. Juuri he, jotka tukivat tällaista maantie- ja maalaisrosvoutta. Usein he olivat ne, jotka ostivat heidän viljansa. He olivat ne, jotka ostivat heidän hevosensa ja söivät ne lihoina.
+              </p>
+
+              <p>
+                Usein myös armeijan viranomaiset kuin myös siviilijohtajat riitelivät keskenään vaikutusvallasta. He tiesivät toistensa asiat, koska he olivat kasvaneet yhdessä.
+              </p>
+
+              <p>
+                Mutta he armeijakenraalit olivat usein kateellisia niistä mukavista oloista, missä siviiliprinssit ja kuninkaat saivat elää, kun taas he joutuivat käyttämään parhaat vuodet elämästänsä sotaretkillä palellen ja nukkuen heidän ylellisissa teltoissaan — mutta kuitenkin nimenomaan teltoissaan.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  Esimerkiksi sanottiin, että jotkin eteläiset heimot kykenivät luomaan piippuja ja putkia, jotka pystyivät syöksymään tulta — niin kuin länsimaalaisten tarinoissa kerrotut lohikäärmeet, jotka saattoivat viedä viatonta karjaa pois heidän paimeniensa luota.
+                  Ehkä oli sellainen aika heidän historiassaan, kun he pystyivät istumaan saman pöydän ääreen. Kun he pystyivät jakamaan ja murtamaan leipää ja juomaan heidän pöydissään. Tätä aikakautta kutsuttiin heidän kultaiseksi ajakseen ja sitä oli kestänyt satoja vuosia.
                 </p>
               </div>
 
               <p>
-                Heimojen sotaretkillä oli kuitenkin tietynlainen kunnioitus ulkomaalaisia kohtaan siinä mielessä, että kaikki ihmiset, joilla oli jokin taito, säästettiin verisempien taisteluiden ja kaupunkien piiritysten jälkeen.
+                He olivat pystyneet valitsemaan yhden ihmisen, joka edustaisi heitä ulkomailla, joka pystyisi päättämään heidän yhteiskuntansa yleisestä linjauksista, kun he säilyttäisivät omien heimojensa kesken laajaa autonomiaa, josta he kaikki silloin nauttivat.
               </p>
 
               <p>
-                Oli myös tunnustettu se fakta, että jokaisella ihmisellä ja ihmisyhteisellä pitää saada olla heidän oma kulttuurinsa ja oma uskontonsa. Toisten ihmisten uskomuksia ja tapoja ei niinkään pitäisi sortaa, vaan niistä pitäisi katsoa vilpittömästi, että mitä hyvää niissä on ja miten ulkomaalaisten kulttuureista voitaisiin hyötyä mahdollisimman paljon.
+                Heidän valtansa kasvaessa ja eksponentiaalisesti vallanhimonsa noustessa ja kehittyessä sitä syödessä, heidän erimielisyytensä kuitenkin nousivat. Koska he eivät nytkään pystyneet sopimaan keskenään siitä, miten valtakuntaa pitäisi sisällään viedä eteenpäin ja mihin suuntaan.
               </p>
 
-              <h3 id="luku-13" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 13: Johtajat</h3>
+              {/* ==================== TULEVAT SIVUT - PAIKKAMERKIT ==================== */}
+              <div id="tulevat-sivut" className="my-16 text-center scroll-mt-20">
+                <div className="w-full h-px bg-border mb-12"></div>
+                <span className="text-6xl font-display font-bold text-muted-foreground/20">...</span>
+                <h2 className="font-display text-3xl font-bold mt-2 text-muted-foreground">Tulevat Sivut</h2>
+                <p className="text-muted-foreground mt-2">Lisää tekstiä tähän alle</p>
+              </div>
 
-              <p>
-                Heidän yhteisistä jaetuista piirteistään huolimatta he olivat kaikki ainutlaatuisia. Kaikista näistä samankaltaisuuksista huolimatta heidän riveissään silti kyti paljon epäpätevyyttä.
-              </p>
+              {/* ==================== SIVU 51-60: LISÄÄ TEKSTI TÄHÄN ==================== */}
+              <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <h3 id="sivu-51" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                  Sivut 51-60
+                </h3>
+                <p className="text-muted-foreground italic mb-4">
+                  Lisää tänne sivujen 51-60 teksti...
+                </p>
+                {/* 
+                  OHJEET: Korvaa tämä kommentti ja yllä oleva placeholder-teksti 
+                  oikealla romaanin tekstillä. Käytä samaa muotoilua kuin yllä olevissa osioissa:
+                  
+                  <p>
+                    Tekstisi tähän...
+                  </p>
+                  
+                  Lainaukset ja korostukset:
+                  <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
+                    <p className="italic text-muted-foreground">
+                      Lainaus tai korostettu teksti...
+                    </p>
+                  </div>
+                */}
+              </div>
 
-              <p>
-                Useasti arokansoilla oli sellainen maine, että he olivat voittamattomia taistelukentillä. He olivat enemmän kuin ihmisiä. He olivat demoneita tai jumalia riippuen omasta mielipiteestään.
-              </p>
-
-              <p>
-                Heidän riveissään kuitenkin oli paljon eriävää kansaa ja eri mieltä olevia ihmisiä. Heillä oli sotilasjohtajia, jotka kykenivät johtamaan omaa tekemistään, johtamaan esimerkillä ja johtamaan edestä.
-              </p>
-
-              <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
-                <p className="italic text-muted-foreground">
-                  Heillä oli johtajia, jotka kykenivät delegoimaan omaa kuormaansa ylhäältä alaspäin ja johtajia, jotka kykenivät jalkauttamaan käskyjä ylhäältä alaspäin. Oli johtajia, joiden ei tarvinnut sanoa paljon — kun hän nosti kulmakarvaansa, oli ikään kuin maat ja taivaat olisivat alkaneet liikkumaan.
+              {/* ==================== SIVU 61-70: LISÄÄ TEKSTI TÄHÄN ==================== */}
+              <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <h3 id="sivu-61" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                  Sivut 61-70
+                </h3>
+                <p className="text-muted-foreground italic mb-4">
+                  Lisää tänne sivujen 61-70 teksti...
                 </p>
               </div>
 
-              <p>
-                Tämän jälkeen oli kuitenkin johtajia, jotka yliarvioivat omat vahvuutensa. Heitä ei kiinnostanut pienien asioiden tekeminen, vaan he vain ryhtyivät hegemonistiseen hedonistiseen ilakointiin monien naistensa kanssa.
-              </p>
-
-              <p>
-                He eivät ikinä vaivautuneet tulemaan jurtasta ulos ja silloin kun he tulivat, he juuri ja juuri pysyivät hevosensa selässä. Posket punoittivat.
-              </p>
-
-              <h3 id="luku-14" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 14: Verot ja Korruptio</h3>
-
-              <p>
-                He suhtautuivat veron maksamiseen todella tiukasti ja todella hierarkkisesti. Jos kuului yhteiskunnan ylempiin kasteihin, veroa ei tarvinnut maksaa, kun taas tavalliset ihmiset maksoivat veron, tekivät kaikki ei-halutut työt ja kontribuoivat heimojen kirstoihin.
-              </p>
-
-              <p>
-                Tällä tavalla tämä loi katkeruutta. Tämä loi riitoja riveissä. Tämä sai aikaan usein jopa kapinoita heimojen sisällä, mikä saattoi olla oiva hetki vihollisille hyökätä myös ulkopuolelta ja napata ainakin osa heimon alueesta itsellensä.
-              </p>
-
-              <p>
-                Korruptio oli valitettavan yleistä näihin aikoihin. Korruptio sai aikaan maaseudulla, jossa armeijat eivät pystyneet valvomaan järjestystä samalla tavalla: hevosvarkaat, maa-alueiden näkymättömät pienet kaappaukset, laitonta metsästystä, vesistöjen käyttämistä viljelysalueena, vaikka uskonnot ja pyhät lait kielsivätkin.
-              </p>
-
-              <h3 id="luku-15" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luku 15: Kultainen Aika</h3>
-
-              <p>
-                Usein myös armeijan viranomaiset kuin myös siviilijohtajat riitelivät keskenään vaikutusvallasta. He tiesivät toistensa asiat, koska he olivat kasvaneet yhdessä, mutta armeijakenraalit olivat usein kateellisia niistä mukavista oloista, missä siviiliprinssit ja kuninkaat saivat elää.
-              </p>
-
-              <p>
-                Kun taas he joutuivat käyttämään parhaat vuodet elämästänsä sotaretkillä palellen ja nukkuen heidän ylellisillä teltoissaan — mutta kuitenkin nimenomaan teltoissaan.
-              </p>
-
-              <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
-                <p className="italic text-muted-foreground">
-                  Oli ehkä sellainen aika heidän historiassaan, kun he pystyivät istumaan saman pöydän ääreen. Kun he pystyivät jakamaan ja murtamaan leipää ja juomaan heidän pöydissään. Tätä aikakautta kutsuttiin heidän kultaa-ajaksi ja sitä oli kestänyt satoja vuosia.
+              {/* ==================== SIVU 71-80: LISÄÄ TEKSTI TÄHÄN ==================== */}
+              <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <h3 id="sivu-71" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                  Sivut 71-80
+                </h3>
+                <p className="text-muted-foreground italic mb-4">
+                  Lisää tänne sivujen 71-80 teksti...
                 </p>
               </div>
 
-              <p>
-                He olivat pystyneet valitsemaan yhden ihmisen, joka edustaisi heitä ulkomailla, joka pystyisi päättämään heidän yhteiskuntansa yleisestä linjauksista, kun he säilyttäisivät omien heimojensa kesken laajaa autonomiaa.
-              </p>
-
-              <p>
-                Heidän valtansa kasvaessa ja vallanhimonsa noustessa ja kehittyessä sitä syödessä, heidän erimielisyytensä kuitenkin nousivat, koska he eivät nytkään pystyneet sopimaan keskenään siitä, miten valtakuntaa pitäisi sisällään viedä eteenpäin ja mihin suuntaan.
-              </p>
-
-              {/* LOPPU */}
-              <div className="my-16 py-12 text-center border-t-2 border-b-2 border-border">
-                <p className="font-display text-2xl text-muted-foreground italic">
-                  — Loppu —
+              {/* ==================== SIVU 81-90: LISÄÄ TEKSTI TÄHÄN ==================== */}
+              <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <h3 id="sivu-81" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                  Sivut 81-90
+                </h3>
+                <p className="text-muted-foreground italic mb-4">
+                  Lisää tänne sivujen 81-90 teksti...
                 </p>
-                <p className="text-muted-foreground mt-4">
-                  Kiitos lukemisesta
+              </div>
+
+              {/* ==================== SIVU 91-100: LISÄÄ TEKSTI TÄHÄN ==================== */}
+              <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                <h3 id="sivu-91" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                  Sivut 91-100
+                </h3>
+                <p className="text-muted-foreground italic mb-4">
+                  Lisää tänne sivujen 91-100 teksti...
+                </p>
+              </div>
+
+              {/* ==================== LISÄÄ UUSIA OSIOITA TÄHÄN ==================== */}
+              {/* 
+                KOPIOI TÄMÄ POHJA UUSILLE SIVUILLE:
+                
+                <div className="my-12 p-8 bg-muted/50 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                  <h3 id="sivu-XXX" className="font-display text-2xl font-bold mb-4 text-muted-foreground scroll-mt-20">
+                    Sivut XXX-YYY
+                  </h3>
+                  <p>
+                    Tekstisi tähän...
+                  </p>
+                </div>
+                
+                TAI KUN TEKSTI ON VALMIS, KÄYTÄ TÄTÄ MUOTOILUA:
+                
+                <h3 id="sivu-XXX" className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">
+                  Sivut XXX-YYY: Otsikko
+                </h3>
+                <p>
+                  Ensimmäinen kappale...
+                </p>
+                <p>
+                  Toinen kappale...
+                </p>
+              */}
+
+              {/* Loppu */}
+              <div className="my-16 text-center">
+                <div className="w-full h-px bg-border mb-8"></div>
+                <p className="text-muted-foreground italic">Tarina jatkuu...</p>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Lisää uusia sivuja muokkaamalla tiedostoa: <code className="bg-muted px-2 py-1 rounded">src/pages/KokoKirja.tsx</code>
                 </p>
               </div>
 
@@ -435,30 +549,16 @@ const KokoKirja = () => {
         </div>
       </section>
 
-      {/* Back to top button */}
+      {/* Scroll to top button */}
       {showScrollTop && (
-        <button
+        <Button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all z-50"
-          aria-label="Takaisin ylös"
+          className="fixed bottom-8 right-8 rounded-full w-12 h-12 shadow-lg z-50"
+          size="icon"
         >
           <ChevronUp className="w-6 h-6" />
-        </button>
+        </Button>
       )}
-
-      {/* Navigation */}
-      <section className="py-8 border-t-2 border-border">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto flex justify-center">
-            <Link to="/romaani">
-              <Button variant="outline" className="font-display uppercase tracking-wide">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Takaisin romaaniin
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 };
