@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Romaani from "./pages/Romaani";
 import Suunnitelma from "./pages/Suunnitelma";
 import Lautapeli from "./pages/Lautapeli";
+import Digipeli from "./pages/Digipeli";
 import Liiketoiminta from "./pages/Liiketoiminta";
 import LukuOsa1 from "./pages/LukuOsa1";
 import LukuOsa2 from "./pages/LukuOsa2";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/romaani" element={<Romaani />} />
           <Route path="/suunnitelma" element={<Suunnitelma />} />
           <Route path="/lautapeli" element={<Lautapeli />} />
+          <Route path="/digipeli" element={<Digipeli />} />
           <Route path="/liiketoiminta" element={<Liiketoiminta />} />
           <Route path="/luku/osa-1" element={<LukuOsa1 />} />
           <Route path="/luku/osa-2" element={<LukuOsa2 />} />
