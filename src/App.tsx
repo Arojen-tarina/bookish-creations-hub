@@ -13,6 +13,7 @@ import LukuOsa1 from "./pages/LukuOsa1";
 import LukuOsa2 from "./pages/LukuOsa2";
 import LukuOsa3 from "./pages/LukuOsa3";
 import KokoKirja from "./pages/KokoKirja";
+import OtaYhteytta from "./pages/OtaYhteytta";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/suunnitelma" element={<Suunnitelma />} />
           <Route path="/lautapeli" element={<Lautapeli />} />
           <Route path="/digipeli" element={<Digipeli />} />
+          <Route path="/ota-yhteytta" element={<OtaYhteytta />} />
           <Route path="/liiketoiminta" element={<Liiketoiminta />} />
           <Route path="/luku/osa-1" element={<LukuOsa1 />} />
           <Route path="/luku/osa-2" element={<LukuOsa2 />} />
