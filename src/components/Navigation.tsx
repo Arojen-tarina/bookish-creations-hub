@@ -10,6 +10,7 @@ const navLinks = [
   { path: "/lautapeli", label: "Lautapeli" },
   { path: "/digipeli", label: "Digipeli" },
   { path: "/liiketoiminta", label: "Liiketoiminta" },
+  { path: "/ota-yhteytta", label: "Ota Yhteyttä" },
 ];
 
 export const Navigation = () => {
