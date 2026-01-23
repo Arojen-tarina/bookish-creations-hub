@@ -4,6 +4,7 @@ import { useAudioManager } from '@/hooks/useAudioManager';
 import { useSaveManager } from '@/hooks/useSaveManager';
 import { useDiplomacyAI } from '@/hooks/useDiplomacyAI';
 import { useElevenLabsSFX, GAME_SFX, GameSFXKey } from '@/hooks/useElevenLabsSFX';
+import { useTurnLog, createLogMessage } from '@/hooks/useTurnLog';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
 import { CivilizationMap } from './CivilizationMap';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
@@ -12,11 +13,13 @@ import { AudioSettings } from './AudioSettings';
 import { BattleDisplay, BattleResult } from './BattleDisplay';
 import { EventCard, getRandomEvent, GAME_EVENTS } from './EventCard';
 import { Tutorial, TutorialButton } from './Tutorial';
-import { FACTION_DATA_1206, ActiveGameEvent } from '@/types/province';
+import { TurnTransition, TurnLog, TurnSummary } from './TurnTransition';
+import { FACTION_DATA_1206, ActiveGameEvent, GamePhase } from '@/types/province';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Maximize2, 
   Minimize2, 
@@ -33,6 +36,7 @@ import {
   RotateCcw,
   Trophy,
   Volume2,
+  ScrollText,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -66,6 +70,7 @@ export const ProvinceGame = () => {
     cacheEnabled: true 
   });
   const { calculateAIDiplomacy, evaluateTreatyProposal } = useDiplomacyAI();
+  const { entries: logEntries, addEntry: addLogEntry, getEntriesForTurn } = useTurnLog();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -76,7 +81,16 @@ export const ProvinceGame = () => {
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('mongolian_game_tutorial_seen') === 'true';
   });
+  
+  // Turn transition state
+  const [showTurnTransition, setShowTurnTransition] = useState(false);
+  const [showTurnSummary, setShowTurnSummary] = useState(false);
+  const [isNewTurn, setIsNewTurn] = useState(false);
+  const [lastTurnIncome, setLastTurnIncome] = useState(0);
+  const [lastManpowerGain, setLastManpowerGain] = useState(0);
+  
   const lastPhaseRef = useRef<string | null>(null);
+  const lastTurnRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Show tutorial on first game start
@@ -135,15 +149,47 @@ export const ProvinceGame = () => {
     return () => audio.stopAmbient();
   }, [gameStarted, sfxEnabled]);
   
-  // AI Diplomacy processing at turn end (when phase changes from 'event' back to 'planning')
+  // Turn and phase transition detection
   useEffect(() => {
     if (!gameState || !playerFaction) return;
     
     const currentPhase = gameState.phase;
+    const currentTurn = gameState.turn;
     const prevPhase = lastPhaseRef.current;
-    lastPhaseRef.current = currentPhase;
+    const prevTurn = lastTurnRef.current;
     
-    // Process AI diplomacy when new turn starts (planning phase after event phase)
+    // Detect new turn
+    if (currentTurn > prevTurn && prevTurn > 0) {
+      // Calculate income for summary
+      const playerFactionData = gameState.factions.find(f => f.id === playerFaction);
+      const ownedProvinces = gameState.provinces.filter(p => p.ownerId === playerFaction);
+      const income = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+      const manpower = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.5);
+      
+      setLastTurnIncome(income);
+      setLastManpowerGain(manpower);
+      setIsNewTurn(true);
+      setShowTurnTransition(true);
+      
+      // Log income
+      addLogEntry({
+        turn: currentTurn,
+        phase: 'economy',
+        type: 'income',
+        message: createLogMessage.incomeCollected(income),
+        details: `+${manpower} miesvoimaa kerätty`,
+        factionId: playerFaction,
+      });
+    } else if (prevPhase && prevPhase !== currentPhase) {
+      // Phase change within same turn
+      setIsNewTurn(false);
+      setShowTurnTransition(true);
+    }
+    
+    lastPhaseRef.current = currentPhase;
+    lastTurnRef.current = currentTurn;
+    
+    // AI Diplomacy processing at turn end (when phase changes from 'event' back to 'planning')
     if (prevPhase === 'event' && currentPhase === 'planning') {
       // Process each AI faction's diplomatic decisions
       gameState.factions.forEach(faction => {
@@ -170,6 +216,14 @@ export const ProvinceGame = () => {
                   onClick: () => proposeTreaty(faction.id, decision.treatyType!),
                 },
               });
+              
+              addLogEntry({
+                turn: gameState.turn,
+                phase: 'diplomacy',
+                type: 'treaty',
+                message: `${factionData.name} ehdotti sopimusta`,
+                factionId: faction.id,
+              });
             }
           } else if (decision.type === 'break_treaty' && decision.targetFactionId && decision.treatyType) {
             // AI breaking treaty
@@ -179,12 +233,20 @@ export const ProvinceGame = () => {
                 description: decision.reason,
               });
               breakTreaty(faction.id, decision.treatyType!);
+              
+              addLogEntry({
+                turn: gameState.turn,
+                phase: 'diplomacy',
+                type: 'treaty',
+                message: createLogMessage.treatyBroken(decision.treatyType, factionData.name),
+                factionId: faction.id,
+              });
             }
           }
         });
       });
     }
-  }, [gameState?.phase, gameState?.turn]);
+  }, [gameState?.phase, gameState?.turn, addLogEntry]);
   
   // Play phase-specific sounds
   useEffect(() => {
@@ -236,15 +298,30 @@ export const ProvinceGame = () => {
       // Try to move selected army
       const canMove = canMoveTo(gameState.selectedArmyId, provinceId);
       if (canMove) {
+        const army = gameState.armies.find(a => a.id === gameState.selectedArmyId);
+        const fromProvince = gameState.provinces.find(p => p.id === army?.provinceId);
+        const toProvince = gameState.provinces.find(p => p.id === provinceId);
+        
         moveArmy(gameState.selectedArmyId, provinceId);
         audio.playConfirm();
         if (sfxEnabled) playGameSFX('cavalry_charge');
+        
+        // Log the movement
+        if (army && fromProvince && toProvince) {
+          addLogEntry({
+            turn: gameState.turn,
+            phase: gameState.phase,
+            type: 'move',
+            message: createLogMessage.armyMoved('Armeija', fromProvince.name, toProvince.name),
+            factionId: playerFaction!,
+          });
+        }
         return;
       }
     }
     
     selectProvince(provinceId);
-  }, [audio, gameState?.selectedArmyId, canMoveTo, moveArmy, selectProvince, sfxEnabled, playGameSFX]);
+  }, [audio, gameState, canMoveTo, moveArmy, selectProvince, sfxEnabled, playGameSFX, addLogEntry, playerFaction]);
 
   // Handle end phase
   const handleEndPhase = useCallback(() => {
@@ -421,18 +498,22 @@ export const ProvinceGame = () => {
         >
           <div className="h-full overflow-y-auto p-4 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full bg-slate-800/50 mb-4">
-                <TabsTrigger value="province" className="flex-1">
-                  <Map className="w-4 h-4 mr-1" />
-                  Provinssi
+              <TabsList className="w-full bg-slate-800/50 mb-4 grid grid-cols-4">
+                <TabsTrigger value="province" className="text-xs px-2">
+                  <Map className="w-3.5 h-3.5 mr-1" />
+                  Alue
                 </TabsTrigger>
-                <TabsTrigger value="diplomacy" className="flex-1">
-                  <Handshake className="w-4 h-4 mr-1" />
-                  Diplomatia
+                <TabsTrigger value="log" className="text-xs px-2">
+                  <ScrollText className="w-3.5 h-3.5 mr-1" />
+                  Loki
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="flex-1">
-                  <Settings className="w-4 h-4 mr-1" />
-                  Asetukset
+                <TabsTrigger value="diplomacy" className="text-xs px-2">
+                  <Handshake className="w-3.5 h-3.5 mr-1" />
+                  Dipl.
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="text-xs px-2">
+                  <Settings className="w-3.5 h-3.5 mr-1" />
+                  Aset.
                 </TabsTrigger>
               </TabsList>
               
@@ -498,6 +579,20 @@ export const ProvinceGame = () => {
                     </CardContent>
                   </Card>
                 )}
+              </TabsContent>
+              
+              <TabsContent value="log" className="space-y-4">
+                <Card className="bg-slate-800/50 border-amber-700/30">
+                  <CardContent className="p-4">
+                    <h4 className="text-amber-100 font-semibold mb-3 flex items-center gap-2">
+                      <ScrollText className="w-4 h-4 text-amber-400" />
+                      Tapahtumaloki - Vuoro {gameState.turn}
+                    </h4>
+                    <ScrollArea className="h-[400px]">
+                      <TurnLog entries={logEntries} maxVisible={50} />
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
               </TabsContent>
               
               <TabsContent value="diplomacy">
@@ -605,6 +700,32 @@ export const ProvinceGame = () => {
         onResolve={handleEventResolve}
         onClose={() => setActiveEvent(null)}
       />
+      
+      {/* Turn Transition Animation */}
+      {showTurnTransition && (
+        <TurnTransition
+          turn={gameState.turn}
+          year={gameState.year}
+          phase={gameState.phase}
+          factionId={playerFaction}
+          isNewTurn={isNewTurn}
+          onComplete={() => setShowTurnTransition(false)}
+        />
+      )}
+      
+      {/* Turn Summary Modal (show after new turn transition) */}
+      {showTurnSummary && playerFactionData && (
+        <TurnSummary
+          turn={gameState.turn - 1}
+          year={gameState.year - 1}
+          factionId={playerFaction}
+          income={lastTurnIncome}
+          manpowerGain={lastManpowerGain}
+          provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
+          armiesCount={gameState.armies.filter(a => a.ownerId === playerFaction).length}
+          onClose={() => setShowTurnSummary(false)}
+        />
+      )}
       
       {/* Tutorial help button */}
       <TutorialButton onClick={() => setShowTutorial(true)} />
