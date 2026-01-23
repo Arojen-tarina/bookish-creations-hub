@@ -25,7 +25,7 @@ interface GenerationState {
   errors: Map<string, string>;
 }
 
-const BATCH_SIZE = 3; // Process 3 cards at a time to avoid timeouts
+const BATCH_SIZE = 1; // Process 1 card at a time for maximum reliability
 
 export function useCardImageGenerator() {
   const [state, setState] = useState<GenerationState>({
@@ -143,9 +143,9 @@ export function useCardImageGenerator() {
         };
       });
 
-      // Small delay between batches to prevent rate limiting
+      // Longer delay between cards to prevent rate limiting
       if (i + BATCH_SIZE < cards.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
 
