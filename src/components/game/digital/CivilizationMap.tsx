@@ -32,68 +32,188 @@ const coordToPixel = (center: { x: number; y: number }) => {
   return { x, y };
 };
 
+// Terrain regions - large geographic areas with specific terrain types
+const TERRAIN_REGIONS = [
+  // EURASIA LANDMASS BASE
+  { id: 'eurasia-base', path: 'M 50 100 Q 100 80 200 90 Q 350 70 500 100 Q 700 80 900 120 Q 1000 180 950 300 Q 980 400 920 500 Q 850 580 700 560 Q 500 600 350 550 Q 200 580 100 500 Q 50 400 80 300 Q 40 200 50 100 Z', terrain: 'grassland' },
+  
+  // SIBERIA - Taiga belt
+  { id: 'siberia-taiga', path: 'M 280 60 Q 400 40 550 50 Q 700 45 820 70 Q 900 90 850 140 Q 750 130 600 120 Q 450 100 300 120 Q 250 100 280 60 Z', terrain: 'taiga' },
+  
+  // SIBERIA TUNDRA - Far north
+  { id: 'siberia-tundra', path: 'M 350 20 Q 500 10 650 15 Q 780 25 850 50 Q 800 70 650 55 Q 500 40 380 55 Q 320 45 350 20 Z', terrain: 'tundra' },
+  
+  // RUSSIAN FORESTS
+  { id: 'russia-forest', path: 'M 80 120 Q 150 100 220 130 Q 260 160 240 220 Q 200 260 140 250 Q 80 230 60 180 Q 50 140 80 120 Z', terrain: 'forest' },
+  
+  // MONGOLIAN STEPPE
+  { id: 'mongol-steppe', path: 'M 550 160 Q 650 140 750 160 Q 850 180 880 220 Q 860 280 780 290 Q 680 300 600 270 Q 520 250 500 200 Q 510 170 550 160 Z', terrain: 'steppe' },
+  
+  // KIPCHAK STEPPE
+  { id: 'kipchak-steppe', path: 'M 150 240 Q 220 220 300 240 Q 380 260 400 310 Q 360 350 280 340 Q 200 330 140 300 Q 120 270 150 240 Z', terrain: 'steppe' },
+  
+  // CENTRAL ASIA STEPPE
+  { id: 'central-steppe', path: 'M 400 240 Q 480 220 550 250 Q 600 280 580 330 Q 520 360 450 340 Q 380 320 370 280 Q 370 250 400 240 Z', terrain: 'steppe' },
+  
+  // GOBI DESERT
+  { id: 'gobi-desert', path: 'M 680 280 Q 760 260 840 290 Q 880 330 860 380 Q 800 400 720 380 Q 660 350 660 310 Q 660 290 680 280 Z', terrain: 'desert' },
+  
+  // TAKLAMAKAN DESERT
+  { id: 'taklamakan', path: 'M 500 340 Q 580 320 650 350 Q 680 400 640 440 Q 560 460 500 420 Q 460 380 480 350 Q 490 340 500 340 Z', terrain: 'desert' },
+  
+  // KHWAREZM DESERT
+  { id: 'khwarezm-desert', path: 'M 300 280 Q 360 260 400 290 Q 420 340 380 380 Q 320 400 280 360 Q 260 320 280 290 Q 290 280 300 280 Z', terrain: 'desert' },
+  
+  // PERSIA DESERT
+  { id: 'persia-desert', path: 'M 280 400 Q 340 380 400 420 Q 430 480 380 530 Q 300 550 260 500 Q 230 450 260 410 Q 270 400 280 400 Z', terrain: 'desert' },
+  
+  // ARABIAN DESERT
+  { id: 'arabian-desert', path: 'M 200 480 Q 260 460 300 500 Q 320 560 280 600 Q 200 620 160 570 Q 140 520 180 490 Q 190 480 200 480 Z', terrain: 'desert' },
+  
+  // CHINESE FARMLANDS - North
+  { id: 'china-farmland-north', path: 'M 820 300 Q 880 280 930 320 Q 960 380 920 420 Q 860 440 800 410 Q 760 370 780 330 Q 800 310 820 300 Z', terrain: 'farmland' },
+  
+  // CHINESE FARMLANDS - South
+  { id: 'china-farmland-south', path: 'M 840 440 Q 900 420 950 460 Q 980 520 940 570 Q 880 600 820 560 Q 780 510 800 460 Q 820 440 840 440 Z', terrain: 'farmland' },
+  
+  // SICHUAN HILLS
+  { id: 'sichuan-hills', path: 'M 720 440 Q 780 420 820 460 Q 840 520 800 560 Q 740 580 700 540 Q 680 490 700 450 Q 710 440 720 440 Z', terrain: 'hills' },
+  
+  // TIBET MOUNTAINS
+  { id: 'tibet-mountains', path: 'M 540 420 Q 620 400 700 440 Q 740 500 700 550 Q 620 580 540 540 Q 480 500 500 450 Q 520 420 540 420 Z', terrain: 'mountain' },
+  
+  // HIMALAYA MOUNTAINS
+  { id: 'himalaya', path: 'M 480 500 Q 560 480 640 510 Q 700 540 720 580 Q 660 620 560 600 Q 480 580 460 540 Q 460 510 480 500 Z', terrain: 'mountain' },
+  
+  // HINDU KUSH MOUNTAINS
+  { id: 'hindukush-region', path: 'M 380 380 Q 440 360 500 400 Q 520 460 480 500 Q 420 520 380 480 Q 340 440 360 400 Q 370 380 380 380 Z', terrain: 'mountain' },
+  
+  // TIAN SHAN MOUNTAINS
+  { id: 'tianshan-region', path: 'M 440 280 Q 520 260 600 300 Q 630 360 590 400 Q 520 420 460 380 Q 420 340 430 300 Q 435 280 440 280 Z', terrain: 'mountain' },
+  
+  // ALTAI MOUNTAINS
+  { id: 'altai-region', path: 'M 520 180 Q 580 160 640 200 Q 670 250 640 290 Q 580 310 530 270 Q 490 230 500 190 Q 510 180 520 180 Z', terrain: 'mountain' },
+  
+  // URAL MOUNTAINS
+  { id: 'ural-region', path: 'M 260 100 Q 290 80 310 120 Q 320 200 300 280 Q 280 340 260 300 Q 240 220 250 150 Q 255 110 260 100 Z', terrain: 'mountain' },
+  
+  // CAUCASUS MOUNTAINS
+  { id: 'caucasus-region', path: 'M 160 340 Q 220 320 280 350 Q 300 400 260 430 Q 200 450 160 410 Q 130 370 150 350 Q 155 340 160 340 Z', terrain: 'mountain' },
+  
+  // TRANSOXIANA FARMLAND
+  { id: 'transoxiana', path: 'M 340 300 Q 400 280 450 320 Q 470 370 430 410 Q 370 430 320 390 Q 290 350 310 310 Q 325 300 340 300 Z', terrain: 'farmland' },
+  
+  // PERSIA HILLS
+  { id: 'persia-hills', path: 'M 220 380 Q 280 360 320 400 Q 340 460 300 500 Q 240 520 200 480 Q 170 430 190 390 Q 205 380 220 380 Z', terrain: 'hills' },
+  
+  // MANCHURIA FOREST
+  { id: 'manchuria-forest', path: 'M 880 160 Q 940 140 980 180 Q 1000 240 960 280 Q 900 300 860 260 Q 840 210 860 170 Q 870 160 880 160 Z', terrain: 'forest' },
+  
+  // KOREA HILLS
+  { id: 'korea-hills', path: 'M 960 280 Q 1000 260 1020 300 Q 1030 360 1000 400 Q 960 420 940 380 Q 930 330 940 290 Q 950 280 960 280 Z', terrain: 'hills' },
+  
+  // YUNNAN HILLS
+  { id: 'yunnan-hills', path: 'M 700 520 Q 760 500 800 540 Q 820 600 780 640 Q 720 660 680 620 Q 660 570 680 530 Q 690 520 700 520 Z', terrain: 'hills' },
+  
+  // INDIA FARMLAND (edge)
+  { id: 'india-farmland', path: 'M 400 520 Q 480 500 540 560 Q 560 620 520 680 Q 440 700 380 650 Q 340 590 370 540 Q 385 520 400 520 Z', terrain: 'farmland' },
+  
+  // MARSH areas
+  { id: 'volga-marsh', path: 'M 200 260 Q 240 250 260 290 Q 250 330 210 320 Q 180 300 190 270 Q 195 260 200 260 Z', terrain: 'marsh' },
+];
+
 // Water bodies - major seas, lakes, rivers
 const WATER_BODIES = [
-  // Caspian Sea
-  { id: 'caspian', type: 'sea', path: 'M 240 360 Q 250 320 230 280 Q 210 320 220 360 Q 230 380 240 360 Z', name: 'Kaspianmeri' },
+  // Caspian Sea - larger
+  { id: 'caspian', type: 'sea', path: 'M 230 300 Q 260 260 250 200 Q 230 240 200 300 Q 180 360 200 400 Q 230 420 250 380 Q 270 340 230 300 Z', name: 'Kaspianmeri' },
   // Aral Sea
-  { id: 'aral', type: 'lake', path: 'M 300 280 Q 320 270 310 250 Q 290 260 300 280 Z', name: 'Araljärvi' },
-  // Black Sea
-  { id: 'black', type: 'sea', path: 'M 100 340 Q 160 320 200 340 Q 180 360 100 360 Q 80 350 100 340 Z', name: 'Mustameri' },
-  // Lake Baikal
-  { id: 'baikal', type: 'lake', path: 'M 780 120 Q 800 100 810 130 Q 790 150 780 120 Z', name: 'Baikaljärvi' },
-  // Yellow Sea / Bohai
-  { id: 'bohai', type: 'sea', path: 'M 900 320 Q 920 300 940 320 Q 920 350 900 340 Q 890 330 900 320 Z', name: 'Bohaimmeri' },
+  { id: 'aral', type: 'lake', path: 'M 320 260 Q 360 240 350 200 Q 310 210 300 250 Q 310 270 320 260 Z', name: 'Araljärvi' },
+  // Black Sea - larger
+  { id: 'black', type: 'sea', path: 'M 60 320 Q 120 290 180 310 Q 220 340 200 380 Q 140 400 80 380 Q 40 360 60 320 Z', name: 'Mustameri' },
+  // Lake Baikal - larger
+  { id: 'baikal', type: 'lake', path: 'M 760 100 Q 800 70 830 100 Q 850 150 820 180 Q 780 170 760 130 Q 750 110 760 100 Z', name: 'Baikaljärvi' },
+  // Yellow Sea / Bohai - larger
+  { id: 'bohai', type: 'sea', path: 'M 920 280 Q 970 260 1000 300 Q 1020 360 980 400 Q 930 420 900 380 Q 880 330 920 280 Z', name: 'Bohaimmeri' },
   // East China Sea
-  { id: 'eastchina', type: 'sea', path: 'M 960 380 Q 1000 360 1020 400 Q 980 440 960 420 Q 950 400 960 380 Z', name: 'Itä-Kiinanmeri' },
+  { id: 'eastchina', type: 'sea', path: 'M 960 400 Q 1020 380 1060 440 Q 1080 520 1020 560 Q 960 580 940 520 Q 930 460 960 400 Z', name: 'Itä-Kiinanmeri' },
   // South China Sea
-  { id: 'southchina', type: 'sea', path: 'M 880 520 Q 920 500 960 540 Q 920 580 880 560 Q 860 540 880 520 Z', name: 'Etelä-Kiinanmeri' },
+  { id: 'southchina', type: 'sea', path: 'M 860 560 Q 920 540 980 600 Q 1000 680 940 720 Q 860 740 820 680 Q 800 620 860 560 Z', name: 'Etelä-Kiinanmeri' },
   // Pacific Ocean edge
-  { id: 'pacific', type: 'ocean', path: 'M 1000 200 L 1200 200 L 1200 600 L 1000 600 Q 1050 400 1000 200 Z', name: 'Tyynimeri' },
-  // Persian Gulf
-  { id: 'persian', type: 'sea', path: 'M 280 540 Q 320 520 360 540 Q 340 560 280 560 Q 260 550 280 540 Z', name: 'Persianlahti' },
+  { id: 'pacific', type: 'ocean', path: 'M 1040 100 L 1200 100 L 1200 700 L 1040 700 Q 1100 500 1080 300 Q 1060 200 1040 100 Z', name: 'Tyynimeri' },
+  // Persian Gulf - larger
+  { id: 'persian', type: 'sea', path: 'M 240 500 Q 300 480 360 520 Q 400 580 360 620 Q 280 640 240 600 Q 200 560 240 500 Z', name: 'Persianlahti' },
   // Indian Ocean edge
-  { id: 'indian', type: 'ocean', path: 'M 200 620 L 500 620 L 500 700 L 200 700 Z', name: 'Intian valtameri' },
+  { id: 'indian', type: 'ocean', path: 'M 100 620 L 600 680 Q 700 700 800 700 L 800 750 L 100 750 Z', name: 'Intian valtameri' },
+  // Mediterranean edge
+  { id: 'mediterranean', type: 'ocean', path: 'M 0 300 L 60 320 Q 40 380 0 400 L 0 300 Z', name: 'Välimeri' },
+  // Baltic Sea edge
+  { id: 'baltic', type: 'sea', path: 'M 0 150 Q 40 140 60 180 Q 40 220 0 230 L 0 150 Z', name: 'Itämeri' },
+  // Sea of Japan
+  { id: 'japan-sea', type: 'sea', path: 'M 1000 200 Q 1040 180 1060 240 Q 1050 300 1020 280 Q 990 250 1000 200 Z', name: 'Japanin meri' },
 ];
 
-// Major rivers
+// Major rivers - more detailed
 const RIVERS = [
-  // Volga
-  { id: 'volga', path: 'M 180 100 Q 200 150 220 200 Q 240 250 220 300', name: 'Volga' },
+  // Volga - longer
+  { id: 'volga', path: 'M 220 80 Q 240 120 250 180 Q 260 250 240 320 Q 230 380 250 400', name: 'Volga' },
   // Dnieper
-  { id: 'dnieper', path: 'M 120 180 Q 130 220 120 280 Q 110 320 120 350', name: 'Dnepr' },
-  // Amu Darya
-  { id: 'amudarya', path: 'M 350 340 Q 330 310 310 280 Q 300 260 310 250', name: 'Amu-Darja' },
-  // Syr Darya
-  { id: 'syrdarya', path: 'M 400 300 Q 370 290 340 280 Q 320 270 310 250', name: 'Syr-Darja' },
-  // Yellow River (Huang He)
-  { id: 'huanghe', path: 'M 820 360 Q 780 340 740 360 Q 700 380 680 400', name: 'Keltainenjoki' },
-  // Yangtze
-  { id: 'yangtze', path: 'M 960 420 Q 900 440 840 460 Q 780 470 720 480', name: 'Jangtse' },
-  // Irtysh
-  { id: 'irtysh', path: 'M 420 240 Q 400 200 380 160 Q 360 120 340 100', name: 'Irtyš' },
-  // Onon
-  { id: 'onon', path: 'M 840 180 Q 860 160 880 140', name: 'Onon' },
+  { id: 'dnieper', path: 'M 100 140 Q 120 180 110 240 Q 100 300 80 350', name: 'Dnepr' },
+  // Don
+  { id: 'don', path: 'M 180 180 Q 170 220 160 280 Q 140 320 120 360', name: 'Don' },
+  // Amu Darya - longer
+  { id: 'amudarya', path: 'M 440 380 Q 400 350 360 300 Q 340 260 330 220', name: 'Amu-Darja' },
+  // Syr Darya - longer
+  { id: 'syrdarya', path: 'M 500 320 Q 450 300 400 270 Q 360 250 340 220', name: 'Syr-Darja' },
+  // Yellow River (Huang He) - longer
+  { id: 'huanghe', path: 'M 880 350 Q 840 330 780 350 Q 720 380 680 360 Q 640 340 620 380', name: 'Keltainenjoki' },
+  // Yangtze - longer
+  { id: 'yangtze', path: 'M 960 500 Q 900 480 840 500 Q 780 520 720 510 Q 660 500 620 530', name: 'Jangtse' },
+  // Irtysh - longer
+  { id: 'irtysh', path: 'M 480 260 Q 440 220 400 160 Q 380 120 360 80', name: 'Irtyš' },
+  // Ob
+  { id: 'ob', path: 'M 380 60 Q 400 100 420 160 Q 440 220 460 260', name: 'Ob' },
+  // Yenisei
+  { id: 'yenisei', path: 'M 560 50 Q 580 100 600 160 Q 620 220 640 260', name: 'Jenisei' },
+  // Lena
+  { id: 'lena', path: 'M 720 40 Q 740 80 760 140 Q 780 200 800 250', name: 'Lena' },
+  // Amur
+  { id: 'amur', path: 'M 860 180 Q 900 200 940 240 Q 970 270 1000 280', name: 'Amur' },
+  // Indus
+  { id: 'indus', path: 'M 440 440 Q 420 500 400 560 Q 380 620 360 680', name: 'Indus' },
+  // Ganges
+  { id: 'ganges', path: 'M 560 560 Q 520 580 480 600 Q 440 620 400 640', name: 'Ganges' },
+  // Tigris/Euphrates
+  { id: 'tigris', path: 'M 220 400 Q 240 450 260 500 Q 280 550 300 600', name: 'Tigris' },
 ];
 
-// Mountain ranges
+// Mountain ranges - more detailed paths
 const MOUNTAINS = [
-  // Himalayas
-  { id: 'himalayas', path: 'M 500 480 Q 560 470 620 480 Q 680 475 720 490', name: 'Himalaja', height: 'high' },
-  // Tian Shan
-  { id: 'tianshan', path: 'M 420 320 Q 480 300 540 310', name: 'Tian Shan', height: 'high' },
-  // Altai
-  { id: 'altai', path: 'M 540 220 Q 580 200 620 220', name: 'Altai', height: 'medium' },
-  // Urals
-  { id: 'urals', path: 'M 260 80 Q 270 150 280 220 Q 290 280 280 340', name: 'Ural', height: 'medium' },
-  // Caucasus
-  { id: 'caucasus', path: 'M 180 360 Q 220 350 260 360', name: 'Kaukasus', height: 'high' },
-  // Kunlun
-  { id: 'kunlun', path: 'M 520 420 Q 580 410 640 420', name: 'Kunlun', height: 'high' },
-  // Hindu Kush
-  { id: 'hindukush', path: 'M 380 420 Q 420 400 460 420', name: 'Hindukuš', height: 'high' },
+  // Himalayas - extended
+  { id: 'himalayas', path: 'M 440 520 Q 520 500 600 520 Q 680 510 740 540 Q 780 560 760 580', name: 'Himalaja', height: 'high' },
+  // Tian Shan - extended
+  { id: 'tianshan', path: 'M 400 300 Q 480 280 560 310 Q 620 330 660 360', name: 'Tian Shan', height: 'high' },
+  // Altai - extended
+  { id: 'altai', path: 'M 500 200 Q 560 180 620 210 Q 680 240 700 280', name: 'Altai', height: 'medium' },
+  // Urals - full range
+  { id: 'urals', path: 'M 270 60 Q 280 120 290 180 Q 300 250 290 320 Q 280 380 270 420', name: 'Ural', height: 'medium' },
+  // Caucasus - extended
+  { id: 'caucasus', path: 'M 160 360 Q 200 340 250 360 Q 300 380 320 400', name: 'Kaukasus', height: 'high' },
+  // Kunlun - extended
+  { id: 'kunlun', path: 'M 480 440 Q 560 420 640 450 Q 700 470 720 500', name: 'Kunlun', height: 'high' },
+  // Hindu Kush - extended
+  { id: 'hindukush', path: 'M 360 420 Q 420 400 480 440 Q 520 470 540 500', name: 'Hindukuš', height: 'high' },
+  // Karakoram
+  { id: 'karakoram', path: 'M 420 460 Q 460 440 500 470 Q 530 500 550 530', name: 'Karakoram', height: 'high' },
   // Great Khingan
-  { id: 'khingan', path: 'M 880 200 Q 900 240 920 280', name: 'Suur-Hingan', height: 'medium' },
+  { id: 'khingan', path: 'M 860 180 Q 880 220 900 270 Q 920 320 940 360', name: 'Suur-Hingan', height: 'medium' },
+  // Sayan
+  { id: 'sayan', path: 'M 620 140 Q 680 120 740 150 Q 780 180 800 220', name: 'Sajan', height: 'medium' },
+  // Stanovoy
+  { id: 'stanovoy', path: 'M 800 100 Q 860 90 920 120 Q 960 150 980 190', name: 'Stanovoi', height: 'medium' },
+  // Zagros
+  { id: 'zagros', path: 'M 200 420 Q 240 440 280 480 Q 320 520 340 560', name: 'Zagros', height: 'medium' },
+  // Elburz
+  { id: 'elburz', path: 'M 240 380 Q 280 360 320 390 Q 360 420 380 450', name: 'Elburz', height: 'medium' },
 ];
 
 // Terrain texture patterns
@@ -139,6 +259,29 @@ const TerrainPatterns = memo(() => (
       <rect width="16" height="16" fill="#8bc34a" />
       <rect x="0" y="0" width="8" height="8" fill="#7cb342" opacity="0.5" />
       <rect x="8" y="8" width="8" height="8" fill="#7cb342" opacity="0.5" />
+    </pattern>
+    
+    {/* Grassland pattern */}
+    <pattern id="grassland-pattern" patternUnits="userSpaceOnUse" width="18" height="18">
+      <rect width="18" height="18" fill="#7cb342" />
+      <circle cx="4" cy="4" r="1.5" fill="#6aa52e" opacity="0.5" />
+      <circle cx="14" cy="10" r="1" fill="#6aa52e" opacity="0.5" />
+      <circle cx="8" cy="16" r="1.2" fill="#6aa52e" opacity="0.5" />
+    </pattern>
+    
+    {/* Tundra pattern */}
+    <pattern id="tundra-pattern" patternUnits="userSpaceOnUse" width="16" height="16">
+      <rect width="16" height="16" fill="#b8c4cc" />
+      <circle cx="4" cy="4" r="2" fill="#d1dce4" opacity="0.4" />
+      <circle cx="12" cy="12" r="1.5" fill="#9eb0bc" opacity="0.4" />
+    </pattern>
+    
+    {/* Marsh pattern */}
+    <pattern id="marsh-pattern" patternUnits="userSpaceOnUse" width="14" height="14">
+      <rect width="14" height="14" fill="#5d8a66" />
+      <path d="M2 7 Q7 4 12 7" stroke="#4a7354" strokeWidth="1" fill="none" opacity="0.6" />
+      <circle cx="4" cy="10" r="1" fill="#3b82f6" opacity="0.4" />
+      <circle cx="10" cy="4" r="0.8" fill="#3b82f6" opacity="0.4" />
     </pattern>
     
     {/* Hills pattern */}
@@ -195,20 +338,25 @@ const TerrainPatterns = memo(() => (
 TerrainPatterns.displayName = 'TerrainPatterns';
 
 // Get terrain fill based on terrain type
-const getTerrainFill = (terrain: Province['terrain']) => {
-  const fills: Record<Province['terrain'], string> = {
+const getTerrainFill = (terrain: Province['terrain'] | string) => {
+  const fills: Record<string, string> = {
     steppe: 'url(#steppe-pattern)',
-    grassland: '#7cb342',
+    grassland: 'url(#grassland-pattern)',
     forest: 'url(#forest-pattern)',
     mountain: 'url(#mountain-pattern)',
     desert: 'url(#desert-pattern)',
     taiga: 'url(#taiga-pattern)',
-    tundra: '#b8c4cc',
+    tundra: 'url(#tundra-pattern)',
     farmland: 'url(#farmland-pattern)',
     hills: 'url(#hills-pattern)',
-    marsh: '#5d8a66',
+    marsh: 'url(#marsh-pattern)',
   };
   return fills[terrain] || '#6b7280';
+};
+
+// Get terrain region fill
+const getTerrainRegionFill = (terrain: string) => {
+  return getTerrainFill(terrain);
 };
 
 // Province hex tile component
@@ -646,6 +794,19 @@ export const CivilizationMap = ({
           height={MAP_CONFIG.height + 200}
           fill="url(#ocean-gradient)"
         />
+        
+        {/* TERRAIN REGIONS - Continental landmass with different terrain types */}
+        {TERRAIN_REGIONS.map(region => (
+          <path
+            key={region.id}
+            d={region.path}
+            fill={getTerrainRegionFill(region.terrain)}
+            opacity={0.85}
+            stroke="#374151"
+            strokeWidth={0.5}
+            strokeOpacity={0.3}
+          />
+        ))}
         
         {/* Water bodies */}
         {WATER_BODIES.map(water => (
