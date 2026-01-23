@@ -15,6 +15,7 @@ import {
   PROVINCE_TERRAIN_INFO,
 } from '@/types/province';
 import { getProvincesWithAdjacency } from '@/data/provinces-1206';
+import { BattleResult } from '@/components/game/digital/BattleDisplay';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -231,6 +232,8 @@ export interface UseProvinceGameStateReturn extends ProvinceGameActions {
   gameStarted: boolean;
   playerFaction: FactionId | null;
   gameState: ProvinceGameState | null;
+  pendingBattle: BattleResult | null;
+  clearBattle: () => void;
   getRelation: (factionA: FactionId, factionB: FactionId) => DiplomaticRelation | null;
   getPlayerFaction: () => Faction | null;
   getArmiesInProvince: (provinceId: string) => Army[];
@@ -241,6 +244,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const [gameStarted, setGameStarted] = useState(false);
   const [playerFaction, setPlayerFaction] = useState<FactionId | null>(null);
   const [gameState, setGameState] = useState<ProvinceGameState | null>(null);
+  const [pendingBattle, setPendingBattle] = useState<BattleResult | null>(null);
 
   // Start a new game
   const startGame = useCallback((selectedFaction: FactionId) => {
@@ -346,14 +350,37 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         // Combat resolution
         const result = resolveCombat(army, enemyArmies[0], targetProvince);
         
+        // Create battle result for UI display
+        const battleResult: BattleResult = {
+          attacker: { ...army },
+          defender: { ...enemyArmies[0] },
+          attackerFaction: army.ownerId,
+          defenderFaction: enemyArmies[0].ownerId,
+          provinceName: targetProvince.name,
+          winner: result.attackerWins ? 'attacker' : 'defender',
+          attackerLosses: {
+            cavalry: result.attackerCavalryLoss,
+            infantry: result.attackerInfantryLoss,
+          },
+          defenderLosses: {
+            cavalry: result.defenderCavalryLoss,
+            infantry: result.defenderInfantryLoss,
+          },
+          attackerMoraleLoss: result.attackerWins ? 10 : 20,
+          defenderMoraleLoss: result.attackerWins ? 20 : 10,
+        };
+        
+        // Set battle result for display (deferred to avoid state conflict)
+        setTimeout(() => setPendingBattle(battleResult), 50);
+        
         if (result.attackerWins) {
           // Move army and update province ownership
           newArmies[armyIndex] = {
             ...army,
             provinceId: targetProvinceId,
             movementLeft: 0,
-            cavalry: army.cavalry - result.attackerCavalryLoss,
-            infantry: army.infantry - result.attackerInfantryLoss,
+            cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
+            infantry: Math.max(0, army.infantry - result.attackerInfantryLoss),
             morale: Math.max(20, army.morale - 10),
           };
           
@@ -364,8 +391,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           } else {
             newArmies[defenderIndex] = {
               ...enemyArmies[0],
-              cavalry: enemyArmies[0].cavalry - result.defenderCavalryLoss,
-              infantry: enemyArmies[0].infantry - result.defenderInfantryLoss,
+              cavalry: Math.max(0, enemyArmies[0].cavalry - result.defenderCavalryLoss),
+              infantry: Math.max(0, enemyArmies[0].infantry - result.defenderInfantryLoss),
               morale: Math.max(20, enemyArmies[0].morale - 20),
             };
           }
@@ -384,8 +411,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           newArmies[armyIndex] = {
             ...army,
             movementLeft: 0,
-            cavalry: army.cavalry - result.attackerCavalryLoss,
-            infantry: army.infantry - result.attackerInfantryLoss,
+            cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
+            infantry: Math.max(0, army.infantry - result.attackerInfantryLoss),
             morale: Math.max(20, army.morale - 20),
           };
         }
@@ -711,10 +738,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     return gameState.armies.filter(a => a.provinceId === provinceId);
   }, [gameState]);
 
+  // Clear pending battle
+  const clearBattle = useCallback(() => {
+    setPendingBattle(null);
+  }, []);
+
   return {
     gameStarted,
     playerFaction,
     gameState,
+    pendingBattle,
+    clearBattle,
     startGame,
     selectProvince,
     selectArmy,

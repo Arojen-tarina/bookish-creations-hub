@@ -1,14 +1,19 @@
-import { useState, useCallback, useMemo, useRef, memo } from 'react';
-import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
-import { ZoomIn, ZoomOut, Maximize2, Compass } from 'lucide-react';
+import { useState, useCallback, useMemo, useRef, memo, useEffect } from 'react';
+import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
+import { ZoomIn, ZoomOut, Maximize2, Compass, Sword, Users, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CivilizationMapProps {
   provinces: Province[];
+  armies: Army[];
   selectedProvinceId: string | null;
+  selectedArmyId: string | null;
   onProvinceClick: (provinceId: string) => void;
+  onArmyClick: (armyId: string) => void;
   playerFaction: FactionId;
   highlightedProvinces?: string[];
+  movingArmyId?: string | null;
+  movingToProvinceId?: string | null;
 }
 
 // Real-world inspired map bounds (Eurasia)
@@ -712,10 +717,15 @@ ProvinceTooltip.displayName = 'ProvinceTooltip';
 
 export const CivilizationMap = ({
   provinces,
+  armies,
   selectedProvinceId,
+  selectedArmyId,
   onProvinceClick,
+  onArmyClick,
   playerFaction,
   highlightedProvinces = [],
+  movingArmyId,
+  movingToProvinceId,
 }: CivilizationMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -723,7 +733,55 @@ export const CivilizationMap = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
+  const [hoveredArmy, setHoveredArmy] = useState<Army | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [animatingArmy, setAnimatingArmy] = useState<{ armyId: string; fromPixel: { x: number; y: number }; toPixel: { x: number; y: number }; progress: number } | null>(null);
+
+  // Animate army movement
+  useEffect(() => {
+    if (movingArmyId && movingToProvinceId) {
+      const army = armies.find(a => a.id === movingArmyId);
+      const fromProvince = provinces.find(p => p.id === army?.provinceId);
+      const toProvince = provinces.find(p => p.id === movingToProvinceId);
+      
+      if (army && fromProvince && toProvince) {
+        const fromPixel = coordToPixel(fromProvince.center);
+        const toPixel = coordToPixel(toProvince.center);
+        
+        setAnimatingArmy({ armyId: movingArmyId, fromPixel, toPixel, progress: 0 });
+        
+        const startTime = Date.now();
+        const duration = 500; // 500ms animation
+        
+        const animate = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          setAnimatingArmy(prev => prev ? { ...prev, progress } : null);
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            setTimeout(() => setAnimatingArmy(null), 100);
+          }
+        };
+        
+        requestAnimationFrame(animate);
+      }
+    }
+  }, [movingArmyId, movingToProvinceId]);
+
+  // Group armies by province
+  const armiesByProvince = useMemo(() => {
+    const grouped: Record<string, Army[]> = {};
+    armies.forEach(army => {
+      if (!grouped[army.provinceId]) {
+        grouped[army.provinceId] = [];
+      }
+      grouped[army.provinceId].push(army);
+    });
+    return grouped;
+  }, [armies]);
 
   // Calculate viewBox
   const viewBox = useMemo(() => {
@@ -983,6 +1041,139 @@ export const CivilizationMap = ({
           />
         ))}
         
+        {/* Army markers */}
+        {provincePixels.map(({ province, pixel }) => {
+          const provincesArmies = armiesByProvince[province.id] || [];
+          if (provincesArmies.length === 0) return null;
+          
+          return provincesArmies.map((army, armyIndex) => {
+            const ownerColor = FACTION_DATA_1206[army.ownerId]?.color || '#888';
+            const isSelected = army.id === selectedArmyId;
+            const isPlayerArmy = army.ownerId === playerFaction;
+            const totalUnits = army.cavalry + army.infantry;
+            
+            // Offset multiple armies in same province
+            const offsetX = armyIndex * 15 - (provincesArmies.length - 1) * 7.5;
+            const armyX = pixel.x + offsetX;
+            const armyY = pixel.y - 20; // Position above province center
+            
+            // Check if this army is animating
+            if (animatingArmy && animatingArmy.armyId === army.id) {
+              const { fromPixel, toPixel, progress } = animatingArmy;
+              const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+              const animX = fromPixel.x + (toPixel.x - fromPixel.x) * easeProgress;
+              const animY = fromPixel.y - 20 + ((toPixel.y - 20) - (fromPixel.y - 20)) * easeProgress;
+              
+              return (
+                <g key={army.id} className="pointer-events-none">
+                  {/* Movement trail */}
+                  <line
+                    x1={fromPixel.x}
+                    y1={fromPixel.y - 20}
+                    x2={animX}
+                    y2={animY}
+                    stroke={ownerColor}
+                    strokeWidth={2}
+                    strokeDasharray="4,2"
+                    opacity={0.5}
+                  />
+                  {/* Dust cloud effect */}
+                  <circle cx={animX - 10} cy={animY + 5} r={4 + progress * 3} fill="#a78b5f" opacity={0.3 - progress * 0.3} />
+                  <circle cx={animX - 5} cy={animY + 8} r={3 + progress * 2} fill="#a78b5f" opacity={0.2 - progress * 0.2} />
+                  {/* Army marker */}
+                  <g transform={`translate(${animX}, ${animY})`}>
+                    <circle r={16} fill={ownerColor} stroke="#1f2937" strokeWidth={2} />
+                    <Sword x={-8} y={-8} width={16} height={16} className="text-white" />
+                    <text x={0} y={24} textAnchor="middle" fontSize={10} fill="white" style={{ textShadow: '0 0 3px black' }}>
+                      {totalUnits}
+                    </text>
+                  </g>
+                </g>
+              );
+            }
+            
+            return (
+              <g 
+                key={army.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onArmyClick(army.id);
+                }}
+                onMouseEnter={() => setHoveredArmy(army)}
+                onMouseLeave={() => setHoveredArmy(null)}
+                className="cursor-pointer"
+                style={{ transition: 'transform 0.2s ease' }}
+              >
+                {/* Selection ring */}
+                {isSelected && (
+                  <circle
+                    cx={armyX}
+                    cy={armyY}
+                    r={20}
+                    fill="none"
+                    stroke="#fbbf24"
+                    strokeWidth={3}
+                    className="animate-pulse"
+                    opacity={0.8}
+                  />
+                )}
+                
+                {/* Army background */}
+                <circle
+                  cx={armyX}
+                  cy={armyY}
+                  r={14}
+                  fill={ownerColor}
+                  stroke={isPlayerArmy ? '#fbbf24' : '#1f2937'}
+                  strokeWidth={isPlayerArmy ? 2.5 : 2}
+                  filter={isSelected ? 'url(#province-glow)' : undefined}
+                />
+                
+                {/* Army icon */}
+                <g transform={`translate(${armyX - 6}, ${armyY - 6})`}>
+                  {army.cavalry > army.infantry ? (
+                    // Cavalry-heavy - horse icon
+                    <path
+                      d="M6 4c-.5 0-.75.25-1 .75s-.5.75-1 .75c-.75 0-1.25-.5-1.75-1L1 6l.5 1.5 1 .5c.5 0 1-.5 1.5-.5h2l1 1.5h2l-.5-2-1-1c0-.5-.25-1-.5-1.5l-1-.5z"
+                      fill="white"
+                      transform="scale(1.3)"
+                    />
+                  ) : (
+                    // Infantry-heavy - sword icon
+                    <Sword className="w-3 h-3 text-white" />
+                  )}
+                </g>
+                
+                {/* Unit count */}
+                <text
+                  x={armyX}
+                  y={armyY + 26}
+                  textAnchor="middle"
+                  fontSize={9}
+                  fontWeight="bold"
+                  fill="white"
+                  style={{ textShadow: '0 0 4px rgba(0,0,0,0.9)' }}
+                >
+                  {army.cavalry > 0 && `🐴${army.cavalry}`}
+                  {army.infantry > 0 && ` ⚔${army.infantry}`}
+                </text>
+                
+                {/* Movement indicator */}
+                {isPlayerArmy && army.movementLeft > 0 && (
+                  <circle
+                    cx={armyX + 10}
+                    cy={armyY - 10}
+                    r={5}
+                    fill="#22c55e"
+                    stroke="#1f2937"
+                    strokeWidth={1}
+                  />
+                )}
+              </g>
+            );
+          });
+        })}
+        
         {/* Province labels (when zoomed) */}
         {zoom > 1.3 && provincePixels.map(({ province, pixel }) => (
           <text
@@ -1061,12 +1252,72 @@ export const CivilizationMap = ({
         onNavigate={handleMinimapNavigate}
       />
       
-      {/* Tooltip */}
-      {hoveredProvince && (
+      {/* Province Tooltip */}
+      {hoveredProvince && !hoveredArmy && (
         <ProvinceTooltip
           province={hoveredProvince}
           position={mousePosition}
         />
+      )}
+      
+      {/* Army Tooltip */}
+      {hoveredArmy && (
+        <div
+          className="absolute z-50 pointer-events-none bg-stone-900/95 border-2 border-amber-700/60 rounded-xl p-4 shadow-2xl min-w-[200px] backdrop-blur-sm"
+          style={{
+            left: mousePosition.x + 20,
+            top: mousePosition.y + 20,
+            transform: mousePosition.x > window.innerWidth - 250 ? 'translateX(-100%)' : undefined,
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-amber-700/30">
+            <Sword className="w-5 h-5 text-red-400" />
+            <div>
+              <span className="text-amber-100 font-bold">Armeija</span>
+              <span 
+                className="ml-2 text-sm" 
+                style={{ color: FACTION_DATA_1206[hoveredArmy.ownerId]?.color }}
+              >
+                {FACTION_DATA_1206[hoveredArmy.ownerId]?.name}
+              </span>
+            </div>
+          </div>
+          
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-stone-400 flex items-center gap-1">🐴 Ratsuväki:</span>
+              <span className="text-amber-200 font-mono">{hoveredArmy.cavalry}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-stone-400 flex items-center gap-1">⚔️ Jalkaväki:</span>
+              <span className="text-blue-200 font-mono">{hoveredArmy.infantry}</span>
+            </div>
+            {hoveredArmy.siege > 0 && (
+              <div className="flex justify-between items-center">
+                <span className="text-stone-400">🏯 Piiritys:</span>
+                <span className="text-stone-200 font-mono">{hoveredArmy.siege}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center pt-2 border-t border-stone-700">
+              <span className="text-stone-400">Moraali:</span>
+              <span className={`font-mono ${hoveredArmy.morale > 60 ? 'text-green-400' : hoveredArmy.morale > 30 ? 'text-yellow-400' : 'text-red-400'}`}>
+                {hoveredArmy.morale}%
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-stone-400">Liike jäljellä:</span>
+              <span className={`font-mono ${hoveredArmy.movementLeft > 0 ? 'text-green-400' : 'text-stone-500'}`}>
+                {hoveredArmy.movementLeft}
+              </span>
+            </div>
+            {hoveredArmy.leaderBonus > 0 && (
+              <div className="text-amber-400 text-xs mt-2 flex items-center gap-1">
+                <span>👑</span>
+                <span>Johtajabonus: +{Math.round(hoveredArmy.leaderBonus * 100)}%</span>
+              </div>
+            )}
+          </div>
+        </div>
       )}
       
       {/* Legend */}
