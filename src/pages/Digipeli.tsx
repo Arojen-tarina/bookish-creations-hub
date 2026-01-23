@@ -1,7 +1,7 @@
-import { MongolianGame } from "@/components/game/digital/MongolianGame";
+import { ProvinceGame } from "@/components/game/digital/ProvinceGame";
 
 const Digipeli = () => {
-  return <MongolianGame />;
+  return <ProvinceGame />;
 };
 
 export default Digipeli;
