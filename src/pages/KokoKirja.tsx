@@ -49,7 +49,7 @@ const KokoKirja = () => {
                 <p className="font-semibold text-primary mb-2">Ensimmäinen kirja</p>
                 <ul className="space-y-1 text-muted-foreground">
                   <li><a href="#osa-1" className="hover:text-primary">Arojen maailma (s. 1-50)</a></li>
-                  <li><a href="#osa-2" className="hover:text-primary">Jonin lapsuus (s. 51-100)</a></li>
+                  <li><a href="#osa-2" className="hover:text-primary">Temüün lapsuus (s. 51-100)</a></li>
                   <li><a href="#osa-3" className="hover:text-primary">Ensimmäinen taistelu (s. 101-150)</a></li>
                   <li><a href="#osa-4" className="hover:text-primary">Uskomusten kirja (s. 151-250)</a></li>
                 </ul>
@@ -57,7 +57,7 @@ const KokoKirja = () => {
               <div>
                 <p className="font-semibold text-accent mb-2">Toinen kirja</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li><a href="#osa-5" className="hover:text-primary">Jonin ja isän taistelu (s. 251-300)</a></li>
+                  <li><a href="#osa-5" className="hover:text-primary">Temüün ja Ganbaatarin taistelu (s. 251-300)</a></li>
                   <li><a href="#osa-6" className="hover:text-primary">Valloitusretket (s. 301-350)</a></li>
                 </ul>
               </div>
@@ -89,7 +89,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Arojen Maa</h3>
               
               <p className="first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:mr-2 first-letter:float-left">
-                Olipa kerran kaukaisessa maassa joukko keskenänsä riiteleviä heimoja. Nämä maat olivat luonnoltaan aroa eli steppejä.
+                Olipa kerran kaukaisessa maassa joukko keskenään riiteleviä heimoja. Nämä maat olivat luonnoltaan aroa eli steppejä.
               </p>
 
               <p>
@@ -348,34 +348,34 @@ const KokoKirja = () => {
               <div className="my-16 text-center">
                 <div className="w-full h-px bg-border mb-12"></div>
                 <span className="text-6xl font-display font-bold text-accent/20">II</span>
-                <h2 id="osa-2" className="font-display text-3xl font-bold mt-2 scroll-mt-20">Jonin Lapsuus</h2>
+                <h2 id="osa-2" className="font-display text-3xl font-bold mt-2 scroll-mt-20">Temüün Lapsuus</h2>
                 <p className="text-muted-foreground mt-2">Sivut 51-100</p>
               </div>
 
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Jonin Syntymä</h3>
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Temüün Syntymä</h3>
 
               <p>
-                Keskitymmeko nyt tarinamme päähenkilöön ja hänen tarinaansa. Hänen nimekseen annettiin joni, mikä tarkoittaa heimollisesti tietynlaista nuorta metsästyskoiraa.
+                Keskitymmeko nyt tarinamme päähenkilöön ja hänen tarinaansa. Hänen nimekseen annettiin Temüü, mikä tarkoittaa heimollisesti "rautaa" — vahvuuden ja kestävyyden symbolia.
               </p>
 
               <p>
-                Tarinassamme ei ollut Djonin syntymässä mitään erikoista. Hänellä ei myöskään ollut ihmeellistä lapsuutta tai kummallisia olosuhteita. Varmasti kaikki olivat tulleet samanlaisista lähtökohdista niin kuin kaikki muutkin aroilla.
+                Tarinassamme ei ollut Temüün syntymässä mitään erikoista. Hänellä ei myöskään ollut ihmeellistä lapsuutta tai kummallisia olosuhteita. Varmasti kaikki olivat tulleet samanlaisista lähtökohdista niin kuin kaikki muutkin aroilla.
               </p>
 
               <p>
-                Varmasti myös kukaan ei olisi uskonut, että hänestä tulisi sitä jota hänestä lopulta tuli. Hänen äitinsä oli tottunut kolmelta mieheltä hyväksikäyttöön, joista yhdeltä oli syntynyt ioni.
+                Varmasti myös kukaan ei olisi uskonut, että hänestä tulisi sitä, jota hänestä lopulta tuli. Hänen äitinsä Bolormaa oli tottunut kolmelta mieheltä hyväksikäyttöön, joista yhdeltä oli syntynyt Temüü.
               </p>
 
               <p>
-                Seuraava mies hyväksikäytti häntä. Myös fyysisesti, hän usein palasi juopuneena kotiin ja pahoinpiteli sekä hänen äitinsä, että hänet ja hänen sisaruksiaan.
+                Seuraava mies, Ganbaatar, hyväksikäytti häntä. Myös fyysisesti, hän usein palasi juopuneena kotiin ja pahoinpiteli sekä Bolormaan, että Temüün ja hänen sisaruksensa.
               </p>
 
               <p>
-                Jonista tuli vanhempi mies ja hänellä oli paljon velvollisuuksia, mitä äiti hänen harteilleen olisi laskenut. Joni oli vastuussa hänen pikkuveljiensä ja pikkusiskojensa hyvinvoinnista.
+                Temüüstä tuli vanhempi mies ja hänellä oli paljon velvollisuuksia, mitä äiti hänen harteilleen olisi laskenut. Temüü oli vastuussa hänen pikkuveljiensä ja pikkusiskojensa hyvinvoinnista.
               </p>
 
               <p>
-                Hän oli usein laittamassa ruokaa ja tuomassa saalista heidän kotijurttaansa. Koska hänen isänsä ei ollut enää kyvykäs siihen.
+                Hän oli usein laittamassa ruokaa ja tuomassa saalista heidän kotijurttaansa. Koska Ganbaatar ei ollut enää kyvykäs siihen.
               </p>
 
               <p>
@@ -388,14 +388,14 @@ const KokoKirja = () => {
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  Yksi asia oli erikoista jonissa. Hänen vanhempansa olivat huomanneet, miten hänen silmänsä loisivat ja leikkasivat auringon valossa. Tämä oli merkki siitä, että hänessä oli henkeä, joka oli suojelemassa häntä.
+                  Yksi asia oli erikoista Temüüssä. Hänen vanhempansa olivat huomanneet, miten hänen silmänsä loisivat ja leikkasivat auringon valossa. Tämä oli merkki siitä, että hänessä oli henkeä, joka oli suojelemassa häntä.
                 </p>
               </div>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Hevosten Kanssa</h3>
 
               <p>
-                Jonin lapsuuden parhaat hetket olivat hänen isosiskonsa kanssa, joka leikki usein hänen kanssaan heidän ainoalla hevosella.
+                Temüün lapsuuden parhaat hetket olivat hänen siskonsa Naranin kanssa, joka leikki usein hänen kanssaan heidän ainoalla hevosella.
               </p>
 
               <p>
@@ -411,11 +411,11 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Jonin isosisko suojeli häntä usein isänsä hyökkäyksiltä. Hän meni eteensä seisomaan ja otti usein vastaan lyöntejä, joita oli tarkoitettu ionille tai hänen muille sisaruksilleen.
+                Naran suojeli Temüütä usein Ganbaatarin hyökkäyksiltä. Hän meni eteensä seisomaan ja otti usein vastaan lyöntejä, joita oli tarkoitettu Temüülle tai hänen muille sisaruksilleen.
               </p>
 
               <p>
-                Yksi asia, jota ioni ei koskaan antaisi itselleen anteeksi, oli se, kun hänen oli joskus jätettävä hänen siskonsa yksin, kun hän yksinkertaisesti ei halunnut olla paikalla enää tässä tilanteessa. Hän joskus myös halusi juosta pakoon metsään ja piiloutua sinne tietäen kuitenkin, että hänellä ei olisi mitään mahdollisuuksia olla poissa kauaa.
+                Yksi asia, jota Temüü ei koskaan antaisi itselleen anteeksi, oli se, kun hänen oli joskus jätettävä Naran yksin, kun hän yksinkertaisesti ei halunnut olla paikalla enää tässä tilanteessa. Hän joskus myös halusi juosta pakoon metsään ja piiloutua sinne tietäen kuitenkin, että hänellä ei olisi mitään mahdollisuuksia olla poissa kauaa.
               </p>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Ankarat Talvet</h3>
@@ -429,31 +429,31 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Jokin vei heitä eteenpäin tämän tuskan, kylmyyden ja lohduttomuuden keskellä. Ruuanlaittajia ei ollut, koska heidän isänsä oli kaapannut heidän leiristään oman perhekuntansa erilleen taistellessaan toisen johtajan kanssa.
+                Jokin vei heitä eteenpäin tämän tuskan, kylmyyden ja lohduttomuuden keskellä. Ruuanlaittajia ei ollut, koska Ganbaatar oli kaapannut heidän leiristään oman perhekuntansa erilleen taistellessaan toisen johtajan kanssa.
               </p>
 
               <p>
-                Jonin äiti oli joutunut tekemään kaikki ruuat, jotka koostuivat vain juurista ja yrteistä, joita löytyi lumikinoksien alta. Ei vain ruuanlaittajia, mutta myöskään lääkäreitä ei ollut mukana ollenkaan.
+                Bolormaa oli joutunut tekemään kaikki ruuat, jotka koostuivat vain juurista ja yrteistä, joita löytyi lumikinoksien alta. Ei vain ruuanlaittajia, mutta myöskään lääkäreitä ei ollut mukana ollenkaan.
               </p>
 
               <p>
-                Jonilla ei ollut taitoja käydä metsästämässä tässä vaiheessa, mutta hänen olisi ollut pakko oppia. Hänen olisi pitänyt jonkun opettaa, mutta miten hän olisi voinut omillaan oppia näitä asioita.
+                Temüüllä ei ollut taitoja käydä metsästämässä tässä vaiheessa, mutta hänen olisi ollut pakko oppia. Hänen olisi pitänyt jonkun opettaa, mutta miten hän olisi voinut omillaan oppia näitä asioita.
               </p>
 
               <p>
-                He sinnittelivät sen talven läpi. Se oli rankin aika, mitä yksikään heistä oli koskaan kokenut ja se ylitti jopa sen kivun, mitä heidän isänsä oli heihin kohdistanut.
+                He sinnittelivät sen talven läpi. Se oli rankin aika, mitä yksikään heistä oli koskaan kokenut ja se ylitti jopa sen kivun, mitä Ganbaatar oli heihin kohdistanut.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  Tuli aika, kun joni todella halusi tappaa hänen isänsä. Oli niin monta asiaa, mitä hän teki väärin. Ei vain häneen ja hänen perheeseensä, mutta myös omiin joukkoihinsa.
+                  Tuli aika, kun Temüü todella halusi tappaa Ganbaatarin. Oli niin monta asiaa, mitä hän teki väärin. Ei vain häneen ja hänen perheeseensä, mutta myös omiin joukkoihinsa.
                 </p>
               </div>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Soturiksi Kasvaminen</h3>
 
               <p>
-                Jonista kehittyi vahva nuori mies. Vaikka hän oli fyysisesti nääntyneessä tilassa aikanaan, hän oli kasvanut isokokoiseksi ja resilienssiä täyteen.
+                Temüüstä kehittyi vahva nuori mies. Vaikka hän oli fyysisesti nääntyneessä tilassa aikanaan, hän oli kasvanut isokokoiseksi ja sisukkuutta täynnä.
               </p>
 
               <p>
@@ -461,19 +461,19 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Nyt koitti yksi asia, jota hän ei olisi halunnut kohdata: hänen olisi mentävä sotaan. Hänen isänsä kanssa ja hänen oli tehtävä niin kuin käskettiin epätoivoisella tavalla ja ehkä se olisi ollut parempi elämä, jos hän olisi kuollut tälle sotaretkelle.
+                Nyt koitti yksi asia, jota hän ei olisi halunnut kohdata: hänen olisi mentävä sotaan. Ganbaatarin kanssa ja hänen oli tehtävä niin kuin käskettiin epätoivoisella tavalla ja ehkä se olisi ollut parempi elämä, jos hän olisi kuollut tälle sotaretkelle.
               </p>
 
               <p>
-                Mutta hänen mieleensä tuli hänen sisaruksensa ja äitinsä ja hänen isosiskonsa, joka suojeli heitä kaikkia.
+                Mutta hänen mieleensä tuli hänen sisaruksensa ja äitinsä Bolormaa ja siskonsa Naran, joka suojeli heitä kaikkia.
               </p>
 
               <p>
-                Mikäli joni kuolisi, kuka olisi heidän puskurinaan? Kuka olisi heitä suojelemassa? Kuka olisi hoitamassa heitä? He kaikki olivat hänen mielestään niin vajavaisessa tilassa, että heidän itsenäinen selviytymisensä ei olisi mahdollista.
+                Mikäli Temüü kuolisi, kuka olisi heidän puskurinaan? Kuka olisi heitä suojelemassa? Kuka olisi hoitamassa heitä? He kaikki olivat hänen mielestään niin vajavaisessa tilassa, että heidän itsenäinen selviytymisensä ei olisi mahdollista.
               </p>
 
               <p>
-                Hänen isänsä saattoi olla paha mies, mutta hänen auktoriteettiasemansa ja arvonsa mahdollistivat perheelle sen, että he saivat tarpeeksi ruokaa, he saivat pitää telttansa ja he saivat olla edes jotenkin turvassa.
+                Ganbaatar saattoi olla paha mies, mutta hänen auktoriteettiasemansa ja arvonsa mahdollistivat perheelle sen, että he saivat tarpeeksi ruokaa, he saivat pitää telttansa ja he saivat olla edes jotenkin turvassa.
               </p>
 
               {/* ==================== OSA 3: ENSIMMÄINEN TAISTELU ==================== */}
@@ -487,7 +487,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Sotaretken Alku</h3>
 
               <p>
-                Nyt tuli aika lähteä sotaretkelle. Ensimmäistä kertaa jonille tuli tilaisuus nähdä omin silmin, mitä sota todellisuudessa oli.
+                Nyt tuli aika lähteä sotaretkelle. Ensimmäistä kertaa Temüülle tuli tilaisuus nähdä omin silmin, mitä sota todellisuudessa oli.
               </p>
 
               <p>
@@ -495,11 +495,11 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joukot kokoontuivat aamunkoitteessa. Hevosia valmisteltiin ja aseita tarkistettiin. Jonin isä seisoi joukkojen edessä, antaen käskyjä kovalla äänellä.
+                Joukot kokoontuivat aamunkoitteessa. Hevosia valmisteltiin ja aseita tarkistettiin. Ganbaatar seisoi joukkojen edessä, antaen käskyjä kovalla äänellä.
               </p>
 
               <p>
-                Joni katsoi häntä vihaisen silmien läpi. Hän tiesi, että hänen oli toteltava tätä miestä, mutta sisällään hän vannoi, että jonain päivänä asiat olisivat toisin.
+                Temüü katsoi häntä vihaisten silmien läpi. Hän tiesi, että hänen oli toteltava tätä miestä, mutta sisällään hän vannoi, että jonain päivänä asiat olisivat toisin.
               </p>
 
               <p>
@@ -507,12 +507,12 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Rutiini oli kova, mutta joni oli tottunut kovuuteen. Hän teki työnsä valittamatta ja ansaitsi pikku hiljaa muiden sotilaiden kunnioituksen.
+                Rutiini oli kova, mutta Temüü oli tottunut kovuuteen. Hän teki työnsä valittamatta ja ansaitsi pikku hiljaa muiden sotilaiden kunnioituksen.
               </p>
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  Ensimmäinen taistelu tuli yllättäen. Vihollisen joukot hyökkäsivät aamunkoitteessa, kun monet vielä nukkuivat. Kaaos oli täydellinen, mutta jotenkin joni pysyi rauhallisena.
+                  Ensimmäinen taistelu tuli yllättäen. Vihollisen joukot hyökkäsivät aamunkoitteessa, kun monet vielä nukkuivat. Kaaos oli täydellinen, mutta jotenkin Temüü pysyi rauhallisena.
                 </p>
               </div>
 
@@ -523,15 +523,15 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Ensimmäinen vihollinen tuli häntä kohti miekka koholla. Joni väisti iskun ja löi takaisin. Hänen miekkansa osui ja vihollinen kaatui.
+                Ensimmäinen vihollinen tuli häntä kohti miekka koholla. Temüü väisti iskun ja löi takaisin. Hänen miekkansa osui ja vihollinen kaatui.
               </p>
 
               <p>
-                Se oli hänen ensimmäinen tappamisensa. Hän tunsi oudon tyhjyyden sisällään. Ei voitonriemua, ei katumusta - vain tyhjyyttä.
+                Se oli hänen ensimmäinen tappamisensa. Hän tunsi oudon tyhjyyden sisällään. Ei voitonriemua, ei katumusta — vain tyhjyyttä.
               </p>
 
               <p>
-                Taistelu kesti tunteja. Kun se viimein päättyi, joni seisoi verisen kentän keskellä, tuijottaen kaatuneiden ruumiita.
+                Taistelu kesti tunteja. Kun se viimein päättyi, Temüü seisoi verisen kentän keskellä, tuijottaen kaatuneiden ruumiita.
               </p>
 
               <p>
@@ -546,18 +546,18 @@ const KokoKirja = () => {
                 <p className="text-muted-foreground mt-2">Sivut 151-250</p>
               </div>
 
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Shamaanin Opetukset</h3>
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Böön Opetukset</h3>
 
               <p>
-                Taistelun jälkeen shamaani kutsui jonin luokseen. Hän oli vanha mies, jonka silmät näyttivät näkevän asioita, joita muut eivät nähneet.
+                Taistelun jälkeen shamaani Böö kutsui Temüün luokseen. Hän oli vanha mies, jonka silmät näyttivät näkevän asioita, joita muut eivät nähneet.
               </p>
 
               <p>
-                "Sinussa on voimaa," shamaani sanoi. "Näen sen. Kosmiset olennot ovat sinun puolellasi."
+                "Sinussa on voimaa," Böö sanoi. "Näen sen. Kosmiset olennot ovat sinun puolellasi."
               </p>
 
               <p>
-                Shamaani alkoi kertoa tarinaa maailman synnystä. Se oli tarina, joka oli kulkenut sukupolvelta toiselle, ja nyt se kerrottiin jonille.
+                Böö alkoi kertoa tarinaa maailman synnystä. Se oli tarina, joka oli kulkenut sukupolvelta toiselle, ja nyt se kerrottiin Temüülle.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
@@ -569,7 +569,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Luomistarina</h3>
 
               <p>
-                Shamaani kertoi, miten kosmiset olennot olivat syntyneet tyhjyydestä. He olivat puhdasta energiaa, valoa ja pimeyttä yhdessä.
+                Böö kertoi, miten kosmiset olennot olivat syntyneet tyhjyydestä. He olivat puhdasta energiaa, valoa ja pimeyttä yhdessä.
               </p>
 
               <p>
@@ -581,7 +581,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                "Nämä kosmiset olennot eivät ole jumalia sanan tavallisessa merkityksessä," shamaani selitti. "He ovat voimia, energioita, jotka virtaavat kaiken läpi."
+                "Nämä kosmiset olennot eivät ole jumalia sanan tavallisessa merkityksessä," Böö selitti. "He ovat voimia, energioita, jotka virtaavat kaiken läpi."
               </p>
 
               <p>
@@ -591,11 +591,11 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Tasapaino ja Rakkaus</h3>
 
               <p>
-                Shamaanin opetuksen ydin oli tasapaino. Ei ollut puhdasta hyvää eikä puhdasta pahaa - oli vain tasapaino ja epätasapaino.
+                Böön opetuksen ydin oli tasapaino. Ei ollut puhdasta hyvää eikä puhdasta pahaa — oli vain tasapaino ja epätasapaino.
               </p>
 
               <p>
-                "Valo tarvitsee pimeyttä," shamaani sanoi. "Ilman yötä päivä ei olisi arvokas. Ilman surua emme tuntisi iloa."
+                "Valo tarvitsee pimeyttä," Böö sanoi. "Ilman yötä päivä ei olisi arvokas. Ilman surua emme tuntisi iloa."
               </p>
 
               <p>
@@ -608,14 +608,14 @@ const KokoKirja = () => {
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  "Sinä, joni, olet valittu. En tiedä mihin, mutta näen sen. Kosmiset voimat ovat asettaneet sinut polulle, jota et vielä ymmärrä. Mutta ymmärrät. Aikanaan ymmärrät."
+                  "Sinä, Temüü, olet valittu. En tiedä mihin, mutta näen sen. Kosmiset voimat ovat asettaneet sinut polulle, jota et vielä ymmärrä. Mutta ymmärrät. Aikanaan ymmärrät."
                 </p>
               </div>
 
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Shamaanin Tehtävä</h3>
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Böön Tehtävä</h3>
 
               <p>
-                Shamaani kertoi omasta tehtävästään. Hän oli sanansaattaja, silta näkyvän ja näkymättömän maailman välillä.
+                Böö kertoi omasta tehtävästään. Hän oli sanansaattaja, silta näkyvän ja näkymättömän maailman välillä.
               </p>
 
               <p>
@@ -639,17 +639,17 @@ const KokoKirja = () => {
                 <div className="w-full h-px bg-border mb-12"></div>
                 <span className="text-6xl font-display font-bold text-primary/20">V</span>
                 <h2 id="osa-5" className="font-display text-3xl font-bold mt-2 scroll-mt-20">Toinen Kirja</h2>
-                <p className="text-muted-foreground mt-2">Jonin ja Isän Taistelu - Sivut 251-300</p>
+                <p className="text-muted-foreground mt-2">Temüün ja Ganbaatarin Taistelu - Sivut 251-300</p>
               </div>
 
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Shamaanin Haaste</h3>
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Böön Haaste</h3>
 
               <p>
-                Shamaanilla olisi tänään edessään pitkä päivä, koska hänen pitäisi suorittaa loppuun todella monta erilaista rituaalia liittyen eri asioihin, kuten henkien miellyttämiseen, synninpäästöön, ruumiiden hautaamiseen ja taistelukentän puhdistamiseen kaikesta pahasta hengestä.
+                Bööllä olisi tänään edessään pitkä päivä, koska hänen pitäisi suorittaa loppuun todella monta erilaista rituaalia liittyen eri asioihin, kuten henkien miellyttämiseen, synninpäästöön, ruumiiden hautaamiseen ja taistelukentän puhdistamiseen kaikesta pahasta hengestä.
               </p>
 
               <p>
-                Seuraavaksi shamaanin tehtävänä olisi kävellä taistelukentän halki joukon kanssa, jotka identifioisivat kaatuneet. Jos he olivat johtajia, heidät haudattaisiin eri tavalla.
+                Seuraavaksi Böön tehtävänä olisi kävellä taistelukentän halki joukon kanssa, jotka identifioisivat kaatuneet. Jos he olivat johtajia, heidät haudattaisiin eri tavalla.
               </p>
 
               <p>
@@ -661,7 +661,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Nyt shamaani törmäsi erääseen nuoreen poikaan, tarinamme päähenkilöön joniin, joka oli osallistunut myös taistelun perästä.
+                Nyt Böö törmäsi erääseen nuoreen poikaan, tarinamme päähenkilöön Temüühün, joka oli osallistunut myös taistelun perästä.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
@@ -671,47 +671,47 @@ const KokoKirja = () => {
               </div>
 
               <p>
-                Shamaani sanoi: "Nuori mies, itke vain. Se helpottaa. Olet kärsinyt kovia, kuten me kaikki, mutta sinuun tämä ottaa paljon kovemmin kuin muihin, koska tämä oli ensimmäinen kertasi. Huomaan myös, että olet syvällinen ja herkkä sielu. Taistelukenttä ei ole kaltaisillesi tehty."
+                Böö sanoi: "Nuori mies, itke vain. Se helpottaa. Olet kärsinyt kovia, kuten me kaikki, mutta sinuun tämä ottaa paljon kovemmin kuin muihin, koska tämä oli ensimmäinen kertasi. Huomaan myös, että olet syvällinen ja herkkä sielu. Taistelukenttä ei ole kaltaisillesi tehty."
               </p>
 
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Isän Kohtaaminen</h3>
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Ganbaatarin Kohtaaminen</h3>
 
               <p>
-                Jonin isä oli kuunnellut tätä keskustelua viereisen teltan takana. Hän tuli jonin viereen, otti jonia niskasta kiinni puristaen häntä niin, että se sattui.
-              </p>
-
-              <p>
-                Hän katsoi shamaania vihaisesti. Shamaani katsoi jonin isää kuin hän ei olisi moksiskaan ja hän näkisi hänen sieluunsa.
+                Ganbaatar oli kuunnellut tätä keskustelua viereisen teltan takana. Hän tuli Temüün viereen, otti häntä niskasta kiinni puristaen niin, että se sattui.
               </p>
 
               <p>
-                Jonin isä oli valmis vetämään miekkaansa ulos, kunnes shamaani sanoi: "Jos olisin sinä, en tekisi tuota. Jos haluat pitää oman pääsi ja kunniasi tämän jälkeen, koska shamaanin tappaminen oli niin ankarasti kielletty, että koko yhteisö, suku ja perhe tultaisiin teloittamaan."
+                Hän katsoi Böötä vihaisesti. Böö katsoi Ganbaataria kuin hän ei olisi moksiskaan ja hän näkisi hänen sieluunsa.
               </p>
 
               <p>
-                Jonin isä sanoi jonille: "Älä kuuntele tuota miestä. Hän on syönyt liikaa sieniä metsästä. Se on sekoittanut hänen aivonsa ja psyykkeensä."
+                Ganbaatar oli valmis vetämään miekkaansa ulos, kunnes Böö sanoi: "Jos olisin sinä, en tekisi tuota. Jos haluat pitää oman pääsi ja kunniasi tämän jälkeen, koska shamaanin tappaminen oli niin ankarasti kielletty, että koko yhteisö, suku ja perhe tultaisiin teloittamaan."
               </p>
 
               <p>
-                Joni vastasi: "Mutta isä, hän vain kertoi minulle, että minun pitäisi käyttää lahjoja, jotka minulla on myönnetty. Minä en sovi taistelukentälle. Minä tapoin ensimmäisen kerran tänään. Minun käteni ovat tahritut toisen ihmisen verellä enkä ikinä pysty antamaan itselleni anteeksi."
+                Ganbaatar sanoi Temüülle: "Älä kuuntele tuota miestä. Hän on syönyt liikaa sieniä metsästä. Se on sekoittanut hänen aivonsa ja psyykkeensä."
               </p>
 
               <p>
-                Isä nosti kätensä ja löi rystysillään poikaansa kovasti. "Jos sinä vielä puhut tuollaisia asioita, takaan, että tulen rankaisemaan teitä kovemmin kuin ketään koskaan. Pieksän sinut henkihieveriin, koska minua ei kiinnosta sinun tuskasi."
-              </p>
-
-              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Shamaanin Profetia</h3>
-
-              <p>
-                Isän lähdettyä shamaani sanoi jonille: "Kuule poika, sinulla ei ole mitään muuta mahdollisuutta tämän miehen kanssa kuin elää hänen alaisuudessaan ikuisesti alentuen, tai sinun on kohdattava hänet taistelussa, jossa jompikumpi tulee kuolemaan."
+                Temüü vastasi: "Mutta isä, hän vain kertoi minulle, että minun pitäisi käyttää lahjoja, jotka minulla on myönnetty. Minä en sovi taistelukentälle. Minä tapoin ensimmäisen kerran tänään. Minun käteni ovat tahritut toisen ihmisen verellä enkä ikinä pysty antamaan itselleni anteeksi."
               </p>
 
               <p>
-                "Sinä olet jo joni. Tulet jonain päivänä olemaan suurmies, joka tulee viemään yhteisömme takaisin sen entiseen loistoonsa yhdistäen kaikki heimot keskenään. Sinä olet se, mitä maailmamme tarvitsee."
+                Ganbaatar nosti kätensä ja löi rystysillään poikaansa kovasti. "Jos sinä vielä puhut tuollaisia asioita, takaan, että tulen rankaisemaan teitä kovemmin kuin ketään koskaan. Pieksän sinut henkihieveriin, koska minua ei kiinnosta sinun tuskasi."
+              </p>
+
+              <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Böön Profetia</h3>
+
+              <p>
+                Ganbaatarin lähdettyä Böö sanoi Temüülle: "Kuule poika, sinulla ei ole mitään muuta mahdollisuutta tämän miehen kanssa kuin elää hänen alaisuudessaan ikuisesti alentuen, tai sinun on kohdattava hänet taistelussa, jossa jompikumpi tulee kuolemaan."
               </p>
 
               <p>
-                "Niitä isäsi kaltaisia miehiä riittää silmänkantamattomiin. He painavat saappaitaan meidän kaikkien niskaan. Mutta sinun on haastettava isäsi julkisesti kaksintaisteluun ja tapettava hänet. Minä tulen seisomaan sinun takanasi."
+                "Sinä olet jo Baatar. Tulet jonain päivänä olemaan suurmies, joka tulee viemään yhteisömme takaisin sen entiseen loistoonsa yhdistäen kaikki heimot keskenään. Sinä olet se, mitä maailmamme tarvitsee."
+              </p>
+
+              <p>
+                "Ganbaatarin kaltaisia miehiä riittää silmänkantamattomiin. He painavat saappaitaan meidän kaikkien niskaan. Mutta sinun on haastettava isäsi julkisesti kaksintaisteluun ja tapettava hänet. Minä tulen seisomaan sinun takanasi."
               </p>
 
               <div className="my-8 p-6 bg-primary/5 border-l-4 border-primary rounded-r-sm">
@@ -727,7 +727,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joni näki isänsä odottavan vihaisen näköisenä. Hän oli ristinyt kätensä uhkaavan näköisesti. Joni käveli isänsä luokse, mutta ennen tätä hän kävelisi miekkatelineen ohi. Hän otti siitä kaksi miekkaa ja heitti toisen isänsä jalkojensa eteen.
+                Temüü näki Ganbaatarin odottavan vihaisen näköisenä. Hän oli ristinyt kätensä uhkaavan näköisesti. Temüü käveli isänsä luokse, mutta ennen tätä hän kävelisi miekkatelineen ohi. Hän otti siitä kaksi miekkaa ja heitti toisen Ganbaatarin jalkojensa eteen.
               </p>
 
               <p>
@@ -735,41 +735,41 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Isä sanoi: "Siinä tyhmä poika olet. Tiedätkö yhtään mitä sinä olet tehnyt? Minä olen isäsi, minä olen kasvattanut sinut. Opetin sinut hyvin, poika."
+                Ganbaatar sanoi: "Siinä tyhmä poika olet. Tiedätkö yhtään mitä sinä olet tehnyt? Minä olen isäsi, minä olen kasvattanut sinut. Opetin sinut hyvin, poika."
               </p>
 
               <p>
-                Shamaani tuli johtamaan taistelun seremoniat. Hän teki perinteen mukaisesti hiekkaan ympyrän. Sitten hän teki suitsukkeella puhdistuksen kentästä.
+                Böö tuli johtamaan taistelun seremoniat. Hän teki perinteen mukaisesti hiekkaan ympyrän. Sitten hän teki suitsukkeella puhdistuksen kentästä.
               </p>
 
               <p>
-                Taistelu alkoi. Isä löi ensimmäisen iskun jonin kypärää, mutta joni oli kovettunut aikaisemmista taisteluistaan. Hän ei kaatunut. Joni keräsi tasapainonsa ja korotti kilpänsä, torjuen iskun.
+                Taistelu alkoi. Ganbaatar löi ensimmäisen iskun Temüün kypärää, mutta Temüü oli kovettunut aikaisemmista taisteluistaan. Hän ei kaatunut. Temüü keräsi tasapainonsa ja korotti kilpänsä, torjuen iskun.
               </p>
 
               <p>
-                Isä menetti tasapainonsa. Joni löi horjahtanutta isäänsä, jonka miekka lensi pois hänen kädestään. Taistelu jatkui raivokkaana, molemmat antoivat ja ottivat iskuja.
+                Ganbaatar menetti tasapainonsa. Temüü löi horjahtanutta isäänsä, jonka miekka lensi pois hänen kädestään. Taistelu jatkui raivokkaana, molemmat antoivat ja ottivat iskuja.
               </p>
 
               <p>
-                Lopulta molemmat olivat maassa, liian väsyneitä jatkamaan. Mutta joni oli nuorempi ja resilientimpi. Hän toipui nopeammin.
+                Lopulta molemmat olivat maassa, liian väsyneitä jatkamaan. Mutta Temüü oli nuorempi ja sisukkaampi. Hän toipui nopeammin.
               </p>
 
               <p>
-                Joni haki miekkansa. Hän laittoi ne isän kurkulle viistoon ja odotti hetken. Isä sanoi viimeiseksi: "Opetin sinut hyvin, poika."
+                Temüü haki miekkansa. Hän laittoi ne isänsä kurkulle viistoon ja odotti hetken. Ganbaatar sanoi viimeiseksi: "Opetin sinut hyvin, poika."
               </p>
 
               <p>
-                Joni viilsi molemmilla käsillään. Isän pää irtosi nopeasti. Tuli hetken hiljaisuus ennen kuin joukot alkoivat hurraamaan ja huutamaan jonin nimeä.
+                Temüü viilsi molemmilla käsillään. Ganbaatarin pää irtosi nopeasti. Tuli hetken hiljaisuus ennen kuin joukot alkoivat hurraamaan ja huutamaan Temüün nimeä.
               </p>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Uusi Alku</h3>
 
               <p>
-                Shamaani nosti jonin käden ylös merkaten hänet voittajaksi. Hän kertoi kaikille, miten jonin perheessä koettaisiin nyt uusi aika. Heidät ylennettäisiin 100-pään johtajaksi. Heille annettaisiin paremmat jurtat.
+                Böö nosti Temüün käden ylös merkaten hänet voittajaksi. Hän kertoi kaikille, miten Temüün perheessä koettaisiin nyt uusi aika. Heidät ylennettäisiin 100-pään johtajaksi. Heille annettaisiin paremmat jurtat.
               </p>
 
               <p>
-                Jonin äiti näytti hyvin ristiriitaiselta. Hänen aviomiehensä oli juuri kuollut, mutta hänen kärsimyksensä oli loppunut. Hän ei enää joutuisi kärsimään juopuneelta mieheltä.
+                Bolormaa näytti hyvin ristiriitaiselta. Hänen aviomiehensä oli juuri kuollut, mutta hänen kärsimyksensä oli loppunut. Hän ei enää joutuisi kärsimään juopuneelta mieheltä.
               </p>
 
               <p>
@@ -787,35 +787,35 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Shokin Jälkeen</h3>
 
               <p>
-                Taistelu oli käyty. Joni tärisi ja hän oli jonkinnäköisessä shokkitilassa. Hänen käsivartensa olivat heikot. Hän ei pystynyt ottamaan mistään kiinni.
+                Taistelu oli käyty. Temüü tärisi ja hän oli jonkinnäköisessä shokkitilassa. Hänen käsivartensa olivat heikot. Hän ei pystynyt ottamaan mistään kiinni.
               </p>
 
               <p>
-                Hänen mielessään meni nyt viime päivien tapahtumat. Hän mietti tätä shamaania, joka oli hänet sysännyt tälle tielle ilman, että hän oli ikinä edes jutellut jonille. Ihan kuin hän olisi kuitenkin jollain tavalla pitänyt häntä silmällä kaiken tämän aikaa.
+                Hänen mielessään meni nyt viime päivien tapahtumat. Hän mietti Böötä, joka oli hänet sysännyt tälle tielle ilman, että hän oli ikinä edes jutellut Temüülle. Ihan kuin hän olisi kuitenkin jollain tavalla pitänyt häntä silmällä kaiken tämän aikaa.
               </p>
 
               <p>
-                Nyt joni mietti sitä, miten hän tulisi nostamaan perheensä ylös nykyisestä sosiaalisesta luokastaan. Hänellä olisi paljon töitä järjestettävänä. Miten hän tulisi hallitsemaan 100 miestään?
+                Nyt Temüü mietti sitä, miten hän tulisi nostamaan perheensä ylös nykyisestä sosiaalisesta luokastaan. Hänellä olisi paljon töitä järjestettävänä. Miten hän tulisi hallitsemaan 100 miestään?
               </p>
 
               <p>
-                Hän meni hetkeksi viereiseen metsään ja päästi huudahduksen niin kovaa, että koko metsä kaiku ja raikui. Joni oli toisaalta ylpeä itsestään, että hän oli päättänyt tuon hirveän pedon iän. Toisaalta hän oli adrenaliinin kyllästyttämä.
+                Hän meni hetkeksi viereiseen metsään ja päästi huudahduksen niin kovaa, että koko metsä kaikui ja raikui. Temüü oli toisaalta ylpeä itsestään, että hän oli päättänyt tuon hirveän pedon iän. Toisaalta hän oli täynnä adrenaliinia.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">
                 <p className="italic text-muted-foreground">
-                  Olikohan se niin kuin vanha sanonta menee, että kuinka ihmiset oppivat rakastamaan omia kahleitaan. Oliko joni tällainen koira? Tulisiko hänestä täysin samanlainen kuin hänen isästään?
+                  Olikohan se niin kuin vanha sanonta menee, että kuinka ihmiset oppivat rakastamaan omia kahleitaan. Oliko Temüü tällainen koira? Tulisiko hänestä täysin samanlainen kuin Ganbaatarista?
                 </p>
               </div>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Joukkojen Komentaja</h3>
 
               <p>
-                Teltassa hänen äitinsä sanoi: "Rakas poikani, sinä teit urhoallisen teon, mutta nyt sinulla on vielä pidempi tie edessäsi. Nyt sinulla on oikea vastuuta muistakin kuin itsestäsi. Nyt sinä olet aikuinen mies."
+                Teltassa Bolormaa sanoi: "Rakas poikani, sinä teit urhoallisen teon, mutta nyt sinulla on vielä pidempi tie edessäsi. Nyt sinulla on oikea vastuuta muistakin kuin itsestäsi. Nyt sinä olet aikuinen mies."
               </p>
 
               <p>
-                Joukot olivat odottaneet häntä teltan ulkopuolella järjestäytyneenä täydellisesti. Joni alkoi määrätä käskyjä. Hän määräsi yhden partion vartioimaan perhettään ja auttamaan heitä maataloustöissä.
+                Joukot olivat odottaneet häntä teltan ulkopuolella järjestäytyneenä täydellisesti. Temüü alkoi määrätä käskyjä. Hän määräsi yhden partion vartioimaan perhettään ja auttamaan heitä maataloustöissä.
               </p>
 
               <p>
@@ -829,7 +829,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Vallankaappaus</h3>
 
               <p>
-                Heimojohtajien teltassa joni marssi suoraan johtajien pöytään. Henkivartijat laittoivat miekkaansa hänen poskilleen. Joni sanoi: "Lopettakaa tämä heti. Minulla on parempi idea teille."
+                Heimojohtajien teltassa Temüü marssi suoraan johtajien pöytään. Henkivartijat laittoivat miekkaansa hänen poskilleen. Temüü sanoi: "Lopettakaa tämä heti. Minulla on parempi idea teille."
               </p>
 
               <p>
@@ -837,7 +837,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joni sanoi: "Me emme voi perääntyä niin kuin aina. Me olemme voittaneet ja meidän on jatkettava hyökkäystä." Yksi heimon johtajista näytti hämmästyneeltä ja pelokkaalta - hänestä tuli mieleen, että olisiko hän jonkinlainen vakooja.
+                Temüü sanoi: "Me emme voi perääntyä niin kuin aina. Me olemme voittaneet ja meidän on jatkettava hyökkäystä." Yksi heimon johtajista näytti hämmästyneeltä ja pelokkaalta — hänestä tuli mieleen, että olisiko hän jonkinlainen vakooja.
               </p>
 
               <p>
@@ -845,11 +845,11 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joni veti miekkansa esiin ja perääntyi joukkoonsa taakse. Heitä oli 10 ja henkivartijoita teltassa vain 2. Kaikki johtajat surmattiin armotta.
+                Temüü veti miekkansa esiin ja perääntyi joukkoonsa taakse. Heitä oli 10 ja henkivartijoita teltassa vain 2. Kaikki johtajat surmattiin armotta.
               </p>
 
               <p>
-                Joni oli nyt ainoa johtaja jäljellä. Shamaani huusi kaikkialle ympärille: "Meillä on uusi heimon johtaja!" Joni antoi välittömästi käskyn kääntää suunta kohti vihollisia.
+                Temüü oli nyt ainoa johtaja jäljellä. Böö huusi kaikkialle ympärille: "Meillä on uusi heimon johtaja!" Temüü antoi välittömästi käskyn kääntää suunta kohti vihollisia.
               </p>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Voittoisa Sotaretki</h3>
@@ -867,7 +867,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joni määräsi ensimmäisen oikean kaupungin rakennettavaksi. Kaupunki tultaisiin rakennuttamaan idän ja lännen välille - ensimmäinen hallinnollinen keskus, jossa alettaisiin pitämään kirjaa asioista.
+                Temüü määräsi ensimmäisen oikean kaupungin rakennettavaksi. Kaupunki tultaisiin rakennuttamaan idän ja lännen välille — ensimmäinen hallinnollinen keskus, jossa alettaisiin pitämään kirjaa asioista.
               </p>
 
               <p>
@@ -883,7 +883,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Aleksanterin Taktiikka</h3>
 
               <p>
-                Edessä oli vielä 8 heimoa. Joni keksi loistavan suunnitelman. Hän muisti lukeneensa ulkomaalaisten kääröistä Aleksanterista, joka oli voittanut persialaisia täysin epäreiluissa taisteluissa.
+                Edessä oli vielä 8 heimoa. Temüü keksi loistavan suunnitelman. Hän muisti lukeneensa ulkomaalaisten kääröistä Aleksanterista, joka oli voittanut persialaisia täysin epäreiluissa taisteluissa.
               </p>
 
               <p>
@@ -895,7 +895,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Kun vihollinen keskittyisi ratsuväen häirintään, Joni ja hänen eliittijoukkonsa ryntäisivät vihollisen kolonnojen väleistä suoraan päällikköä kohti.
+                Kun vihollinen keskittyisi ratsuväen häirintään, Temüü ja hänen eliittijoukkonsa ryntäisivät vihollisen kolonnojen väleistä suoraan päällikköä kohti.
               </p>
 
               <p>
@@ -913,7 +913,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Etelän Uhka</h3>
 
               <p>
-                Viestin viejä saapui saliin. Hänellä oli vaaleampi iho ja hän näytti sivistyneeltä. Hän kertoi jonille, miten heidän hallintojärjestelmänsä olisi parempi ja että heidän pitäisi luovuttaa välittömästi.
+                Viestin viejä saapui saliin. Hänellä oli vaaleampi iho ja hän näytti sivistyneeltä. Hän kertoi Temüülle, miten heidän hallintojärjestelmänsä olisi parempi ja että heidän pitäisi luovuttaa välittömästi.
               </p>
 
               <p>
@@ -921,7 +921,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Joni näytti tyyneltä. Hän tiesi mihin tämä johtaisi. Aina oli luultu seuraavan taistelun olevan viimeinen taistelu, mutta seuraava konflikti johti vain syvempään konfliktiin.
+                Temüü näytti tyyneltä. Hän tiesi mihin tämä johtaisi. Aina oli luultu seuraavan taistelun olevan viimeinen taistelu, mutta seuraava konflikti johti vain syvempään konfliktiin.
               </p>
 
               <p>
@@ -953,7 +953,7 @@ const KokoKirja = () => {
               </div>
 
               <p>
-                Joni käytti samaa taktiikkaa kuin aina. Sillat rakennettiin, vihollinen houkuteltiin ansaan, ja ratsuväki iskeytyi heidän selustansa.
+                Temüü käytti samaa taktiikkaa kuin aina. Sillat rakennettiin, vihollinen houkuteltiin ansaan, ja ratsuväki iskeytyi heidän selustansa.
               </p>
 
               <p>
@@ -975,7 +975,7 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Ulanbaatar</h3>
 
               <p>
-                Kun heimot olivat viimein yhdistetty, rakennettiin suuri linna Ulanbataariin. Jonin perhe sijoitettiin sinne. Joni saapuisi voittajana, joka oli rikastuttanut valtion kirstun.
+                Kun heimot olivat viimein yhdistetty, rakennettiin suuri linna Ulanbataariin. Temüün perhe sijoitettiin sinne. Temüü saapuisi voittajana, joka oli rikastuttanut valtion kirstun.
               </p>
 
               <p>
@@ -983,7 +983,7 @@ const KokoKirja = () => {
               </p>
 
               <p>
-                Hänen äitinsä sanoi: "Vihdoinkin olet saapunut." Hänen sisaruksensa olivat jo kasvaneet. He kertoivat hänelle kaikista asioista, mitä oli tapahtunut.
+                Bolormaa sanoi: "Vihdoinkin olet saapunut." Hänen sisaruksensa olivat jo kasvaneet. He kertoivat hänelle kaikista asioista, mitä oli tapahtunut.
               </p>
 
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Vuorella</h3>
@@ -1019,11 +1019,11 @@ const KokoKirja = () => {
               <h3 className="font-display text-2xl font-bold mt-12 mb-4 scroll-mt-20">Tarinan Loppu</h3>
 
               <p>
-                Jonille löydettiin vaimo. Hän oli täsmälleen jonin mittainen, sisäänpäin kääntynyt ja herkkä. Hän tulisi istumaan toisella valtaistuimella hänen vieressään.
+                Temüülle löydettiin vaimo. Hän oli täsmälleen Temüün mittainen, sisäänpäin kääntynyt ja herkkä. Hän tulisi istumaan toisella valtaistuimella hänen vieressään.
               </p>
 
               <p>
-                Asiat tulisivat olemaan rauhallisesti vielä monta vuosikymmentä. Mutta tämä ei missään nimessä merkannyt loppua tarinalle.
+                Asiat tulisivat olemaan rauhallisesti vielä monta vuosikymmentä. Mutta tämä ei missään nimessä merkinnyt loppua tarinalle.
               </p>
 
               <div className="my-8 p-6 bg-secondary/30 border-l-4 border-accent rounded-r-sm">

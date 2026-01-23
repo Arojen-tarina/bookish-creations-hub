@@ -10,22 +10,22 @@ const characters = [
   {
     name: "Temüü \"Baatar\"",
     role: "Päähenkilö",
-    description: "Nuori soturi, joka kasvaa mieheksi isänsä opastuksella.",
+    description: "Nuori soturi, joka kasvaa mieheksi ja yhdistää heimot.",
   },
   {
     name: "Naran",
     role: "Sisko",
-    description: "Temüün sisko, vahva ja itsenäinen nainen.",
+    description: "Temüün sisko, vahva ja suojeleva nainen.",
   },
   {
     name: "Ganbaatar",
     role: "Isä",
-    description: "Kokenut soturi ja opettaja, joka kasvattaa poikansa soturiksi.",
+    description: "Juoppo ja väkivaltainen isä, jonka Temüü haastaa kaksintaisteluun.",
   },
   {
     name: "Bolormaa",
     role: "Äiti",
-    description: "Sydämellinen äiti, joka pitää perheen koossa.",
+    description: "Sydämellinen äiti, joka pitää perheen koossa vaikeuksien keskellä.",
   },
   {
     name: "Batu",
@@ -35,7 +35,7 @@ const characters = [
   {
     name: "Erdenetögs \"Böö\"",
     role: "Shamaani",
-    description: "Yliluonnollisten voimien välittäjä ja henkinen opas.",
+    description: "Yliluonnollisten voimien välittäjä ja Temüün henkinen opas.",
   },
 ];
 

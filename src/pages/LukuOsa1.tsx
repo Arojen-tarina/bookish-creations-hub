@@ -34,7 +34,7 @@ const LukuOsa1 = () => {
               <h2 className="font-display text-2xl font-bold mt-8 mb-4">Luku 1: Arojen Maa</h2>
               
               <p className="first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:mr-2 first-letter:float-left">
-                Olipa kerran kaukaisessa maassa joukko keskenänsä riiteleviä heimoja. Nämä maat olivat luonnoltaan aroa eli steppejä.
+                Olipa kerran kaukaisessa maassa joukko keskenään riiteleviä heimoja. Nämä maat olivat luonnoltaan aroa eli steppejä.
               </p>
 
               <p>
