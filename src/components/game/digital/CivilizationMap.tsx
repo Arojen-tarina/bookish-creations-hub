@@ -13,6 +13,7 @@ interface CivilizationMapProps {
   playerFaction: FactionId;
   highlightedProvinces?: string[];
   attackableProvinces?: string[]; // NEW: provinces with enemy armies
+  attackModeActive?: boolean; // When true, emphasize attack targets
   movingArmyId?: string | null;
   movingToProvinceId?: string | null;
 }
@@ -403,6 +404,7 @@ interface ProvinceTileProps {
   isSelected: boolean;
   isHighlighted: boolean;
   isAttackable: boolean; // NEW: enemy province that can be attacked
+  isAttackModeActive: boolean; // When true, emphasize attack targets more
   isPlayerOwned: boolean;
   isNeutral: boolean;
   onClick: () => void;
@@ -415,6 +417,7 @@ const ProvinceTile = memo(({
   isSelected,
   isHighlighted,
   isAttackable,
+  isAttackModeActive,
   isPlayerOwned,
   isNeutral,
   onClick,
@@ -455,16 +458,28 @@ const ProvinceTile = memo(({
       className="cursor-pointer"
       style={{ transition: 'all 0.15s ease' }}
     >
-      {/* Attack target pulsing ring */}
+      {/* Attack target pulsing ring - enhanced when attack mode active */}
       {isAttackable && (
         <polygon
           points={hexPath}
-          fill="none"
+          fill={isAttackModeActive ? 'rgba(239, 68, 68, 0.3)' : 'none'}
           stroke="#ef4444"
-          strokeWidth={5}
-          opacity={0.6}
+          strokeWidth={isAttackModeActive ? 8 : 5}
+          opacity={isAttackModeActive ? 1 : 0.6}
           filter="url(#attack-glow)"
           className="animate-pulse"
+        />
+      )}
+      
+      {/* Extra intense glow when attack mode active */}
+      {isAttackable && isAttackModeActive && (
+        <polygon
+          points={hexPath}
+          fill="none"
+          stroke="#ff0000"
+          strokeWidth={12}
+          opacity={0.3}
+          filter="url(#attack-glow)"
         />
       )}
       
@@ -780,6 +795,7 @@ export const CivilizationMap = ({
   playerFaction,
   highlightedProvinces = [],
   attackableProvinces = [],
+  attackModeActive = false,
   movingArmyId,
   movingToProvinceId,
 }: CivilizationMapProps) => {
@@ -1091,6 +1107,7 @@ export const CivilizationMap = ({
             isSelected={province.id === selectedProvinceId}
             isHighlighted={highlightedProvinces.includes(province.id) && !attackableProvinces.includes(province.id)}
             isAttackable={attackableProvinces.includes(province.id)}
+            isAttackModeActive={attackModeActive}
             isPlayerOwned={province.ownerId === playerFaction}
             isNeutral={province.ownerId === null}
             onClick={() => onProvinceClick(province.id)}
