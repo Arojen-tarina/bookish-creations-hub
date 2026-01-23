@@ -256,61 +256,86 @@ export const TabletopBoard = ({
   
   return (
     <div 
-      className="relative w-full overflow-hidden rounded-xl"
+      className="relative w-full h-full min-h-[400px] overflow-hidden rounded-2xl shadow-2xl"
       style={{
-        perspective: '1200px',
-        perspectiveOrigin: 'center 30%',
+        perspective: '1400px',
+        perspectiveOrigin: 'center 25%',
       }}
     >
-      {/* Table surface */}
+      {/* Deep table surface with premium wood texture */}
       <div 
-        className="absolute inset-0 rounded-xl"
+        className="absolute inset-0 rounded-2xl"
         style={{
-          background: 'linear-gradient(135deg, #2d1b0e 0%, #1a0f08 50%, #0d0704 100%)',
-          boxShadow: 'inset 0 0 100px rgba(0,0,0,0.5)',
+          background: `
+            radial-gradient(ellipse at 50% 0%, rgba(139, 90, 43, 0.2) 0%, transparent 50%),
+            linear-gradient(180deg, #1a0f08 0%, #0d0704 50%, #050302 100%)
+          `,
+        }}
+      />
+      
+      {/* Animated ambient glow */}
+      <div 
+        className="absolute inset-0 opacity-40 rounded-2xl animate-pulse"
+        style={{
+          background: `radial-gradient(ellipse at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 70%)`,
+          animationDuration: '4s',
         }}
       />
       
       {/* Wood grain texture overlay */}
       <div 
-        className="absolute inset-0 opacity-20 rounded-xl"
+        className="absolute inset-0 opacity-15 rounded-2xl"
         style={{
-          backgroundImage: `repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 2px,
-            rgba(139, 90, 43, 0.3) 2px,
-            rgba(139, 90, 43, 0.3) 4px
-          )`,
+          backgroundImage: `
+            repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(139, 90, 43, 0.4) 1px, rgba(139, 90, 43, 0.4) 2px),
+            repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(100, 60, 30, 0.1) 20px, rgba(100, 60, 30, 0.1) 21px)
+          `,
         }}
       />
       
-      {/* Board container with 3D transform */}
+      {/* Board container with enhanced 3D transform */}
       <div
-        className="relative p-8 transition-transform duration-500 ease-out"
+        className="relative h-full p-4 lg:p-8 transition-transform duration-700 ease-out"
         style={{
-          transform: `rotateX(45deg) rotateZ(${cameraAngle}deg)`,
+          transform: `rotateX(50deg) rotateZ(${cameraAngle}deg) scale(0.9)`,
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Board mat/felt */}
+        {/* Green felt gaming mat with stitched border effect */}
         <div 
-          className="absolute inset-4 rounded-lg"
+          className="absolute inset-2 lg:inset-4 rounded-xl"
           style={{
-            background: 'linear-gradient(180deg, #1e3a29 0%, #0f2318 100%)',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.5), inset 0 2px 10px rgba(255,255,255,0.1)',
-            transform: 'translateZ(-5px)',
+            background: `
+              radial-gradient(ellipse at 50% 30%, #1e4d2e 0%, #0f2318 60%, #0a1810 100%)
+            `,
+            boxShadow: `
+              0 20px 60px rgba(0,0,0,0.6), 
+              inset 0 2px 15px rgba(255,255,255,0.08),
+              inset 0 -2px 10px rgba(0,0,0,0.3),
+              0 0 0 3px rgba(139, 90, 43, 0.3)
+            `,
+            transform: 'translateZ(-8px)',
+          }}
+        />
+        
+        {/* Felt texture */}
+        <div 
+          className="absolute inset-2 lg:inset-4 rounded-xl opacity-30"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            transform: 'translateZ(-7px)',
           }}
         />
         
         {/* SVG board */}
         <svg
           viewBox={`${minX} ${minY} ${width} ${height}`}
-          className="relative z-10 w-full h-auto min-h-[450px] max-h-[600px]"
+          className="relative z-10 w-full h-full"
           preserveAspectRatio="xMidYMid meet"
           style={{ 
-            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-            transform: 'translateZ(0)',
+            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4))',
+            transform: 'translateZ(5px)',
+            minHeight: '300px',
           }}
         >
           {/* Definitions */}
@@ -321,10 +346,11 @@ export const TabletopBoard = ({
               <feColorMatrix type="saturate" values="0" />
             </filter>
             
-            {/* Glow effect */}
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            {/* Enhanced glow effect */}
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
               <feMerge>
+                <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
@@ -333,6 +359,15 @@ export const TabletopBoard = ({
             {/* Drop shadow */}
             <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="2" dy="4" stdDeviation="3" floodOpacity="0.4"/>
+            </filter>
+            
+            {/* Selection pulse animation */}
+            <filter id="selectPulse">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
             </filter>
           </defs>
           
@@ -359,19 +394,34 @@ export const TabletopBoard = ({
         </svg>
       </div>
       
-      {/* Ambient lighting effect */}
+      {/* Premium ambient lighting effects */}
       <div 
-        className="absolute inset-0 pointer-events-none rounded-xl"
+        className="absolute inset-0 pointer-events-none rounded-2xl"
         style={{
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(255,200,100,0.1) 0%, transparent 60%)',
+          background: `
+            radial-gradient(ellipse at 50% -20%, rgba(255, 200, 100, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 20% 100%, rgba(180, 83, 9, 0.05) 0%, transparent 40%),
+            radial-gradient(ellipse at 80% 100%, rgba(180, 83, 9, 0.05) 0%, transparent 40%)
+          `,
         }}
       />
       
-      {/* Edge vignette */}
+      {/* Premium edge vignette */}
       <div 
-        className="absolute inset-0 pointer-events-none rounded-xl"
+        className="absolute inset-0 pointer-events-none rounded-2xl"
         style={{
-          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.6)',
+          boxShadow: `
+            inset 0 0 100px rgba(0,0,0,0.7),
+            inset 0 0 200px rgba(0,0,0,0.3)
+          `,
+        }}
+      />
+      
+      {/* Subtle border glow */}
+      <div 
+        className="absolute inset-0 pointer-events-none rounded-2xl"
+        style={{
+          boxShadow: '0 0 40px rgba(251, 191, 36, 0.1)',
         }}
       />
     </div>
