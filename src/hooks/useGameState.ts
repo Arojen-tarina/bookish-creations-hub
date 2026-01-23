@@ -8,29 +8,37 @@ import {
   Unit,
   Resources,
   CombatLogEntry,
+  Building,
+  BuildingType,
+  EventCard,
+  ActiveEvent,
+  GameEventLog,
+  AIDecision,
   FACTIONS,
   TERRAIN_INFO,
   UNIT_INFO,
+  BUILDING_INFO,
+  EVENT_CARDS,
+  AI_PERSONALITIES,
 } from '@/types/game';
 
-// Generate unique ID
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-// Create initial hex grid
+// Create initial hex grid - larger for more strategic depth
 const createHexGrid = (): HexTile[] => {
   const hexes: HexTile[] = [];
-  const regions = [
-    { name: 'Mongoliasteppi', terrain: 'steppe' as const, hasCity: false },
-    { name: 'Gobin autiomaa', terrain: 'desert' as const, hasCity: false },
-    { name: 'Kiinan valtakunta', terrain: 'city' as const, hasCity: true },
-    { name: 'Samarkand', terrain: 'city' as const, hasCity: true },
-    { name: 'Persianlahti', terrain: 'river' as const, hasCity: true },
-    { name: 'Venäjän metsät', terrain: 'forest' as const, hasCity: false },
-    { name: 'Vuoristopassit', terrain: 'mountain' as const, hasCity: false },
+  const gridRadius = 4;
+  
+  const regionData = [
+    { name: 'Mongoliasteppi', terrain: 'steppe' as const },
+    { name: 'Gobin autiomaa', terrain: 'desert' as const },
+    { name: 'Kiinan valtakunta', terrain: 'city' as const },
+    { name: 'Samarkand', terrain: 'river' as const },
+    { name: 'Persianlahti', terrain: 'city' as const },
+    { name: 'Venäjän metsät', terrain: 'forest' as const },
+    { name: 'Vuoristopassit', terrain: 'mountain' as const },
+    { name: 'Silkkitie', terrain: 'river' as const },
   ];
-
-  // Create a smaller hex grid for playability (7 rings)
-  const gridRadius = 3;
   
   for (let q = -gridRadius; q <= gridRadius; q++) {
     const r1 = Math.max(-gridRadius, -q - gridRadius);
@@ -38,38 +46,53 @@ const createHexGrid = (): HexTile[] => {
     
     for (let r = r1; r <= r2; r++) {
       const index = hexes.length;
-      const region = regions[index % regions.length];
+      const region = regionData[index % regionData.length];
       
-      // Determine terrain and features based on position
+      // Terrain based on position for variety
       let terrain = region.terrain;
-      let hasCity = region.hasCity && Math.random() > 0.7;
+      let hasCity = false;
       
-      // Assign terrain based on position for variety
+      // Center is steppe (Mongolia)
       if (Math.abs(q) + Math.abs(r) <= 1) {
-        terrain = 'steppe'; // Center is steppe
-      } else if (q > 2) {
-        terrain = 'city';
-        hasCity = true;
-      } else if (q < -2) {
+        terrain = 'steppe';
+      } else if (q >= 3) {
+        terrain = Math.random() > 0.5 ? 'city' : 'forest';
+        hasCity = terrain === 'city';
+      } else if (q <= -3) {
         terrain = 'forest';
-      } else if (r > 2) {
-        terrain = 'desert';
-      } else if (r < -2) {
+      } else if (r >= 3) {
+        terrain = Math.random() > 0.5 ? 'desert' : 'river';
+      } else if (r <= -3) {
         terrain = 'mountain';
+      } else if (Math.abs(q - r) >= 3) {
+        terrain = Math.random() > 0.6 ? 'city' : 'steppe';
+        hasCity = terrain === 'city';
       }
       
       const resourceProduction: HexTile['resourceProduction'] = {};
-      if (terrain === 'steppe') {
-        resourceProduction.horses = 2;
-        resourceProduction.cattle = 1;
-      } else if (terrain === 'city') {
-        resourceProduction.gold = 2;
-        resourceProduction.artisans = 1;
-      } else if (terrain === 'river') {
-        resourceProduction.food = 2;
-        resourceProduction.gold = 1;
-      } else if (terrain === 'forest') {
-        resourceProduction.food = 1;
+      switch (terrain) {
+        case 'steppe':
+          resourceProduction.horses = 2;
+          resourceProduction.cattle = 1;
+          break;
+        case 'city':
+          resourceProduction.gold = 3;
+          resourceProduction.artisans = 2;
+          hasCity = true;
+          break;
+        case 'river':
+          resourceProduction.food = 3;
+          resourceProduction.gold = 1;
+          break;
+        case 'forest':
+          resourceProduction.food = 2;
+          break;
+        case 'desert':
+          resourceProduction.gold = 1;
+          break;
+        case 'mountain':
+          resourceProduction.artisans = 1;
+          break;
       }
       
       hexes.push({
@@ -80,10 +103,12 @@ const createHexGrid = (): HexTile[] => {
         regionName: region.name,
         ownerId: null,
         units: [],
+        buildings: [],
         hasCity,
         hasFortress: false,
         hasTradeRoute: terrain === 'city' || terrain === 'river',
         resourceProduction,
+        defenseBonus: TERRAIN_INFO[terrain].defenseBonus,
       });
     }
   }
@@ -91,7 +116,6 @@ const createHexGrid = (): HexTile[] => {
   return hexes;
 };
 
-// Create starting units for a faction
 const createStartingUnits = (factionId: FactionId, startHexId: string): Unit[] => {
   const units: Unit[] = [];
   
@@ -107,6 +131,7 @@ const createStartingUnits = (factionId: FactionId, startHexId: string): Unit[] =
       movementLeft: UNIT_INFO.cavalry.baseMovement,
       maxMovement: UNIT_INFO.cavalry.baseMovement,
       attackPower: UNIT_INFO.cavalry.basePower,
+      hasActed: false,
     });
   }
   
@@ -122,6 +147,7 @@ const createStartingUnits = (factionId: FactionId, startHexId: string): Unit[] =
       movementLeft: UNIT_INFO.infantry.baseMovement,
       maxMovement: UNIT_INFO.infantry.baseMovement,
       attackPower: UNIT_INFO.infantry.basePower,
+      hasActed: false,
     });
   }
   
@@ -136,12 +162,23 @@ const createStartingUnits = (factionId: FactionId, startHexId: string): Unit[] =
     movementLeft: UNIT_INFO.leader.baseMovement,
     maxMovement: UNIT_INFO.leader.baseMovement,
     attackPower: UNIT_INFO.leader.basePower,
+    hasActed: false,
   });
   
   return units;
 };
 
-const createInitialPlayer = (factionId: FactionId): Player => ({
+const getAIPersonality = (factionId: FactionId): 'aggressive' | 'defensive' | 'economic' | 'balanced' => {
+  const personalities: Record<FactionId, 'aggressive' | 'defensive' | 'economic' | 'balanced'> = {
+    mongol: 'aggressive',
+    china: 'defensive',
+    persia: 'economic',
+    russia: 'balanced',
+  };
+  return personalities[factionId];
+};
+
+const createInitialPlayer = (factionId: FactionId, isAI: boolean): Player => ({
   id: `player-${factionId}`,
   factionId,
   resources: {
@@ -156,15 +193,147 @@ const createInitialPlayer = (factionId: FactionId): Player => ({
   citiesControlled: 0,
   tradeRoutes: 0,
   technologies: [],
-  isAI: false,
+  isAI,
+  aiPersonality: getAIPersonality(factionId),
 });
 
-// Starting positions for each faction
 const STARTING_POSITIONS: Record<FactionId, { q: number; r: number }> = {
   mongol: { q: 0, r: 0 },
-  china: { q: 3, r: -1 },
-  persia: { q: -2, r: 3 },
-  russia: { q: -3, r: 0 },
+  china: { q: 4, r: -2 },
+  persia: { q: -2, r: 4 },
+  russia: { q: -4, r: 1 },
+};
+
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// AI Logic
+const evaluateHexValue = (hex: HexTile, player: Player): number => {
+  let value = 0;
+  
+  // Resource value
+  Object.entries(hex.resourceProduction).forEach(([resource, amount]) => {
+    if (amount) value += amount * 2;
+  });
+  
+  // City bonus
+  if (hex.hasCity) value += 10;
+  
+  // Trade route bonus
+  if (hex.hasTradeRoute) value += 5;
+  
+  // Strategic position (center is valuable)
+  const distanceFromCenter = Math.abs(hex.q) + Math.abs(hex.r);
+  value += Math.max(0, 5 - distanceFromCenter);
+  
+  return value;
+};
+
+const calculateAIDecisions = (gameState: GameState, player: Player): AIDecision[] => {
+  const decisions: AIDecision[] = [];
+  const personality = AI_PERSONALITIES[player.aiPersonality];
+  const playerUnits = gameState.units.filter(u => u.factionId === player.factionId && !u.hasActed);
+  
+  for (const unit of playerUnits) {
+    const currentHex = gameState.hexes.find(h => h.id === unit.hexId);
+    if (!currentHex || unit.movementLeft <= 0) continue;
+    
+    // Find available moves
+    const availableMoves = gameState.hexes.filter(hex => {
+      if (hex.id === unit.hexId) return false;
+      const distance = Math.max(
+        Math.abs(hex.q - currentHex.q),
+        Math.abs(hex.r - currentHex.r),
+        Math.abs((-hex.q - hex.r) - (-currentHex.q - currentHex.r))
+      );
+      return distance <= unit.movementLeft;
+    });
+    
+    for (const targetHex of availableMoves) {
+      const enemyUnits = gameState.units.filter(u => u.hexId === targetHex.id && u.factionId !== player.factionId);
+      const isEnemy = enemyUnits.length > 0;
+      const hexValue = evaluateHexValue(targetHex, player);
+      
+      if (isEnemy && personality.aggressiveness > 0.5) {
+        // Attack decision
+        const enemyPower = enemyUnits.reduce((sum, u) => sum + u.attackPower, 0);
+        const attackAdvantage = unit.attackPower - enemyPower + targetHex.defenseBonus;
+        
+        if (attackAdvantage > -1 || Math.random() < personality.aggressiveness) {
+          decisions.push({
+            type: 'attack',
+            priority: hexValue + attackAdvantage * 3 + personality.aggressiveness * 10,
+            unitId: unit.id,
+            targetHexId: targetHex.id,
+            reasoning: `Hyökkää kohteeseen ${targetHex.regionName} (arvo: ${hexValue.toFixed(1)})`,
+          });
+        }
+      } else if (!isEnemy && targetHex.ownerId !== player.factionId) {
+        // Expansion decision
+        decisions.push({
+          type: 'move',
+          priority: hexValue * personality.expansionism,
+          unitId: unit.id,
+          targetHexId: targetHex.id,
+          reasoning: `Laajenna kohteeseen ${targetHex.regionName} (arvo: ${hexValue.toFixed(1)})`,
+        });
+      }
+    }
+  }
+  
+  // Building decisions
+  if (personality.economicFocus > 0.4 && player.resources.gold >= 5) {
+    const ownedHexes = gameState.hexes.filter(h => h.ownerId === player.factionId && h.buildings.length === 0);
+    
+    for (const hex of ownedHexes) {
+      if (hex.hasCity && player.resources.gold >= 5 && player.resources.artisans >= 2) {
+        decisions.push({
+          type: 'build',
+          priority: 15 * personality.economicFocus,
+          targetHexId: hex.id,
+          buildingType: 'market',
+          reasoning: `Rakenna kauppatori kohteeseen ${hex.regionName}`,
+        });
+      } else if (hex.terrain === 'steppe' && player.resources.gold >= 4 && player.resources.food >= 3) {
+        decisions.push({
+          type: 'build',
+          priority: 12 * personality.economicFocus,
+          targetHexId: hex.id,
+          buildingType: 'stable',
+          reasoning: `Rakenna talli kohteeseen ${hex.regionName}`,
+        });
+      }
+    }
+  }
+  
+  // Recruit decisions
+  if (player.resources.gold >= 2 && player.resources.food >= 2) {
+    const capitalHex = gameState.hexes.find(h => 
+      h.ownerId === player.factionId && 
+      h.q === STARTING_POSITIONS[player.factionId].q && 
+      h.r === STARTING_POSITIONS[player.factionId].r
+    );
+    
+    if (capitalHex && personality.aggressiveness > 0.3) {
+      decisions.push({
+        type: 'recruit',
+        priority: 8 * personality.aggressiveness,
+        targetHexId: capitalHex.id,
+        reasoning: 'Rekrytoi uusia yksiköitä',
+      });
+    }
+  }
+  
+  // Sort by priority
+  decisions.sort((a, b) => b.priority - a.priority);
+  
+  return decisions.slice(0, 3); // Return top 3 decisions
 };
 
 export const useGameState = () => {
@@ -177,11 +346,11 @@ export const useGameState = () => {
     const allUnits: Unit[] = [];
     const players: Player[] = [];
     
-    // Create player
-    const humanPlayer = createInitialPlayer(selectedFaction);
+    // Create human player
+    const humanPlayer = createInitialPlayer(selectedFaction, false);
     players.push(humanPlayer);
     
-    // Get starting hex for human player
+    // Set up human player start
     const humanStartPos = STARTING_POSITIONS[selectedFaction];
     const humanStartHex = hexes.find(h => h.q === humanStartPos.q && h.r === humanStartPos.r);
     if (humanStartHex) {
@@ -194,7 +363,7 @@ export const useGameState = () => {
     // Create AI opponents
     const aiFactions = (Object.keys(FACTIONS) as FactionId[]).filter(f => f !== selectedFaction);
     aiFactions.forEach(factionId => {
-      const aiPlayer = { ...createInitialPlayer(factionId), isAI: true };
+      const aiPlayer = createInitialPlayer(factionId, true);
       players.push(aiPlayer);
       
       const startPos = STARTING_POSITIONS[factionId];
@@ -212,20 +381,54 @@ export const useGameState = () => {
       currentPlayerId: humanPlayer.id,
       currentPhase: 'planning',
       turn: 1,
+      maxTurns: 30,
       hexes,
       units: allUnits,
+      buildings: [],
       selectedUnitId: null,
       selectedHexId: null,
       availableMoves: [],
       combatLog: [],
+      eventLog: [],
+      activeEvents: [],
+      eventDeck: shuffleArray([...EVENT_CARDS]),
+      currentEvent: null,
       gameOver: false,
       winnerId: null,
       winCondition: null,
+      showEventModal: false,
+      showBuildMenu: false,
+      aiThinking: false,
+      lastAIActions: [],
+      cameraAngle: 0,
+      gameSpeed: 'normal',
     };
     
     setPlayerFaction(selectedFaction);
     setGameState(initialState);
     setGameStarted(true);
+  }, []);
+
+  const addEventLog = useCallback((
+    type: GameEventLog['type'],
+    message: string,
+    factionId?: FactionId
+  ) => {
+    setGameState(prev => {
+      if (!prev) return null;
+      const newEvent: GameEventLog = {
+        id: generateId(),
+        turn: prev.turn,
+        type,
+        message,
+        factionId,
+        timestamp: Date.now(),
+      };
+      return {
+        ...prev,
+        eventLog: [...prev.eventLog.slice(-50), newEvent],
+      };
+    });
   }, []);
 
   const selectHex = useCallback((hexId: string) => {
@@ -234,21 +437,22 @@ export const useGameState = () => {
     const hex = gameState.hexes.find(h => h.id === hexId);
     if (!hex) return;
     
-    // If we have a selected unit and click on a valid move hex, move the unit
+    // If we have a selected unit and click on a valid move hex
     if (gameState.selectedUnitId && gameState.availableMoves.includes(hexId)) {
       moveUnit(gameState.selectedUnitId, hexId);
       return;
     }
     
-    // Select units on this hex if they belong to current player
     const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
-    if (!currentPlayer) return;
+    if (!currentPlayer || currentPlayer.isAI) return;
     
-    const unitsOnHex = gameState.units.filter(u => u.hexId === hexId && u.factionId === currentPlayer.factionId);
+    const unitsOnHex = gameState.units.filter(
+      u => u.hexId === hexId && u.factionId === currentPlayer.factionId && !u.hasActed
+    );
     
-    if (unitsOnHex.length > 0) {
+    if (unitsOnHex.length > 0 && gameState.currentPhase === 'action') {
       const selectedUnit = unitsOnHex[0];
-      const availableMoves = calculateAvailableMoves(selectedUnit, gameState.hexes);
+      const availableMoves = calculateAvailableMoves(selectedUnit, gameState.hexes, gameState.units);
       
       setGameState(prev => prev ? {
         ...prev,
@@ -262,11 +466,12 @@ export const useGameState = () => {
         selectedUnitId: null,
         selectedHexId: hexId,
         availableMoves: [],
+        showBuildMenu: hex.ownerId === currentPlayer?.factionId && gameState.currentPhase === 'building',
       } : null);
     }
   }, [gameState]);
 
-  const calculateAvailableMoves = (unit: Unit, hexes: HexTile[]): string[] => {
+  const calculateAvailableMoves = (unit: Unit, hexes: HexTile[], units: Unit[]): string[] => {
     const currentHex = hexes.find(h => h.id === unit.hexId);
     if (!currentHex || unit.movementLeft <= 0) return [];
     
@@ -275,7 +480,6 @@ export const useGameState = () => {
     hexes.forEach(hex => {
       if (hex.id === unit.hexId) return;
       
-      // Calculate distance (simplified for hex grid)
       const distance = Math.max(
         Math.abs(hex.q - currentHex.q),
         Math.abs(hex.r - currentHex.r),
@@ -307,22 +511,19 @@ export const useGameState = () => {
       
       if (!sourceHex || !targetHex) return prev;
       
-      const movementCost = TERRAIN_INFO[targetHex.terrain].movementCost;
-      
-      // Check for combat
       const enemyUnits = prev.units.filter(u => u.hexId === targetHexId && u.factionId !== unit.factionId);
       
       if (enemyUnits.length > 0) {
-        // Combat!
         return resolveCombat(prev, unit, enemyUnits, targetHex);
       }
       
-      // Normal movement
+      const movementCost = TERRAIN_INFO[targetHex.terrain].movementCost;
       const newUnits = [...prev.units];
       newUnits[unitIndex] = {
         ...unit,
         hexId: targetHexId,
         movementLeft: Math.max(0, unit.movementLeft - movementCost),
+        hasActed: true,
       };
       
       const newHexes = prev.hexes.map(h => {
@@ -333,7 +534,7 @@ export const useGameState = () => {
           return { 
             ...h, 
             units: [...h.units, unitId],
-            ownerId: unit.factionId, // Take control
+            ownerId: unit.factionId,
           };
         }
         return h;
@@ -351,15 +552,13 @@ export const useGameState = () => {
   }, [gameState]);
 
   const resolveCombat = (state: GameState, attacker: Unit, defenders: Unit[], hex: HexTile): GameState => {
-    // Roll dice for combat
     const attackerDice = Math.min(6, attacker.attackPower);
     const defenderPower = defenders.reduce((sum, d) => sum + d.attackPower, 0);
-    const defenderDice = Math.min(6, defenderPower + TERRAIN_INFO[hex.terrain].defenseBonus);
+    const defenderDice = Math.min(6, defenderPower + hex.defenseBonus);
     
     const attackerRolls = Array.from({ length: attackerDice }, () => Math.floor(Math.random() * 6) + 1);
     const defenderRolls = Array.from({ length: defenderDice }, () => Math.floor(Math.random() * 6) + 1);
     
-    // Hits on 4+
     const attackerHits = attackerRolls.filter(r => r >= 4).length;
     const defenderHits = defenderRolls.filter(r => r >= 4).length;
     
@@ -367,7 +566,6 @@ export const useGameState = () => {
     let attackerLosses = 0;
     let defenderLosses = 0;
     
-    // Apply damage to attacker
     const attackerIndex = newUnits.findIndex(u => u.id === attacker.id);
     if (attackerIndex !== -1) {
       const newHealth = newUnits[attackerIndex].health - defenderHits;
@@ -375,11 +573,10 @@ export const useGameState = () => {
         newUnits = newUnits.filter(u => u.id !== attacker.id);
         attackerLosses = 1;
       } else {
-        newUnits[attackerIndex] = { ...newUnits[attackerIndex], health: newHealth };
+        newUnits[attackerIndex] = { ...newUnits[attackerIndex], health: newHealth, hasActed: true };
       }
     }
     
-    // Apply damage to defenders
     let remainingHits = attackerHits;
     defenders.forEach(defender => {
       if (remainingHits <= 0) return;
@@ -415,37 +612,32 @@ export const useGameState = () => {
       defenderLosses,
       hexId: hex.id,
       result,
+      timestamp: Date.now(),
     };
     
-    // Update hex ownership if attacker wins and survives
     const attackerSurvived = newUnits.some(u => u.id === attacker.id);
     const defendersRemain = newUnits.some(u => defenders.some(d => d.id === u.id));
     
     let newHexes = state.hexes;
     if (attackerSurvived && !defendersRemain) {
-      // Attacker takes the hex
-      const updatedAttacker = newUnits.find(u => u.id === attacker.id);
-      if (updatedAttacker) {
-        const sourceHex = state.hexes.find(h => h.id === attacker.hexId);
-        newHexes = state.hexes.map(h => {
-          if (h.id === sourceHex?.id) {
-            return { ...h, units: h.units.filter(id => id !== attacker.id) };
-          }
-          if (h.id === hex.id) {
-            return { 
-              ...h, 
-              units: [attacker.id],
-              ownerId: attacker.factionId,
-            };
-          }
-          return h;
-        });
-        
-        // Update unit position
-        const attackerIdx = newUnits.findIndex(u => u.id === attacker.id);
-        if (attackerIdx !== -1) {
-          newUnits[attackerIdx] = { ...newUnits[attackerIdx], hexId: hex.id, movementLeft: 0 };
+      const sourceHex = state.hexes.find(h => h.id === attacker.hexId);
+      newHexes = state.hexes.map(h => {
+        if (h.id === sourceHex?.id) {
+          return { ...h, units: h.units.filter(id => id !== attacker.id) };
         }
+        if (h.id === hex.id) {
+          return { 
+            ...h, 
+            units: [attacker.id],
+            ownerId: attacker.factionId,
+          };
+        }
+        return h;
+      });
+      
+      const attackerIdx = newUnits.findIndex(u => u.id === attacker.id);
+      if (attackerIdx !== -1) {
+        newUnits[attackerIdx] = { ...newUnits[attackerIdx], hexId: hex.id, movementLeft: 0, hasActed: true };
       }
     }
     
@@ -460,21 +652,264 @@ export const useGameState = () => {
     };
   };
 
-  const endPhase = useCallback(() => {
+  const buildStructure = useCallback((hexId: string, buildingType: BuildingType) => {
     if (!gameState) return;
+    
+    const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+    if (!currentPlayer) return;
+    
+    const buildingInfo = BUILDING_INFO[buildingType];
+    const cost = buildingInfo.cost;
+    
+    // Check resources
+    let canAfford = true;
+    (Object.entries(cost) as [keyof Resources, number][]).forEach(([resource, amount]) => {
+      if (currentPlayer.resources[resource] < amount) canAfford = false;
+    });
+    
+    if (!canAfford) return;
     
     setGameState(prev => {
       if (!prev) return null;
       
-      const phases: GamePhase[] = ['planning', 'action', 'management', 'event'];
-      const currentIndex = phases.indexOf(prev.currentPhase);
-      const nextIndex = (currentIndex + 1) % phases.length;
+      const newBuilding: Building = {
+        id: generateId(),
+        type: buildingType,
+        hexId,
+        ownerId: currentPlayer.factionId,
+        health: 5,
+        maxHealth: 5,
+        level: 1,
+      };
+      
+      // Deduct resources
+      const newPlayers = prev.players.map(p => {
+        if (p.id !== currentPlayer.id) return p;
+        const newResources = { ...p.resources };
+        (Object.entries(cost) as [keyof Resources, number][]).forEach(([resource, amount]) => {
+          newResources[resource] -= amount;
+        });
+        return { ...p, resources: newResources };
+      });
+      
+      // Update hex
+      const newHexes = prev.hexes.map(h => {
+        if (h.id !== hexId) return h;
+        return {
+          ...h,
+          buildings: [...h.buildings, newBuilding.id],
+          defenseBonus: h.defenseBonus + buildingInfo.defenseBonus,
+          hasFortress: buildingType === 'fortress' ? true : h.hasFortress,
+        };
+      });
+      
+      return {
+        ...prev,
+        players: newPlayers,
+        hexes: newHexes,
+        buildings: [...prev.buildings, newBuilding],
+        showBuildMenu: false,
+      };
+    });
+  }, [gameState]);
+
+  const executeAITurn = useCallback(async () => {
+    if (!gameState) return;
+    
+    const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+    if (!currentPlayer || !currentPlayer.isAI) return;
+    
+    setGameState(prev => prev ? { ...prev, aiThinking: true } : null);
+    
+    // Simulate thinking time
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const decisions = calculateAIDecisions(gameState, currentPlayer);
+    
+    setGameState(prev => {
+      if (!prev) return null;
+      
+      let newState = { ...prev, lastAIActions: decisions };
+      
+      // Execute top decision
+      for (const decision of decisions.slice(0, 2)) {
+        if (decision.type === 'move' || decision.type === 'attack') {
+          if (decision.unitId && decision.targetHexId) {
+            const unit = newState.units.find(u => u.id === decision.unitId);
+            if (unit && !unit.hasActed) {
+              const targetHex = newState.hexes.find(h => h.id === decision.targetHexId);
+              if (targetHex) {
+                const enemyUnits = newState.units.filter(
+                  u => u.hexId === decision.targetHexId && u.factionId !== unit.factionId
+                );
+                
+                if (enemyUnits.length > 0) {
+                  newState = resolveCombat(newState, unit, enemyUnits, targetHex);
+                } else {
+                  // Simple move
+                  const sourceHex = newState.hexes.find(h => h.id === unit.hexId);
+                  const unitIndex = newState.units.findIndex(u => u.id === unit.id);
+                  
+                  if (sourceHex && unitIndex !== -1) {
+                    const newUnits = [...newState.units];
+                    newUnits[unitIndex] = { ...unit, hexId: decision.targetHexId!, hasActed: true, movementLeft: 0 };
+                    
+                    const newHexes = newState.hexes.map(h => {
+                      if (h.id === sourceHex.id) {
+                        return { ...h, units: h.units.filter(id => id !== unit.id) };
+                      }
+                      if (h.id === decision.targetHexId) {
+                        return { ...h, units: [...h.units, unit.id], ownerId: unit.factionId };
+                      }
+                      return h;
+                    });
+                    
+                    newState = { ...newState, units: newUnits, hexes: newHexes };
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      return { ...newState, aiThinking: false };
+    });
+  }, [gameState]);
+
+  const drawEventCard = useCallback(() => {
+    if (!gameState || gameState.eventDeck.length === 0) return;
+    
+    setGameState(prev => {
+      if (!prev || prev.eventDeck.length === 0) return prev;
+      
+      const [drawnEvent, ...remainingDeck] = prev.eventDeck;
+      
+      return {
+        ...prev,
+        currentEvent: drawnEvent,
+        eventDeck: remainingDeck,
+        showEventModal: true,
+      };
+    });
+  }, [gameState]);
+
+  const resolveEvent = useCallback(() => {
+    if (!gameState || !gameState.currentEvent) return;
+    
+    setGameState(prev => {
+      if (!prev || !prev.currentEvent) return prev;
+      
+      const event = prev.currentEvent;
+      let newPlayers = [...prev.players];
+      let newUnits = [...prev.units];
+      
+      // Apply event effects
+      switch (event.type) {
+        case 'harvest':
+          newPlayers = newPlayers.map(p => ({
+            ...p,
+            resources: { ...p.resources, food: p.resources.food + 5 },
+          }));
+          break;
+        case 'trade_boom':
+          newPlayers = newPlayers.map(p => ({
+            ...p,
+            resources: { ...p.resources, gold: p.resources.gold + p.tradeRoutes * 3 },
+          }));
+          break;
+        case 'plague':
+          newPlayers = newPlayers.map(p => ({
+            ...p,
+            resources: { ...p.resources, food: Math.max(0, p.resources.food - 2) },
+          }));
+          break;
+        case 'mongol_horde':
+          if (event.targetFaction === 'mongol') {
+            const mongolPlayer = newPlayers.find(p => p.factionId === 'mongol');
+            if (mongolPlayer) {
+              const startHex = prev.hexes.find(h => h.ownerId === 'mongol');
+              if (startHex) {
+                for (let i = 0; i < 2; i++) {
+                  newUnits.push({
+                    id: `mongol-bonus-cavalry-${generateId()}`,
+                    type: 'cavalry',
+                    factionId: 'mongol',
+                    hexId: startHex.id,
+                    health: 3,
+                    maxHealth: 3,
+                    movementLeft: 3,
+                    maxMovement: 3,
+                    attackPower: 3,
+                    hasActed: true,
+                  });
+                }
+              }
+            }
+          }
+          break;
+        case 'alliance':
+          const currentPlayer = newPlayers.find(p => p.id === prev.currentPlayerId);
+          if (currentPlayer) {
+            newPlayers = newPlayers.map(p => 
+              p.id === currentPlayer.id 
+                ? { ...p, resources: { ...p.resources, gold: p.resources.gold + 10 }, victoryPoints: p.victoryPoints + 5 }
+                : p
+            );
+          }
+          break;
+      }
+      
+      const activeEvent: ActiveEvent = {
+        event,
+        turnsRemaining: event.duration,
+        affectedFactions: event.affectsAll 
+          ? newPlayers.map(p => p.factionId) 
+          : event.targetFaction 
+            ? [event.targetFaction]
+            : [newPlayers.find(p => p.id === prev.currentPlayerId)?.factionId || 'mongol'],
+      };
+      
+      return {
+        ...prev,
+        players: newPlayers,
+        units: newUnits,
+        currentEvent: null,
+        showEventModal: false,
+        activeEvents: [...prev.activeEvents, activeEvent],
+        eventLog: [...prev.eventLog, {
+          id: generateId(),
+          turn: prev.turn,
+          type: 'event' as const,
+          message: `${event.name}: ${event.effect}`,
+          timestamp: Date.now(),
+        }],
+      };
+    });
+  }, [gameState]);
+
+  const endPhase = useCallback(async () => {
+    if (!gameState) return;
+    
+    const phases: GamePhase[] = ['planning', 'action', 'building', 'event', 'management'];
+    const currentIndex = phases.indexOf(gameState.currentPhase);
+    const nextIndex = (currentIndex + 1) % phases.length;
+    
+    // If entering event phase, draw a card
+    if (phases[nextIndex] === 'event' && gameState.eventDeck.length > 0) {
+      drawEventCard();
+      setGameState(prev => prev ? { ...prev, currentPhase: 'event' } : null);
+      return;
+    }
+    
+    setGameState(prev => {
+      if (!prev) return null;
       
       let newState = { ...prev, currentPhase: phases[nextIndex] };
       
-      // If we complete all phases, go to next turn
+      // If completing all phases, go to next player/turn
       if (nextIndex === 0) {
-        newState = endTurn(newState);
+        newState = endTurnForPlayer(newState);
       }
       
       // Handle phase-specific logic
@@ -484,68 +919,104 @@ export const useGameState = () => {
       
       return newState;
     });
-  }, [gameState]);
+    
+    // If next player is AI, execute their turn
+    const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+    if (currentPlayer?.isAI && phases[nextIndex] === 'action') {
+      await executeAITurn();
+    }
+  }, [gameState, drawEventCard, executeAITurn]);
 
-  const endTurn = (state: GameState): GameState => {
-    // Reset unit movements
+  const endTurnForPlayer = (state: GameState): GameState => {
+    const currentPlayerIndex = state.players.findIndex(p => p.id === state.currentPlayerId);
+    const nextPlayerIndex = (currentPlayerIndex + 1) % state.players.length;
+    const isNewTurn = nextPlayerIndex === 0;
+    
+    // Reset units for next player
+    const nextPlayer = state.players[nextPlayerIndex];
     const newUnits = state.units.map(u => ({
       ...u,
-      movementLeft: u.maxMovement,
+      movementLeft: u.factionId === nextPlayer.factionId ? u.maxMovement : u.movementLeft,
+      hasActed: u.factionId === nextPlayer.factionId ? false : u.hasActed,
     }));
+    
+    // Decrement active events
+    const newActiveEvents = state.activeEvents
+      .map(ae => ({ ...ae, turnsRemaining: isNewTurn ? ae.turnsRemaining - 1 : ae.turnsRemaining }))
+      .filter(ae => ae.turnsRemaining > 0);
     
     // Check victory conditions
     const winCheck = checkVictoryConditions(state);
     
-    // AI turns (simplified - just collect resources)
-    let newState = {
+    return {
       ...state,
-      turn: state.turn + 1,
+      currentPlayerId: state.players[nextPlayerIndex].id,
+      turn: isNewTurn ? state.turn + 1 : state.turn,
       units: newUnits,
+      activeEvents: newActiveEvents,
+      currentPhase: 'planning',
       ...winCheck,
     };
-    
-    return newState;
   };
 
   const collectResources = (state: GameState): GameState => {
-    const newPlayers = state.players.map(player => {
-      const controlledHexes = state.hexes.filter(h => h.ownerId === player.factionId);
-      
-      const resourceGains: Resources = {
-        horses: 0,
-        gold: 0,
-        food: 0,
-        artisans: 0,
-        cattle: 0,
-      };
-      
-      controlledHexes.forEach(hex => {
-        Object.entries(hex.resourceProduction).forEach(([resource, amount]) => {
-          if (amount) {
-            resourceGains[resource as keyof Resources] += amount;
-          }
-        });
+    const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);
+    if (!currentPlayer) return state;
+    
+    const controlledHexes = state.hexes.filter(h => h.ownerId === currentPlayer.factionId);
+    
+    const resourceGains: Resources = {
+      horses: 0,
+      gold: 0,
+      food: 0,
+      artisans: 0,
+      cattle: 0,
+    };
+    
+    controlledHexes.forEach(hex => {
+      Object.entries(hex.resourceProduction).forEach(([resource, amount]) => {
+        if (amount) {
+          resourceGains[resource as keyof Resources] += amount;
+        }
       });
       
-      // Apply faction bonuses
-      if (player.factionId === 'persia') {
-        const tradeHexes = controlledHexes.filter(h => h.hasTradeRoute);
-        resourceGains.gold += tradeHexes.length * 2;
-        resourceGains.artisans += tradeHexes.length;
-      }
+      // Building bonuses
+      hex.buildings.forEach(buildingId => {
+        const building = state.buildings.find(b => b.id === buildingId);
+        if (building) {
+          const info = BUILDING_INFO[building.type];
+          Object.entries(info.resourceBonus).forEach(([resource, amount]) => {
+            if (amount) {
+              resourceGains[resource as keyof Resources] += amount;
+            }
+          });
+        }
+      });
+    });
+    
+    // Faction bonuses
+    if (currentPlayer.factionId === 'persia') {
+      const tradeHexes = controlledHexes.filter(h => h.hasTradeRoute);
+      resourceGains.gold += tradeHexes.length * 2;
+      resourceGains.artisans += tradeHexes.length;
+    }
+    
+    const newPlayers = state.players.map(p => {
+      if (p.id !== currentPlayer.id) return p;
       
       return {
-        ...player,
+        ...p,
         resources: {
-          horses: player.resources.horses + resourceGains.horses,
-          gold: player.resources.gold + resourceGains.gold,
-          food: player.resources.food + resourceGains.food,
-          artisans: player.resources.artisans + resourceGains.artisans,
-          cattle: player.resources.cattle + resourceGains.cattle,
+          horses: p.resources.horses + resourceGains.horses,
+          gold: p.resources.gold + resourceGains.gold,
+          food: p.resources.food + resourceGains.food,
+          artisans: p.resources.artisans + resourceGains.artisans,
+          cattle: p.resources.cattle + resourceGains.cattle,
         },
         territoriesControlled: controlledHexes.length,
         citiesControlled: controlledHexes.filter(h => h.hasCity).length,
         tradeRoutes: controlledHexes.filter(h => h.hasTradeRoute).length,
+        victoryPoints: p.victoryPoints + controlledHexes.filter(h => h.hasCity).length,
       };
     });
     
@@ -553,34 +1024,123 @@ export const useGameState = () => {
   };
 
   const checkVictoryConditions = (state: GameState): { gameOver: boolean; winnerId: string | null; winCondition: string | null } => {
+    // Turn limit
+    if (state.turn >= state.maxTurns) {
+      const winner = state.players.reduce((prev, current) => 
+        (prev.victoryPoints > current.victoryPoints) ? prev : current
+      );
+      return { 
+        gameOver: true, 
+        winnerId: winner.id, 
+        winCondition: `Voittopisteet: ${winner.victoryPoints} (${FACTIONS[winner.factionId].name})` 
+      };
+    }
+    
     for (const player of state.players) {
       // Military victory: control 60% of cities
       const totalCities = state.hexes.filter(h => h.hasCity).length;
       const playerCities = state.hexes.filter(h => h.hasCity && h.ownerId === player.factionId).length;
       
-      if (playerCities >= totalCities * 0.6) {
-        return { gameOver: true, winnerId: player.id, winCondition: 'Sotilaallinen Voitto: Maailmanvalloittaja' };
+      if (totalCities > 0 && playerCities >= totalCities * 0.6) {
+        return { 
+          gameOver: true, 
+          winnerId: player.id, 
+          winCondition: `Sotilaallinen Voitto: ${FACTIONS[player.factionId].name} hallitsee ${playerCities}/${totalCities} kaupunkia` 
+        };
       }
       
-      // Economic victory: 50 victory points and 5 trade routes
+      // Economic victory
       if (player.victoryPoints >= 50 && player.tradeRoutes >= 5) {
-        return { gameOver: true, winnerId: player.id, winCondition: 'Ekonominen Voitto: Silkkitien Herra' };
+        return { 
+          gameOver: true, 
+          winnerId: player.id, 
+          winCondition: `Ekonominen Voitto: ${FACTIONS[player.factionId].name} - Silkkitien Herra` 
+        };
       }
       
-      // Elimination check
-      const playerUnits = state.units.filter(u => u.factionId === player.factionId);
-      if (playerUnits.length === 0) {
-        // Player eliminated
+      // Domination: last faction standing
+      const activeFactions = new Set(state.units.map(u => u.factionId));
+      if (activeFactions.size === 1 && activeFactions.has(player.factionId)) {
+        return {
+          gameOver: true,
+          winnerId: player.id,
+          winCondition: `Täydellinen Voitto: ${FACTIONS[player.factionId].name} on valloittanut kaikki!`
+        };
       }
     }
     
     return { gameOver: false, winnerId: null, winCondition: null };
   };
 
+  const recruitUnit = useCallback((hexId: string, unitType: 'cavalry' | 'infantry') => {
+    if (!gameState) return;
+    
+    const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+    if (!currentPlayer) return;
+    
+    const cost = UNIT_INFO[unitType].cost;
+    
+    // Check resources
+    let canAfford = true;
+    (Object.entries(cost) as [keyof Resources, number][]).forEach(([resource, amount]) => {
+      if (currentPlayer.resources[resource] < amount) canAfford = false;
+    });
+    
+    if (!canAfford) return;
+    
+    setGameState(prev => {
+      if (!prev) return null;
+      
+      const newUnit: Unit = {
+        id: `${currentPlayer.factionId}-${unitType}-${generateId()}`,
+        type: unitType,
+        factionId: currentPlayer.factionId,
+        hexId,
+        health: UNIT_INFO[unitType].basePower,
+        maxHealth: UNIT_INFO[unitType].basePower,
+        movementLeft: 0,
+        maxMovement: UNIT_INFO[unitType].baseMovement,
+        attackPower: UNIT_INFO[unitType].basePower,
+        hasActed: true,
+      };
+      
+      // Deduct resources
+      const newPlayers = prev.players.map(p => {
+        if (p.id !== currentPlayer.id) return p;
+        const newResources = { ...p.resources };
+        (Object.entries(cost) as [keyof Resources, number][]).forEach(([resource, amount]) => {
+          newResources[resource] -= amount;
+        });
+        return { ...p, resources: newResources };
+      });
+      
+      // Update hex
+      const newHexes = prev.hexes.map(h => {
+        if (h.id !== hexId) return h;
+        return { ...h, units: [...h.units, newUnit.id] };
+      });
+      
+      return {
+        ...prev,
+        players: newPlayers,
+        hexes: newHexes,
+        units: [...prev.units, newUnit],
+      };
+    });
+  }, [gameState]);
+
   const resetGame = useCallback(() => {
     setGameStarted(false);
     setPlayerFaction(null);
     setGameState(null);
+  }, []);
+
+  const rotateCameraLeft = useCallback(() => {
+    setGameState(prev => prev ? { ...prev, cameraAngle: prev.cameraAngle - 15 } : null);
+  }, []);
+
+  const rotateCameraRight = useCallback(() => {
+    setGameState(prev => prev ? { ...prev, cameraAngle: prev.cameraAngle + 15 } : null);
   }, []);
 
   return {
@@ -592,5 +1152,10 @@ export const useGameState = () => {
     moveUnit,
     endPhase,
     resetGame,
+    buildStructure,
+    recruitUnit,
+    resolveEvent,
+    rotateCameraLeft,
+    rotateCameraRight,
   };
 };
