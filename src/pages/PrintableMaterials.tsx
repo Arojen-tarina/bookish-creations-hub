@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrintableCardSheet } from "@/components/game/printable/PrintableCard";
+import { CardImageGenerator } from "@/components/game/printable/CardImageGenerator";
 import { 
   strategyCards, 
   diplomacyCards, 
@@ -11,7 +12,7 @@ import {
   allCards,
   cardTypeInfo 
 } from "@/data/gameCards";
-import { Printer, FileText, CreditCard, Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Printer, FileText, Wand2 } from "lucide-react";
 
 const PrintableMaterials = () => {
   const [showRulebook, setShowRulebook] = useState(true);
@@ -61,8 +62,12 @@ const PrintableMaterials = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="rulebook" className="print:hidden">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
+        <Tabs defaultValue="ai-generator" className="print:hidden">
+          <TabsList className="grid w-full grid-cols-6 mb-6">
+            <TabsTrigger value="ai-generator" className="gap-2">
+              <Wand2 className="w-4 h-4" />
+              AI-Kuvat
+            </TabsTrigger>
             <TabsTrigger value="rulebook" className="gap-2">
               <FileText className="w-4 h-4" />
               Sääntökirja
@@ -84,6 +89,10 @@ const PrintableMaterials = () => {
               Resurssit
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="ai-generator">
+            <CardImageGenerator />
+          </TabsContent>
 
           <TabsContent value="rulebook">
             <PrintableRulebook />
