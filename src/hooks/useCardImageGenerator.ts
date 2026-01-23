@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { GameCard } from '@/data/gameCards';
 
@@ -25,10 +25,60 @@ interface GenerationState {
   errors: Map<string, string>;
 }
 
-const BATCH_SIZE = 1; // Process 1 card at a time for maximum reliability
+const BATCH_SIZE = 1;
+const STORAGE_KEY = 'mongolian-game-card-images';
+const ERRORS_KEY = 'mongolian-game-card-errors';
+
+// Helper to load saved images from localStorage
+function loadSavedImages(): Map<string, string> {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return new Map(Object.entries(parsed));
+    }
+  } catch (e) {
+    console.error('Failed to load saved images:', e);
+  }
+  return new Map();
+}
+
+// Helper to save images to localStorage
+function saveImages(images: Map<string, string>) {
+  try {
+    const obj = Object.fromEntries(images);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  } catch (e) {
+    console.error('Failed to save images:', e);
+  }
+}
+
+// Helper to load saved errors from localStorage
+function loadSavedErrors(): Map<string, string> {
+  try {
+    const saved = localStorage.getItem(ERRORS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return new Map(Object.entries(parsed));
+    }
+  } catch (e) {
+    console.error('Failed to load saved errors:', e);
+  }
+  return new Map();
+}
+
+// Helper to save errors to localStorage
+function saveErrors(errors: Map<string, string>) {
+  try {
+    const obj = Object.fromEntries(errors);
+    localStorage.setItem(ERRORS_KEY, JSON.stringify(obj));
+  } catch (e) {
+    console.error('Failed to save errors:', e);
+  }
+}
 
 export function useCardImageGenerator() {
-  const [state, setState] = useState<GenerationState>({
+  const [state, setState] = useState<GenerationState>(() => ({
     isGenerating: false,
     progress: {
       total: 0,
@@ -38,33 +88,63 @@ export function useCardImageGenerator() {
       currentBatch: 0,
       totalBatches: 0,
     },
-    generatedImages: new Map(),
-    errors: new Map(),
-  });
+    generatedImages: loadSavedImages(),
+    errors: loadSavedErrors(),
+  }));
+
+  // Sync to localStorage whenever images or errors change
+  useEffect(() => {
+    saveImages(state.generatedImages);
+  }, [state.generatedImages]);
+
+  useEffect(() => {
+    saveErrors(state.errors);
+  }, [state.errors]);
 
   const generateImages = useCallback(async (cards: GameCard[]) => {
-    const totalBatches = Math.ceil(cards.length / BATCH_SIZE);
+    // Filter out already generated cards
+    const existingImages = loadSavedImages();
+    const cardsToGenerate = cards.filter(card => !existingImages.has(card.id));
+    
+    if (cardsToGenerate.length === 0) {
+      console.log('All cards already generated!');
+      return [];
+    }
+
+    console.log(`Generating ${cardsToGenerate.length} cards (${existingImages.size} already done)`);
+    
+    const totalBatches = Math.ceil(cardsToGenerate.length / BATCH_SIZE);
     
     setState(prev => ({
       ...prev,
       isGenerating: true,
       progress: {
-        total: cards.length,
+        total: cardsToGenerate.length,
         processed: 0,
         successful: 0,
         failed: 0,
         currentBatch: 0,
         totalBatches,
       },
-      generatedImages: new Map(),
-      errors: new Map(),
     }));
 
     const allResults: GeneratedImage[] = [];
 
-    // Process cards in batches
-    for (let i = 0; i < cards.length; i += BATCH_SIZE) {
-      const batch = cards.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < cardsToGenerate.length; i += BATCH_SIZE) {
+      // Check if generation was stopped
+      const currentState = await new Promise<GenerationState>(resolve => {
+        setState(prev => {
+          resolve(prev);
+          return prev;
+        });
+      });
+      
+      if (!currentState.isGenerating) {
+        console.log('Generation stopped by user');
+        break;
+      }
+
+      const batch = cardsToGenerate.slice(i, i + BATCH_SIZE);
       const currentBatchNum = Math.floor(i / BATCH_SIZE) + 1;
 
       setState(prev => ({
@@ -89,7 +169,6 @@ export function useCardImageGenerator() {
 
         if (error) {
           console.error('Batch error:', error);
-          // Mark all cards in batch as failed
           batch.forEach(card => {
             allResults.push({
               cardId: card.id,
@@ -113,8 +192,7 @@ export function useCardImageGenerator() {
         });
       }
 
-      // Update progress after each batch
-      const processed = Math.min(i + BATCH_SIZE, cards.length);
+      const processed = Math.min(i + BATCH_SIZE, cardsToGenerate.length);
       const successful = allResults.filter(r => r.success).length;
       const failed = allResults.filter(r => !r.success).length;
 
@@ -143,8 +221,7 @@ export function useCardImageGenerator() {
         };
       });
 
-      // Longer delay between cards to prevent rate limiting
-      if (i + BATCH_SIZE < cards.length) {
+      if (i + BATCH_SIZE < cardsToGenerate.length) {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
@@ -165,6 +242,8 @@ export function useCardImageGenerator() {
   }, []);
 
   const clearResults = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ERRORS_KEY);
     setState({
       isGenerating: false,
       progress: {
