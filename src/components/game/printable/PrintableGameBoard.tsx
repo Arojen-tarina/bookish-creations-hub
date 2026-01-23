@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Printer, ZoomIn, ZoomOut } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Printer, ZoomIn, ZoomOut, X, MapPin, Shield, Swords, Coins, Mountain, TreePine, Waves, Sun, Building2, Wheat } from 'lucide-react';
 
 // Region definitions with hex positions and terrain
 interface HexTile {
@@ -14,12 +15,131 @@ interface HexTile {
   isCapital?: boolean;
 }
 
+// Terrain info for the info panel
+interface TerrainInfo {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  movement: string;
+  combat: string;
+  resources: string;
+  special: string;
+}
+
+const terrainInfo: Record<string, TerrainInfo> = {
+  steppe: {
+    name: 'Steppialue',
+    icon: Sun,
+    movement: 'Nopea liikkuminen (+1)',
+    combat: 'Ratsuväki +2 hyökkäys',
+    resources: 'Hevoset, Karja',
+    special: 'Mongolit saavat lisäbonuksen'
+  },
+  desert: {
+    name: 'Autiomaa',
+    icon: Waves,
+    movement: 'Hidas liikkuminen (-1)',
+    combat: 'Ei taisteluetuja',
+    resources: 'Kauppareitit',
+    special: 'Vaatii ylimääräistä ruokaa'
+  },
+  mountain: {
+    name: 'Vuoristo',
+    icon: Mountain,
+    movement: 'Erittäin hidas (-2)',
+    combat: 'Puolustaja +3',
+    resources: 'Malmit, Kiviaines',
+    special: 'Estää ratsuväen hyökkäyksen'
+  },
+  forest: {
+    name: 'Metsäalue',
+    icon: TreePine,
+    movement: 'Normaali liikkuminen',
+    combat: 'Jalkaväki +1, Ratsuväki -1',
+    resources: 'Puu, Turkikset',
+    special: 'Venäläiset saavat lisäbonuksen'
+  },
+  river: {
+    name: 'Jokilaakso',
+    icon: Wheat,
+    movement: 'Normaali liikkuminen',
+    combat: 'Puolustaja +1 joelta hyökätessä',
+    resources: 'Ruoka, Kauppa',
+    special: 'Kaupungit tuottavat +1 kultaa'
+  },
+  city: {
+    name: 'Kaupunkialue',
+    icon: Building2,
+    movement: 'Normaali liikkuminen',
+    combat: 'Linnoitus +3 puolustus',
+    resources: 'Kulta, Käsityöläiset',
+    special: 'Voidaan piirittää'
+  },
+};
+
+// Region info for the info panel
+interface RegionInfo {
+  name: string;
+  description: string;
+  capital: string;
+  faction: string;
+  bonuses: string[];
+}
+
+const regionInfo: Record<string, RegionInfo> = {
+  'Mongolia': {
+    name: 'Mongolian Steppi',
+    description: 'Laajat ruohomaat ja pelin sydän. Genghis Khanin synnyinmaa.',
+    capital: 'Karakorum',
+    faction: 'Mongoli-heimo',
+    bonuses: ['Ratsuväki +1 liike', 'Hevosten tuotanto x2', 'Nomadibonus']
+  },
+  'Gobi': {
+    name: 'Gobin Autiomaa',
+    description: 'Ankara aavikko Mongolian ja Kiinan välissä. Strateginen este.',
+    capital: '-',
+    faction: 'Ei hallitsijaa',
+    bonuses: ['Puolustusetu', 'Kauppareitit', 'Suojaa hyökkäyksiltä']
+  },
+  'Kiina': {
+    name: 'Kiinan Valtakunta',
+    description: 'Rikas ja linnoitettu itäinen valtakunta. Teknologian keskus.',
+    capital: 'Zhongdu',
+    faction: 'Jin-dynastia',
+    bonuses: ['Teknologia +1', 'Linnoitukset vahvempia', 'Runsaat resurssit']
+  },
+  'Keski-Aasia': {
+    name: 'Keski-Aasian Kaupunkivaltiot',
+    description: 'Silkkitien sydän. Rikkaat kauppakaupungit.',
+    capital: 'Samarkand',
+    faction: 'Khwarezmit',
+    bonuses: ['Kauppa +2 kultaa', 'Silkkitien hallinta', 'Diplomaattinen vaikutus']
+  },
+  'Persia': {
+    name: 'Persialainen Valtakunta',
+    description: 'Muinainen sivistys ja kulttuurikeskus.',
+    capital: 'Bagdad',
+    faction: 'Abbasidi-kalifaatti',
+    bonuses: ['Kulttuuri +1', 'Tiede +1', 'Vauras talous']
+  },
+  'Venäjä': {
+    name: 'Venäjän Ruhtinaskunnat',
+    description: 'Pohjoisen metsien hallitsijat ja kauppaverkostot.',
+    capital: 'Kiev',
+    faction: 'Kiovan Rus',
+    bonuses: ['Talvibonus +2', 'Metsätaistelu +1', 'Sitkeä puolustus']
+  },
+  'Intia': {
+    name: 'Intian Vuoristopassit',
+    description: 'Eteläinen rikkaus ja linnoitetut vuoristosolat.',
+    capital: 'Delhi',
+    faction: 'Delhi-sultantti',
+    bonuses: ['Puolustus +2', 'Elefantit', 'Rikkaat kaupungit']
+  },
+};
+
 // Generate hex grid for the game board
 const generateHexGrid = (): HexTile[] => {
   const tiles: HexTile[] = [];
-  
-  // Board dimensions (approximately 15x12 hexes to fit 60x80cm at reasonable size)
-  // Regions are laid out geographically
   
   // Mongolia Steppe - Center
   const mongoliaHexes = [
@@ -135,13 +255,13 @@ const generateHexGrid = (): HexTile[] => {
 };
 
 // Hex dimensions for 60x80cm board with ~80 hexes
-const HEX_SIZE = 45; // mm in print scale
+const HEX_SIZE = 45;
 
 // Convert axial coordinates to pixel position
 const hexToPixel = (q: number, r: number) => {
   const x = HEX_SIZE * (3/2 * q);
   const y = HEX_SIZE * (Math.sqrt(3)/2 * q + Math.sqrt(3) * r);
-  return { x: x + 100, y: y + 80 }; // offset for margins
+  return { x: x + 100, y: y + 80 };
 };
 
 // Generate hex path
@@ -188,22 +308,38 @@ const terrainIcons: Record<string, string> = {
 interface HexTileComponentProps {
   tile: HexTile;
   size: number;
+  isSelected: boolean;
+  isHovered: boolean;
+  onClick: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
-const HexTileComponent = ({ tile, size }: HexTileComponentProps) => {
+const HexTileComponent = ({ tile, size, isSelected, isHovered, onClick, onMouseEnter, onMouseLeave }: HexTileComponentProps) => {
   const { x, y } = hexToPixel(tile.q, tile.r);
   const colors = terrainColors[tile.terrain];
   const regionColor = regionColors[tile.region];
   
+  const highlightStroke = isSelected ? '#FFFFFF' : isHovered ? '#FFE066' : regionColor;
+  const highlightWidth = isSelected ? 5 : isHovered ? 4 : (tile.isCapital ? 4 : 2);
+  const glowFilter = isSelected || isHovered ? 'url(#glow)' : undefined;
+  
   return (
-    <g transform={`translate(${x}, ${y})`}>
+    <g 
+      transform={`translate(${x}, ${y})`}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{ cursor: 'pointer' }}
+    >
       {/* Hex background */}
       <path
         d={hexPath(size)}
         fill={colors.fill}
-        stroke={regionColor}
-        strokeWidth={tile.isCapital ? 4 : 2}
-        className="transition-all"
+        stroke={highlightStroke}
+        strokeWidth={highlightWidth}
+        filter={glowFilter}
+        className="transition-all duration-200"
       />
       
       {/* Terrain pattern */}
@@ -250,7 +386,7 @@ const HexTileComponent = ({ tile, size }: HexTileComponentProps) => {
           fontSize={10}
           fontWeight="bold"
           fill="#333"
-          className="font-display"
+          className="font-display pointer-events-none"
         >
           {tile.name}
         </text>
@@ -259,16 +395,123 @@ const HexTileComponent = ({ tile, size }: HexTileComponentProps) => {
   );
 };
 
+// Info Panel Component
+interface InfoPanelProps {
+  tile: HexTile | null;
+  onClose: () => void;
+}
+
+const InfoPanel = ({ tile, onClose }: InfoPanelProps) => {
+  if (!tile) return null;
+
+  const terrain = terrainInfo[tile.terrain];
+  const region = regionInfo[tile.region];
+  const TerrainIcon = terrain.icon;
+
+  return (
+    <Card className="absolute top-4 right-4 w-80 shadow-xl border-2 border-amber-600 bg-background/95 backdrop-blur z-50 print:hidden">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MapPin className="w-5 h-5 text-primary" />
+            {tile.name || `Heksi ${tile.q},${tile.r}`}
+          </CardTitle>
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className="flex gap-2 mt-1">
+          <span 
+            className="text-xs px-2 py-0.5 rounded-full font-medium"
+            style={{ backgroundColor: `${regionColors[tile.region]}33`, color: regionColors[tile.region] }}
+          >
+            {tile.region}
+          </span>
+          {tile.isCapital && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 font-medium">
+              ★ Pääkaupunki
+            </span>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 text-sm">
+        {/* Terrain Info */}
+        <div className="p-3 rounded-lg" style={{ backgroundColor: terrainColors[tile.terrain].fill + '40' }}>
+          <div className="flex items-center gap-2 mb-2 font-semibold">
+            <div 
+              className="w-5 h-5 rounded flex items-center justify-center"
+              style={{ backgroundColor: terrainColors[tile.terrain].stroke }}
+            >
+              <TerrainIcon className="w-3 h-3 text-white" />
+            </div>
+            {terrain.name}
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">Liikkuminen:</span>
+            </div>
+            <div>{terrain.movement}</div>
+            <div className="flex items-center gap-1">
+              <Swords className="w-3 h-3 text-muted-foreground" />
+              <span className="text-muted-foreground">Taistelu:</span>
+            </div>
+            <div>{terrain.combat}</div>
+            <div className="flex items-center gap-1">
+              <Coins className="w-3 h-3 text-muted-foreground" />
+              <span className="text-muted-foreground">Resurssit:</span>
+            </div>
+            <div>{terrain.resources}</div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground italic">{terrain.special}</p>
+        </div>
+
+        {/* Region Info */}
+        <div className="border-t pt-3">
+          <h4 className="font-semibold mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: regionColors[tile.region] }} />
+            {region.name}
+          </h4>
+          <p className="text-xs text-muted-foreground mb-2">{region.description}</p>
+          <div className="text-xs space-y-1">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Faktio:</span>
+              <span className="font-medium">{region.faction}</span>
+            </div>
+            {region.capital !== '-' && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Pääkaupunki:</span>
+                <span className="font-medium">{region.capital}</span>
+              </div>
+            )}
+          </div>
+          <div className="mt-2">
+            <p className="text-xs text-muted-foreground mb-1">Aluebonukset:</p>
+            <ul className="text-xs space-y-0.5">
+              {region.bonuses.map((bonus, i) => (
+                <li key={i} className="flex items-center gap-1">
+                  <span className="text-green-600">+</span> {bonus}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 export const PrintableGameBoard = () => {
-  const [zoom, setZoom] = useState(0.5);
+  const [zoom, setZoom] = useState(0.6);
+  const [selectedTile, setSelectedTile] = useState<HexTile | null>(null);
+  const [hoveredTile, setHoveredTile] = useState<HexTile | null>(null);
   const tiles = generateHexGrid();
   
-  // Board dimensions in mm for 60x80cm
-  const BOARD_WIDTH = 800; // mm
-  const BOARD_HEIGHT = 600; // mm
+  const BOARD_WIDTH = 800;
+  const BOARD_HEIGHT = 600;
 
   const handlePrint = () => {
-    window.print();
+    setSelectedTile(null);
+    setTimeout(() => window.print(), 100);
   };
 
   return (
@@ -281,14 +524,18 @@ export const PrintableGameBoard = () => {
         </Button>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.2, z - 0.1))}>
+          <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
             <ZoomOut className="w-4 h-4" />
           </Button>
           <span className="text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
-          <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.min(1, z + 0.1))}>
+          <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.min(1.2, z + 0.1))}>
             <ZoomIn className="w-4 h-4" />
           </Button>
         </div>
+
+        <span className="text-sm text-muted-foreground">
+          💡 Klikkaa heksaa nähdäksesi aluetiedot
+        </span>
       </div>
 
       {/* Legend */}
@@ -314,137 +561,154 @@ export const PrintableGameBoard = () => {
               style={{ backgroundColor: colors.fill, border: `1px solid ${colors.stroke}` }}
             />
             <span className="text-sm capitalize">
-              {terrain === 'steppe' ? 'Steppi' :
-               terrain === 'desert' ? 'Autiomaa' :
-               terrain === 'mountain' ? 'Vuoristo' :
-               terrain === 'forest' ? 'Metsä' :
-               terrain === 'river' ? 'Jokilaakso' :
-               'Kaupunki'}
+              {terrainInfo[terrain]?.name || terrain}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Game Board */}
-      <div 
-        className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50"
-        style={{ maxHeight: '70vh' }}
-      >
-        <svg
-          viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}
-          style={{ 
-            width: `${BOARD_WIDTH * zoom}px`, 
-            height: `${BOARD_HEIGHT * zoom}px`,
-            minWidth: '100%'
-          }}
-          className="print:w-full print:h-auto"
+      {/* Game Board with Info Panel */}
+      <div className="relative">
+        <InfoPanel tile={selectedTile} onClose={() => setSelectedTile(null)} />
+        
+        <div 
+          className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50"
+          style={{ maxHeight: '70vh' }}
         >
-          {/* Background */}
-          <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#F5E6C8" />
-          
-          {/* Decorative border */}
-          <rect
-            x={10}
-            y={10}
-            width={BOARD_WIDTH - 20}
-            height={BOARD_HEIGHT - 20}
-            fill="none"
-            stroke="#8B4513"
-            strokeWidth={4}
-          />
-          <rect
-            x={20}
-            y={20}
-            width={BOARD_WIDTH - 40}
-            height={BOARD_HEIGHT - 40}
-            fill="none"
-            stroke="#D2691E"
-            strokeWidth={2}
-          />
-
-          {/* Title */}
-          <text
-            x={BOARD_WIDTH / 2}
-            y={45}
-            textAnchor="middle"
-            fontSize={28}
-            fontWeight="bold"
-            fill="#5D3A1A"
-            className="font-display"
+          <svg
+            viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}
+            style={{ 
+              width: `${BOARD_WIDTH * zoom}px`, 
+              height: `${BOARD_HEIGHT * zoom}px`,
+              minWidth: '100%'
+            }}
+            className="print:w-full print:h-auto"
           >
-            MONGOLIEN VALTAKUNTA
-          </text>
-          <text
-            x={BOARD_WIDTH / 2}
-            y={65}
-            textAnchor="middle"
-            fontSize={14}
-            fill="#8B4513"
-          >
-            Aasian Steppi — 1200-luku
-          </text>
+            {/* Glow filter for selection */}
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
 
-          {/* Hex tiles */}
-          {tiles.map(tile => (
-            <HexTileComponent key={tile.id} tile={tile} size={HEX_SIZE} />
-          ))}
-
-          {/* Region labels */}
-          <text x={380} y={240} textAnchor="middle" fontSize={16} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>MONGOLIA</text>
-          <text x={480} y={360} textAnchor="middle" fontSize={14} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>GOBI</text>
-          <text x={600} y={280} textAnchor="middle" fontSize={14} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>KIINA</text>
-          <text x={200} y={280} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>KESKI-AASIA</text>
-          <text x={80} y={400} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>PERSIA</text>
-          <text x={180} y={140} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>VENÄJÄ</text>
-          <text x={300} y={480} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7}>INTIA</text>
-
-          {/* Legend box - bottom right */}
-          <g transform={`translate(${BOARD_WIDTH - 180}, ${BOARD_HEIGHT - 160})`}>
-            <rect x={0} y={0} width={160} height={140} fill="#FFF8E7" stroke="#8B4513" strokeWidth={1} rx={4} />
-            <text x={80} y={18} textAnchor="middle" fontSize={11} fontWeight="bold" fill="#5D3A1A">SELITE</text>
+            {/* Background */}
+            <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#F5E6C8" />
             
-            {/* Terrain legend items */}
-            {[
-              { terrain: 'steppe', label: 'Steppi', y: 35 },
-              { terrain: 'desert', label: 'Autiomaa', y: 52 },
-              { terrain: 'mountain', label: 'Vuoristo', y: 69 },
-              { terrain: 'forest', label: 'Metsä', y: 86 },
-              { terrain: 'river', label: 'Jokilaakso', y: 103 },
-              { terrain: 'city', label: 'Kaupunki', y: 120 },
-            ].map(item => (
-              <g key={item.terrain}>
-                <rect
-                  x={10}
-                  y={item.y - 8}
-                  width={14}
-                  height={14}
-                  fill={terrainColors[item.terrain].fill}
-                  stroke={terrainColors[item.terrain].stroke}
-                  strokeWidth={1}
-                />
-                <text x={32} y={item.y + 3} fontSize={9} fill="#5D3A1A">{item.label}</text>
-              </g>
+            {/* Decorative border */}
+            <rect
+              x={10}
+              y={10}
+              width={BOARD_WIDTH - 20}
+              height={BOARD_HEIGHT - 20}
+              fill="none"
+              stroke="#8B4513"
+              strokeWidth={4}
+            />
+            <rect
+              x={20}
+              y={20}
+              width={BOARD_WIDTH - 40}
+              height={BOARD_HEIGHT - 40}
+              fill="none"
+              stroke="#D2691E"
+              strokeWidth={2}
+            />
+
+            {/* Title */}
+            <text
+              x={BOARD_WIDTH / 2}
+              y={45}
+              textAnchor="middle"
+              fontSize={28}
+              fontWeight="bold"
+              fill="#5D3A1A"
+              className="font-display"
+            >
+              MONGOLIEN VALTAKUNTA
+            </text>
+            <text
+              x={BOARD_WIDTH / 2}
+              y={65}
+              textAnchor="middle"
+              fontSize={14}
+              fill="#8B4513"
+            >
+              Aasian Steppi — 1200-luku
+            </text>
+
+            {/* Hex tiles */}
+            {tiles.map(tile => (
+              <HexTileComponent 
+                key={tile.id} 
+                tile={tile} 
+                size={HEX_SIZE}
+                isSelected={selectedTile?.id === tile.id}
+                isHovered={hoveredTile?.id === tile.id}
+                onClick={() => setSelectedTile(tile)}
+                onMouseEnter={() => setHoveredTile(tile)}
+                onMouseLeave={() => setHoveredTile(null)}
+              />
             ))}
 
-            {/* Capital marker */}
-            <circle cx={100} y={40} r={6} fill="#FFD700" stroke="#333" strokeWidth={1} />
-            <text x={100} y={42} textAnchor="middle" fontSize={8} fill="#333">★</text>
-            <text x={115} y={42} fontSize={9} fill="#5D3A1A">Pääkaupunki</text>
-          </g>
+            {/* Region labels */}
+            <text x={380} y={240} textAnchor="middle" fontSize={16} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">MONGOLIA</text>
+            <text x={480} y={360} textAnchor="middle" fontSize={14} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">GOBI</text>
+            <text x={600} y={280} textAnchor="middle" fontSize={14} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">KIINA</text>
+            <text x={200} y={280} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">KESKI-AASIA</text>
+            <text x={80} y={400} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">PERSIA</text>
+            <text x={180} y={140} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">VENÄJÄ</text>
+            <text x={300} y={480} textAnchor="middle" fontSize={12} fontWeight="bold" fill="#5D3A1A" opacity={0.7} className="pointer-events-none">INTIA</text>
 
-          {/* Scale indicator */}
-          <g transform={`translate(40, ${BOARD_HEIGHT - 40})`}>
-            <line x1={0} y1={0} x2={100} y2={0} stroke="#5D3A1A" strokeWidth={2} />
-            <line x1={0} y1={-5} x2={0} y2={5} stroke="#5D3A1A" strokeWidth={2} />
-            <line x1={100} y1={-5} x2={100} y2={5} stroke="#5D3A1A" strokeWidth={2} />
-            <text x={50} y={-8} textAnchor="middle" fontSize={10} fill="#5D3A1A">≈ 500 km</text>
-          </g>
+            {/* Legend box - bottom right */}
+            <g transform={`translate(${BOARD_WIDTH - 180}, ${BOARD_HEIGHT - 160})`}>
+              <rect x={0} y={0} width={160} height={140} fill="#FFF8E7" stroke="#8B4513" strokeWidth={1} rx={4} />
+              <text x={80} y={18} textAnchor="middle" fontSize={11} fontWeight="bold" fill="#5D3A1A">SELITE</text>
+              
+              {[
+                { terrain: 'steppe', label: 'Steppi', y: 35 },
+                { terrain: 'desert', label: 'Autiomaa', y: 52 },
+                { terrain: 'mountain', label: 'Vuoristo', y: 69 },
+                { terrain: 'forest', label: 'Metsä', y: 86 },
+                { terrain: 'river', label: 'Jokilaakso', y: 103 },
+                { terrain: 'city', label: 'Kaupunki', y: 120 },
+              ].map(item => (
+                <g key={item.terrain}>
+                  <rect
+                    x={10}
+                    y={item.y - 8}
+                    width={14}
+                    height={14}
+                    fill={terrainColors[item.terrain].fill}
+                    stroke={terrainColors[item.terrain].stroke}
+                    strokeWidth={1}
+                  />
+                  <text x={32} y={item.y + 3} fontSize={9} fill="#5D3A1A">{item.label}</text>
+                </g>
+              ))}
 
-          {/* Copyright */}
-          <text x={BOARD_WIDTH / 2} y={BOARD_HEIGHT - 15} textAnchor="middle" fontSize={8} fill="#8B4513">
-            © Mongolien Valtakunta — Strategialautapeli
-          </text>
-        </svg>
+              <circle cx={100} cy={40} r={6} fill="#FFD700" stroke="#333" strokeWidth={1} />
+              <text x={100} y={42} textAnchor="middle" fontSize={8} fill="#333">★</text>
+              <text x={115} y={42} fontSize={9} fill="#5D3A1A">Pääkaupunki</text>
+            </g>
+
+            {/* Scale indicator */}
+            <g transform={`translate(40, ${BOARD_HEIGHT - 40})`}>
+              <line x1={0} y1={0} x2={100} y2={0} stroke="#5D3A1A" strokeWidth={2} />
+              <line x1={0} y1={-5} x2={0} y2={5} stroke="#5D3A1A" strokeWidth={2} />
+              <line x1={100} y1={-5} x2={100} y2={5} stroke="#5D3A1A" strokeWidth={2} />
+              <text x={50} y={-8} textAnchor="middle" fontSize={10} fill="#5D3A1A">≈ 500 km</text>
+            </g>
+
+            {/* Copyright */}
+            <text x={BOARD_WIDTH / 2} y={BOARD_HEIGHT - 15} textAnchor="middle" fontSize={8} fill="#8B4513">
+              © Mongolien Valtakunta — Strategialautapeli
+            </text>
+          </svg>
+        </div>
       </div>
 
       {/* Print instructions */}
