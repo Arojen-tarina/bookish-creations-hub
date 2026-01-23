@@ -2,8 +2,10 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProvinceGameState } from '@/hooks/useProvinceGameState';
 import { useAudioManager } from '@/hooks/useAudioManager';
 import { useSaveManager } from '@/hooks/useSaveManager';
+import { useDiplomacyAI } from '@/hooks/useDiplomacyAI';
+import { useElevenLabsSFX, GAME_SFX, GameSFXKey } from '@/hooks/useElevenLabsSFX';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
-import { ProvinceMap } from './ProvinceMap';
+import { GeoProvinceMap } from './GeoProvinceMap';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
 import { DiplomacyPanel } from './DiplomacyPanel';
 import { AudioSettings } from './AudioSettings';
@@ -27,9 +29,11 @@ import {
   Sword,
   RotateCcw,
   Trophy,
+  Volume2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 export const ProvinceGame = () => {
   const {
@@ -52,19 +56,97 @@ export const ProvinceGame = () => {
   } = useProvinceGameState();
   
   const audio = useAudioManager();
+  const { playGameSFX, isLoading: sfxLoading, preloadSounds } = useElevenLabsSFX({ 
+    volume: audio.settings.sfxVolume * audio.settings.masterVolume,
+    cacheEnabled: true 
+  });
+  const { calculateAIDiplomacy, evaluateTreatyProposal } = useDiplomacyAI();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('province');
+  const [sfxEnabled, setSfxEnabled] = useState(false);
+  const lastPhaseRef = useRef<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Start ambient on game start
+  // Start ambient on game start + preload SFX
   useEffect(() => {
     if (gameStarted && gameState) {
       audio.playAmbient();
+      // Preload commonly used sounds
+      if (sfxEnabled) {
+        preloadSounds(['steppe_wind', 'cavalry_charge', 'battle_win']);
+      }
     }
     return () => audio.stopAmbient();
-  }, [gameStarted]);
+  }, [gameStarted, sfxEnabled]);
+  
+  // AI Diplomacy processing at turn end (when phase changes from 'event' back to 'planning')
+  useEffect(() => {
+    if (!gameState || !playerFaction) return;
+    
+    const currentPhase = gameState.phase;
+    const prevPhase = lastPhaseRef.current;
+    lastPhaseRef.current = currentPhase;
+    
+    // Process AI diplomacy when new turn starts (planning phase after event phase)
+    if (prevPhase === 'event' && currentPhase === 'planning') {
+      // Process each AI faction's diplomatic decisions
+      gameState.factions.forEach(faction => {
+        if (faction.id === playerFaction || faction.isPlayer) return;
+        
+        const aiDecisions = calculateAIDiplomacy(
+          faction,
+          gameState.factions,
+          gameState.relations,
+          gameState.provinces,
+          gameState.turn
+        );
+        
+        // Execute AI diplomatic decisions
+        aiDecisions.forEach(decision => {
+          if (decision.type === 'propose_treaty' && decision.targetFactionId && decision.treatyType) {
+            // AI proposing treaty to player
+            if (decision.targetFactionId === playerFaction) {
+              const factionData = FACTION_DATA_1206[faction.id];
+              toast.info(`${factionData.name} ehdottaa: ${decision.treatyType}`, {
+                description: decision.reason,
+                action: {
+                  label: 'Hyväksy',
+                  onClick: () => proposeTreaty(faction.id, decision.treatyType!),
+                },
+              });
+            }
+          } else if (decision.type === 'break_treaty' && decision.targetFactionId && decision.treatyType) {
+            // AI breaking treaty
+            if (decision.targetFactionId === playerFaction) {
+              const factionData = FACTION_DATA_1206[faction.id];
+              toast.warning(`${factionData.name} rikkoi sopimuksen: ${decision.treatyType}`, {
+                description: decision.reason,
+              });
+              breakTreaty(faction.id, decision.treatyType!);
+            }
+          }
+        });
+      });
+    }
+  }, [gameState?.phase, gameState?.turn]);
+  
+  // Play phase-specific sounds
+  useEffect(() => {
+    if (!sfxEnabled || !gameState) return;
+    
+    const phaseSFX: Record<string, GameSFXKey> = {
+      military: 'battle_start',
+      diplomacy: 'treaty_signed',
+      event: 'turn_start',
+    };
+    
+    const sfxKey = phaseSFX[gameState.phase];
+    if (sfxKey) {
+      playGameSFX(sfxKey);
+    }
+  }, [gameState?.phase, sfxEnabled]);
 
   // Fullscreen handlers
   const toggleFullscreen = useCallback(async () => {
@@ -102,18 +184,20 @@ export const ProvinceGame = () => {
       if (canMove) {
         moveArmy(gameState.selectedArmyId, provinceId);
         audio.playConfirm();
+        if (sfxEnabled) playGameSFX('cavalry_charge');
         return;
       }
     }
     
     selectProvince(provinceId);
-  }, [audio, gameState?.selectedArmyId, canMoveTo, moveArmy, selectProvince]);
+  }, [audio, gameState?.selectedArmyId, canMoveTo, moveArmy, selectProvince, sfxEnabled, playGameSFX]);
 
   // Handle end phase
   const handleEndPhase = useCallback(() => {
     audio.playTurnEnd();
+    if (sfxEnabled) playGameSFX('turn_end');
     endPhase();
-  }, [audio, endPhase]);
+  }, [audio, endPhase, sfxEnabled, playGameSFX]);
 
   // Handle game start
   const handleStartGame = useCallback((factionId: typeof playerFaction) => {
@@ -262,7 +346,7 @@ export const ProvinceGame = () => {
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[400px]' : ''}`}>
           <div className="absolute inset-0 p-4">
-            <ProvinceMap
+            <GeoProvinceMap
               provinces={gameState.provinces}
               selectedProvinceId={gameState.selectedProvinceId}
               onProvinceClick={handleProvinceClick}
@@ -383,6 +467,30 @@ export const ProvinceGame = () => {
                   onSfxVolumeChange={audio.setSfxVolume}
                   onToggleMute={audio.toggleMute}
                 />
+                
+                {/* ElevenLabs SFX Toggle */}
+                <Card className="bg-slate-800/50 border-amber-700/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Volume2 className="w-4 h-4 text-amber-400" />
+                        <span className="text-amber-100 text-sm">AI-äänitehosteet</span>
+                      </div>
+                      <Button
+                        variant={sfxEnabled ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSfxEnabled(!sfxEnabled)}
+                        disabled={!!sfxLoading}
+                        className={sfxEnabled ? "bg-green-600 hover:bg-green-500" : "border-amber-600"}
+                      >
+                        {sfxLoading ? 'Ladataan...' : sfxEnabled ? 'Päällä' : 'Pois'}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-amber-200/60 mt-2">
+                      Käyttää ElevenLabs AI:ta generoimaan realistisia ääniefektejä
+                    </p>
+                  </CardContent>
+                </Card>
                 
                 <Button
                   variant="destructive"
