@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Mail, User } from "lucide-react";
+import { ExternalLink, Mail, User, Building2 } from "lucide-react";
 
 interface Project {
   name: string;
@@ -22,6 +22,7 @@ const employees: Employee[] = [
   {
     name: "Juuso Honkonen",
     role: "Kehittäjä",
+    email: "juuso5279@gmail.com",
     initials: "JH",
     projects: [
       {
@@ -33,11 +34,6 @@ const employees: Employee[] = [
         name: "Melody Muse Blog",
         url: "https://melody-muse-blog.lovable.app",
         description: "Musiikkiblogi-alusta"
-      },
-      {
-        name: "Honkosen Joensuu Service",
-        url: "https://honkosen-joensuu-service.lovable.app",
-        description: "Palveluyrityksen verkkosivusto"
       }
     ]
   },
@@ -108,6 +104,34 @@ const OtaYhteytta = () => {
             Tiimimme on valmiina auttamaan sinua. Tutustu tekijöihin ja heidän projekteihinsa.
           </p>
         </div>
+
+        {/* Yritystiedot */}
+        <Card className="max-w-2xl mx-auto mb-12 bg-primary/5 border-primary/20">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <Building2 className="h-8 w-8 text-primary mt-1" />
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Honkosen Huoltopalvelut
+                </h2>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>
+                    <span className="font-semibold text-foreground">Y-tunnus:</span> 3493306-7
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <a 
+                      href="mailto:juuso5279@gmail.com" 
+                      className="text-primary hover:text-primary/80 transition-colors"
+                    >
+                      juuso5279@gmail.com
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {employees.map((employee, index) => (
