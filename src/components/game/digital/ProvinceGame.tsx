@@ -368,13 +368,36 @@ export const ProvinceGame = () => {
   const selectedProvince = gameState.provinces.find(p => p.id === gameState.selectedProvinceId);
   const selectedProvinceArmies = selectedProvince ? getArmiesInProvince(selectedProvince.id) : [];
   
-  // Get available moves for selected army
+  // Get available moves for selected army - separate peaceful moves from attacks
   const selectedArmy = gameState.armies.find(a => a.id === gameState.selectedArmyId);
-  const availableMoves = selectedArmy 
-    ? gameState.provinces
-        .filter(p => canMoveTo(selectedArmy.id, p.id))
-        .map(p => p.id)
-    : [];
+  
+  // Calculate which provinces can be moved to (peaceful) vs attacked (has enemy)
+  const { availableMoves, attackableProvinces } = (() => {
+    if (!selectedArmy) return { availableMoves: [], attackableProvinces: [] };
+    
+    const moveable = gameState.provinces.filter(p => canMoveTo(selectedArmy.id, p.id));
+    const peaceful: string[] = [];
+    const attacks: string[] = [];
+    
+    moveable.forEach(province => {
+      const hasEnemyArmy = gameState.armies.some(
+        a => a.provinceId === province.id && a.ownerId !== selectedArmy.ownerId
+      );
+      const isEnemyTerritory = province.ownerId !== null && 
+        province.ownerId !== selectedArmy.ownerId;
+      
+      if (hasEnemyArmy) {
+        attacks.push(province.id);
+      } else if (isEnemyTerritory) {
+        // Enemy territory but no army - can capture peacefully
+        attacks.push(province.id);
+      } else {
+        peaceful.push(province.id);
+      }
+    });
+    
+    return { availableMoves: peaceful, attackableProvinces: attacks };
+  })();
 
   const phaseNames: Record<string, string> = {
     planning: 'Suunnittelu',
@@ -486,6 +509,7 @@ export const ProvinceGame = () => {
               onArmyClick={selectArmy}
               playerFaction={playerFaction}
               highlightedProvinces={availableMoves}
+              attackableProvinces={attackableProvinces}
             />
           </div>
         </div>
@@ -543,7 +567,7 @@ export const ProvinceGame = () => {
                   </Card>
                 )}
                 
-                {/* Army selection */}
+                {/* Army selection with attack info */}
                 {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && (
                   <Card className="bg-green-900/30 border-green-700/30">
                     <CardContent className="p-4">
@@ -576,6 +600,27 @@ export const ProvinceGame = () => {
                             </Button>
                           ))}
                       </div>
+                      
+                      {/* Attack/Move legend when army selected */}
+                      {gameState.selectedArmyId && (availableMoves.length > 0 || attackableProvinces.length > 0) && (
+                        <div className="mt-4 pt-3 border-t border-green-700/30">
+                          <p className="text-xs text-green-200/70 mb-2">Klikkaa kohdeprovinssia kartalta:</p>
+                          <div className="flex gap-4 text-xs">
+                            {availableMoves.length > 0 && (
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-3 h-3 rounded border-2 border-green-500 bg-green-500/30" />
+                                <span className="text-green-300">Liiku ({availableMoves.length})</span>
+                              </div>
+                            )}
+                            {attackableProvinces.length > 0 && (
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-3 h-3 rounded border-2 border-red-500 bg-red-500/30 animate-pulse" />
+                                <span className="text-red-300">Hyökkää ({attackableProvinces.length})</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 )}

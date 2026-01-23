@@ -12,6 +12,7 @@ interface CivilizationMapProps {
   onArmyClick: (armyId: string) => void;
   playerFaction: FactionId;
   highlightedProvinces?: string[];
+  attackableProvinces?: string[]; // NEW: provinces with enemy armies
   movingArmyId?: string | null;
   movingToProvinceId?: string | null;
 }
@@ -352,6 +353,22 @@ const TerrainPatterns = memo(() => (
         <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
+    
+    {/* Attack target glow - red pulsing */}
+    <filter id="attack-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feFlood floodColor="#ef4444" floodOpacity="0.8" result="red"/>
+      <feComposite in="red" in2="coloredBlur" operator="in" result="coloredGlow"/>
+      <feMerge>
+        <feMergeNode in="coloredGlow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    {/* Attack arrow marker */}
+    <marker id="attack-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+    </marker>
   </defs>
 ));
 
@@ -385,6 +402,7 @@ interface ProvinceTileProps {
   pixel: { x: number; y: number };
   isSelected: boolean;
   isHighlighted: boolean;
+  isAttackable: boolean; // NEW: enemy province that can be attacked
   isPlayerOwned: boolean;
   isNeutral: boolean;
   onClick: () => void;
@@ -396,6 +414,7 @@ const ProvinceTile = memo(({
   pixel,
   isSelected,
   isHighlighted,
+  isAttackable,
   isPlayerOwned,
   isNeutral,
   onClick,
@@ -417,6 +436,17 @@ const ProvinceTile = memo(({
   }
   const hexPath = hexPoints.join(' ');
   
+  // Determine stroke color based on state
+  const getStrokeStyle = () => {
+    if (isSelected) return { color: '#fbbf24', width: 3 };
+    if (isAttackable) return { color: '#ef4444', width: 3 }; // Red for attack
+    if (isHighlighted) return { color: '#22c55e', width: 2 }; // Green for move
+    if (isNeutral) return { color: '#4b5563', width: 1 };
+    return { color: '#374151', width: 1 };
+  };
+  
+  const strokeStyle = getStrokeStyle();
+  
   return (
     <g
       onClick={onClick}
@@ -425,12 +455,37 @@ const ProvinceTile = memo(({
       className="cursor-pointer"
       style={{ transition: 'all 0.15s ease' }}
     >
+      {/* Attack target pulsing ring */}
+      {isAttackable && (
+        <polygon
+          points={hexPath}
+          fill="none"
+          stroke="#ef4444"
+          strokeWidth={5}
+          opacity={0.6}
+          filter="url(#attack-glow)"
+          className="animate-pulse"
+        />
+      )}
+      
+      {/* Move target glow */}
+      {isHighlighted && !isAttackable && (
+        <polygon
+          points={hexPath}
+          fill="none"
+          stroke="#22c55e"
+          strokeWidth={4}
+          opacity={0.5}
+          filter="url(#province-glow)"
+        />
+      )}
+      
       {/* Terrain base */}
       <polygon
         points={hexPath}
         fill={getTerrainFill(province.terrain)}
-        stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : isNeutral ? '#4b5563' : '#374151'}
-        strokeWidth={isSelected ? 3 : isHighlighted ? 2 : 1}
+        stroke={strokeStyle.color}
+        strokeWidth={strokeStyle.width}
         opacity={isNeutral ? 0.7 : 0.9}
       />
       
@@ -724,6 +779,7 @@ export const CivilizationMap = ({
   onArmyClick,
   playerFaction,
   highlightedProvinces = [],
+  attackableProvinces = [],
   movingArmyId,
   movingToProvinceId,
 }: CivilizationMapProps) => {
@@ -1033,7 +1089,8 @@ export const CivilizationMap = ({
             province={province}
             pixel={pixel}
             isSelected={province.id === selectedProvinceId}
-            isHighlighted={highlightedProvinces.includes(province.id)}
+            isHighlighted={highlightedProvinces.includes(province.id) && !attackableProvinces.includes(province.id)}
+            isAttackable={attackableProvinces.includes(province.id)}
             isPlayerOwned={province.ownerId === playerFaction}
             isNeutral={province.ownerId === null}
             onClick={() => onProvinceClick(province.id)}
