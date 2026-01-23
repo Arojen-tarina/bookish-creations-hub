@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrintableCardSheet } from "@/components/game/printable/PrintableCard";
 import { CardImageGenerator } from "@/components/game/printable/CardImageGenerator";
+import { PrintableGameBoard } from "@/components/game/printable/PrintableGameBoard";
 import { 
   strategyCards, 
   diplomacyCards, 
@@ -12,7 +13,7 @@ import {
   allCards,
   cardTypeInfo 
 } from "@/data/gameCards";
-import { Printer, FileText, Wand2 } from "lucide-react";
+import { Printer, FileText, Wand2, Map } from "lucide-react";
 
 const PrintableMaterials = () => {
   const [showRulebook, setShowRulebook] = useState(true);
@@ -62,8 +63,12 @@ const PrintableMaterials = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="ai-generator" className="print:hidden">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+        <Tabs defaultValue="gameboard" className="print:hidden">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
+            <TabsTrigger value="gameboard" className="gap-2">
+              <Map className="w-4 h-4" />
+              Pelilauta
+            </TabsTrigger>
             <TabsTrigger value="ai-generator" className="gap-2">
               <Wand2 className="w-4 h-4" />
               AI-Kuvat
@@ -89,6 +94,10 @@ const PrintableMaterials = () => {
               Resurssit
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="gameboard">
+            <PrintableGameBoard />
+          </TabsContent>
 
           <TabsContent value="ai-generator">
             <CardImageGenerator />
