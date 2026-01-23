@@ -16,6 +16,7 @@ import { SpecialFeatures } from "@/components/game/SpecialFeatures";
 import { StrategicConsiderations } from "@/components/game/StrategicConsiderations";
 import { ExpansionIdeas } from "@/components/game/ExpansionIdeas";
 import { VisualMockups } from "@/components/game/VisualMockups";
+import { PrototypeSection } from "@/components/game/PrototypeSection";
 import { DocumentSummary } from "@/components/game/DocumentSummary";
 
 const Lautapeli = () => {
@@ -24,6 +25,9 @@ const Lautapeli = () => {
       {/* 1. Pelin yleiskuvaus */}
       <GameOverview />
       <GameIntroduction />
+      
+      {/* PROTOTYYPPI - Tulostettavat materiaalit */}
+      <PrototypeSection />
       
       {/* 2. Pelilauta */}
       <GameBoard />
