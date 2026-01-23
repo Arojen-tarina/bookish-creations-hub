@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { path: "/", label: "Koti" },
   { path: "/romaani", label: "Romaani" },
-  { path: "/suunnitelma", label: "Suunnitelma" },
+  { path: "/suunnitelma", label: "Projektisuunnitelma" },
   { path: "/lautapeli", label: "Lautapeli" },
   { path: "/digipeli", label: "Digipeli" },
-  { path: "/liiketoiminta", label: "Liiketoiminta" },
   { path: "/ota-yhteytta", label: "Ota Yhteyttä" },
 ];
 
