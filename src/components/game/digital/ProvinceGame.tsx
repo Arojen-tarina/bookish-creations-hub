@@ -5,11 +5,14 @@ import { useSaveManager } from '@/hooks/useSaveManager';
 import { useDiplomacyAI } from '@/hooks/useDiplomacyAI';
 import { useElevenLabsSFX, GAME_SFX, GameSFXKey } from '@/hooks/useElevenLabsSFX';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
-import { GeoProvinceMap } from './GeoProvinceMap';
+import { ProvinceMap } from './ProvinceMap';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
 import { DiplomacyPanel } from './DiplomacyPanel';
 import { AudioSettings } from './AudioSettings';
-import { FACTION_DATA_1206 } from '@/types/province';
+import { BattleDisplay, BattleResult } from './BattleDisplay';
+import { EventCard, getRandomEvent, GAME_EVENTS } from './EventCard';
+import { Tutorial, TutorialButton } from './Tutorial';
+import { FACTION_DATA_1206, ActiveGameEvent } from '@/types/province';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -66,8 +69,58 @@ export const ProvinceGame = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('province');
   const [sfxEnabled, setSfxEnabled] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [activeBattle, setActiveBattle] = useState<BattleResult | null>(null);
+  const [activeEvent, setActiveEvent] = useState<ActiveGameEvent | null>(null);
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
+    return localStorage.getItem('mongolian_game_tutorial_seen') === 'true';
+  });
   const lastPhaseRef = useRef<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Show tutorial on first game start
+  useEffect(() => {
+    if (gameStarted && gameState && !hasSeenTutorial) {
+      setShowTutorial(true);
+    }
+  }, [gameStarted, hasSeenTutorial]);
+  
+  // Handle tutorial completion
+  const handleTutorialComplete = useCallback(() => {
+    setHasSeenTutorial(true);
+    localStorage.setItem('mongolian_game_tutorial_seen', 'true');
+    setShowTutorial(false);
+  }, []);
+  
+  // Trigger random event in event phase
+  useEffect(() => {
+    if (!gameState || !playerFaction) return;
+    
+    if (gameState.phase === 'event' && !activeEvent) {
+      // 40% chance for an event each turn
+      if (Math.random() < 0.4) {
+        const newEvent = getRandomEvent(playerFaction, gameState.turn);
+        setActiveEvent(newEvent);
+        if (sfxEnabled) {
+          playGameSFX('turn_start');
+        }
+      }
+    }
+  }, [gameState?.phase, gameState?.turn]);
+  
+  // Handle event resolution
+  const handleEventResolve = useCallback((choiceIndex: number) => {
+    if (!activeEvent || !playerFaction) return;
+    
+    const choice = activeEvent.event.choices?.[choiceIndex];
+    if (choice) {
+      toast.success(`Valitsit: ${choice.text}`, {
+        description: choice.effect,
+      });
+    }
+    
+    setActiveEvent(null);
+  }, [activeEvent, playerFaction]);
 
   // Start ambient on game start + preload SFX
   useEffect(() => {
@@ -346,7 +399,7 @@ export const ProvinceGame = () => {
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[400px]' : ''}`}>
           <div className="absolute inset-0 p-4">
-            <GeoProvinceMap
+            <ProvinceMap
               provinces={gameState.provinces}
               selectedProvinceId={gameState.selectedProvinceId}
               onProvinceClick={handleProvinceClick}
@@ -526,6 +579,31 @@ export const ProvinceGame = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Tutorial */}
+      <Tutorial
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
+        onComplete={handleTutorialComplete}
+      />
+      
+      {/* Battle Display */}
+      <BattleDisplay
+        battle={activeBattle}
+        onClose={() => setActiveBattle(null)}
+        onPlaySound={sfxEnabled ? (sound) => playGameSFX(sound as GameSFXKey) : undefined}
+      />
+      
+      {/* Event Card */}
+      <EventCard
+        activeEvent={activeEvent}
+        playerFaction={playerFaction}
+        onResolve={handleEventResolve}
+        onClose={() => setActiveEvent(null)}
+      />
+      
+      {/* Tutorial help button */}
+      <TutorialButton onClick={() => setShowTutorial(true)} />
 
       {/* Back link */}
       <Link 
