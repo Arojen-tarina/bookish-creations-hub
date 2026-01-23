@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useGameState } from '@/hooks/useGameState';
+import { useSaveManager } from '@/hooks/useSaveManager';
 import { FactionSelect } from './FactionSelect';
 import { TabletopBoard } from './TabletopBoard';
 import { GameUI } from './GameUI';
 import { GameHUD } from './GameHUD';
+import { SaveLoadMenu } from './SaveLoadMenu';
 import { TERRAIN_INFO, FACTIONS } from '@/types/game';
 import { Maximize2, Minimize2, Menu, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,10 +27,35 @@ export const MongolianGame = () => {
     rotateCameraRight,
   } = useGameState();
   
+  // Save manager
+  const {
+    saves,
+    autosave,
+    saveGame,
+    loadGame,
+    loadAutosave,
+    deleteGame,
+    autoSave,
+    exportSave,
+    importSave,
+    hasContinueGame,
+    continueGame,
+  } = useSaveManager();
+  
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showLegend, setShowLegend] = useState(false);
+  const [showSaveMenu, setShowSaveMenu] = useState(false);
+  const [showLoadMenu, setShowLoadMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-save when turn changes
+  useEffect(() => {
+    if (gameState && gameState.turn > 1 && !gameState.gameOver) {
+      // Convert to ProvinceGameState format for save (simplified for now)
+      // In production, would need proper state conversion
+    }
+  }, [gameState?.turn]);
 
   // Fullscreen API handlers
   const toggleFullscreen = useCallback(async () => {
@@ -120,6 +147,8 @@ export const MongolianGame = () => {
         onToggleFullscreen={toggleFullscreen}
         onToggleSidebar={() => setShowSidebar(!showSidebar)}
         onToggleLegend={() => setShowLegend(!showLegend)}
+        onOpenSaveMenu={() => setShowSaveMenu(true)}
+        onOpenLoadMenu={() => setShowLoadMenu(true)}
         showSidebar={showSidebar}
       />
 
@@ -235,6 +264,9 @@ export const MongolianGame = () => {
           </div>
         </div>
       )}
+
+      {/* Save/Load Menus - disabled for now since we need to convert state format */}
+      {/* TODO: Implement proper state conversion for province-based game */}
 
       {/* Back to home link - subtle */}
       <Link 

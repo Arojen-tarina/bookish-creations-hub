@@ -10,6 +10,8 @@ import {
   Clock,
   Brain,
   Crown,
+  Save,
+  FolderOpen,
 } from 'lucide-react';
 
 interface GameHUDProps {
@@ -19,6 +21,8 @@ interface GameHUDProps {
   onToggleFullscreen: () => void;
   onToggleSidebar: () => void;
   onToggleLegend: () => void;
+  onOpenSaveMenu?: () => void;
+  onOpenLoadMenu?: () => void;
   showSidebar: boolean;
 }
 
@@ -29,6 +33,8 @@ export const GameHUD = ({
   onToggleFullscreen,
   onToggleSidebar,
   onToggleLegend,
+  onOpenSaveMenu,
+  onOpenLoadMenu,
   showSidebar,
 }: GameHUDProps) => {
   const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
@@ -72,6 +78,34 @@ export const GameHUD = ({
               {gameState.turn}<span className="text-amber-200/50">/{gameState.maxTurns}</span>
             </span>
           </div>
+          
+          {/* Save/Load buttons */}
+          <div className="hidden md:flex items-center gap-1">
+            {onOpenSaveMenu && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenSaveMenu}
+                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30"
+                title="Tallenna peli"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                <span className="hidden lg:inline">Tallenna</span>
+              </Button>
+            )}
+            {onOpenLoadMenu && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenLoadMenu}
+                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30"
+                title="Lataa peli"
+              >
+                <FolderOpen className="w-4 h-4 mr-1" />
+                <span className="hidden lg:inline">Lataa</span>
+              </Button>
+            )}
+          </div>
         </div>
         
         {/* Center - Resources (desktop only) */}
@@ -90,6 +124,32 @@ export const GameHUD = ({
         
         {/* Right section - Controls */}
         <div className="flex items-center gap-2">
+          {/* Mobile Save/Load */}
+          <div className="md:hidden flex items-center gap-1">
+            {onOpenSaveMenu && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onOpenSaveMenu}
+                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30"
+                title="Tallenna peli"
+              >
+                <Save className="w-5 h-5" />
+              </Button>
+            )}
+            {onOpenLoadMenu && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onOpenLoadMenu}
+                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30"
+                title="Lataa peli"
+              >
+                <FolderOpen className="w-5 h-5" />
+              </Button>
+            )}
+          </div>
+          
           {/* Help button */}
           <Button
             variant="ghost"
