@@ -43,6 +43,8 @@ export const ProvinceGame = () => {
     gameStarted,
     playerFaction,
     gameState,
+    pendingBattle,
+    clearBattle,
     startGame,
     selectProvince,
     selectArmy,
@@ -70,7 +72,6 @@ export const ProvinceGame = () => {
   const [activeTab, setActiveTab] = useState('province');
   const [sfxEnabled, setSfxEnabled] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [activeBattle, setActiveBattle] = useState<BattleResult | null>(null);
   const [activeEvent, setActiveEvent] = useState<ActiveGameEvent | null>(null);
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('mongolian_game_tutorial_seen') === 'true';
@@ -401,8 +402,11 @@ export const ProvinceGame = () => {
           <div className="absolute inset-0 p-4">
             <CivilizationMap
               provinces={gameState.provinces}
+              armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
+              selectedArmyId={gameState.selectedArmyId}
               onProvinceClick={handleProvinceClick}
+              onArmyClick={selectArmy}
               playerFaction={playerFaction}
               highlightedProvinces={availableMoves}
             />
@@ -589,8 +593,8 @@ export const ProvinceGame = () => {
       
       {/* Battle Display */}
       <BattleDisplay
-        battle={activeBattle}
-        onClose={() => setActiveBattle(null)}
+        battle={pendingBattle}
+        onClose={clearBattle}
         onPlaySound={sfxEnabled ? (sound) => playGameSFX(sound as GameSFXKey) : undefined}
       />
       
