@@ -5,10 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Romaani from "./pages/Romaani";
-import Suunnitelma from "./pages/Suunnitelma";
+import Projektisuunnitelma from "./pages/Projektisuunnitelma";
 import Lautapeli from "./pages/Lautapeli";
 import Digipeli from "./pages/Digipeli";
-import Liiketoiminta from "./pages/Liiketoiminta";
 import LukuOsa1 from "./pages/LukuOsa1";
 import LukuOsa2 from "./pages/LukuOsa2";
 import LukuOsa3 from "./pages/LukuOsa3";
@@ -28,11 +27,11 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/romaani" element={<Romaani />} />
-          <Route path="/suunnitelma" element={<Suunnitelma />} />
+          <Route path="/suunnitelma" element={<Projektisuunnitelma />} />
           <Route path="/lautapeli" element={<Lautapeli />} />
           <Route path="/digipeli" element={<Digipeli />} />
           <Route path="/ota-yhteytta" element={<OtaYhteytta />} />
-          <Route path="/liiketoiminta" element={<Liiketoiminta />} />
+          <Route path="/liiketoiminta" element={<Projektisuunnitelma />} />
           <Route path="/luku/osa-1" element={<LukuOsa1 />} />
           <Route path="/luku/osa-2" element={<LukuOsa2 />} />
           <Route path="/luku/osa-3" element={<LukuOsa3 />} />
