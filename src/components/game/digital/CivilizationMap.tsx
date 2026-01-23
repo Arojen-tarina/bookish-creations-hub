@@ -332,6 +332,21 @@ const TerrainPatterns = memo(() => (
       <feGaussianBlur stdDeviation="2" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
+    
+    {/* Neutral territory pattern (diagonal stripes) */}
+    <pattern id="neutral-pattern" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="transparent" />
+      <line x1="0" y1="4" x2="8" y2="4" stroke="#4b5563" strokeWidth="2" opacity="0.5" />
+    </pattern>
+    
+    {/* Faction border glow */}
+    <filter id="border-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
 ));
 
@@ -366,6 +381,7 @@ interface ProvinceTileProps {
   isSelected: boolean;
   isHighlighted: boolean;
   isPlayerOwned: boolean;
+  isNeutral: boolean;
   onClick: () => void;
   onHover: (province: Province | null) => void;
 }
@@ -376,6 +392,7 @@ const ProvinceTile = memo(({
   isSelected,
   isHighlighted,
   isPlayerOwned,
+  isNeutral,
   onClick,
   onHover,
 }: ProvinceTileProps) => {
@@ -407,9 +424,9 @@ const ProvinceTile = memo(({
       <polygon
         points={hexPath}
         fill={getTerrainFill(province.terrain)}
-        stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : '#374151'}
+        stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : isNeutral ? '#4b5563' : '#374151'}
         strokeWidth={isSelected ? 3 : isHighlighted ? 2 : 1}
-        opacity={0.9}
+        opacity={isNeutral ? 0.7 : 0.9}
       />
       
       {/* Faction ownership overlay */}
@@ -417,9 +434,18 @@ const ProvinceTile = memo(({
         <polygon
           points={hexPath}
           fill={ownerColor}
-          opacity={0.35}
+          opacity={0.4}
           stroke={ownerColor}
-          strokeWidth={1.5}
+          strokeWidth={2}
+        />
+      )}
+      
+      {/* Neutral territory pattern (stripes) */}
+      {isNeutral && (
+        <polygon
+          points={hexPath}
+          fill="url(#neutral-pattern)"
+          opacity={0.3}
         />
       )}
       
@@ -442,7 +468,7 @@ const ProvinceTile = memo(({
           <circle
             cx={pixel.x}
             cy={pixel.y}
-            r={8}
+            r={10}
             fill="#fbbf24"
             stroke="#1f2937"
             strokeWidth={2}
@@ -451,7 +477,7 @@ const ProvinceTile = memo(({
             x={pixel.x}
             y={pixel.y + 4}
             textAnchor="middle"
-            fontSize={10}
+            fontSize={12}
             fill="#1f2937"
           >
             ★
@@ -461,16 +487,27 @@ const ProvinceTile = memo(({
       
       {/* Fort indicator */}
       {province.fortLevel > 0 && !province.isCapital && (
-        <rect
-          x={pixel.x - 6}
-          y={pixel.y - 6}
-          width={12}
-          height={12}
-          fill="#6b7280"
-          stroke="#1f2937"
-          strokeWidth={1}
-          rx={2}
-        />
+        <g>
+          <rect
+            x={pixel.x - 7}
+            y={pixel.y - 7}
+            width={14}
+            height={14}
+            fill="#6b7280"
+            stroke="#1f2937"
+            strokeWidth={1}
+            rx={2}
+          />
+          <text
+            x={pixel.x}
+            y={pixel.y + 4}
+            textAnchor="middle"
+            fontSize={10}
+            fill="white"
+          >
+            {province.fortLevel}
+          </text>
+        </g>
       )}
       
       {/* Silk Road marker */}
@@ -768,6 +805,50 @@ export const CivilizationMap = ({
     return connections;
   }, [provinces]);
 
+  // Faction borders - lines between provinces of different factions
+  const factionBorders = useMemo(() => {
+    const borders: { 
+      from: { x: number; y: number }; 
+      to: { x: number; y: number }; 
+      color1: string;
+      color2: string;
+    }[] = [];
+    
+    provinces.forEach(province => {
+      const pixel = coordToPixel(province.center);
+      
+      province.neighbors.forEach(neighborId => {
+        const neighbor = provinces.find(p => p.id === neighborId);
+        if (!neighbor || province.id >= neighborId) return; // Avoid duplicates
+        
+        // Only draw border if different factions
+        if (province.ownerId !== neighbor.ownerId) {
+          const neighborPixel = coordToPixel(neighbor.center);
+          
+          // Calculate midpoint for border
+          const midX = (pixel.x + neighborPixel.x) / 2;
+          const midY = (pixel.y + neighborPixel.y) / 2;
+          
+          // Calculate perpendicular direction
+          const dx = neighborPixel.x - pixel.x;
+          const dy = neighborPixel.y - pixel.y;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          const perpX = -dy / len * 20;
+          const perpY = dx / len * 20;
+          
+          borders.push({
+            from: { x: midX - perpX, y: midY - perpY },
+            to: { x: midX + perpX, y: midY + perpY },
+            color1: province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color || '#6b7280' : '#6b7280',
+            color2: neighbor.ownerId ? FACTION_DATA_1206[neighbor.ownerId]?.color || '#6b7280' : '#6b7280',
+          });
+        }
+      });
+    });
+    
+    return borders;
+  }, [provinces]);
+
   return (
     <div
       ref={containerRef}
@@ -872,6 +953,21 @@ export const CivilizationMap = ({
           />
         ))}
         
+        {/* Faction borders */}
+        {factionBorders.map((border, i) => (
+          <line
+            key={`border-${i}`}
+            x1={border.from.x}
+            y1={border.from.y}
+            x2={border.to.x}
+            y2={border.to.y}
+            stroke="#1f2937"
+            strokeWidth={4}
+            strokeLinecap="round"
+            opacity={0.8}
+          />
+        ))}
+        
         {/* Province tiles */}
         {provincePixels.map(({ province, pixel }) => (
           <ProvinceTile
@@ -881,6 +977,7 @@ export const CivilizationMap = ({
             isSelected={province.id === selectedProvinceId}
             isHighlighted={highlightedProvinces.includes(province.id)}
             isPlayerOwned={province.ownerId === playerFaction}
+            isNeutral={province.ownerId === null}
             onClick={() => onProvinceClick(province.id)}
             onHover={setHoveredProvince}
           />
@@ -973,9 +1070,23 @@ export const CivilizationMap = ({
       )}
       
       {/* Legend */}
-      <div className="absolute bottom-4 right-4 bg-stone-900/90 border border-amber-700/30 rounded-lg p-3 text-xs">
-        <div className="text-amber-200 font-bold mb-2">Selite</div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-stone-300">
+      <div className="absolute bottom-4 right-4 bg-stone-900/95 border border-amber-700/40 rounded-lg p-3 text-xs max-w-[280px]">
+        <div className="text-amber-200 font-bold mb-2">Valtakunnat</div>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-stone-300 mb-3">
+          {Object.values(FACTION_DATA_1206).map(faction => (
+            <div key={faction.id} className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ background: faction.color }} />
+              <span className="truncate">{faction.name.split(' ')[0]}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded border border-dashed border-stone-500" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 2px, #4b5563 2px, #4b5563 4px)' }} />
+            <span>Riippumaton</span>
+          </div>
+        </div>
+        
+        <div className="text-amber-200 font-bold mb-2 pt-2 border-t border-stone-700">Maasto</div>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-stone-300">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded" style={{ background: '#a8b077' }} />
             <span>Steppi</span>
@@ -1001,7 +1112,7 @@ export const CivilizationMap = ({
             <span>Vesistö</span>
           </div>
         </div>
-        <div className="mt-2 pt-2 border-t border-stone-700 flex gap-3">
+        <div className="mt-2 pt-2 border-t border-stone-700 flex flex-wrap gap-3">
           <div className="flex items-center gap-1">
             <span className="text-amber-400">👑</span>
             <span>Pääkaupunki</span>

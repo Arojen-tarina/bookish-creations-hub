@@ -515,6 +515,104 @@ const koreaProvinces: Feature<Polygon, ProvinceProperties>[] = [
   }),
 ];
 
+// Siberia - Neutral territories
+const siberiaProvinces: Feature<Polygon, ProvinceProperties>[] = [
+  createProvince('yenisei', 'Yenisei', 92, 55, {
+    region: 'siberia',
+    terrain: 'taiga',
+    ownerId: null,
+    baseTax: 1,
+    baseManpower: 2,
+    tradeGood: 'fur',
+  }),
+  createProvince('yakutia', 'Yakutia', 130, 58, {
+    region: 'siberia',
+    terrain: 'tundra',
+    ownerId: null,
+    baseTax: 1,
+    baseManpower: 1,
+    tradeGood: 'fur',
+  }),
+  createProvince('irkutsk', 'Irkutsk', 104, 52, {
+    region: 'siberia',
+    terrain: 'taiga',
+    ownerId: null,
+    baseTax: 2,
+    baseManpower: 2,
+    tradeGood: 'fur',
+  }),
+  createProvince('tomsk', 'Tomsk', 85, 54, {
+    region: 'siberia',
+    terrain: 'taiga',
+    ownerId: null,
+    baseTax: 1,
+    baseManpower: 2,
+    tradeGood: 'fur',
+  }),
+];
+
+// India Border - Neutral territories
+const indiaProvinces: Feature<Polygon, ProvinceProperties>[] = [
+  createProvince('delhi', 'Delhi', 77, 28, {
+    region: 'india',
+    terrain: 'farmland',
+    ownerId: null,
+    baseTax: 8,
+    baseManpower: 10,
+    fortLevel: 2,
+    developmentLevel: 4,
+    tradeGood: 'spices',
+  }),
+  createProvince('multan', 'Multan', 71, 30, {
+    region: 'india',
+    terrain: 'farmland',
+    ownerId: null,
+    baseTax: 5,
+    baseManpower: 6,
+    hasSilkRoad: true,
+  }),
+  createProvince('kashmir', 'Kashmir', 75, 34, {
+    region: 'india',
+    terrain: 'mountain',
+    ownerId: null,
+    baseTax: 3,
+    baseManpower: 4,
+    fortLevel: 1,
+    tradeGood: 'silk',
+  }),
+];
+
+// Arabia Border - Neutral territories
+const arabiaProvinces: Feature<Polygon, ProvinceProperties>[] = [
+  createProvince('baghdad', 'Baghdad', 44, 33, {
+    region: 'arabia',
+    terrain: 'farmland',
+    ownerId: null,
+    baseTax: 7,
+    baseManpower: 8,
+    fortLevel: 2,
+    developmentLevel: 4,
+    tradeGood: 'spices',
+  }),
+  createProvince('basra', 'Basra', 48, 30, {
+    region: 'arabia',
+    terrain: 'marsh',
+    ownerId: null,
+    isCoastal: true,
+    baseTax: 5,
+    baseManpower: 5,
+    tradeGood: 'spices',
+  }),
+  createProvince('mosul', 'Mosul', 43, 36, {
+    region: 'arabia',
+    terrain: 'hills',
+    ownerId: null,
+    baseTax: 4,
+    baseManpower: 5,
+    hasSilkRoad: true,
+  }),
+];
+
 // ============= COMBINED GEOJSON =============
 
 export const EURASIA_1206_GEOJSON: FeatureCollection<Polygon, ProvinceProperties> = {
@@ -532,6 +630,9 @@ export const EURASIA_1206_GEOJSON: FeatureCollection<Polygon, ProvinceProperties
     ...tibetProvinces,
     ...caucasusProvinces,
     ...koreaProvinces,
+    ...siberiaProvinces,
+    ...indiaProvinces,
+    ...arabiaProvinces,
   ],
 };
 
@@ -546,8 +647,8 @@ export const PROVINCE_ADJACENCY_GRAPH: Record<string, string[]> = {
   mongol_west: ['karakorum', 'mongol_central', 'altai', 'dzungaria'],
   gobi_north: ['karakorum', 'mongol_central', 'gobi_south'],
   gobi_south: ['gobi_north', 'xingqing', 'ganzhou'],
-  baikal: ['mongol_east'],
-  altai: ['mongol_west', 'mongol_central', 'dzungaria', 'turfan'],
+  baikal: ['mongol_east', 'irkutsk', 'yenisei'],
+  altai: ['mongol_west', 'mongol_central', 'dzungaria', 'turfan', 'tomsk'],
   
   // Jin China
   zhongdu: ['datong', 'shandong', 'liaoyang', 'kaifeng'],
@@ -555,7 +656,7 @@ export const PROVINCE_ADJACENCY_GRAPH: Record<string, string[]> = {
   taiyuan: ['datong', 'kaifeng'],
   kaifeng: ['zhongdu', 'taiyuan', 'shandong', 'nanjing'],
   shandong: ['zhongdu', 'kaifeng', 'nanjing'],
-  liaoyang: ['zhongdu', 'mongol_east', 'goryeo'],
+  liaoyang: ['zhongdu', 'mongol_east', 'goryeo', 'pyongyang'],
   
   // Xi Xia
   xingqing: ['ganzhou', 'liangzhou', 'gobi_south', 'datong'],
@@ -569,17 +670,18 @@ export const PROVINCE_ADJACENCY_GRAPH: Record<string, string[]> = {
   guangdong: ['hangzhou'],
   
   // Khwarezm
-  samarkand: ['bukhara', 'merv', 'kashgar'],
+  samarkand: ['bukhara', 'merv', 'kashgar', 'ferghana'],
   bukhara: ['samarkand', 'urgench', 'merv'],
   urgench: ['bukhara', 'kipchak_east'],
   merv: ['samarkand', 'bukhara', 'nishapur', 'herat'],
   nishapur: ['merv', 'herat', 'ray'],
-  herat: ['merv', 'nishapur', 'isfahan'],
-  kashgar: ['samarkand', 'dunhuang', 'turfan'],
+  herat: ['merv', 'nishapur', 'isfahan', 'kashmir', 'multan'],
+  kashgar: ['samarkand', 'dunhuang', 'turfan', 'khotan', 'ferghana'],
+  ferghana: ['samarkand', 'kashgar', 'kucha'],
   
   // Persia
-  isfahan: ['herat', 'ray', 'tabriz'],
-  tabriz: ['isfahan', 'ray', 'azerbaijan', 'georgia'],
+  isfahan: ['herat', 'ray', 'tabriz', 'baghdad'],
+  tabriz: ['isfahan', 'ray', 'azerbaijan', 'georgia', 'mosul'],
   ray: ['nishapur', 'isfahan', 'tabriz'],
   
   // Rus
@@ -589,23 +691,47 @@ export const PROVINCE_ADJACENCY_GRAPH: Record<string, string[]> = {
   
   // Kipchak
   sarkel: ['kipchak_west', 'kipchak_east', 'kiev'],
-  kipchak_west: ['sarkel', 'kiev', 'georgia'],
+  kipchak_west: ['sarkel', 'kiev', 'georgia', 'circassia'],
   kipchak_east: ['sarkel', 'urgench', 'dzungaria'],
   
   // Central Asia
-  dunhuang: ['ganzhou', 'kashgar', 'turfan'],
-  turfan: ['dunhuang', 'kashgar', 'altai', 'dzungaria'],
-  dzungaria: ['mongol_west', 'altai', 'turfan', 'kipchak_east'],
+  dunhuang: ['ganzhou', 'kashgar', 'turfan', 'kucha', 'khotan'],
+  turfan: ['dunhuang', 'kashgar', 'altai', 'dzungaria', 'kucha'],
+  dzungaria: ['mongol_west', 'altai', 'turfan', 'kipchak_east', 'tomsk'],
+  khotan: ['kashgar', 'dunhuang', 'lhasa', 'ngari'],
+  kucha: ['turfan', 'dunhuang', 'ferghana'],
   
   // Tibet
-  lhasa: ['sichuan'],
+  lhasa: ['sichuan', 'shigatse', 'chamdo', 'ngari', 'khotan'],
+  shigatse: ['lhasa', 'ngari', 'delhi'],
+  chamdo: ['lhasa', 'sichuan'],
+  ngari: ['lhasa', 'shigatse', 'khotan', 'kashmir'],
   
   // Caucasus
-  georgia: ['tabriz', 'azerbaijan', 'kipchak_west'],
-  azerbaijan: ['georgia', 'tabriz'],
+  georgia: ['tabriz', 'azerbaijan', 'kipchak_west', 'armenia', 'circassia'],
+  azerbaijan: ['georgia', 'tabriz', 'armenia'],
+  armenia: ['georgia', 'azerbaijan', 'mosul'],
+  circassia: ['georgia', 'kipchak_west'],
   
   // Korea
-  goryeo: ['liaoyang'],
+  goryeo: ['liaoyang', 'pyongyang'],
+  pyongyang: ['goryeo', 'liaoyang'],
+  
+  // Siberia
+  yenisei: ['baikal', 'irkutsk', 'tomsk', 'yakutia'],
+  yakutia: ['yenisei', 'irkutsk'],
+  irkutsk: ['baikal', 'yenisei', 'yakutia'],
+  tomsk: ['altai', 'dzungaria', 'yenisei'],
+  
+  // India
+  delhi: ['multan', 'kashmir', 'shigatse'],
+  multan: ['delhi', 'kashmir', 'herat'],
+  kashmir: ['delhi', 'multan', 'herat', 'ngari'],
+  
+  // Arabia
+  baghdad: ['isfahan', 'mosul', 'basra'],
+  basra: ['baghdad'],
+  mosul: ['baghdad', 'tabriz', 'armenia'],
 };
 
 // Get all province IDs
