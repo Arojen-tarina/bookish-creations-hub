@@ -37,6 +37,8 @@ import {
   Trophy,
   Volume2,
   ScrollText,
+  Target,
+  Crosshair,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -81,6 +83,7 @@ export const ProvinceGame = () => {
   const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
     return localStorage.getItem('mongolian_game_tutorial_seen') === 'true';
   });
+  const [attackMode, setAttackMode] = useState(false);
   
   // Turn transition state
   const [showTurnTransition, setShowTurnTransition] = useState(false);
@@ -508,8 +511,9 @@ export const ProvinceGame = () => {
               onProvinceClick={handleProvinceClick}
               onArmyClick={selectArmy}
               playerFaction={playerFaction}
-              highlightedProvinces={availableMoves}
+              highlightedProvinces={attackMode ? [] : availableMoves}
               attackableProvinces={attackableProvinces}
+              attackModeActive={attackMode}
             />
           </div>
         </div>
@@ -569,12 +573,28 @@ export const ProvinceGame = () => {
                 
                 {/* Army selection with attack info */}
                 {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && (
-                  <Card className="bg-green-900/30 border-green-700/30">
+                  <Card className={`border transition-all duration-300 ${
+                    attackMode 
+                      ? 'bg-red-900/50 border-red-500/50 shadow-lg shadow-red-500/20' 
+                      : 'bg-green-900/30 border-green-700/30'
+                  }`}>
                     <CardContent className="p-4">
-                      <h4 className="text-green-200 font-semibold mb-2 flex items-center gap-2">
-                        <Sword className="w-4 h-4" />
-                        Valitse armeija liikutettavaksi
+                      <h4 className={`font-semibold mb-2 flex items-center gap-2 ${
+                        attackMode ? 'text-red-200' : 'text-green-200'
+                      }`}>
+                        {attackMode ? (
+                          <>
+                            <Crosshair className="w-4 h-4 animate-pulse" />
+                            Valitse hyökkäyskohde kartalta!
+                          </>
+                        ) : (
+                          <>
+                            <Sword className="w-4 h-4" />
+                            Valitse armeija
+                          </>
+                        )}
                       </h4>
+                      
                       <div className="space-y-2">
                         {selectedProvinceArmies
                           .filter(a => a.ownerId === playerFaction)
@@ -584,12 +604,13 @@ export const ProvinceGame = () => {
                               variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
                               className={`w-full justify-start ${
                                 gameState.selectedArmyId === army.id 
-                                  ? 'bg-green-600' 
-                                  : 'border-green-600 text-green-200'
+                                  ? attackMode ? 'bg-red-600' : 'bg-green-600' 
+                                  : attackMode ? 'border-red-600 text-red-200' : 'border-green-600 text-green-200'
                               }`}
                               onClick={() => {
                                 audio.playSelect();
                                 selectArmy(army.id);
+                                setAttackMode(false);
                               }}
                               disabled={army.movementLeft <= 0}
                             >
@@ -601,10 +622,39 @@ export const ProvinceGame = () => {
                           ))}
                       </div>
                       
-                      {/* Attack/Move legend when army selected */}
-                      {gameState.selectedArmyId && (availableMoves.length > 0 || attackableProvinces.length > 0) && (
+                      {/* Attack button when army selected */}
+                      {gameState.selectedArmyId && attackableProvinces.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <Button
+                            variant={attackMode ? 'destructive' : 'outline'}
+                            className={`w-full font-bold ${
+                              attackMode 
+                                ? 'bg-red-600 hover:bg-red-500 animate-pulse' 
+                                : 'border-red-500 text-red-300 hover:bg-red-900/50'
+                            }`}
+                            onClick={() => {
+                              setAttackMode(!attackMode);
+                              if (!attackMode && sfxEnabled) {
+                                playGameSFX('battle_start');
+                              }
+                            }}
+                          >
+                            <Target className="w-4 h-4 mr-2" />
+                            {attackMode ? 'Peruuta hyökkäys' : `Hyökkää! (${attackableProvinces.length} kohdetta)`}
+                          </Button>
+                          
+                          {attackMode && (
+                            <p className="text-xs text-red-200 text-center animate-pulse">
+                              🔴 Klikkaa punaista provinssia kartalta hyökätäksesi
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Move/Attack legend */}
+                      {gameState.selectedArmyId && !attackMode && (availableMoves.length > 0 || attackableProvinces.length > 0) && (
                         <div className="mt-4 pt-3 border-t border-green-700/30">
-                          <p className="text-xs text-green-200/70 mb-2">Klikkaa kohdeprovinssia kartalta:</p>
+                          <p className="text-xs text-green-200/70 mb-2">Vaihtoehdot:</p>
                           <div className="flex gap-4 text-xs">
                             {availableMoves.length > 0 && (
                               <div className="flex items-center gap-1.5">
@@ -614,8 +664,8 @@ export const ProvinceGame = () => {
                             )}
                             {attackableProvinces.length > 0 && (
                               <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded border-2 border-red-500 bg-red-500/30 animate-pulse" />
-                                <span className="text-red-300">Hyökkää ({attackableProvinces.length})</span>
+                                <div className="w-3 h-3 rounded border-2 border-red-500 bg-red-500/30" />
+                                <span className="text-red-300">Hyökkäys ({attackableProvinces.length})</span>
                               </div>
                             )}
                           </div>
