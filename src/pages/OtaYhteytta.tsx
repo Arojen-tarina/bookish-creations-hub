@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink, Mail, User, Building2 } from "lucide-react";
+import { ContactForm } from "@/components/ContactForm";
 
 interface Project {
   name: string;
@@ -132,6 +133,11 @@ const OtaYhteytta = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Yhteydenottolomake */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <ContactForm />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {employees.map((employee, index) => (
