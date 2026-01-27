@@ -7,6 +7,7 @@ interface GeneratedImage {
   imageUrl: string;
   success: boolean;
   error?: string;
+  cached?: boolean;
 }
 
 interface GenerationProgress {
@@ -14,6 +15,7 @@ interface GenerationProgress {
   processed: number;
   successful: number;
   failed: number;
+  cached: number;
   currentBatch: number;
   totalBatches: number;
 }
@@ -23,87 +25,66 @@ interface GenerationState {
   progress: GenerationProgress;
   generatedImages: Map<string, string>;
   errors: Map<string, string>;
+  isLoading: boolean;
 }
 
 const BATCH_SIZE = 1;
-const STORAGE_KEY = 'mongolian-game-card-images';
-const ERRORS_KEY = 'mongolian-game-card-errors';
-
-// Helper to load saved images from localStorage
-function loadSavedImages(): Map<string, string> {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return new Map(Object.entries(parsed));
-    }
-  } catch (e) {
-    console.error('Failed to load saved images:', e);
-  }
-  return new Map();
-}
-
-// Helper to save images to localStorage
-function saveImages(images: Map<string, string>) {
-  try {
-    const obj = Object.fromEntries(images);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-  } catch (e) {
-    console.error('Failed to save images:', e);
-  }
-}
-
-// Helper to load saved errors from localStorage
-function loadSavedErrors(): Map<string, string> {
-  try {
-    const saved = localStorage.getItem(ERRORS_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return new Map(Object.entries(parsed));
-    }
-  } catch (e) {
-    console.error('Failed to load saved errors:', e);
-  }
-  return new Map();
-}
-
-// Helper to save errors to localStorage
-function saveErrors(errors: Map<string, string>) {
-  try {
-    const obj = Object.fromEntries(errors);
-    localStorage.setItem(ERRORS_KEY, JSON.stringify(obj));
-  } catch (e) {
-    console.error('Failed to save errors:', e);
-  }
-}
 
 export function useCardImageGenerator() {
-  const [state, setState] = useState<GenerationState>(() => ({
+  const [state, setState] = useState<GenerationState>({
     isGenerating: false,
     progress: {
       total: 0,
       processed: 0,
       successful: 0,
       failed: 0,
+      cached: 0,
       currentBatch: 0,
       totalBatches: 0,
     },
-    generatedImages: loadSavedImages(),
-    errors: loadSavedErrors(),
-  }));
+    generatedImages: new Map(),
+    errors: new Map(),
+    isLoading: true,
+  });
 
-  // Sync to localStorage whenever images or errors change
+  // Load existing images from database on mount
   useEffect(() => {
-    saveImages(state.generatedImages);
-  }, [state.generatedImages]);
+    async function loadExistingImages() {
+      try {
+        const { data, error } = await supabase
+          .from('generated_cards')
+          .select('id, image_url');
 
-  useEffect(() => {
-    saveErrors(state.errors);
-  }, [state.errors]);
+        if (error) {
+          console.error('Failed to load existing images:', error);
+          setState(prev => ({ ...prev, isLoading: false }));
+          return;
+        }
+
+        const images = new Map<string, string>();
+        data?.forEach(card => {
+          images.set(card.id, card.image_url);
+        });
+
+        console.log(`Loaded ${images.size} existing card images from database`);
+
+        setState(prev => ({
+          ...prev,
+          generatedImages: images,
+          isLoading: false,
+        }));
+      } catch (e) {
+        console.error('Error loading images:', e);
+        setState(prev => ({ ...prev, isLoading: false }));
+      }
+    }
+
+    loadExistingImages();
+  }, []);
 
   const generateImages = useCallback(async (cards: GameCard[]) => {
     // Filter out already generated cards
-    const existingImages = loadSavedImages();
+    const existingImages = state.generatedImages;
     const cardsToGenerate = cards.filter(card => !existingImages.has(card.id));
     
     if (cardsToGenerate.length === 0) {
@@ -123,6 +104,7 @@ export function useCardImageGenerator() {
         processed: 0,
         successful: 0,
         failed: 0,
+        cached: 0,
         currentBatch: 0,
         totalBatches,
       },
@@ -195,6 +177,7 @@ export function useCardImageGenerator() {
       const processed = Math.min(i + BATCH_SIZE, cardsToGenerate.length);
       const successful = allResults.filter(r => r.success).length;
       const failed = allResults.filter(r => !r.success).length;
+      const cached = allResults.filter(r => r.cached).length;
 
       setState(prev => {
         const newImages = new Map(prev.generatedImages);
@@ -215,6 +198,7 @@ export function useCardImageGenerator() {
             processed,
             successful,
             failed,
+            cached,
           },
           generatedImages: newImages,
           errors: newErrors,
@@ -232,7 +216,7 @@ export function useCardImageGenerator() {
     }));
 
     return allResults;
-  }, []);
+  }, [state.generatedImages]);
 
   const stopGeneration = useCallback(() => {
     setState(prev => ({
@@ -241,9 +225,9 @@ export function useCardImageGenerator() {
     }));
   }, []);
 
-  const clearResults = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(ERRORS_KEY);
+  const clearResults = useCallback(async () => {
+    // Note: This only clears local state, not the database
+    // Images remain in storage for persistence
     setState({
       isGenerating: false,
       progress: {
@@ -251,12 +235,40 @@ export function useCardImageGenerator() {
         processed: 0,
         successful: 0,
         failed: 0,
+        cached: 0,
         currentBatch: 0,
         totalBatches: 0,
       },
       generatedImages: new Map(),
       errors: new Map(),
+      isLoading: false,
     });
+  }, []);
+
+  const refreshImages = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true }));
+    
+    try {
+      const { data, error } = await supabase
+        .from('generated_cards')
+        .select('id, image_url');
+
+      if (error) throw error;
+
+      const images = new Map<string, string>();
+      data?.forEach(card => {
+        images.set(card.id, card.image_url);
+      });
+
+      setState(prev => ({
+        ...prev,
+        generatedImages: images,
+        isLoading: false,
+      }));
+    } catch (e) {
+      console.error('Error refreshing images:', e);
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
   }, []);
 
   return {
@@ -264,5 +276,6 @@ export function useCardImageGenerator() {
     generateImages,
     stopGeneration,
     clearResults,
+    refreshImages,
   };
 }
