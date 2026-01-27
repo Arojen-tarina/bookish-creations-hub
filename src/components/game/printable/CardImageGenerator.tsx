@@ -102,9 +102,11 @@ export const CardImageGenerator = () => {
     progress,
     generatedImages,
     errors,
+    isLoading,
     generateImages,
     stopGeneration,
     clearResults,
+    refreshImages,
   } = useCardImageGenerator();
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'strategy' | 'diplomacy' | 'technology' | 'resource'>('all');
@@ -169,6 +171,14 @@ export const CardImageGenerator = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <span className="ml-2 text-muted-foreground">Ladataan tallennettuja kuvia...</span>
+          </div>
+        )}
+
         {/* Category selector */}
         <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as typeof selectedCategory)}>
           <TabsList className="grid w-full grid-cols-5">
@@ -270,9 +280,9 @@ export const CardImageGenerator = () => {
         <div className="text-xs text-muted-foreground bg-muted p-3 rounded-lg">
           <p className="font-medium mb-1">💡 Tietoa generoinnista:</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Kuvat generoidaan 3 kortin erissä virheiden välttämiseksi</li>
-            <li>180 kortin generointi kestää noin 60 minuuttia</li>
-            <li>Kuvat tallennetaan selaimen muistiin - muista ladata ne!</li>
+            <li>Kuvat generoidaan yksi kerrallaan ja tallennetaan pilveen</li>
+            <li>Kuvat säilyvät pysyvästi - ne näkyvät aina kun palaat sivulle</li>
+            <li>Jo generoidut kuvat ohitetaan automaattisesti</li>
             <li>Tyyli: Realistinen maalaus, 1200-luvun mongolilais-persialainen</li>
           </ul>
         </div>

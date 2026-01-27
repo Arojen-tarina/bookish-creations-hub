@@ -1,4 +1,6 @@
-// Supabase Edge Function for generating card images
+// Supabase Edge Function for generating card images and storing them
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +34,18 @@ function generateArtPrompt(card: CardRequest): string {
   return `${baseStyle}. Scene depicting ${sceneDescription}. ${typeContext}. Mongolian and Persian artistic influences, traditional Central Asian elements, detailed borders with geometric patterns, museum quality artwork, dramatic lighting, professional illustration.`;
 }
 
+// Convert base64 data URL to Uint8Array for upload
+function base64ToUint8Array(base64: string): Uint8Array {
+  // Remove data URL prefix if present
+  const base64Data = base64.includes(',') ? base64.split(',')[1] : base64;
+  const binaryString = atob(base64Data);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -44,18 +58,48 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error("Supabase credentials not configured");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     const { cards } = await req.json() as { cards: CardRequest[] };
     
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
       throw new Error("No cards provided");
     }
 
-    // Process cards in smaller batches to avoid timeouts
-    const results: { cardId: string; imageUrl: string; success: boolean; error?: string }[] = [];
+    // Check which cards already exist in storage
+    const { data: existingCards } = await supabase
+      .from('generated_cards')
+      .select('id, image_url')
+      .in('id', cards.map(c => c.cardId));
+
+    const existingCardIds = new Set(existingCards?.map(c => c.id) || []);
+    const cardsToGenerate = cards.filter(c => !existingCardIds.has(c.cardId));
+
+    // Return existing cards immediately
+    const results: { cardId: string; imageUrl: string; success: boolean; error?: string; cached?: boolean }[] = [];
     
-    for (const card of cards) {
+    existingCards?.forEach(card => {
+      results.push({
+        cardId: card.id,
+        imageUrl: card.image_url,
+        success: true,
+        cached: true
+      });
+    });
+
+    // Generate new cards
+    for (const card of cardsToGenerate) {
       try {
         const prompt = generateArtPrompt(card);
+        
+        console.log(`Generating image for ${card.cardId}...`);
         
         const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -88,22 +132,68 @@ Deno.serve(async (req) => {
         }
 
         const data = await response.json();
-        const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        const imageDataUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
         
-        if (imageUrl) {
-          results.push({
-            cardId: card.cardId,
-            imageUrl: imageUrl,
-            success: true
-          });
-        } else {
+        if (!imageDataUrl) {
           results.push({
             cardId: card.cardId,
             imageUrl: "",
             success: false,
             error: "No image generated"
           });
+          continue;
         }
+
+        // Upload image to storage
+        const imageBytes = base64ToUint8Array(imageDataUrl);
+        const fileName = `${card.cardId}.png`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('card-images')
+          .upload(fileName, imageBytes, {
+            contentType: 'image/png',
+            upsert: true
+          });
+
+        if (uploadError) {
+          console.error(`Upload error for ${card.cardId}:`, uploadError);
+          results.push({
+            cardId: card.cardId,
+            imageUrl: "",
+            success: false,
+            error: `Upload error: ${uploadError.message}`
+          });
+          continue;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('card-images')
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+
+        // Save to database
+        const { error: dbError } = await supabase
+          .from('generated_cards')
+          .upsert({
+            id: card.cardId,
+            image_url: publicUrl,
+            card_type: card.cardType
+          });
+
+        if (dbError) {
+          console.error(`DB error for ${card.cardId}:`, dbError);
+        }
+
+        console.log(`Successfully generated and stored ${card.cardId}`);
+        
+        results.push({
+          cardId: card.cardId,
+          imageUrl: publicUrl,
+          success: true
+        });
+
       } catch (cardError: unknown) {
         const errorMessage = cardError instanceof Error ? cardError.message : 'Unknown error';
         console.error(`Error processing card ${card.cardId}:`, cardError);
@@ -120,7 +210,8 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         results,
         processed: results.length,
-        successful: results.filter(r => r.success).length
+        successful: results.filter(r => r.success).length,
+        cached: results.filter(r => r.cached).length
       }),
       { 
         headers: { ...corsHeaders, "Content-Type": "application/json" }
