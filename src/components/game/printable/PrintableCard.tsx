@@ -1,11 +1,13 @@
 import { GameCard, cardTypeInfo, rarityInfo } from "@/data/gameCards";
+import { useGeneratedCardImages } from "@/hooks/useGeneratedCardImages";
 
 interface PrintableCardProps {
   card: GameCard;
   showBack?: boolean;
+  imageUrl?: string;
 }
 
-export const PrintableCard = ({ card, showBack = false }: PrintableCardProps) => {
+export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCardProps) => {
   const typeInfo = cardTypeInfo[card.type];
   const rarity = rarityInfo[card.rarity || 'common'];
 
@@ -38,9 +40,18 @@ export const PrintableCard = ({ card, showBack = false }: PrintableCardProps) =>
         </h3>
       </div>
       
-      {/* Kuva-alue (placeholder) */}
-      <div className="h-20 mx-2 mt-2 bg-gradient-to-b from-amber-200 to-amber-300 rounded border border-amber-400 flex items-center justify-center">
-        <span className="text-4xl opacity-50">{typeInfo.icon}</span>
+      {/* Kuva-alue - näyttää AI-generoidun kuvan tai placeholderin */}
+      <div className="h-20 mx-2 mt-2 bg-gradient-to-b from-amber-200 to-amber-300 rounded border border-amber-400 flex items-center justify-center overflow-hidden">
+        {imageUrl ? (
+          <img 
+            src={imageUrl} 
+            alt={card.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <span className="text-4xl opacity-50">{typeInfo.icon}</span>
+        )}
       </div>
       
       {/* Kuvaus */}
@@ -78,6 +89,8 @@ interface PrintableCardSheetProps {
 }
 
 export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) => {
+  const { images, isLoading } = useGeneratedCardImages();
+  
   // 9 korttia per sivu (3x3)
   const cardsPerPage = 9;
   const pages = [];
@@ -86,8 +99,20 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
     pages.push(cards.slice(i, i + cardsPerPage));
   }
 
+  // Count how many cards have images
+  const cardsWithImages = cards.filter(card => images.has(card.id)).length;
+
   return (
     <div className="print:block">
+      {/* Info banner - hidden when printing */}
+      {!isLoading && cardsWithImages > 0 && (
+        <div className="mb-4 p-3 bg-green-100 border border-green-300 rounded-lg print:hidden">
+          <p className="text-sm text-green-800">
+            ✅ <strong>{cardsWithImages}/{cards.length}</strong> korttia näyttää AI-generoidun kuvan
+          </p>
+        </div>
+      )}
+      
       {pages.map((pageCards, pageIndex) => (
         <div 
           key={pageIndex} 
@@ -100,7 +125,11 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
           )}
           <div className="grid grid-cols-3 gap-2 justify-items-center">
             {pageCards.map((card) => (
-              <PrintableCard key={card.id} card={card} />
+              <PrintableCard 
+                key={card.id} 
+                card={card} 
+                imageUrl={images.get(card.id)}
+              />
             ))}
           </div>
           <p className="text-xs text-center text-gray-400 mt-2">
