@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Printer, ZoomIn, ZoomOut, X, MapPin, Shield, Swords, Coins, Mountain, TreePine, Waves, Sun, Building2, Wheat } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Printer, ZoomIn, ZoomOut, X, MapPin, Shield, Swords, Coins, Mountain, TreePine, Waves, Sun, Building2, Wheat, Image, Grid3X3 } from 'lucide-react';
+import gameBoardImage from '@/assets/game-board-map.png';
 
 // Region definitions with hex positions and terrain
 interface HexTile {
@@ -504,7 +506,7 @@ export const PrintableGameBoard = () => {
   const [zoom, setZoom] = useState(1);
   const [selectedTile, setSelectedTile] = useState<HexTile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<HexTile | null>(null);
-  const [isPrintMode, setIsPrintMode] = useState(false);
+  const [boardType, setBoardType] = useState<'image' | 'svg'>('image');
   const tiles = generateHexGrid();
   
   const BOARD_WIDTH = 900;
@@ -512,15 +514,25 @@ export const PrintableGameBoard = () => {
 
   const handlePrint = () => {
     setSelectedTile(null);
-    setIsPrintMode(true);
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => setIsPrintMode(false), 500);
-    }, 100);
+    setTimeout(() => window.print(), 100);
   };
 
   return (
     <div className="space-y-6">
+      {/* Board type selector */}
+      <Tabs value={boardType} onValueChange={(v) => setBoardType(v as 'image' | 'svg')} className="print:hidden">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="image" className="gap-2">
+            <Image className="w-4 h-4" />
+            AI-Generoitu Kartta
+          </TabsTrigger>
+          <TabsTrigger value="svg" className="gap-2">
+            <Grid3X3 className="w-4 h-4" />
+            Interaktiivinen Heksilauta
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Controls - hidden in print */}
       <div className="flex flex-wrap gap-4 items-center print:hidden">
         <Button onClick={handlePrint} className="gap-2">
@@ -539,87 +551,110 @@ export const PrintableGameBoard = () => {
           <Button variant="outline" onClick={() => setZoom(1)}>100%</Button>
         </div>
 
-        <span className="text-sm text-muted-foreground">
-          💡 Klikkaa heksaa nähdäksesi aluetiedot
-        </span>
+        {boardType === 'svg' && (
+          <span className="text-sm text-muted-foreground">
+            💡 Klikkaa heksaa nähdäksesi aluetiedot
+          </span>
+        )}
       </div>
 
-      {/* Legend - shown both in preview and print */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 p-4 bg-muted rounded-lg print:bg-white print:border print:border-gray-300">
-        <h4 className="col-span-full font-display font-bold mb-2">Alueet:</h4>
-        {Object.entries(regionColors).map(([region, color]) => (
-          <div key={region} className="flex items-center gap-2">
-            <div 
-              className="w-4 h-4 rounded border-2" 
-              style={{ borderColor: color, backgroundColor: `${color}33` }}
-            />
-            <span className="text-sm">{region}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3 p-4 bg-muted rounded-lg print:bg-white print:border print:border-gray-300">
-        <h4 className="col-span-full font-display font-bold mb-2">Maastotyypit:</h4>
-        {Object.entries(terrainColors).map(([terrain, colors]) => (
-          <div key={terrain} className="flex items-center gap-2">
-            <div 
-              className="w-4 h-4 rounded" 
-              style={{ backgroundColor: colors.fill, border: `1px solid ${colors.stroke}` }}
-            />
-            <span className="text-sm capitalize">
-              {terrainInfo[terrain]?.name || terrain}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Game Board with Info Panel */}
-      <div className="relative">
-        <InfoPanel tile={selectedTile} onClose={() => setSelectedTile(null)} />
-        
-        {/* Interactive preview */}
-        <div 
-          className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50 print:hidden"
-          style={{ maxHeight: '80vh' }}
-        >
-          <svg
-            viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}
-            style={{ 
-              width: `${BOARD_WIDTH * zoom}px`, 
-              height: `${BOARD_HEIGHT * zoom}px`,
-            }}
+      {/* AI-Generated Image Board */}
+      {boardType === 'image' && (
+        <div className="space-y-4">
+          <div 
+            className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50"
+            style={{ maxHeight: '80vh' }}
           >
-            <GameBoardSVG 
-              tiles={tiles}
-              width={BOARD_WIDTH}
-              height={BOARD_HEIGHT}
-              selectedTile={selectedTile}
-              hoveredTile={hoveredTile}
-              onTileClick={setSelectedTile}
-              onTileHover={setHoveredTile}
-            />
-          </svg>
-        </div>
-
-        {/* Printable version - full size, landscape */}
-        <div className="hidden print:block print:break-before-page">
-          <div className="w-full">
-            <svg
-              viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}
+            <img 
+              src={gameBoardImage}
+              alt="Mongolien Valtakunta - 1206 AD pelilauta"
               className="w-full h-auto"
-              style={{ maxHeight: '100vh' }}
-            >
-              <GameBoardSVG 
-                tiles={tiles}
-                width={BOARD_WIDTH}
-                height={BOARD_HEIGHT}
-                selectedTile={null}
-                hoveredTile={null}
-                onTileClick={() => {}}
-                onTileHover={() => {}}
-              />
-            </svg>
+              style={{ 
+                transform: `scale(${zoom})`,
+                transformOrigin: 'top left',
+                width: zoom > 1 ? `${100 * zoom}%` : '100%'
+              }}
+            />
           </div>
+          
+          <div className="text-sm text-muted-foreground bg-green-100 border border-green-300 p-4 rounded-lg print:hidden">
+            <p className="font-medium text-green-800 mb-2">✅ AI-Generoitu korkearesoluutiokartta</p>
+            <p className="text-green-700">Tämä kartta on generoitu tekoälyllä ja sisältää kaikki alueet, maastotyypit ja pääkaupungit. Kartta on optimoitu tulostukseen.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive SVG Board */}
+      {boardType === 'svg' && (
+        <>
+          {/* Legend - shown both in preview and print */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 p-4 bg-muted rounded-lg print:bg-white print:border print:border-gray-300">
+            <h4 className="col-span-full font-display font-bold mb-2">Alueet:</h4>
+            {Object.entries(regionColors).map(([region, color]) => (
+              <div key={region} className="flex items-center gap-2">
+                <div 
+                  className="w-4 h-4 rounded border-2" 
+                  style={{ borderColor: color, backgroundColor: `${color}33` }}
+                />
+                <span className="text-sm">{region}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 p-4 bg-muted rounded-lg print:bg-white print:border print:border-gray-300">
+            <h4 className="col-span-full font-display font-bold mb-2">Maastotyypit:</h4>
+            {Object.entries(terrainColors).map(([terrain, colors]) => (
+              <div key={terrain} className="flex items-center gap-2">
+                <div 
+                  className="w-4 h-4 rounded" 
+                  style={{ backgroundColor: colors.fill, border: `1px solid ${colors.stroke}` }}
+                />
+                <span className="text-sm capitalize">
+                  {terrainInfo[terrain]?.name || terrain}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Game Board with Info Panel */}
+          <div className="relative">
+            <InfoPanel tile={selectedTile} onClose={() => setSelectedTile(null)} />
+            
+            {/* Interactive preview */}
+            <div 
+              className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50 print:hidden"
+              style={{ maxHeight: '80vh' }}
+            >
+              <svg
+                viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}
+                style={{ 
+                  width: `${BOARD_WIDTH * zoom}px`, 
+                  height: `${BOARD_HEIGHT * zoom}px`,
+                }}
+              >
+                <GameBoardSVG 
+                  tiles={tiles}
+                  width={BOARD_WIDTH}
+                  height={BOARD_HEIGHT}
+                  selectedTile={selectedTile}
+                  hoveredTile={hoveredTile}
+                  onTileClick={setSelectedTile}
+                  onTileHover={setHoveredTile}
+                />
+              </svg>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Printable version - uses the AI image for best quality */}
+      <div className="hidden print:block print:break-before-page">
+        <div className="w-full text-center">
+          <img 
+            src={gameBoardImage}
+            alt="Mongolien Valtakunta - 1206 AD pelilauta"
+            className="w-full h-auto max-h-screen object-contain"
+          />
         </div>
       </div>
 
