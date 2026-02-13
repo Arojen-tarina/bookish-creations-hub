@@ -117,9 +117,7 @@ const Index = () => {
                 <span className="text-2xl">❤️</span>
               </div>
               <h3 className="font-display text-lg font-semibold mb-2">Kielletty Rakkaus</h3>
-              <p className="text-muted-foreground text-sm">
-                Rakkaus, joka ylittää rajat ja ennakkoluulot. Testi muokkaus..
-              </p>
+              <p className="text-muted-foreground text-sm">Rakkaus, joka ylittää rajat ja ennakkoluulot.</p>
             </div>
 
             <div className="text-center">
