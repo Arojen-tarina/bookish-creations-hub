@@ -8,6 +8,7 @@ const navLinks = [
   { path: "/romaani", label: "Romaani" },
   { path: "/suunnitelma", label: "Projektisuunnitelma" },
   { path: "/lautapeli", label: "Lautapeli" },
+  { path: "/esittely", label: "Pelin Esittely" },
   { path: "/digipeli", label: "Digipeli" },
   { path: "/ota-yhteytta", label: "Ota Yhteyttä" },
 ];
