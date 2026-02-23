@@ -4,6 +4,7 @@ import { ComicPanel } from "@/components/ComicPanel";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer, Dice6, Layers } from "lucide-react";
 import gameBoardMap from "@/assets/game-board-map.png";
+import gameSession from "@/assets/game-session.jpg";
 
 const showcaseCards = {
   strategy: ["str-034", "str-035", "str-036", "str-037", "str-038", "str-039", "str-040", "str-041"],
@@ -50,6 +51,34 @@ const PelinEsittely = () => {
             </ComicPanel>
             <p className="text-center text-sm text-muted-foreground mt-4 italic">
               Mongolien Valtakunta — strateginen lautapeli 2–4 pelaajalle
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Game Session Section */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                <Dice6 className="w-6 h-6 text-accent" />
+              </div>
+              <div>
+                <h2 className="font-display text-2xl md:text-3xl font-bold">Pelitilanne pöydällä</h2>
+                <p className="text-muted-foreground">Näin peliä pelataan — tunnelmaa ja strategiaa</p>
+              </div>
+            </div>
+            <ComicPanel className="overflow-hidden p-0">
+              <img
+                src={gameSession}
+                alt="Pelaajat pelaamassa Mongolien Valtakunta -lautapeliä pöydän ääressä"
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </ComicPanel>
+            <p className="text-center text-sm text-muted-foreground mt-4 italic">
+              Pelaajat suunnittelevat strategiaansa arojen hallinnasta
             </p>
           </div>
         </div>
