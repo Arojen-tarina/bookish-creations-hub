@@ -46,6 +46,11 @@ function base64ToUint8Array(base64: string): Uint8Array {
   return bytes;
 }
 
+// Simple in-memory rate limiting
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 50;
+const RATE_WINDOW = 3600000; // 1 hour
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -53,6 +58,41 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Authenticate user
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Missing authorization" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting
+    const now = Date.now();
+    const userLimit = rateLimitMap.get(user.id);
+    if (userLimit && userLimit.resetAt > now) {
+      if (userLimit.count >= RATE_LIMIT) {
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded" }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
       throw new Error("LOVABLE_API_KEY not configured");
@@ -71,6 +111,15 @@ Deno.serve(async (req) => {
     
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
       throw new Error("No cards provided");
+    }
+
+    // Update rate limit counter
+    const rlNow = Date.now();
+    const rl = rateLimitMap.get(user.id);
+    if (rl && rl.resetAt > rlNow) {
+      rl.count += cards.length;
+    } else {
+      rateLimitMap.set(user.id, { count: cards.length, resetAt: rlNow + RATE_WINDOW });
     }
 
     // Check which cards already exist in storage

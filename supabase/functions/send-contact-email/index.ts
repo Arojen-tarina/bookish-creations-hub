@@ -33,6 +33,16 @@ serve(async (req: Request): Promise<Response> => {
 
     const { name, email, message }: ContactEmailRequest = await req.json();
 
+    // HTML escape utility to prevent XSS in email clients
+    const escapeHtml = (unsafe: string): string => {
+      return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    };
+
     // Validate inputs
     if (!name || !email || !message) {
       return new Response(
@@ -54,13 +64,13 @@ serve(async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Yhteydenotto <onboarding@resend.dev>",
         to: ["juuso5279@gmail.com"],
-        subject: `Uusi yhteydenotto: ${name}`,
+      subject: `Uusi yhteydenotto: ${escapeHtml(name)}`,
         html: `
           <h1>Uusi yhteydenotto verkkosivuilta</h1>
-          <p><strong>Nimi:</strong> ${name}</p>
-          <p><strong>Sähköposti:</strong> ${email}</p>
+          <p><strong>Nimi:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Sähköposti:</strong> ${escapeHtml(email)}</p>
           <p><strong>Viesti:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
+          <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
         `,
       }),
     });
@@ -85,10 +95,10 @@ serve(async (req: Request): Promise<Response> => {
         to: [email],
         subject: "Kiitos yhteydenotostasi!",
         html: `
-          <h1>Kiitos yhteydenotostasi, ${name}!</h1>
+          <h1>Kiitos yhteydenotostasi, ${escapeHtml(name)}!</h1>
           <p>Olemme vastaanottaneet viestisi ja palaamme asiaan mahdollisimman pian.</p>
           <p><strong>Viestisi:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
+          <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
           <br>
           <p>Ystävällisin terveisin,<br>Honkosen Huoltopalvelut</p>
         `,
