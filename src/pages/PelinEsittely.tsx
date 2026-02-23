@@ -3,6 +3,13 @@ import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer, Dice6, Layers } from "lucide-react";
+import gameBoardMap from "@/assets/game-board-map.png";
+
+const showcaseCards = {
+  strategy: ["str-034", "str-035", "str-036", "str-037", "str-038", "str-039", "str-040", "str-041"],
+  diplomacy: ["dip-001", "dip-002", "dip-003", "dip-004", "dip-005", "dip-006", "dip-007", "dip-008"],
+  technology: ["tek-001", "tek-002", "tek-003", "tek-004", "tek-005", "tek-006", "tek-007", "tek-008"],
+};
 
 const PelinEsittely = () => {
   return (
@@ -20,7 +27,7 @@ const PelinEsittely = () => {
         </div>
       </section>
 
-      {/* 3D Render Section */}
+      {/* Game Board Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -29,16 +36,17 @@ const PelinEsittely = () => {
                 <Layers className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-bold">3D-malli lautapelistä</h2>
-                <p className="text-muted-foreground">Renderöity kuva valmiista pelipaketista</p>
+                <h2 className="font-display text-2xl md:text-3xl font-bold">Pelilauta</h2>
+                <p className="text-muted-foreground">60×80 cm strateginen karttalauta</p>
               </div>
             </div>
             <ComicPanel className="overflow-hidden p-0">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <p className="text-muted-foreground italic text-lg" id="render-placeholder">
-                  📦 3D-renderöity kuva — lataa kuva chatissa
-                </p>
-              </div>
+              <img 
+                src={gameBoardMap} 
+                alt="Mongolien Valtakunta -lautapelin pelilauta" 
+                className="w-full h-auto"
+                loading="lazy"
+              />
             </ComicPanel>
             <p className="text-center text-sm text-muted-foreground mt-4 italic">
               Mongolien Valtakunta — strateginen lautapeli 2–4 pelaajalle
@@ -47,7 +55,7 @@ const PelinEsittely = () => {
         </div>
       </section>
 
-      {/* Game Session Section */}
+      {/* Card Showcase Section */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -56,19 +64,61 @@ const PelinEsittely = () => {
                 <Dice6 className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-bold">Pelitilanne pöydällä</h2>
-                <p className="text-muted-foreground">Näin peliä pelataan — tunnelmaa ja strategiaa</p>
+                <h2 className="font-display text-2xl md:text-3xl font-bold">Pelikortit</h2>
+                <p className="text-muted-foreground">180 uniikkia pelikorttia — strategia, diplomatia ja teknologia</p>
               </div>
             </div>
-            <ComicPanel className="overflow-hidden p-0">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <p className="text-muted-foreground italic text-lg" id="session-placeholder">
-                  🎲 Kuva pelitilanteesta — lataa kuva chatissa
-                </p>
+            
+            {/* Strategy cards */}
+            <div className="mb-8">
+              <h3 className="font-display text-lg font-semibold text-foreground mb-3">⚔️ Strategiakortit</h3>
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                {showcaseCards.strategy.map((id) => (
+                  <img
+                    key={id}
+                    src={`/cards/${id}.png`}
+                    alt={`Strategiakortti ${id}`}
+                    className="w-full h-auto rounded-sm border border-border shadow-sm hover:scale-105 transition-transform"
+                    loading="lazy"
+                  />
+                ))}
               </div>
-            </ComicPanel>
-            <p className="text-center text-sm text-muted-foreground mt-4 italic">
-              Pelaajat suunnittelevat strategiaansa arojen hallinnasta
+            </div>
+
+            {/* Diplomacy cards */}
+            <div className="mb-8">
+              <h3 className="font-display text-lg font-semibold text-foreground mb-3">🤝 Diplomatiakortit</h3>
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                {showcaseCards.diplomacy.map((id) => (
+                  <img
+                    key={id}
+                    src={`/cards/${id}.png`}
+                    alt={`Diplomatiakortti ${id}`}
+                    className="w-full h-auto rounded-sm border border-border shadow-sm hover:scale-105 transition-transform"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Technology cards */}
+            <div>
+              <h3 className="font-display text-lg font-semibold text-foreground mb-3">⚙️ Teknologiakortit</h3>
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                {showcaseCards.technology.map((id) => (
+                  <img
+                    key={id}
+                    src={`/cards/${id}.png`}
+                    alt={`Teknologiakortti ${id}`}
+                    className="w-full h-auto rounded-sm border border-border shadow-sm hover:scale-105 transition-transform"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <p className="text-center text-sm text-muted-foreground mt-6 italic">
+              Esimerkkejä 180 pelikortista — kaikki tulostettavissa
             </p>
           </div>
         </div>
@@ -79,7 +129,7 @@ const PelinEsittely = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-steppe-gold/20 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Printer className="w-6 h-6 text-foreground" />
               </div>
               <div>
@@ -87,15 +137,27 @@ const PelinEsittely = () => {
                 <p className="text-muted-foreground">Kortit, pelilauta ja komponentit</p>
               </div>
             </div>
-            <ComicPanel className="overflow-hidden p-0">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <p className="text-muted-foreground italic text-lg" id="materials-placeholder">
-                  🃏 Kuva tulostettavista materiaaleista — lataa kuva chatissa
-                </p>
+            <ComicPanel className="overflow-hidden p-4 md:p-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
+                <div className="space-y-2">
+                  <div className="text-4xl">🃏</div>
+                  <p className="font-display font-bold text-foreground">180 pelikorttia</p>
+                  <p className="text-sm text-muted-foreground">Strategia, diplomatia, teknologia ja resurssit</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-4xl">🗺️</div>
+                  <p className="font-display font-bold text-foreground">60×80 cm pelilauta</p>
+                  <p className="text-sm text-muted-foreground">Historiallinen Euraasian kartta</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-4xl">📖</div>
+                  <p className="font-display font-bold text-foreground">Sääntökirja</p>
+                  <p className="text-sm text-muted-foreground">10 osiota — kaikki säännöt selitettynä</p>
+                </div>
               </div>
             </ComicPanel>
             <p className="text-center text-sm text-muted-foreground mt-4 italic">
-              180 pelikorttia, pelilauta ja sääntökirja — kaikki tulostettavissa
+              Kaikki materiaalit tulostettavissa A4-koossa
             </p>
           </div>
         </div>
