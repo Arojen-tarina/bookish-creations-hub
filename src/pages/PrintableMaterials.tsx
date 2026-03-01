@@ -11,9 +11,59 @@ import {
   technologyCards, 
   resourceCards,
   allCards,
-  cardTypeInfo 
+  cardTypeInfo,
+  rarityInfo,
+  GameCard
 } from "@/data/gameCards";
 import { Printer, FileText, Wand2, Map } from "lucide-react";
+
+const rarityDot: Record<string, string> = {
+  common: 'bg-gray-500',
+  uncommon: 'bg-green-500',
+  rare: 'bg-blue-500',
+  legendary: 'bg-purple-500',
+};
+
+const CardReferenceSection = ({ title, subtitle, cards, headerColor, titleColor }: {
+  title: string;
+  subtitle: string;
+  cards: GameCard[];
+  headerColor: string;
+  titleColor: string;
+}) => (
+  <div className="mb-6 print:break-inside-avoid-page">
+    <h3 className={`font-bold ${titleColor} mb-1 text-sm`}>{title} ({cards.length} kpl)</h3>
+    <p className="text-xs text-gray-600 mb-2 italic">{subtitle}</p>
+    <table className="w-full border-collapse text-xs mb-2">
+      <thead>
+        <tr className="bg-gray-100">
+          <th className="border p-1 text-left w-12">ID</th>
+          <th className="border p-1 text-left">Nimi</th>
+          <th className="border p-1 text-left">Kuvaus</th>
+          <th className="border p-1 text-left">Vaikutus</th>
+          {cards.some(c => c.cost) && <th className="border p-1 text-left w-28">Hinta</th>}
+          <th className="border p-1 text-center w-10">⭐</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cards.map((card) => (
+          <tr key={card.id} className="hover:bg-amber-50">
+            <td className="border p-1 font-mono text-gray-500">{card.id}</td>
+            <td className="border p-1 font-bold">{card.name}</td>
+            <td className="border p-1 text-gray-700">{card.description}</td>
+            <td className="border p-1">{card.effect}</td>
+            {cards.some(c => c.cost) && <td className="border p-1 text-gray-600">{card.cost || '—'}</td>}
+            <td className="border p-1 text-center">
+              <span className={`inline-block w-2 h-2 rounded-full ${rarityDot[card.rarity || 'common']}`}></span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+
 
 const PrintableMaterials = () => {
   const [showRulebook, setShowRulebook] = useState(true);
@@ -517,33 +567,14 @@ const PrintableRulebook = () => {
         </div>
       </section>
 
-      {/* 9. Korttien selitykset */}
-      <section className="mb-8">
+      {/* 9. Korttien selitykset — Täydellinen korttiluettelo */}
+      <section className="mb-8 print:break-before-page">
         <h2 className="font-display text-xl font-bold text-amber-800 mb-3 flex items-center gap-2">
           <span className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm">9</span>
-          Korttien selitykset
+          Korttien selitykset — Täydellinen korttiluettelo
         </h2>
-        
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <h3 className="font-bold text-red-700 mb-1">⚔️ STRATEGIAKORTIT (60 kpl)</h3>
-            <p>Taistelutaktiikat, erikoisliikkeet, historialliset tapahtumat. Pelaa toimintavaiheessa.</p>
-          </div>
-          <div>
-            <h3 className="font-bold text-blue-700 mb-1">🤝 DIPLOMATIAKORTIT (40 kpl)</h3>
-            <p>Sopimukset, liitot, painostus. Pelaa milloin tahansa neuvotteluissa.</p>
-          </div>
-          <div>
-            <h3 className="font-bold text-green-700 mb-1">⚙️ TEKNOLOGIAKORTIT (30 kpl)</h3>
-            <p>Pysyvät parannukset. Maksa käsityöläisillä hallintovaiheessa.</p>
-          </div>
-          <div>
-            <h3 className="font-bold text-amber-700 mb-1">📦 RESURSSIKORTIT (50 kpl)</h3>
-            <p>Hevoset, kulta, ruoka, käsityöläiset, karja. Käytä tarpeen mukaan.</p>
-          </div>
-        </div>
-        
-        <div className="mt-3 text-xs">
+
+        <div className="mt-3 mb-4 text-xs">
           <h3 className="font-bold mb-1">Harvinaisuudet:</h3>
           <div className="flex gap-4">
             <span><span className="inline-block w-2 h-2 rounded-full bg-gray-500"></span> Yleinen</span>
@@ -552,6 +583,38 @@ const PrintableRulebook = () => {
             <span><span className="inline-block w-2 h-2 rounded-full bg-purple-500"></span> Legendaarinen</span>
           </div>
         </div>
+
+        <CardReferenceSection
+          title="⚔️ STRATEGIAKORTIT"
+          subtitle="Taistelutaktiikat, erikoisliikkeet ja historialliset tapahtumat. Pelaa toimintavaiheessa."
+          cards={strategyCards}
+          headerColor="bg-red-600"
+          titleColor="text-red-700"
+        />
+
+        <CardReferenceSection
+          title="🤝 DIPLOMATIAKORTIT"
+          subtitle="Sopimukset, liitot ja painostus. Pelaa milloin tahansa neuvotteluissa."
+          cards={diplomacyCards}
+          headerColor="bg-blue-600"
+          titleColor="text-blue-700"
+        />
+
+        <CardReferenceSection
+          title="⚙️ TEKNOLOGIAKORTIT"
+          subtitle="Pysyvät parannukset. Maksa käsityöläisillä hallintovaiheessa."
+          cards={technologyCards}
+          headerColor="bg-green-600"
+          titleColor="text-green-700"
+        />
+
+        <CardReferenceSection
+          title="📦 RESURSSIKORTIT"
+          subtitle="Hevoset, kulta, ruoka, käsityöläiset, karja. Käytä tarpeen mukaan."
+          cards={resourceCards}
+          headerColor="bg-amber-600"
+          titleColor="text-amber-700"
+        />
       </section>
 
       {/* 10. Pikaohje */}
