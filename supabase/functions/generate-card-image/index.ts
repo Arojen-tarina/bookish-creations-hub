@@ -98,14 +98,13 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !serviceKey) {
       throw new Error("Supabase credentials not configured");
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     const { cards } = await req.json() as { cards: CardRequest[] };
     
