@@ -15,6 +15,7 @@ import KokoKirja from "./pages/KokoKirja";
 import OtaYhteytta from "./pages/OtaYhteytta";
 import PrintableMaterials from "./pages/PrintableMaterials";
 import PelinEsittely from "./pages/PelinEsittely";
+import KortitPDF from "./pages/KortitPDF";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/luku/koko-kirja" element={<KokoKirja />} />
           <Route path="/tulosta" element={<PrintableMaterials />} />
           <Route path="/esittely" element={<PelinEsittely />} />
+          <Route path="/kortit-pdf" element={<KortitPDF />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
