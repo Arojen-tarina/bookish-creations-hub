@@ -16,6 +16,7 @@ import OtaYhteytta from "./pages/OtaYhteytta";
 import PrintableMaterials from "./pages/PrintableMaterials";
 import PelinEsittely from "./pages/PelinEsittely";
 import KortitPDF from "./pages/KortitPDF";
+import MateriaalitPDF from "./pages/MateriaalitPDF";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/tulosta" element={<PrintableMaterials />} />
           <Route path="/esittely" element={<PelinEsittely />} />
           <Route path="/kortit-pdf" element={<KortitPDF />} />
+          <Route path="/materiaalit-pdf" element={<MateriaalitPDF />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
