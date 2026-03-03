@@ -129,7 +129,7 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
               <PrintableCard 
                 key={card.id} 
                 card={card} 
-                imageUrl={images.get(card.id)}
+                imageUrl={images.get(card.id) ?? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/card-images/${card.id}.png`}
               />
             ))}
           </div>
