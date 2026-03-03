@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrintableCardSheet } from "@/components/game/printable/PrintableCard";
 import { CardImageGenerator } from "@/components/game/printable/CardImageGenerator";
+import gameBoardImage from "@/assets/game-board-map.png";
 import { PrintableGameBoard } from "@/components/game/printable/PrintableGameBoard";
 import { 
   strategyCards, 
@@ -176,6 +177,19 @@ const PrintableMaterials = () => {
 
         {/* Tulostettava versio - näkyy vain tulostuksessa */}
         <div className="hidden print:block">
+          {/* Pelilauta */}
+          <div className="print:break-after-page">
+            <div className="text-center mb-4">
+              <h1 className="font-display text-2xl font-bold">Mongolien Valtakunta — Pelilauta</h1>
+              <p className="text-sm text-gray-500">Tulosta A3-kokoiselle paperille vaakasuuntaan</p>
+            </div>
+            <img 
+              src={gameBoardImage}
+              alt="Mongolien Valtakunta - pelilauta"
+              className="w-full h-auto max-h-[90vh] object-contain"
+              crossOrigin="anonymous"
+            />
+          </div>
           <PrintableRulebook />
           <PrintableCardSheet cards={strategyCards} title="Strategiakortit" />
           <PrintableCardSheet cards={diplomacyCards} title="Diplomatiakortit" />
