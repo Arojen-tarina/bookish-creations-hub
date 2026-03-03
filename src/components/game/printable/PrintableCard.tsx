@@ -48,6 +48,7 @@ export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCar
             alt={card.name}
             className="w-full h-full object-cover"
             loading="lazy"
+            crossOrigin="anonymous"
           />
         ) : (
           <span className="text-4xl opacity-50">{typeInfo.icon}</span>

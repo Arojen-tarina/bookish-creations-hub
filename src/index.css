@@ -145,12 +145,21 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
   
-  .print\\:break-before-page {
+  .print\:break-before-page {
     break-before: page;
   }
   
-  .print\\:break-after-page {
+  .print\:break-after-page {
     break-after: page;
+  }
+
+  .print\:break-inside-avoid-page {
+    break-inside: avoid-page;
   }
 }
