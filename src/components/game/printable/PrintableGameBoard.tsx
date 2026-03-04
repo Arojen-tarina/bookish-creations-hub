@@ -171,33 +171,31 @@ const regionColors: Record<string, string> = {
 const generateHexGrid = (): HexTile[] => {
   const tiles: HexTile[] = [];
 
-  // ── Venäjä / Kiovan Rus (northwest) ──
+  // ── Venäjä / Kiovan Rus (far northwest — Kiev ~30°E, 50°N) ──
   const russia: Partial<HexTile>[] = [
-    { q: 1, r: 1, terrain: 'forest', name: 'Novgorod', isCity: true },
-    { q: 2, r: 1, terrain: 'forest' },
-    { q: 3, r: 1, terrain: 'forest' },
-    { q: 1, r: 2, terrain: 'forest' },
-    { q: 2, r: 2, terrain: 'city', name: 'Kiev', isCity: true, isCapital: true },
-    { q: 3, r: 2, terrain: 'forest' },
-    { q: 0, r: 2, terrain: 'forest' },
-    { q: 1, r: 3, terrain: 'forest' },
-    { q: 0, r: 1, terrain: 'tundra' },
     { q: 0, r: 0, terrain: 'tundra' },
     { q: 1, r: 0, terrain: 'tundra' },
-    { q: 2, r: 0, terrain: 'tundra' },
+    { q: 0, r: 1, terrain: 'forest', name: 'Novgorod', isCity: true },
+    { q: 1, r: 1, terrain: 'forest' },
+    { q: 0, r: 2, terrain: 'forest' },
+    { q: 1, r: 2, terrain: 'forest' },
+    { q: 0, r: 3, terrain: 'city', name: 'Kiev', isCity: true, isCapital: true },
+    { q: 1, r: 3, terrain: 'forest' },
+    { q: 0, r: 4, terrain: 'steppe' },
   ];
   russia.forEach((h, i) => tiles.push({ id: `rus-${i}`, region: 'Venäjä', ...h } as HexTile));
 
-  // ── Kipchak Steppe (Pontic-Caspian) ──
+  // ── Kipchak Steppe (Pontic-Caspian, north of Caucasus) ──
   const kipchak: Partial<HexTile>[] = [
-    { q: 4, r: 1, terrain: 'steppe' },
-    { q: 5, r: 1, terrain: 'steppe' },
+    { q: 2, r: 2, terrain: 'steppe' },
+    { q: 3, r: 2, terrain: 'steppe' },
     { q: 4, r: 2, terrain: 'steppe' },
-    { q: 5, r: 2, terrain: 'steppe' },
-    { q: 6, r: 2, terrain: 'steppe' },
+    { q: 2, r: 3, terrain: 'steppe' },
     { q: 3, r: 3, terrain: 'steppe' },
     { q: 4, r: 3, terrain: 'steppe' },
+    { q: 5, r: 2, terrain: 'steppe' },
     { q: 5, r: 3, terrain: 'steppe' },
+    { q: 6, r: 2, terrain: 'steppe' },
     { q: 6, r: 3, terrain: 'steppe' },
     { q: 7, r: 2, terrain: 'steppe' },
     { q: 7, r: 3, terrain: 'steppe' },
@@ -304,34 +302,39 @@ const generateHexGrid = (): HexTile[] => {
   ];
   jin.forEach((h, i) => tiles.push({ id: `jin-${i}`, region: 'Jin', ...h } as HexTile));
 
-  // ── Song Dynasty (south China) ──
+  // ── Song Dynasty (southeast China — Hangzhou ~120°E, 30°N) ──
   const song: Partial<HexTile>[] = [
-    { q: 15, r: 5, terrain: 'city', name: 'Lin\'an', isCity: true, isCapital: true },
-    { q: 16, r: 5, terrain: 'river', name: 'Jangtse' },
-    { q: 14, r: 5, terrain: 'river' },
-    { q: 14, r: 6, terrain: 'mountain' },
-    { q: 15, r: 6, terrain: 'river' },
-    { q: 16, r: 6, terrain: 'river' },
-    { q: 17, r: 3, terrain: 'sea' }, // East China Sea
-    { q: 17, r: 4, terrain: 'sea' },
-    { q: 17, r: 5, terrain: 'sea' },
+    { q: 16, r: 7, terrain: 'city', name: 'Lin\'an', isCity: true, isCapital: true },
+    { q: 15, r: 7, terrain: 'river', name: 'Jangtse' },
+    { q: 14, r: 7, terrain: 'river' },
+    { q: 14, r: 8, terrain: 'mountain' },
+    { q: 15, r: 8, terrain: 'river' },
+    { q: 16, r: 8, terrain: 'river' },
+    { q: 17, r: 5, terrain: 'sea' }, // East China Sea
+    { q: 17, r: 6, terrain: 'sea' },
+    { q: 17, r: 7, terrain: 'sea' },
+    { q: 17, r: 8, terrain: 'sea' },
+    { q: 13, r: 7, terrain: 'mountain' },
+    { q: 13, r: 8, terrain: 'river', name: 'Guangzhou' },
   ];
   song.forEach((h, i) => tiles.push({ id: `sng-${i}`, region: 'Song', ...h } as HexTile));
 
-  // ── Intia / Delhi (south) ──
+  // ── Intia / Delhi (south — Delhi ~77°E, 28°N) ──
   const india: Partial<HexTile>[] = [
-    { q: 8, r: 7, terrain: 'city', name: 'Delhi', isCity: true, isCapital: true },
-    { q: 7, r: 6, terrain: 'mountain', name: 'Hindukuš' },
-    { q: 8, r: 6, terrain: 'mountain', name: 'Khyber' },
-    { q: 9, r: 6, terrain: 'mountain' },
-    { q: 9, r: 5, terrain: 'mountain', name: 'Himalaja' },
-    { q: 7, r: 7, terrain: 'river', name: 'Indus' },
-    { q: 9, r: 7, terrain: 'river', name: 'Ganges' },
-    { q: 10, r: 5, terrain: 'mountain' },
+    { q: 8, r: 9, terrain: 'city', name: 'Delhi', isCity: true, isCapital: true },
+    { q: 7, r: 7, terrain: 'mountain', name: 'Hindukuš' },
+    { q: 8, r: 7, terrain: 'mountain', name: 'Khyber' },
+    { q: 9, r: 6, terrain: 'mountain', name: 'Himalaja' },
     { q: 10, r: 6, terrain: 'mountain' },
-    { q: 11, r: 5, terrain: 'mountain', name: 'Tibet' },
-    { q: 12, r: 5, terrain: 'mountain' },
-    { q: 13, r: 5, terrain: 'mountain' },
+    { q: 11, r: 6, terrain: 'mountain', name: 'Tibet' },
+    { q: 12, r: 6, terrain: 'mountain' },
+    { q: 13, r: 6, terrain: 'mountain' },
+    { q: 7, r: 8, terrain: 'mountain' },
+    { q: 8, r: 8, terrain: 'mountain' },
+    { q: 9, r: 7, terrain: 'mountain' },
+    { q: 7, r: 9, terrain: 'river', name: 'Indus' },
+    { q: 9, r: 9, terrain: 'river', name: 'Ganges' },
+    { q: 10, r: 7, terrain: 'mountain' },
   ];
   india.forEach((h, i) => tiles.push({ id: `ind-${i}`, region: 'Intia', ...h } as HexTile));
 
