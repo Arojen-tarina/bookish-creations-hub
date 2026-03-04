@@ -6,7 +6,7 @@ import { useDiplomacyAI } from '@/hooks/useDiplomacyAI';
 import { useElevenLabsSFX, GAME_SFX, GameSFXKey } from '@/hooks/useElevenLabsSFX';
 import { useTurnLog, createLogMessage } from '@/hooks/useTurnLog';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
-import { CivilizationMap } from './CivilizationMap';
+import { GameBoard3D } from './GameBoard3D';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
 import { DiplomacyPanel } from './DiplomacyPanel';
 import { AudioSettings } from './AudioSettings';
@@ -502,8 +502,8 @@ export const ProvinceGame = () => {
       <div className="relative h-full pt-14 flex">
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[400px]' : ''}`}>
-          <div className="absolute inset-0 p-4">
-            <CivilizationMap
+          <div className="absolute inset-0 p-2">
+            <GameBoard3D
               provinces={gameState.provinces}
               armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
