@@ -126,6 +126,16 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
 
   const cardsWithImages = cards.filter(card => images.has(card.id)).length;
 
+  // Helper: reverse each row of 3 so backs align with fronts when flipping along long edge
+  const mirrorRowOrder = (cards: GameCard[]): GameCard[] => {
+    const result: GameCard[] = [];
+    for (let i = 0; i < cards.length; i += 3) {
+      const row = cards.slice(i, i + 3);
+      result.push(...row.reverse());
+    }
+    return result;
+  };
+
   return (
     <div className="print:block">
       {!isLoading && cardsWithImages > 0 && (
@@ -135,56 +145,56 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
           </p>
         </div>
       )}
+
+      {/* Print hint */}
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg print:hidden">
+        <p className="text-sm text-blue-800">
+          🖨️ <strong>Kaksipuolinen tulostus:</strong> Etupuoli ja takapuoli tulostetaan peräkkäisille sivuille. 
+          Valitse tulostusasetuksista "Käännä pitkän sivun kautta" (Flip on long edge). 
+          Takapuolen kortit on peilattu automaattisesti oikein.
+        </p>
+      </div>
       
-      {/* Front sides (image) */}
+      {/* Interleaved: front page, then its matching back page */}
       {pages.map((pageCards, pageIndex) => (
-        <div 
-          key={`front-${pageIndex}`} 
-          className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page"
-        >
-          {pageIndex === 0 && (
-            <h2 className="font-display text-lg font-bold text-center mb-4 text-amber-900 print:text-black">
+        <div key={`pair-${pageIndex}`}>
+          {/* FRONT side */}
+          <div className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page">
+            <h2 className="font-display text-sm font-bold text-center mb-4 text-amber-900 print:text-black">
               {title} — Etupuoli (Sivu {pageIndex + 1}/{pages.length})
             </h2>
-          )}
-          <div className="grid grid-cols-3 gap-2 justify-items-center">
-            {pageCards.map((card) => (
-              <PrintableCard 
-                key={card.id} 
-                card={card} 
-                imageUrl={images.get(card.id) ?? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/card-images/${card.id}.png`}
-              />
-            ))}
+            <div className="grid grid-cols-3 gap-2 justify-items-center">
+              {pageCards.map((card) => (
+                <PrintableCard 
+                  key={card.id} 
+                  card={card} 
+                  imageUrl={images.get(card.id) ?? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/card-images/${card.id}.png`}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-center text-gray-400 mt-2">
+              Mongolien Valtakunta — {title} — Etupuoli {pageIndex + 1}/{pages.length}
+            </p>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">
-            Mongolien Valtakunta — {title} — Etupuoli {pageIndex + 1}/{pages.length}
-          </p>
-        </div>
-      ))}
 
-      {/* Back sides (stats/effects) */}
-      {pages.map((pageCards, pageIndex) => (
-        <div 
-          key={`back-${pageIndex}`} 
-          className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page"
-        >
-          {pageIndex === 0 && (
-            <h2 className="font-display text-lg font-bold text-center mb-4 text-amber-900 print:text-black">
-              {title} — Takapuoli / Tilastot (Sivu {pageIndex + 1}/{pages.length})
+          {/* BACK side — row-mirrored for double-sided printing */}
+          <div className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page">
+            <h2 className="font-display text-sm font-bold text-center mb-4 text-amber-900 print:text-black">
+              {title} — Takapuoli (Sivu {pageIndex + 1}/{pages.length})
             </h2>
-          )}
-          <div className="grid grid-cols-3 gap-2 justify-items-center">
-            {pageCards.map((card) => (
-              <PrintableCard 
-                key={card.id} 
-                card={card}
-                showBack={true}
-              />
-            ))}
+            <div className="grid grid-cols-3 gap-2 justify-items-center">
+              {mirrorRowOrder(pageCards).map((card) => (
+                <PrintableCard 
+                  key={card.id} 
+                  card={card}
+                  showBack={true}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-center text-gray-400 mt-2">
+              Mongolien Valtakunta — {title} — Takapuoli {pageIndex + 1}/{pages.length}
+            </p>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">
-            Mongolien Valtakunta — {title} — Takapuoli {pageIndex + 1}/{pages.length}
-          </p>
         </div>
       ))}
     </div>
