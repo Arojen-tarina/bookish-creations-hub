@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Printer, ZoomIn, ZoomOut, X, MapPin, Shield, Swords, Coins, Mountain, TreePine, Waves, Sun, Building2, Wheat, Image, Grid3X3 } from 'lucide-react';
 import gameBoardImage from '@/assets/game-board-map.png';
+import { FACTION_DATA_1206, PROVINCE_TERRAIN_INFO, type FactionId } from '@/types/province';
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface HexTile {
@@ -47,50 +48,51 @@ const terrainInfo: Record<string, TerrainInfo> = {
   sea:      { name: 'Meri',         icon: Waves,     movement: 'Ei liikettä',         combat: 'Ei taistelua',            resources: 'Kalastus',              special: 'Vain laivoilla' },
 };
 
+// Terrain colors matching digital game's PROVINCE_TERRAIN_INFO
 const terrainColors: Record<string, { fill: string; stroke: string }> = {
-  steppe:   { fill: '#C4B896', stroke: '#A69B70' },
-  desert:   { fill: '#E8D4A8', stroke: '#D4BC7A' },
-  mountain: { fill: '#8B7355', stroke: '#6B5344' },
-  forest:   { fill: '#4A7C59', stroke: '#3A6249' },
-  river:    { fill: '#7FB3D3', stroke: '#5A9BC4' },
-  city:     { fill: '#D4A574', stroke: '#B8864A' },
-  tundra:   { fill: '#B8C8C0', stroke: '#8FA898' },
-  sea:      { fill: '#5B92B8', stroke: '#3D7CA3' },
+  steppe:   { fill: '#a8b077', stroke: '#8a9360' },
+  desert:   { fill: '#d4a574', stroke: '#b8864a' },
+  mountain: { fill: '#6b7280', stroke: '#4b5563' },
+  forest:   { fill: '#2d5a27', stroke: '#1e3a1a' },
+  river:    { fill: '#7cb342', stroke: '#5a9230' },
+  city:     { fill: '#8bc34a', stroke: '#6d9a36' },
+  tundra:   { fill: '#b8c4cc', stroke: '#8fa898' },
+  sea:      { fill: '#3b6fa0', stroke: '#2d5580' },
 };
 
-// ─── Historically accurate regions (c. 1206) ────────────────────────
+// ─── Historically accurate regions (c. 1206) — unified with digital game ──
 const regionInfo: Record<string, RegionInfo> = {
   'Mongolia': {
-    name: 'Mongolian Steppi',
-    description: 'Keski-Aasian sydän. Genghis Khan yhdisti mongoliheimot vuonna 1206 ja perusti Mongolien valtakunnan.',
+    name: 'Mongolien valtakunta',
+    description: FACTION_DATA_1206.mongol.name + ' — Tšingis-kaanin yhdistämä valtakunta.',
     capital: 'Karakorum',
-    faction: 'Mongoli-imperiumi',
-    bonuses: ['Ratsuväki +1 liike', 'Hevosten tuotanto ×2', 'Nomadibonus'],
+    faction: FACTION_DATA_1206.mongol.name,
+    bonuses: ['Ratsuväki +30%', 'Piiritystaito +20%', 'Nomadibonus'],
     historicalNote: 'Vuonna 1206 Temüjin sai arvonimen Genghis Khan kurultaissa Onon-joen varrella.'
   },
   'Jin': {
     name: 'Jin-dynastia (金朝)',
-    description: 'Juršen-kansan hallitsema Pohjois-Kiinan valtakunta. Rikas mutta sisäisesti heikentynyt.',
+    description: FACTION_DATA_1206.jin.name + ' — Juršen-kansan hallitsema Pohjois-Kiinan valtakunta.',
     capital: 'Zhongdu (Peking)',
-    faction: 'Jin-dynastia',
-    bonuses: ['Teknologia +1', 'Muuri: puolustus +2', 'Runsaat resurssit'],
-    historicalNote: 'Jin hallitsi Pohjois-Kiinaa 1115–1234. Pääkaupunki Zhongdu (nykyinen Peking) vallattiin 1215.'
+    faction: FACTION_DATA_1206.jin.name,
+    bonuses: ['Teknologia +20%', 'Muuri: puolustus +2', 'Runsaat resurssit'],
+    historicalNote: 'Jin hallitsi Pohjois-Kiinaa 1115–1234. Pääkaupunki Zhongdu vallattiin 1215.'
   },
   'Xi Xia': {
-    name: 'Xi Xia -kuningaskunta (西夏)',
-    description: 'Tangut-kansan buddhalainen valtakunta Kiinan luoteisosassa, Silkkitien varrella.',
+    name: 'Länsi-Xia (西夏)',
+    description: FACTION_DATA_1206.xixia.name + ' — Tangut-kansan buddhalainen valtakunta.',
     capital: 'Zhongxing',
-    faction: 'Xi Xia',
-    bonuses: ['Silkkitie +1 kultaa', 'Puolustusetu', 'Kauppiaat'],
+    faction: FACTION_DATA_1206.xixia.name,
+    bonuses: ['Silkkitie +10%', 'Puolustusetu', 'Kauppiaat'],
     historicalNote: 'Genghis Khanin ensimmäinen suuri valloituskohde. Xi Xia tuhottiin 1227.'
   },
   'Khwarezmia': {
     name: 'Khwarezmin šaahinvaltakunta',
-    description: 'Voimakas islamilainen valtakunta Keski-Aasiassa. Hallitsi Silkkitien kauppakaupunkeja.',
+    description: FACTION_DATA_1206.khwarezm.name + ' — Voimakas islamilainen valtakunta Keski-Aasiassa.',
     capital: 'Samarkand',
-    faction: 'Khwarezmit',
-    bonuses: ['Kauppa +2 kultaa', 'Silkkitien hallinta', 'Diplomaattinen vaikutus'],
-    historicalNote: 'Šaahi Muhammad II loukkasi mongoleja teloittamalla kauppalähetystön 1218, mikä johti tuhoisaan valloitussotaan.'
+    faction: FACTION_DATA_1206.khwarezm.name,
+    bonuses: ['Kauppa +20%', 'Silkkitien hallinta', 'Piiritystaito +10%'],
+    historicalNote: 'Šaahi Muhammad II loukkasi mongoleja teloittamalla kauppalähetystön 1218.'
   },
   'Kara-Khitai': {
     name: 'Kara-Khitai (西遼)',
@@ -102,47 +104,47 @@ const regionInfo: Record<string, RegionInfo> = {
   },
   'Kipchak': {
     name: 'Kipčakkien steppivaltakunta',
-    description: 'Kumaani-kipčakkien hallitsema laaja steppivyöhyke Mustanmeren pohjoispuolelta Aral-järvelle.',
-    capital: 'Sarai (myöh.)',
-    faction: 'Kumaaniliitto',
-    bonuses: ['Ratsuväki +1', 'Laaja alue', 'Nomadien verkostot'],
+    description: FACTION_DATA_1206.kipchak.name + ' — Kumaani-kipčakkien hallitsema laaja steppivyöhyke.',
+    capital: 'Sarkel',
+    faction: FACTION_DATA_1206.kipchak.name,
+    bonuses: ['Ratsuväki +20%', 'Laaja alue', 'Nomadien verkostot'],
     historicalNote: 'Kipčakit olivat mongolilaisten sukulaiskansaa. Alueesta tuli myöhemmin Kultaisen ordan ydin.'
   },
   'Venäjä': {
-    name: 'Kiovan Rusin ruhtinaskunnat',
-    description: 'Hajanainen slaavilaisten ruhtinaskuntien kokoelma. Sisäiset riidat heikensivät puolustusta.',
-    capital: 'Kiev',
-    faction: 'Kiovan Rus',
-    bonuses: ['Talvibonus +2', 'Metsätaistelu +1', 'Sitkeä puolustus'],
+    name: 'Venäjän ruhtinaskunnat',
+    description: FACTION_DATA_1206.rus.name + ' — Hajanainen slaavilaisten ruhtinaskuntien kokoelma.',
+    capital: 'Novgorod',
+    faction: FACTION_DATA_1206.rus.name,
+    bonuses: ['Talvibonus +10%', 'Metsätaistelu +10%', 'Sitkeä puolustus'],
     historicalNote: 'Mongoliarmeija murskasi venäläis-kumaaniliiton Kalka-joen taistelussa 1223.'
   },
   'Persia': {
     name: 'Abbasidien kalifaatti',
-    description: 'Islamilaisen maailman henkinen keskus Bagdadissa. Sotilaallisesti heikko mutta kulttuurisesti rikas.',
+    description: 'Islamilaisen maailman henkinen keskus Bagdadissa.',
     capital: 'Bagdad',
     faction: 'Abbasidi-kalifaatti',
     bonuses: ['Kulttuuri +2', 'Tiede +1', 'Vauras talous'],
-    historicalNote: 'Bagdad tuhottiin 1258 Hülegün johdolla. Kaliffi teloitettiin ja kirjasto tuhottiin.'
+    historicalNote: 'Bagdad tuhottiin 1258 Hülegün johdolla.'
   },
   'Intia': {
     name: 'Delhin sulttaanikunta',
-    description: 'Pohjois-Intian islamilainen valtakunta. Vuoristopassit suojelivat hyökkäyksiltä.',
+    description: 'Pohjois-Intian islamilainen valtakunta.',
     capital: 'Delhi',
     faction: 'Delhi-sultantti',
     bonuses: ['Puolustus +2', 'Elefantit', 'Rikkaat kaupungit'],
-    historicalNote: 'Mongolit hyökkäsivät Intiaan useaan otteeseen 1200-luvulla mutta eivät koskaan valloittaneet Delhiä.'
+    historicalNote: 'Mongolit hyökkäsivät Intiaan useaan otteeseen mutta eivät koskaan valloittaneet Delhiä.'
   },
   'Song': {
     name: 'Etelä-Songin dynastia (南宋)',
-    description: 'Maailman rikkain ja edistynein valtakunta. Jangtsejoki oli luonnollinen puolustuseste.',
+    description: FACTION_DATA_1206.song.name + ' — Maailman rikkain ja edistynein valtakunta.',
     capital: 'Hangzhou (Lin\'an)',
-    faction: 'Song-dynastia',
-    bonuses: ['Teknologia +2', 'Laivasto', 'Rikkain talous'],
-    historicalNote: 'Song kesti mongolien hyökkäykset 40 vuotta (1235–1279). Ruuti ja kompassi keksittiin täällä.'
+    faction: FACTION_DATA_1206.song.name,
+    bonuses: ['Teknologia +30%', 'Laivasto', 'Rikkain talous'],
+    historicalNote: 'Song kesti mongolien hyökkäykset 40 vuotta (1235–1279).'
   },
   'Kaukasia': {
     name: 'Kaukasian kuningaskunnat',
-    description: 'Georgian ja Armenian kristityt kuningaskunnat vuoristoisella alueella.',
+    description: 'Georgian ja Armenian kristityt kuningaskunnat.',
     capital: 'Tbilisi',
     faction: 'Georgian kuningaskunta',
     bonuses: ['Vuoristopuolustus +2', 'Kristilliset liittolaiset', 'Kauppareitit'],
@@ -150,17 +152,18 @@ const regionInfo: Record<string, RegionInfo> = {
   },
 };
 
+// Region colors matching digital game's FACTION_DATA_1206
 const regionColors: Record<string, string> = {
-  'Mongolia':    '#FFD700',
-  'Jin':         '#DC143C',
-  'Xi Xia':      '#FF8C00',
-  'Khwarezmia':  '#9370DB',
-  'Kara-Khitai': '#DB7093',
-  'Kipchak':     '#F4A460',
-  'Venäjä':      '#4169E1',
+  'Mongolia':    FACTION_DATA_1206.mongol.color,    // #f59e0b (amber/gold)
+  'Jin':         FACTION_DATA_1206.jin.color,        // #ef4444 (red)
+  'Xi Xia':      FACTION_DATA_1206.xixia.color,      // #3b82f6 (blue)
+  'Khwarezmia':  FACTION_DATA_1206.khwarezm.color,    // #8b5cf6 (purple)
+  'Kara-Khitai': '#14b8a6',                           // teal
+  'Kipchak':     FACTION_DATA_1206.kipchak.color,      // #ec4899 (pink)
+  'Venäjä':      FACTION_DATA_1206.rus.color,          // #64748b (slate)
   'Persia':      '#20B2AA',
   'Intia':       '#FF6347',
-  'Song':        '#228B22',
+  'Song':        FACTION_DATA_1206.song.color,         // #22c55e (green)
   'Kaukasia':    '#C71585',
 };
 
