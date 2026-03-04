@@ -1,32 +1,37 @@
 // Tulostettavat pelinappulat ja nopat Mongolien Valtakunta -lautapeliin
 
 const factions = [
-  { name: "Mongoli-imperiumi", color: "bg-red-700", border: "border-red-900", icon: "🏇", textColor: "text-red-100" },
-  { name: "Jin-dynastia", color: "bg-amber-600", border: "border-amber-800", icon: "🏯", textColor: "text-amber-100" },
-  { name: "Khwarezmia", color: "bg-green-700", border: "border-green-900", icon: "🕌", textColor: "text-green-100" },
-  { name: "Kumaaninliitto", color: "bg-blue-700", border: "border-blue-900", icon: "🐺", textColor: "text-blue-100" },
+  { name: "Mongoli-imperiumi", short: "MONGOLI", color: "bg-red-700", border: "border-red-900", icon: "🏇", textColor: "text-white" },
+  { name: "Jin-dynastia", short: "JIN", color: "bg-amber-600", border: "border-amber-800", icon: "🏯", textColor: "text-white" },
+  { name: "Khwarezmia", short: "KHWAR.", color: "bg-green-700", border: "border-green-900", icon: "🕌", textColor: "text-white" },
+  { name: "Kumaaninliitto", short: "KUMAAN.", color: "bg-blue-700", border: "border-blue-900", icon: "🐺", textColor: "text-white" },
 ];
 
 const unitTypes = [
-  { name: "Ratsuväki", icon: "🏇", stats: "Liike 3 · Hyökkäys 3 · Puolustus 2" },
-  { name: "Jalkaväki", icon: "🛡️", stats: "Liike 1 · Hyökkäys 2 · Puolustus 3" },
-  { name: "Khaanin palvelija", icon: "👑", stats: "Liike 2 · Hyökkäys 1 · Puolustus 1 · Erikois +" },
-  { name: "Piirityskoneet", icon: "🏗️", stats: "Liike 1 · Hyökkäys 4 · Puolustus 0" },
+  { name: "Ratsuväki", icon: "🏇", attack: 3, defense: 2, move: 3 },
+  { name: "Jalkaväki", icon: "🛡️", attack: 2, defense: 3, move: 1 },
+  { name: "Khaanin palvelija", icon: "👑", attack: 1, defense: 1, move: 2 },
+  { name: "Piirityskoneet", icon: "🏗️", attack: 4, defense: 0, move: 1 },
 ];
 
 const TokenCircle = ({ faction, unit }: { faction: typeof factions[0]; unit: typeof unitTypes[0] }) => (
-  <div className={`w-[25mm] h-[25mm] rounded-full ${faction.color} ${faction.border} border-3 flex flex-col items-center justify-center shadow-md print:break-inside-avoid`}>
-    <span className="text-xl leading-none">{unit.icon}</span>
-    <span className={`text-[7px] font-bold ${faction.textColor} mt-0.5 leading-none`}>{unit.name}</span>
-    <span className={`text-[5px] ${faction.textColor} opacity-80 leading-none mt-0.5`}>{faction.name.slice(0, 8)}</span>
+  <div className={`w-[30mm] h-[30mm] rounded-full ${faction.color} ${faction.border} border-[3px] flex flex-col items-center justify-center shadow-md print:break-inside-avoid`}>
+    <span className="text-2xl leading-none">{unit.icon}</span>
+    <span className={`text-[9px] font-bold ${faction.textColor} mt-1 leading-none tracking-tight`}>{unit.name}</span>
+    <span className={`text-[7px] ${faction.textColor} opacity-90 leading-none mt-0.5 font-semibold`}>{faction.short}</span>
+    <div className={`flex gap-1.5 mt-1 ${faction.textColor}`}>
+      <span className="text-[7px] font-bold">⚔{unit.attack}</span>
+      <span className="text-[7px] font-bold">🛡{unit.defense}</span>
+      <span className="text-[7px] font-bold">→{unit.move}</span>
+    </div>
   </div>
 );
 
 const ResourceToken = ({ icon, label, value }: { icon: string; label: string; value: string }) => (
-  <div className="w-[20mm] h-[20mm] rounded-lg bg-amber-200 border-2 border-amber-600 flex flex-col items-center justify-center print:break-inside-avoid">
-    <span className="text-lg leading-none">{icon}</span>
-    <span className="text-[7px] font-bold text-amber-900 mt-0.5">{label}</span>
-    <span className="text-[6px] text-amber-700">{value}</span>
+  <div className="w-[24mm] h-[24mm] rounded-lg bg-amber-100 border-2 border-amber-600 flex flex-col items-center justify-center print:break-inside-avoid shadow-sm">
+    <span className="text-xl leading-none">{icon}</span>
+    <span className="text-[9px] font-bold text-amber-900 mt-1">{label}</span>
+    <span className="text-[8px] font-semibold text-amber-700">{value}</span>
   </div>
 );
 
@@ -41,11 +46,11 @@ const diceFaces = [
 ];
 
 const DiceFace = ({ face, index }: { face: typeof diceFaces[0]; index: number }) => (
-  <div className="w-[22mm] h-[22mm] bg-amber-50 border-2 border-amber-800 rounded-lg flex flex-col items-center justify-center print:break-inside-avoid shadow-sm">
-    <span className="text-[8px] text-amber-500 font-mono">{index + 1}</span>
-    <span className="text-2xl leading-none">{face.value}</span>
-    <span className="text-[7px] font-bold text-amber-900 mt-0.5">{face.label}</span>
-    <span className="text-[5px] text-amber-700 text-center px-1">{face.desc}</span>
+  <div className="w-[28mm] h-[28mm] bg-amber-50 border-2 border-amber-800 rounded-lg flex flex-col items-center justify-center print:break-inside-avoid shadow-sm">
+    <span className="text-[9px] text-amber-500 font-mono font-bold">{index + 1}</span>
+    <span className="text-3xl leading-none">{face.value}</span>
+    <span className="text-[9px] font-bold text-amber-900 mt-1">{face.label}</span>
+    <span className="text-[7px] text-amber-700 text-center px-1 font-medium">{face.desc}</span>
   </div>
 );
 
@@ -56,25 +61,25 @@ export const PrintableTokensAndDice = () => (
       <h2 className="text-xl font-bold text-center text-amber-900 mb-1" style={{ fontFamily: 'Cinzel, serif' }}>
         Pelinappulat — Yksiköt
       </h2>
-      <p className="text-xs text-center text-amber-700 mb-4">Leikkaa ympyrät ja liimaa pahville. 4 fraktiota × 4 yksikkötyyppiä.</p>
+      <p className="text-sm text-center text-amber-700 mb-2">Leikkaa ympyrät ja liimaa pahville. 4 fraktiota × 4 yksikkötyyppiä.</p>
+
+      {/* Unit type legend */}
+      <div className="flex gap-4 justify-center mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2">
+        {unitTypes.map(u => (
+          <span key={u.name} className="font-semibold">{u.icon} {u.name}: ⚔{u.attack} 🛡{u.defense} →{u.move}</span>
+        ))}
+      </div>
 
       {factions.map((faction) => (
-        <div key={faction.name} className="mb-6">
+        <div key={faction.name} className="mb-5">
           <h3 className="text-sm font-bold text-amber-800 mb-2 flex items-center gap-1">
             {faction.icon} {faction.name}
           </h3>
           <div className="flex flex-wrap gap-3">
-            {/* 3x ratsuväki, 3x jalkaväki, 1x khaanin palvelija, 1x piirityskoneet */}
             {[...Array(3)].map((_, i) => <TokenCircle key={`c${i}`} faction={faction} unit={unitTypes[0]} />)}
             {[...Array(3)].map((_, i) => <TokenCircle key={`i${i}`} faction={faction} unit={unitTypes[1]} />)}
             <TokenCircle faction={faction} unit={unitTypes[2]} />
             <TokenCircle faction={faction} unit={unitTypes[3]} />
-          </div>
-          {/* Unit stat reference */}
-          <div className="mt-2 flex gap-4 text-[8px] text-amber-700">
-            {unitTypes.map(u => (
-              <span key={u.name}>{u.icon} {u.name}: {u.stats}</span>
-            ))}
           </div>
         </div>
       ))}
@@ -85,11 +90,11 @@ export const PrintableTokensAndDice = () => (
       <h2 className="text-xl font-bold text-center text-amber-900 mb-1" style={{ fontFamily: 'Cinzel, serif' }}>
         Resurssimerkkit & Noppajärjestelmä
       </h2>
-      <p className="text-xs text-center text-amber-700 mb-6">Leikkaa ja liimaa pahville.</p>
+      <p className="text-sm text-center text-amber-700 mb-6">Leikkaa ja liimaa pahville.</p>
 
       {/* Resource tokens */}
       <h3 className="text-sm font-bold text-amber-800 mb-3">📦 Resurssimerkkit</h3>
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2.5 mb-8">
         {[...Array(8)].map((_, i) => <ResourceToken key={`h${i}`} icon="🐴" label="Hevoset" value="+1" />)}
         {[...Array(8)].map((_, i) => <ResourceToken key={`g${i}`} icon="💰" label="Kulta" value="+1" />)}
         {[...Array(8)].map((_, i) => <ResourceToken key={`f${i}`} icon="🌾" label="Ruoka" value="+1" />)}
@@ -109,25 +114,25 @@ export const PrintableTokensAndDice = () => (
       {/* Dice reference table */}
       <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
         <h4 className="text-xs font-bold text-amber-900 mb-2">🎲 Taistelunopan käyttö</h4>
-        <table className="w-full text-[10px] border-collapse">
+        <table className="w-full text-[11px] border-collapse">
           <thead>
             <tr className="bg-amber-200">
-              <th className="border border-amber-400 p-1.5 text-left">Noppa</th>
-              <th className="border border-amber-400 p-1.5 text-left">Tulos</th>
-              <th className="border border-amber-400 p-1.5 text-left">Vaikutus</th>
+              <th className="border border-amber-400 p-2 text-left">Noppa</th>
+              <th className="border border-amber-400 p-2 text-left">Tulos</th>
+              <th className="border border-amber-400 p-2 text-left">Vaikutus</th>
             </tr>
           </thead>
           <tbody>
             {diceFaces.map((face, i) => (
               <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-amber-50'}>
-                <td className="border border-amber-300 p-1.5 font-bold text-center">{i + 1} ({face.value})</td>
-                <td className="border border-amber-300 p-1.5 font-semibold">{face.label}</td>
-                <td className="border border-amber-300 p-1.5">{face.desc}</td>
+                <td className="border border-amber-300 p-2 font-bold text-center text-sm">{i + 1} ({face.value})</td>
+                <td className="border border-amber-300 p-2 font-semibold">{face.label}</td>
+                <td className="border border-amber-300 p-2">{face.desc}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-3 text-[9px] text-amber-800">
+        <div className="mt-3 text-[10px] text-amber-800">
           <p className="font-bold mb-1">Taistelusäännöt:</p>
           <ul className="list-disc list-inside space-y-0.5">
             <li>Kumpikin pelaaja heittää 1 nopan per yksikkö (max 3 noppaa)</li>
@@ -142,11 +147,11 @@ export const PrintableTokensAndDice = () => (
 
       {/* VP markers */}
       <h3 className="text-sm font-bold text-amber-800 mb-2 mt-6">🏆 Voittopistemerkkit</h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {[1, 1, 1, 2, 2, 3, 3, 5, 5, 10].map((vp, i) => (
-          <div key={i} className="w-[18mm] h-[18mm] rounded-full bg-gradient-to-br from-amber-300 to-amber-500 border-2 border-amber-700 flex flex-col items-center justify-center">
-            <span className="text-xs font-bold text-amber-900">{vp}</span>
-            <span className="text-[6px] text-amber-800">VP</span>
+          <div key={i} className="w-[22mm] h-[22mm] rounded-full bg-gradient-to-br from-amber-300 to-amber-500 border-2 border-amber-700 flex flex-col items-center justify-center shadow-sm">
+            <span className="text-base font-bold text-amber-900">{vp}</span>
+            <span className="text-[8px] font-bold text-amber-800">VP</span>
           </div>
         ))}
       </div>
