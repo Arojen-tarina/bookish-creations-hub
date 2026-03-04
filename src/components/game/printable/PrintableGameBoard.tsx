@@ -669,17 +669,196 @@ export const PrintableGameBoard = () => {
                 </div>
               </div>
             </div>
+            {/* Terrain legend overlay */}
+            <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
+              <div className="px-4 py-3 rounded-lg text-xs space-y-1" style={{ backgroundColor: 'rgba(245, 230, 200, 0.9)' }}>
+                <p className="font-bold text-amber-900 text-sm mb-1">Maastotyypit</p>
+                <div className="grid grid-cols-1 gap-y-0.5">
+                  {[
+                    { name: 'Aro / Steppe', color: '#a8b077' },
+                    { name: 'Autiomaa', color: '#d4a574' },
+                    { name: 'Metsä / Taiga', color: '#2d6a27' },
+                    { name: 'Vuoristo', color: '#7a7f88' },
+                    { name: 'Tundra', color: '#b8c4cc' },
+                    { name: 'Viljelymaa', color: '#7cb342' },
+                    { name: 'Meri / Järvi', color: '#3b6fa0' },
+                  ].map(t => (
+                    <div key={t.name} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: t.color }} />
+                      <span style={{ color: '#5D3A1A' }}>{t.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             {/* Compass overlay */}
             <div className="absolute top-4 right-4 z-20 pointer-events-none">
               <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,248,231,0.9)', border: '2px solid #8B4513' }}>
                 <span className="text-amber-900 font-bold text-sm">N ↑</span>
               </div>
             </div>
-            <img src={gameBoardImage} alt="Mongolien Valtakunta - 1206 AD pelilauta" className="w-full h-auto" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: zoom > 1 ? `${100 * zoom}%` : '100%' }} />
+
+            {/* Base image */}
+            <div className="relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: zoom > 1 ? `${100 * zoom}%` : '100%' }}>
+              <img src={gameBoardImage} alt="Mongolien Valtakunta - 1206 AD pelilauta" className="w-full h-auto block" />
+              
+              {/* SVG terrain overlay */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 700" preserveAspectRatio="none">
+                <defs>
+                  {/* Steppe - waving grass lines */}
+                  <pattern id="img-steppe" patternUnits="userSpaceOnUse" width="30" height="20">
+                    <rect width="30" height="20" fill="#a8b077" />
+                    <path d="M0 12 Q4 8 8 12 Q12 16 16 12 Q20 8 24 12 Q28 16 30 12" stroke="#8a9a5a" strokeWidth="0.8" fill="none" />
+                    <path d="M5 6 Q9 3 13 6 Q17 9 21 6 Q25 3 29 6" stroke="#9aaa6a" strokeWidth="0.5" fill="none" opacity="0.6" />
+                    <line x1="7" y1="10" x2="7" y2="16" stroke="#7a8a4a" strokeWidth="0.4" opacity="0.5" />
+                    <line x1="15" y1="9" x2="15" y2="15" stroke="#7a8a4a" strokeWidth="0.4" opacity="0.5" />
+                    <line x1="23" y1="10" x2="23" y2="16" stroke="#7a8a4a" strokeWidth="0.4" opacity="0.5" />
+                  </pattern>
+                  {/* Desert - sand dunes */}
+                  <pattern id="img-desert" patternUnits="userSpaceOnUse" width="40" height="25">
+                    <rect width="40" height="25" fill="#d4a574" />
+                    <path d="M0 15 Q10 8 20 15 Q30 22 40 15" stroke="#c49060" strokeWidth="1" fill="none" opacity="0.5" />
+                    <path d="M5 20 Q15 14 25 20 Q35 26 40 20" stroke="#c49060" strokeWidth="0.6" fill="none" opacity="0.3" />
+                    <circle cx="10" cy="6" r="0.8" fill="#c8985c" opacity="0.4" />
+                    <circle cx="30" cy="10" r="0.5" fill="#c8985c" opacity="0.3" />
+                  </pattern>
+                  {/* Forest - trees */}
+                  <pattern id="img-forest" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <rect width="20" height="20" fill="#2d6a27" />
+                    <path d="M5 18 L5 12 L2 12 L5 7 L3 7 L5 3 L7 7 L5.5 7 L8 12 L5 12" fill="#1e5a1a" opacity="0.6" />
+                    <path d="M14 18 L14 13 L11 13 L14 8 L12 8 L14 4 L16 8 L14.5 8 L17 13 L14 13" fill="#1e5a1a" opacity="0.5" />
+                    <circle cx="5" cy="5" r="3" fill="#246a20" opacity="0.3" />
+                    <circle cx="15" cy="7" r="2.5" fill="#246a20" opacity="0.25" />
+                  </pattern>
+                  {/* Taiga - sparse conifers */}
+                  <pattern id="img-taiga" patternUnits="userSpaceOnUse" width="24" height="20">
+                    <rect width="24" height="20" fill="#3a7a34" />
+                    <path d="M8 18 L8 10 L5 10 L8 4 L11 10 L8 10" fill="#2a5a24" opacity="0.5" />
+                    <path d="M18 18 L18 12 L16 12 L18 7 L20 12 L18 12" fill="#2a5a24" opacity="0.4" />
+                    <rect x="7.5" y="14" width="1" height="4" fill="#5a3a1a" opacity="0.3" />
+                    <rect x="17.5" y="14" width="1" height="4" fill="#5a3a1a" opacity="0.3" />
+                  </pattern>
+                  {/* Mountain - peaks */}
+                  <pattern id="img-mountain" patternUnits="userSpaceOnUse" width="30" height="24">
+                    <rect width="30" height="24" fill="#7a7f88" />
+                    <path d="M0 24 L8 6 L16 24 Z" fill="#6a6f78" opacity="0.5" />
+                    <path d="M14 24 L22 4 L30 24 Z" fill="#5a5f68" opacity="0.4" />
+                    <path d="M6 10 L8 6 L10 10" fill="#e8e8f0" opacity="0.5" />
+                    <path d="M20 8 L22 4 L24 8" fill="#e8e8f0" opacity="0.6" />
+                    <path d="M3 18 L8 8 L13 18" fill="none" stroke="#9a9fa8" strokeWidth="0.4" opacity="0.3" />
+                  </pattern>
+                  {/* Tundra - snow patches */}
+                  <pattern id="img-tundra" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <rect width="20" height="20" fill="#c0ccd4" />
+                    <circle cx="5" cy="5" r="3" fill="#d8e4ec" opacity="0.5" />
+                    <circle cx="15" cy="12" r="2.5" fill="#d8e4ec" opacity="0.4" />
+                    <circle cx="10" cy="18" r="1.5" fill="#e0ecf4" opacity="0.3" />
+                    <path d="M2 14 L4 14 M3 13 L3 15" stroke="#e8f0f8" strokeWidth="0.5" opacity="0.4" />
+                    <path d="M16 4 L18 4 M17 3 L17 5" stroke="#e8f0f8" strokeWidth="0.5" opacity="0.4" />
+                  </pattern>
+                  {/* Farmland - fields */}
+                  <pattern id="img-farmland" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <rect width="20" height="20" fill="#7cb342" />
+                    <rect x="0" y="0" width="9" height="9" fill="#8cc44a" opacity="0.5" />
+                    <rect x="10" y="10" width="10" height="10" fill="#6ca332" opacity="0.4" />
+                    <line x1="0" y1="5" x2="20" y2="5" stroke="#6aa030" strokeWidth="0.4" opacity="0.3" />
+                    <line x1="0" y1="15" x2="20" y2="15" stroke="#6aa030" strokeWidth="0.4" opacity="0.3" />
+                    <line x1="5" y1="0" x2="5" y2="20" stroke="#6aa030" strokeWidth="0.3" opacity="0.2" />
+                    <line x1="15" y1="0" x2="15" y2="20" stroke="#6aa030" strokeWidth="0.3" opacity="0.2" />
+                  </pattern>
+                  {/* Water */}
+                  <pattern id="img-water" patternUnits="userSpaceOnUse" width="24" height="16">
+                    <rect width="24" height="16" fill="#3b6fa0" />
+                    <path d="M0 8 Q6 4 12 8 Q18 12 24 8" stroke="#5a8ac0" strokeWidth="0.8" fill="none" opacity="0.5" />
+                    <path d="M0 13 Q6 10 12 13 Q18 16 24 13" stroke="#5a8ac0" strokeWidth="0.5" fill="none" opacity="0.3" />
+                    <path d="M4 4 Q8 2 12 4 Q16 6 20 4" stroke="#4a7ab0" strokeWidth="0.4" fill="none" opacity="0.3" />
+                  </pattern>
+                </defs>
+
+                {/* === TERRAIN REGIONS === */}
+                {/* Coordinates are approximate % of the image: x/1000, y/700 */}
+
+                {/* Siperian tundra — pohjoisreunat */}
+                <path d="M 0 0 L 1000 0 L 1000 80 Q 800 60 600 75 Q 400 65 200 70 Q 100 60 0 65 Z" fill="url(#img-tundra)" opacity="0.35" />
+                
+                {/* Venäjän metsät — luoteinen */}
+                <path d="M 0 65 Q 50 55 120 80 Q 180 110 200 160 Q 200 240 160 280 Q 100 300 50 280 Q 0 250 0 200 Z" fill="url(#img-forest)" opacity="0.35" />
+
+                {/* Siperian taiga — pohjoinen keskikaista */}
+                <path d="M 200 50 Q 400 40 600 60 Q 700 55 750 80 Q 720 120 650 130 Q 500 110 350 100 Q 250 90 200 70 Z" fill="url(#img-taiga)" opacity="0.3" />
+
+                {/* Kipčakkien aro — Mustanmeren pohjoispuoli */}
+                <path d="M 120 200 Q 200 180 320 200 Q 380 220 400 250 Q 360 290 280 280 Q 180 270 120 240 Z" fill="url(#img-steppe)" opacity="0.35" />
+
+                {/* Mongolian aro — keskellä itä */}
+                <path d="M 550 100 Q 700 80 800 120 Q 830 170 810 220 Q 750 250 650 230 Q 560 200 540 150 Z" fill="url(#img-steppe)" opacity="0.4" />
+
+                {/* Kara-Khitain aro */}
+                <path d="M 430 160 Q 530 140 580 180 Q 570 230 510 240 Q 440 230 420 200 Z" fill="url(#img-steppe)" opacity="0.3" />
+
+                {/* Gobin autiomaa */}
+                <path d="M 620 220 Q 730 200 790 250 Q 800 300 760 330 Q 680 340 620 310 Q 590 270 620 220 Z" fill="url(#img-desert)" opacity="0.4" />
+
+                {/* Keski-Aasian autiomaa (Karakum, Kyzylkum) */}
+                <path d="M 260 260 Q 380 230 460 280 Q 490 330 460 370 Q 380 400 290 370 Q 240 330 260 260 Z" fill="url(#img-desert)" opacity="0.4" />
+
+                {/* Persia / Arabian autiomaa */}
+                <path d="M 100 350 Q 200 310 280 370 Q 300 430 260 480 Q 180 510 100 470 Q 60 420 100 350 Z" fill="url(#img-desert)" opacity="0.35" />
+
+                {/* Khwarezmin viljelymaat (Samarkand, Bukhara) */}
+                <path d="M 330 250 Q 400 230 430 270 Q 430 310 390 330 Q 340 330 320 300 Z" fill="url(#img-farmland)" opacity="0.3" />
+
+                {/* Tiibetin vuoristo / Himalaja */}
+                <path d="M 420 380 Q 560 350 700 400 Q 730 450 700 500 Q 580 520 460 490 Q 400 450 420 380 Z" fill="url(#img-mountain)" opacity="0.45" />
+
+                {/* Altai-vuoret */}
+                <path d="M 500 120 Q 550 100 580 130 Q 580 170 550 180 Q 510 175 500 150 Z" fill="url(#img-mountain)" opacity="0.35" />
+
+                {/* Kaukasuksen vuoret */}
+                <path d="M 180 280 Q 240 270 280 300 Q 270 330 230 340 Q 190 330 180 310 Z" fill="url(#img-mountain)" opacity="0.35" />
+
+                {/* Jin / Pohjois-Kiinan viljelymaat */}
+                <path d="M 800 200 Q 880 180 920 230 Q 930 300 900 360 Q 840 380 800 340 Q 770 280 790 230 Z" fill="url(#img-farmland)" opacity="0.35" />
+
+                {/* Song / Etelä-Kiinan metsät ja viljelymaat */}
+                <path d="M 810 370 Q 880 350 930 400 Q 960 480 940 560 Q 880 600 820 560 Q 780 490 800 420 Z" fill="url(#img-forest)" opacity="0.25" />
+                <path d="M 830 400 Q 880 380 910 420 Q 920 470 900 510 Q 860 520 840 490 Q 820 450 830 400 Z" fill="url(#img-farmland)" opacity="0.2" />
+
+                {/* Intian viljelymaat */}
+                <path d="M 380 470 Q 500 440 580 500 Q 600 560 570 620 Q 480 660 400 630 Q 350 570 380 470 Z" fill="url(#img-farmland)" opacity="0.25" />
+
+                {/* Kashmir / Intian vuoristot */}
+                <path d="M 380 400 Q 440 380 480 420 Q 470 460 430 470 Q 380 460 370 430 Z" fill="url(#img-mountain)" opacity="0.3" />
+
+                {/* Itäinen meri / Tyynimeri */}
+                <path d="M 940 0 L 1000 0 L 1000 700 L 930 700 Q 950 500 960 300 Q 955 150 940 0 Z" fill="url(#img-water)" opacity="0.4" />
+
+                {/* Eteläinen merivyöhyke */}
+                <path d="M 0 550 Q 200 530 400 600 Q 300 680 100 700 L 0 700 Z" fill="url(#img-water)" opacity="0.25" />
+
+                {/* Kaspianmeri */}
+                <path d="M 210 290 Q 230 280 245 300 Q 245 340 230 360 Q 210 360 200 340 Q 195 310 210 290 Z" fill="url(#img-water)" opacity="0.45" />
+
+                {/* Araljärvi */}
+                <path d="M 310 230 Q 325 225 335 240 Q 335 260 320 265 Q 305 260 305 245 Z" fill="url(#img-water)" opacity="0.45" />
+
+                {/* Baikaljärvi */}
+                <path d="M 690 80 Q 700 70 710 80 Q 715 100 705 110 Q 695 105 690 95 Z" fill="url(#img-water)" opacity="0.5" />
+
+                {/* Geographic labels */}
+                <text x="120" y="140" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1a3a10" opacity="0.35" fontStyle="italic">Taiga</text>
+                <text x="700" y="180" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#5a6a30" opacity="0.3" fontStyle="italic">Steppe</text>
+                <text x="700" y="290" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#8a6a40" opacity="0.35" fontStyle="italic">Gobi</text>
+                <text x="370" y="310" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#8a6a40" opacity="0.35" fontStyle="italic">Karakum</text>
+                <text x="560" y="450" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#5a5a68" opacity="0.35" fontStyle="italic">Himalaja</text>
+                <text x="150" y="420" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#8a6a40" opacity="0.3" fontStyle="italic">Arabia</text>
+                <text x="500" y="70" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#3a5a34" opacity="0.3" fontStyle="italic">Siperia</text>
+              </svg>
+            </div>
           </div>
           <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg print:hidden">
-            <p className="font-medium mb-1">🗺️ AI-generoitu korkearesoluutiokartta</p>
-            <p>Kartta kattaa Euraasian vuonna 1206 — mongolien vallan alku. Käytä zoomia yksityiskohtien tarkasteluun.</p>
+            <p className="font-medium mb-1">🗺️ AI-generoitu kartta maastokerrostuksella</p>
+            <p>Kartta kattaa Euraasian vuonna 1206. Maastotyypit on esitetty kuvioituna kerroksena kuvan päällä.</p>
           </div>
         </div>
       )}
