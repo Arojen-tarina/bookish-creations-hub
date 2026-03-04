@@ -13,12 +13,54 @@ export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCar
 
   if (showBack) {
     return (
-      <div className="w-[63mm] h-[88mm] bg-gradient-to-br from-amber-800 to-amber-950 border-2 border-amber-600 rounded-lg flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="text-4xl mb-2">🏇</div>
-          <div className="font-display text-amber-200 text-lg font-bold">Mongolien</div>
-          <div className="font-display text-amber-100 text-xl font-bold">Valtakunta</div>
-          <div className="mt-2 text-amber-300 text-xs">1206 AD</div>
+      <div className={`w-[63mm] h-[88mm] bg-gradient-to-b from-amber-50 to-amber-100 border-2 ${typeInfo.borderColor} rounded-lg flex flex-col overflow-hidden print:break-inside-avoid`}>
+        {/* Header with type */}
+        <div className={`${typeInfo.color} text-white px-2 py-1.5 flex items-center justify-between`}>
+          <span className="text-lg">{typeInfo.icon}</span>
+          <span className="font-display text-[10px] font-bold uppercase tracking-wider">{typeInfo.name}</span>
+          <span className="text-lg">{typeInfo.icon}</span>
+        </div>
+
+        {/* Card name */}
+        <div className="px-2 py-1.5 bg-gradient-to-r from-amber-200 to-amber-100 border-b-2 border-amber-400">
+          <h3 className="font-display font-bold text-xs text-amber-900 text-center leading-tight">
+            {card.name}
+          </h3>
+        </div>
+
+        {/* Stats area */}
+        <div className="flex-1 px-2.5 py-2 flex flex-col gap-1.5">
+          <div className="bg-amber-200/60 rounded p-1.5 border border-amber-300">
+            <p className="text-[10px] leading-snug text-amber-900 text-center font-medium">
+              📜 {card.description}
+            </p>
+          </div>
+
+          <div className="bg-amber-900/90 rounded p-2 border border-amber-700 flex-1 flex items-center">
+            <p className="text-[11px] leading-snug text-amber-100 font-bold text-center w-full">
+              ⚡ {card.effect}
+            </p>
+          </div>
+
+          {card.cost && (
+            <div className="bg-amber-700/90 rounded p-1.5 border border-amber-600">
+              <p className="text-[10px] text-amber-100 font-bold text-center">
+                💰 Hinta: {card.cost}
+              </p>
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-2 pt-0.5">
+            <span className={`w-2.5 h-2.5 rounded-full ${rarity.color}`}></span>
+            <span className="text-[10px] font-semibold text-amber-800">{rarity.name}</span>
+            <span className="text-[9px] text-amber-600">({rarity.symbol})</span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-2 py-1 bg-amber-200 border-t-2 border-amber-400 flex items-center justify-between">
+          <span className="text-[8px] font-mono text-amber-600">{card.id}</span>
+          <span className="text-[8px] text-amber-700 font-bold">MONGOLIEN VALTAKUNTA</span>
         </div>
       </div>
     );
@@ -29,19 +71,19 @@ export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCar
       {/* Header */}
       <div className={`${typeInfo.color} text-white px-2 py-1.5 flex items-center justify-between`}>
         <span className="text-lg">{typeInfo.icon}</span>
-        <span className="font-display text-xs font-bold uppercase tracking-wide">{typeInfo.name}</span>
+        <span className="font-display text-[10px] font-bold uppercase tracking-wider">{typeInfo.name}</span>
         <span className="text-lg">{typeInfo.icon}</span>
       </div>
       
       {/* Kortin nimi */}
-      <div className="px-3 py-2 bg-gradient-to-r from-amber-200 to-amber-100 border-b border-amber-300">
+      <div className="px-3 py-2 bg-gradient-to-r from-amber-200 to-amber-100 border-b-2 border-amber-400">
         <h3 className="font-display font-bold text-sm text-amber-900 text-center leading-tight">
           {card.name}
         </h3>
       </div>
       
-      {/* Kuva-alue - näyttää AI-generoidun kuvan tai placeholderin */}
-      <div className="h-20 mx-2 mt-2 bg-gradient-to-b from-amber-200 to-amber-300 rounded border border-amber-400 flex items-center justify-center overflow-hidden">
+      {/* Kuva-alue */}
+      <div className="flex-1 mx-2 mt-2 mb-1 bg-gradient-to-b from-amber-200 to-amber-300 rounded border border-amber-400 flex items-center justify-center overflow-hidden">
         {imageUrl ? (
           <img 
             src={imageUrl} 
@@ -55,29 +97,12 @@ export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCar
         )}
       </div>
       
-      {/* Kuvaus */}
-      <div className="flex-1 px-3 py-2 flex flex-col gap-1">
-        <p className="text-[11px] leading-snug text-amber-900 italic text-center">
-          {card.description}
-        </p>
-        <div className="bg-amber-900/90 rounded p-2 border border-amber-700">
-          <p className="text-[11px] leading-snug text-amber-100 font-bold text-center">
-            {card.effect}
-          </p>
-        </div>
-        {card.cost && (
-          <p className="text-[11px] font-semibold text-amber-800 text-center">
-            💰 {card.cost}
-          </p>
-        )}
-      </div>
-      
       {/* Footer */}
-      <div className="px-2 py-1 bg-amber-200 border-t border-amber-300 flex items-center justify-between">
-        <span className="text-xs text-amber-700">{card.id}</span>
+      <div className="px-2 py-1 bg-amber-200 border-t-2 border-amber-400 flex items-center justify-between">
+        <span className="text-[8px] font-mono text-amber-600">{card.id}</span>
         <div className="flex items-center gap-1">
           <span className={`w-2 h-2 rounded-full ${rarity.color}`}></span>
-          <span className="text-xs text-amber-700">{rarity.name}</span>
+          <span className="text-[8px] font-semibold text-amber-700">{rarity.name}</span>
         </div>
       </div>
     </div>
@@ -92,7 +117,6 @@ interface PrintableCardSheetProps {
 export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) => {
   const { images, isLoading } = useGeneratedCardImages();
   
-  // 9 korttia per sivu (3x3)
   const cardsPerPage = 9;
   const pages = [];
   
@@ -100,12 +124,10 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
     pages.push(cards.slice(i, i + cardsPerPage));
   }
 
-  // Count how many cards have images
   const cardsWithImages = cards.filter(card => images.has(card.id)).length;
 
   return (
     <div className="print:block">
-      {/* Info banner - hidden when printing */}
       {!isLoading && cardsWithImages > 0 && (
         <div className="mb-4 p-3 bg-green-100 border border-green-300 rounded-lg print:hidden">
           <p className="text-sm text-green-800">
@@ -114,14 +136,15 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
         </div>
       )}
       
+      {/* Front sides (image) */}
       {pages.map((pageCards, pageIndex) => (
         <div 
-          key={pageIndex} 
+          key={`front-${pageIndex}`} 
           className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page"
         >
           {pageIndex === 0 && (
             <h2 className="font-display text-lg font-bold text-center mb-4 text-amber-900 print:text-black">
-              {title} (Sivu {pageIndex + 1}/{pages.length})
+              {title} — Etupuoli (Sivu {pageIndex + 1}/{pages.length})
             </h2>
           )}
           <div className="grid grid-cols-3 gap-2 justify-items-center">
@@ -134,7 +157,33 @@ export const PrintableCardSheet = ({ cards, title }: PrintableCardSheetProps) =>
             ))}
           </div>
           <p className="text-xs text-center text-gray-400 mt-2">
-            Mongolien Valtakunta — {title} — Sivu {pageIndex + 1}/{pages.length}
+            Mongolien Valtakunta — {title} — Etupuoli {pageIndex + 1}/{pages.length}
+          </p>
+        </div>
+      ))}
+
+      {/* Back sides (stats/effects) */}
+      {pages.map((pageCards, pageIndex) => (
+        <div 
+          key={`back-${pageIndex}`} 
+          className="w-[210mm] min-h-[297mm] p-4 bg-white print:break-after-page"
+        >
+          {pageIndex === 0 && (
+            <h2 className="font-display text-lg font-bold text-center mb-4 text-amber-900 print:text-black">
+              {title} — Takapuoli / Tilastot (Sivu {pageIndex + 1}/{pages.length})
+            </h2>
+          )}
+          <div className="grid grid-cols-3 gap-2 justify-items-center">
+            {pageCards.map((card) => (
+              <PrintableCard 
+                key={card.id} 
+                card={card}
+                showBack={true}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-center text-gray-400 mt-2">
+            Mongolien Valtakunta — {title} — Takapuoli {pageIndex + 1}/{pages.length}
           </p>
         </div>
       ))}

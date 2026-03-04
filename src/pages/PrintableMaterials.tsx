@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrintableCardSheet } from "@/components/game/printable/PrintableCard";
 import { CardImageGenerator } from "@/components/game/printable/CardImageGenerator";
+import { PrintableTokensAndDice } from "@/components/game/printable/PrintableTokensAndDice";
 import gameBoardImage from "@/assets/game-board-map.png";
 import { PrintableGameBoard } from "@/components/game/printable/PrintableGameBoard";
 import { 
@@ -16,7 +17,7 @@ import {
   rarityInfo,
   GameCard
 } from "@/data/gameCards";
-import { Printer, FileText, Wand2, Map } from "lucide-react";
+import { Printer, FileText, Wand2, Map, Dices } from "lucide-react";
 
 const rarityDot: Record<string, string> = {
   common: 'bg-gray-500',
@@ -115,10 +116,14 @@ const PrintableMaterials = () => {
         </div>
 
         <Tabs defaultValue="gameboard" className="print:hidden">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsList className="grid w-full grid-cols-8 mb-6">
             <TabsTrigger value="gameboard" className="gap-2">
               <Map className="w-4 h-4" />
               Pelilauta
+            </TabsTrigger>
+            <TabsTrigger value="tokens" className="gap-2">
+              <Dices className="w-4 h-4" />
+              Nappulat
             </TabsTrigger>
             <TabsTrigger value="ai-generator" className="gap-2">
               <Wand2 className="w-4 h-4" />
@@ -148,6 +153,10 @@ const PrintableMaterials = () => {
 
           <TabsContent value="gameboard">
             <PrintableGameBoard />
+          </TabsContent>
+
+          <TabsContent value="tokens">
+            <PrintableTokensAndDice />
           </TabsContent>
 
           <TabsContent value="ai-generator">
