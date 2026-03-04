@@ -586,9 +586,74 @@ export const PrintableGameBoard = () => {
                     <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                     <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
                   </filter>
+                  {/* Terrain fill patterns for background regions */}
+                  <pattern id="bg-steppe" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <rect width="20" height="20" fill="#c4c89a" />
+                    <circle cx="5" cy="5" r="1" fill="#aab07a" opacity="0.4" />
+                    <circle cx="15" cy="15" r="1" fill="#aab07a" opacity="0.4" />
+                  </pattern>
+                  <pattern id="bg-desert" patternUnits="userSpaceOnUse" width="15" height="15">
+                    <rect width="15" height="15" fill="#e4c49a" />
+                    <path d="M0 7 Q7 4 15 7" stroke="#d0a878" strokeWidth="0.5" fill="none" opacity="0.5" />
+                  </pattern>
+                  <pattern id="bg-mountain" patternUnits="userSpaceOnUse" width="24" height="20">
+                    <rect width="24" height="20" fill="#9aa0a8" />
+                    <path d="M0 20 L8 8 L16 20 Z" fill="#8a9098" opacity="0.4" />
+                    <path d="M8 20 L16 5 L24 20 Z" fill="#7a8088" opacity="0.3" />
+                    <path d="M12 8 L16 3 L20 8" fill="white" opacity="0.2" />
+                  </pattern>
+                  <pattern id="bg-forest" patternUnits="userSpaceOnUse" width="12" height="12">
+                    <rect width="12" height="12" fill="#5a8a54" />
+                    <circle cx="4" cy="4" r="2" fill="#4a7a44" opacity="0.5" />
+                    <circle cx="10" cy="8" r="1.5" fill="#4a7a44" opacity="0.5" />
+                  </pattern>
+                  <pattern id="bg-tundra" patternUnits="userSpaceOnUse" width="16" height="16">
+                    <rect width="16" height="16" fill="#d0dce4" />
+                    <circle cx="4" cy="4" r="2" fill="#e0ecf4" opacity="0.5" />
+                    <circle cx="12" cy="12" r="1.5" fill="#c0d0dc" opacity="0.4" />
+                  </pattern>
+                  <pattern id="bg-water" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <rect width="20" height="20" fill="#4a7ab0" />
+                    <path d="M0 10 Q5 7 10 10 Q15 13 20 10" stroke="#5a8ac0" strokeWidth="0.8" fill="none" opacity="0.5" />
+                    <path d="M0 16 Q5 13 10 16 Q15 19 20 16" stroke="#5a8ac0" strokeWidth="0.5" fill="none" opacity="0.3" />
+                  </pattern>
                 </defs>
 
                 <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#F5E6C8" />
+
+                {/* Geographic background regions — fill empty spaces */}
+                {/* Northern Siberia tundra */}
+                <path d="M 0 0 L 1100 0 L 1100 120 Q 900 90 700 100 Q 500 85 300 100 Q 150 95 0 110 Z" fill="url(#bg-tundra)" opacity="0.5" />
+                {/* Russian forests */}
+                <path d="M 0 110 Q 80 100 150 120 Q 200 140 180 200 Q 150 250 100 260 Q 50 250 0 240 Z" fill="url(#bg-forest)" opacity="0.4" />
+                {/* Kipchak steppe belt */}
+                <path d="M 100 140 Q 250 120 450 140 Q 550 150 600 180 Q 580 220 500 230 Q 350 240 200 230 Q 120 220 100 180 Z" fill="url(#bg-steppe)" opacity="0.35" />
+                {/* Central Asian deserts (Karakum, Kyzylkum) */}
+                <path d="M 300 250 Q 400 220 500 250 Q 540 300 500 340 Q 420 370 340 340 Q 280 310 300 250 Z" fill="url(#bg-desert)" opacity="0.35" />
+                {/* Gobi Desert */}
+                <path d="M 640 200 Q 720 180 800 210 Q 840 260 810 310 Q 740 340 670 310 Q 620 270 640 200 Z" fill="url(#bg-desert)" opacity="0.3" />
+                {/* Mongolian steppe */}
+                <path d="M 550 80 Q 700 60 850 90 Q 900 130 870 180 Q 780 200 650 190 Q 540 170 520 130 Q 530 90 550 80 Z" fill="url(#bg-steppe)" opacity="0.3" />
+                {/* Tibet & Himalaya mountains */}
+                <path d="M 460 350 Q 580 330 720 360 Q 780 400 750 450 Q 650 480 530 460 Q 440 430 430 380 Q 440 360 460 350 Z" fill="url(#bg-mountain)" opacity="0.4" />
+                {/* Hindu Kush / Karakoram */}
+                <path d="M 380 340 Q 440 320 500 350 Q 520 400 480 440 Q 420 460 370 430 Q 340 390 360 350 Z" fill="url(#bg-mountain)" opacity="0.35" />
+                {/* Persian/Arabian desert */}
+                <path d="M 200 350 Q 300 330 380 370 Q 400 430 350 480 Q 250 510 180 470 Q 150 420 180 370 Z" fill="url(#bg-desert)" opacity="0.35" />
+                {/* Chinese farmland */}
+                <path d="M 830 250 Q 920 230 980 280 Q 1010 350 970 420 Q 890 450 820 400 Q 780 340 800 280 Z" fill="url(#bg-forest)" opacity="0.25" />
+                {/* South China */}
+                <path d="M 840 420 Q 930 400 980 460 Q 1010 540 960 580 Q 880 600 820 560 Q 790 500 820 440 Z" fill="url(#bg-forest)" opacity="0.2" />
+                {/* Indian subcontinent */}
+                <path d="M 420 480 Q 530 460 600 520 Q 630 590 580 620 Q 480 640 400 600 Q 360 550 390 500 Z" fill="url(#bg-steppe)" opacity="0.25" />
+                {/* Seas */}
+                {/* Black Sea area */}
+                <path d="M 40 290 Q 100 270 160 290 Q 180 330 150 360 Q 90 380 50 350 Q 30 320 40 290 Z" fill="url(#bg-water)" opacity="0.4" />
+                {/* Caspian Sea area */}
+                <path d="M 250 230 Q 280 200 290 250 Q 300 330 280 380 Q 240 400 230 350 Q 220 280 250 230 Z" fill="url(#bg-water)" opacity="0.4" />
+                {/* East seas */}
+                <path d="M 1000 200 L 1100 200 L 1100 620 L 950 620 Q 980 500 1000 400 Q 1020 300 1000 200 Z" fill="url(#bg-water)" opacity="0.3" />
+
                 <rect x={8} y={8} width={BOARD_WIDTH - 16} height={BOARD_HEIGHT - 16} fill="none" stroke="#8B4513" strokeWidth={3} />
                 <rect x={16} y={16} width={BOARD_WIDTH - 32} height={BOARD_HEIGHT - 32} fill="none" stroke="#D2691E" strokeWidth={1} />
 
@@ -625,6 +690,9 @@ export const PrintableGameBoard = () => {
                   { label: 'JIN', q: 15.5, r: 2.5, size: 12 },
                   { label: 'SONG', q: 15, r: 5.5, size: 11 },
                   { label: 'INTIA', q: 8.5, r: 6.5, size: 10 },
+                  { label: 'TIIBET', q: 10, r: 6, size: 9 },
+                  { label: 'GOBI', q: 12, r: 3, size: 8 },
+                  { label: 'SIPERIA', q: 7, r: 0.5, size: 9 },
                 ].map(({ label, q, r, size }) => {
                   const { x, y } = hexToPixel(q, r);
                   return <text key={label} x={x} y={y} textAnchor="middle" fontSize={size} fontWeight="bold" fill="#5D3A1A" opacity={0.5} className="pointer-events-none">{label}</text>;
