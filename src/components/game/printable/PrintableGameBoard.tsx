@@ -717,107 +717,107 @@ export const PrintableGameBoard = () => {
                   </filter>
                 </defs>
 
-                {/* === FULL MAP TERRAIN COVERAGE === */}
+                {/* === FULL MAP TERRAIN — high opacity to create painted map look === */}
 
-                {/* Base: fill entire map with mild steppe/grassland */}
-                <rect width="1000" height="700" fill="url(#img-steppe)" opacity="0.08" />
+                {/* Base fill — warm parchment */}
+                <rect width="1000" height="700" fill="#c8b890" opacity="0.5" />
 
                 {/* Tundra — full northern belt */}
-                <path d="M 0 0 L 1000 0 L 1000 90 Q 800 70 600 80 Q 400 70 200 75 Q 100 65 0 70 Z" fill="url(#img-tundra)" opacity="0.2" />
+                <path d="M 0 0 L 1000 0 L 1000 90 Q 800 70 600 80 Q 400 70 200 75 Q 100 65 0 70 Z" fill="url(#img-tundra)" opacity="0.6" />
                 
-                {/* Venäjän metsät — laajempi */}
-                <path d="M 0 70 Q 30 60 80 75 Q 140 100 180 140 Q 210 200 200 260 Q 180 310 120 320 Q 60 310 20 290 Q 0 260 0 200 Z" fill="url(#img-forest)" opacity="0.2" />
+                {/* Venäjän metsät */}
+                <path d="M 0 70 Q 30 60 80 75 Q 140 100 180 140 Q 210 200 200 260 Q 180 310 120 320 Q 60 310 20 290 Q 0 260 0 200 Z" fill="url(#img-forest)" opacity="0.55" />
 
-                {/* Siperian taiga — leveämpi kaista */}
-                <path d="M 120 55 Q 300 40 500 55 Q 650 50 780 80 Q 800 110 750 140 Q 650 150 500 130 Q 350 115 220 100 Q 140 90 120 75 Z" fill="url(#img-taiga)" opacity="0.18" />
+                {/* Siperian taiga */}
+                <path d="M 120 55 Q 300 40 500 55 Q 650 50 780 80 Q 800 110 750 140 Q 650 150 500 130 Q 350 115 220 100 Q 140 90 120 75 Z" fill="url(#img-taiga)" opacity="0.5" />
 
                 {/* Itä-Siperian taiga */}
-                <path d="M 750 60 Q 830 50 900 70 Q 930 100 920 140 Q 880 160 830 150 Q 770 130 750 100 Z" fill="url(#img-taiga)" opacity="0.15" />
+                <path d="M 750 60 Q 830 50 900 70 Q 930 100 920 140 Q 880 160 830 150 Q 770 130 750 100 Z" fill="url(#img-taiga)" opacity="0.45" />
 
-                {/* Kipčakkien aro — leveämpi */}
-                <path d="M 100 200 Q 180 175 300 190 Q 400 210 430 250 Q 420 300 340 310 Q 220 300 130 270 Q 90 240 100 200 Z" fill="url(#img-steppe)" opacity="0.2" />
+                {/* Kipčakkien aro */}
+                <path d="M 100 200 Q 180 175 300 190 Q 400 210 430 250 Q 420 300 340 310 Q 220 300 130 270 Q 90 240 100 200 Z" fill="url(#img-steppe)" opacity="0.55" />
 
-                {/* Mongolian aro — koko Mongolia */}
-                <path d="M 520 90 Q 650 70 800 110 Q 850 160 840 230 Q 800 270 700 260 Q 590 240 530 190 Q 510 140 520 90 Z" fill="url(#img-steppe)" opacity="0.22" />
+                {/* Mongolian aro */}
+                <path d="M 520 90 Q 650 70 800 110 Q 850 160 840 230 Q 800 270 700 260 Q 590 240 530 190 Q 510 140 520 90 Z" fill="url(#img-steppe)" opacity="0.6" />
 
-                {/* Kara-Khitain aro / steppe */}
-                <path d="M 400 150 Q 520 130 590 170 Q 600 220 550 250 Q 460 260 400 230 Q 380 190 400 150 Z" fill="url(#img-steppe)" opacity="0.18" />
+                {/* Kara-Khitain aro */}
+                <path d="M 400 150 Q 520 130 590 170 Q 600 220 550 250 Q 460 260 400 230 Q 380 190 400 150 Z" fill="url(#img-steppe)" opacity="0.5" />
 
-                {/* Gobin autiomaa — laajempi */}
-                <path d="M 600 210 Q 740 190 810 250 Q 830 310 800 360 Q 710 380 620 340 Q 570 290 600 210 Z" fill="url(#img-desert)" opacity="0.22" />
+                {/* Gobin autiomaa */}
+                <path d="M 600 210 Q 740 190 810 250 Q 830 310 800 360 Q 710 380 620 340 Q 570 290 600 210 Z" fill="url(#img-desert)" opacity="0.6" />
 
                 {/* Taklamakanin autiomaa */}
-                <path d="M 440 250 Q 530 230 590 270 Q 600 320 560 350 Q 480 360 430 330 Q 410 290 440 250 Z" fill="url(#img-desert)" opacity="0.2" />
+                <path d="M 440 250 Q 530 230 590 270 Q 600 320 560 350 Q 480 360 430 330 Q 410 290 440 250 Z" fill="url(#img-desert)" opacity="0.55" />
 
                 {/* Keski-Aasian autiomaa (Karakum, Kyzylkum) */}
-                <path d="M 240 250 Q 370 220 450 270 Q 480 330 450 380 Q 360 410 270 380 Q 220 330 240 250 Z" fill="url(#img-desert)" opacity="0.22" />
+                <path d="M 240 250 Q 370 220 450 270 Q 480 330 450 380 Q 360 410 270 380 Q 220 330 240 250 Z" fill="url(#img-desert)" opacity="0.6" />
 
                 {/* Persian / Iranian autiomaa */}
-                <path d="M 80 330 Q 200 290 300 350 Q 330 420 300 490 Q 200 530 100 490 Q 50 430 80 330 Z" fill="url(#img-desert)" opacity="0.2" />
+                <path d="M 80 330 Q 200 290 300 350 Q 330 420 300 490 Q 200 530 100 490 Q 50 430 80 330 Z" fill="url(#img-desert)" opacity="0.55" />
 
-                {/* Arabian autiomaa — etelälounas */}
-                <path d="M 0 400 Q 60 370 130 400 Q 160 450 140 510 Q 80 540 30 520 Q 0 480 0 430 Z" fill="url(#img-desert)" opacity="0.18" />
+                {/* Arabian autiomaa */}
+                <path d="M 0 400 Q 60 370 130 400 Q 160 450 140 510 Q 80 540 30 520 Q 0 480 0 430 Z" fill="url(#img-desert)" opacity="0.5" />
 
                 {/* Khwarezmin viljelymaat */}
-                <path d="M 310 240 Q 400 220 440 265 Q 445 310 400 340 Q 330 345 300 310 Q 290 275 310 240 Z" fill="url(#img-farmland)" opacity="0.18" />
+                <path d="M 310 240 Q 400 220 440 265 Q 445 310 400 340 Q 330 345 300 310 Q 290 275 310 240 Z" fill="url(#img-farmland)" opacity="0.5" />
 
                 {/* Mesopotamian viljelymaat */}
-                <path d="M 160 330 Q 210 310 240 340 Q 240 380 210 400 Q 170 400 155 370 Z" fill="url(#img-farmland)" opacity="0.15" />
+                <path d="M 160 330 Q 210 310 240 340 Q 240 380 210 400 Q 170 400 155 370 Z" fill="url(#img-farmland)" opacity="0.45" />
 
-                {/* Tiibetin vuoristo / Himalaja — laajempi */}
-                <path d="M 380 360 Q 560 330 720 380 Q 760 440 730 510 Q 600 550 450 520 Q 370 470 380 360 Z" fill="url(#img-mountain)" opacity="0.25" />
+                {/* Tiibetin vuoristo / Himalaja */}
+                <path d="M 380 360 Q 560 330 720 380 Q 760 440 730 510 Q 600 550 450 520 Q 370 470 380 360 Z" fill="url(#img-mountain)" opacity="0.65" />
 
                 {/* Altai-vuoret */}
-                <path d="M 490 110 Q 550 90 590 130 Q 600 180 570 200 Q 510 200 490 170 Q 480 140 490 110 Z" fill="url(#img-mountain)" opacity="0.2" />
+                <path d="M 490 110 Q 550 90 590 130 Q 600 180 570 200 Q 510 200 490 170 Q 480 140 490 110 Z" fill="url(#img-mountain)" opacity="0.55" />
 
                 {/* Kaukasus */}
-                <path d="M 170 270 Q 240 260 290 290 Q 290 330 250 350 Q 190 350 170 320 Q 160 295 170 270 Z" fill="url(#img-mountain)" opacity="0.2" />
+                <path d="M 170 270 Q 240 260 290 290 Q 290 330 250 350 Q 190 350 170 320 Q 160 295 170 270 Z" fill="url(#img-mountain)" opacity="0.55" />
 
                 {/* Tien Shan */}
-                <path d="M 420 220 Q 480 200 520 230 Q 520 270 490 285 Q 440 285 420 260 Z" fill="url(#img-mountain)" opacity="0.18" />
+                <path d="M 420 220 Q 480 200 520 230 Q 520 270 490 285 Q 440 285 420 260 Z" fill="url(#img-mountain)" opacity="0.5" />
 
-                {/* Uralin vuoret (kapea nauha) */}
-                <path d="M 260 50 Q 270 40 280 50 Q 290 100 285 160 Q 280 200 270 230 Q 260 220 255 170 Q 250 100 260 50 Z" fill="url(#img-mountain)" opacity="0.15" />
+                {/* Uralin vuoret */}
+                <path d="M 260 50 Q 270 40 280 50 Q 290 100 285 160 Q 280 200 270 230 Q 260 220 255 170 Q 250 100 260 50 Z" fill="url(#img-mountain)" opacity="0.45" />
 
                 {/* Jin / Pohjois-Kiinan viljelymaat */}
-                <path d="M 790 180 Q 890 160 930 220 Q 945 310 920 380 Q 850 400 790 360 Q 760 290 780 220 Z" fill="url(#img-farmland)" opacity="0.2" />
+                <path d="M 790 180 Q 890 160 930 220 Q 945 310 920 380 Q 850 400 790 360 Q 760 290 780 220 Z" fill="url(#img-farmland)" opacity="0.55" />
 
                 {/* Song / Etelä-Kiinan metsät & viljelymaat */}
-                <path d="M 800 380 Q 880 350 940 410 Q 970 500 950 590 Q 880 630 810 590 Q 770 510 790 430 Z" fill="url(#img-forest)" opacity="0.15" />
-                <path d="M 830 410 Q 890 390 920 440 Q 930 500 910 550 Q 860 560 840 520 Q 820 470 830 410 Z" fill="url(#img-farmland)" opacity="0.12" />
+                <path d="M 800 380 Q 880 350 940 410 Q 970 500 950 590 Q 880 630 810 590 Q 770 510 790 430 Z" fill="url(#img-forest)" opacity="0.45" />
+                <path d="M 830 410 Q 890 390 920 440 Q 930 500 910 550 Q 860 560 840 520 Q 820 470 830 410 Z" fill="url(#img-farmland)" opacity="0.35" />
 
-                {/* Intian viljelymaat — laajempi */}
-                <path d="M 350 460 Q 500 430 600 500 Q 630 580 600 660 Q 500 700 380 670 Q 320 590 350 460 Z" fill="url(#img-farmland)" opacity="0.15" />
+                {/* Intian viljelymaat */}
+                <path d="M 350 460 Q 500 430 600 500 Q 630 580 600 660 Q 500 700 380 670 Q 320 590 350 460 Z" fill="url(#img-farmland)" opacity="0.45" />
 
                 {/* Intian trooppinen metsä */}
-                <path d="M 420 530 Q 520 510 570 560 Q 580 620 540 660 Q 460 670 420 630 Q 400 580 420 530 Z" fill="url(#img-forest)" opacity="0.12" />
+                <path d="M 420 530 Q 520 510 570 560 Q 580 620 540 660 Q 460 670 420 630 Q 400 580 420 530 Z" fill="url(#img-forest)" opacity="0.4" />
 
-                {/* Kashmir / Hindukush vuoristot */}
-                <path d="M 360 380 Q 440 360 500 400 Q 500 450 460 480 Q 380 480 350 440 Q 340 410 360 380 Z" fill="url(#img-mountain)" opacity="0.2" />
+                {/* Kashmir / Hindukush */}
+                <path d="M 360 380 Q 440 360 500 400 Q 500 450 460 480 Q 380 480 350 440 Q 340 410 360 380 Z" fill="url(#img-mountain)" opacity="0.55" />
 
                 {/* Korean metsät */}
-                <path d="M 900 180 Q 930 170 945 200 Q 950 250 935 280 Q 910 285 900 260 Q 890 220 900 180 Z" fill="url(#img-forest)" opacity="0.12" />
+                <path d="M 900 180 Q 930 170 945 200 Q 950 250 935 280 Q 910 285 900 260 Q 890 220 900 180 Z" fill="url(#img-forest)" opacity="0.4" />
 
                 {/* Manchurian metsät */}
-                <path d="M 830 120 Q 890 100 920 140 Q 930 180 910 210 Q 870 220 840 200 Q 820 170 830 120 Z" fill="url(#img-forest)" opacity="0.14" />
+                <path d="M 830 120 Q 890 100 920 140 Q 930 180 910 210 Q 870 220 840 200 Q 820 170 830 120 Z" fill="url(#img-forest)" opacity="0.45" />
 
                 {/* === WATER BODIES === */}
                 {/* Tyynimeri */}
-                <path d="M 940 0 L 1000 0 L 1000 700 L 920 700 Q 945 500 955 300 Q 950 150 940 0 Z" fill="url(#img-water)" opacity="0.25" />
+                <path d="M 940 0 L 1000 0 L 1000 700 L 920 700 Q 945 500 955 300 Q 950 150 940 0 Z" fill="url(#img-water)" opacity="0.6" />
                 {/* Eteläinen meri */}
-                <path d="M 0 580 Q 200 560 400 630 Q 350 700 100 700 L 0 700 Z" fill="url(#img-water)" opacity="0.15" />
+                <path d="M 0 580 Q 200 560 400 630 Q 350 700 100 700 L 0 700 Z" fill="url(#img-water)" opacity="0.45" />
                 {/* Mustameri */}
-                <path d="M 130 260 Q 160 250 180 265 Q 185 285 170 295 Q 145 295 130 280 Z" fill="url(#img-water)" opacity="0.35" />
+                <path d="M 130 260 Q 160 250 180 265 Q 185 285 170 295 Q 145 295 130 280 Z" fill="url(#img-water)" opacity="0.65" />
                 {/* Kaspianmeri */}
-                <path d="M 210 280 Q 235 270 250 295 Q 255 340 240 370 Q 215 375 200 350 Q 195 310 210 280 Z" fill="url(#img-water)" opacity="0.35" />
+                <path d="M 210 280 Q 235 270 250 295 Q 255 340 240 370 Q 215 375 200 350 Q 195 310 210 280 Z" fill="url(#img-water)" opacity="0.65" />
                 {/* Araljärvi */}
-                <path d="M 310 225 Q 330 218 340 235 Q 342 260 325 268 Q 308 262 305 245 Z" fill="url(#img-water)" opacity="0.35" />
+                <path d="M 310 225 Q 330 218 340 235 Q 342 260 325 268 Q 308 262 305 245 Z" fill="url(#img-water)" opacity="0.65" />
                 {/* Baikaljärvi */}
-                <path d="M 688 75 Q 702 65 712 78 Q 718 100 708 115 Q 695 110 688 98 Z" fill="url(#img-water)" opacity="0.4" />
+                <path d="M 688 75 Q 702 65 712 78 Q 718 100 708 115 Q 695 110 688 98 Z" fill="url(#img-water)" opacity="0.7" />
                 {/* Persianlahti */}
-                <path d="M 180 430 Q 210 420 230 440 Q 230 470 210 480 Q 185 475 178 455 Z" fill="url(#img-water)" opacity="0.3" />
+                <path d="M 180 430 Q 210 420 230 440 Q 230 470 210 480 Q 185 475 178 455 Z" fill="url(#img-water)" opacity="0.6" />
                 {/* Intian valtameri */}
-                <path d="M 280 600 Q 400 580 500 620 Q 500 700 350 700 Q 250 700 250 650 Z" fill="url(#img-water)" opacity="0.15" />
+                <path d="M 280 600 Q 400 580 500 620 Q 500 700 350 700 Q 250 700 250 650 Z" fill="url(#img-water)" opacity="0.4" />
 
                 {/* === SILK ROAD — golden dashed line === */}
                 <path 
