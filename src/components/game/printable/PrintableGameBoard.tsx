@@ -579,8 +579,8 @@ export const PrintableGameBoard = () => {
 
           <div className="relative">
             <InfoPanel tile={selectedTile} onClose={() => setSelectedTile(null)} />
-            <div className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50 print:hidden" style={{ maxHeight: '80vh' }}>
-              <svg viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`} style={{ width: `${BOARD_WIDTH * zoom}px`, height: `${BOARD_HEIGHT * zoom}px` }}>
+            <div className="overflow-auto border-4 border-amber-700 rounded-lg print:hidden" style={{ maxHeight: '80vh', backgroundColor: '#d8cbb0' }}>
+              <svg viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`} style={{ width: zoom === 1 ? '100%' : `${BOARD_WIDTH * zoom}px`, minWidth: `${BOARD_WIDTH}px`, height: 'auto' }}>
                 <defs>
                   <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -619,40 +619,46 @@ export const PrintableGameBoard = () => {
                   </pattern>
                 </defs>
 
-                <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#F5E6C8" />
+                {/* Full background fill — no white gaps */}
+                <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#d8cbb0" />
 
-                {/* Geographic background regions — fill empty spaces */}
-                {/* Northern Siberia tundra */}
-                <path d="M 0 0 L 1100 0 L 1100 120 Q 900 90 700 100 Q 500 85 300 100 Q 150 95 0 110 Z" fill="url(#bg-tundra)" opacity="0.5" />
-                {/* Russian forests */}
-                <path d="M 0 110 Q 80 100 150 120 Q 200 140 180 200 Q 150 250 100 260 Q 50 250 0 240 Z" fill="url(#bg-forest)" opacity="0.4" />
-                {/* Kipchak steppe belt */}
-                <path d="M 100 140 Q 250 120 450 140 Q 550 150 600 180 Q 580 220 500 230 Q 350 240 200 230 Q 120 220 100 180 Z" fill="url(#bg-steppe)" opacity="0.35" />
+                {/* Large geographic background fills covering ALL empty space */}
+                {/* Northern Siberia tundra — full top strip */}
+                <path d="M 0 0 L 1100 0 L 1100 130 Q 950 100 800 110 Q 600 90 400 105 Q 200 95 0 115 Z" fill="url(#bg-tundra)" opacity="0.6" />
+                {/* Siberian forests — broad strip below tundra */}
+                <path d="M 0 115 Q 100 100 250 120 Q 400 130 550 110 Q 650 100 750 120 L 750 180 Q 600 170 450 180 Q 300 190 150 175 Q 50 165 0 180 Z" fill="url(#bg-forest)" opacity="0.35" />
+                {/* Russian forests — west */}
+                <path d="M 0 115 Q 80 100 150 125 Q 220 160 200 220 Q 160 280 100 300 Q 50 290 0 260 Z" fill="url(#bg-forest)" opacity="0.45" />
+                {/* Kipchak steppe belt — wide central band */}
+                <path d="M 80 160 Q 200 130 400 150 Q 550 160 650 190 Q 700 240 650 280 Q 500 300 300 280 Q 150 260 80 220 Z" fill="url(#bg-steppe)" opacity="0.4" />
+                {/* Mongolian steppe — large NE region */}
+                <path d="M 550 70 Q 700 50 900 80 Q 960 130 940 200 Q 880 240 750 230 Q 600 220 530 180 Q 510 130 530 90 Z" fill="url(#bg-steppe)" opacity="0.35" />
                 {/* Central Asian deserts (Karakum, Kyzylkum) */}
-                <path d="M 300 250 Q 400 220 500 250 Q 540 300 500 340 Q 420 370 340 340 Q 280 310 300 250 Z" fill="url(#bg-desert)" opacity="0.35" />
-                {/* Gobi Desert */}
-                <path d="M 640 200 Q 720 180 800 210 Q 840 260 810 310 Q 740 340 670 310 Q 620 270 640 200 Z" fill="url(#bg-desert)" opacity="0.3" />
-                {/* Mongolian steppe */}
-                <path d="M 550 80 Q 700 60 850 90 Q 900 130 870 180 Q 780 200 650 190 Q 540 170 520 130 Q 530 90 550 80 Z" fill="url(#bg-steppe)" opacity="0.3" />
-                {/* Tibet & Himalaya mountains */}
-                <path d="M 460 350 Q 580 330 720 360 Q 780 400 750 450 Q 650 480 530 460 Q 440 430 430 380 Q 440 360 460 350 Z" fill="url(#bg-mountain)" opacity="0.4" />
+                <path d="M 270 260 Q 400 230 540 260 Q 580 320 540 370 Q 430 400 320 370 Q 260 330 270 260 Z" fill="url(#bg-desert)" opacity="0.4" />
+                {/* Gobi Desert — large */}
+                <path d="M 620 190 Q 740 170 840 210 Q 880 280 850 340 Q 760 380 660 340 Q 600 290 620 190 Z" fill="url(#bg-desert)" opacity="0.35" />
+                {/* Tibet & Himalaya mountains — wide belt */}
+                <path d="M 420 340 Q 560 310 750 350 Q 830 400 800 470 Q 700 510 550 500 Q 420 480 380 420 Q 390 370 420 340 Z" fill="url(#bg-mountain)" opacity="0.45" />
                 {/* Hindu Kush / Karakoram */}
-                <path d="M 380 340 Q 440 320 500 350 Q 520 400 480 440 Q 420 460 370 430 Q 340 390 360 350 Z" fill="url(#bg-mountain)" opacity="0.35" />
-                {/* Persian/Arabian desert */}
-                <path d="M 200 350 Q 300 330 380 370 Q 400 430 350 480 Q 250 510 180 470 Q 150 420 180 370 Z" fill="url(#bg-desert)" opacity="0.35" />
-                {/* Chinese farmland */}
-                <path d="M 830 250 Q 920 230 980 280 Q 1010 350 970 420 Q 890 450 820 400 Q 780 340 800 280 Z" fill="url(#bg-forest)" opacity="0.25" />
-                {/* South China */}
-                <path d="M 840 420 Q 930 400 980 460 Q 1010 540 960 580 Q 880 600 820 560 Q 790 500 820 440 Z" fill="url(#bg-forest)" opacity="0.2" />
+                <path d="M 340 320 Q 430 300 500 340 Q 530 400 490 460 Q 400 490 340 450 Q 300 400 320 350 Z" fill="url(#bg-mountain)" opacity="0.4" />
+                {/* Persian/Arabian region */}
+                <path d="M 0 300 Q 100 280 230 310 Q 340 340 380 410 Q 370 490 300 540 Q 180 560 80 520 Q 20 460 0 400 Z" fill="url(#bg-desert)" opacity="0.4" />
+                {/* Chinese farmland — broader */}
+                <path d="M 810 230 Q 930 210 1000 270 Q 1040 350 1000 440 Q 930 480 850 440 Q 790 370 800 290 Z" fill="url(#bg-forest)" opacity="0.3" />
+                {/* South China & SE Asia */}
+                <path d="M 820 440 Q 940 410 1000 470 Q 1040 560 1000 620 L 800 620 Q 780 530 800 460 Z" fill="url(#bg-forest)" opacity="0.25" />
                 {/* Indian subcontinent */}
-                <path d="M 420 480 Q 530 460 600 520 Q 630 590 580 620 Q 480 640 400 600 Q 360 550 390 500 Z" fill="url(#bg-steppe)" opacity="0.25" />
-                {/* Seas */}
-                {/* Black Sea area */}
-                <path d="M 40 290 Q 100 270 160 290 Q 180 330 150 360 Q 90 380 50 350 Q 30 320 40 290 Z" fill="url(#bg-water)" opacity="0.4" />
-                {/* Caspian Sea area */}
-                <path d="M 250 230 Q 280 200 290 250 Q 300 330 280 380 Q 240 400 230 350 Q 220 280 250 230 Z" fill="url(#bg-water)" opacity="0.4" />
-                {/* East seas */}
-                <path d="M 1000 200 L 1100 200 L 1100 620 L 950 620 Q 980 500 1000 400 Q 1020 300 1000 200 Z" fill="url(#bg-water)" opacity="0.3" />
+                <path d="M 380 480 Q 540 450 650 520 Q 690 590 650 620 L 350 620 Q 330 560 360 500 Z" fill="url(#bg-steppe)" opacity="0.3" />
+                {/* Black Sea */}
+                <path d="M 30 270 Q 110 250 180 280 Q 200 330 170 370 Q 100 400 40 370 Q 10 330 30 270 Z" fill="url(#bg-water)" opacity="0.5" />
+                {/* Caspian Sea */}
+                <path d="M 230 210 Q 270 180 300 230 Q 310 320 290 400 Q 250 430 230 380 Q 210 290 230 210 Z" fill="url(#bg-water)" opacity="0.5" />
+                {/* Aral Sea */}
+                <path d="M 330 220 Q 370 200 390 230 Q 400 270 380 300 Q 340 310 320 280 Q 310 250 330 220 Z" fill="url(#bg-water)" opacity="0.45" />
+                {/* East seas — Pacific coast, full right strip */}
+                <path d="M 980 0 L 1100 0 L 1100 620 L 950 620 Q 960 500 970 380 Q 985 250 980 150 Z" fill="url(#bg-water)" opacity="0.4" />
+                {/* South bottom fill — avoid any remaining white */}
+                <path d="M 0 520 Q 200 510 400 530 Q 600 550 800 540 Q 950 550 1100 530 L 1100 620 L 0 620 Z" fill="url(#bg-desert)" opacity="0.15" />
 
                 <rect x={8} y={8} width={BOARD_WIDTH - 16} height={BOARD_HEIGHT - 16} fill="none" stroke="#8B4513" strokeWidth={3} />
                 <rect x={16} y={16} width={BOARD_WIDTH - 32} height={BOARD_HEIGHT - 32} fill="none" stroke="#D2691E" strokeWidth={1} />
