@@ -56,17 +56,17 @@ export const PrintableCard = ({ card, showBack = false, imageUrl }: PrintableCar
       </div>
       
       {/* Kuvaus */}
-      <div className="flex-1 px-3 py-2">
-        <p className="text-xs text-amber-800 italic text-center mb-2">
+      <div className="flex-1 px-3 py-2 flex flex-col gap-1">
+        <p className="text-[11px] leading-snug text-amber-900 italic text-center">
           {card.description}
         </p>
-        <div className="bg-amber-200/50 rounded p-2 border border-amber-300">
-          <p className="text-xs text-amber-900 font-medium text-center">
+        <div className="bg-amber-900/90 rounded p-2 border border-amber-700">
+          <p className="text-[11px] leading-snug text-amber-100 font-bold text-center">
             {card.effect}
           </p>
         </div>
         {card.cost && (
-          <p className="text-xs text-amber-700 text-center mt-1">
+          <p className="text-[11px] font-semibold text-amber-800 text-center">
             💰 {card.cost}
           </p>
         )}
