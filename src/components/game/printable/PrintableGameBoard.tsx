@@ -174,21 +174,24 @@ const regionColors: Record<string, string> = {
 const generateHexGrid = (): HexTile[] => {
   const tiles: HexTile[] = [];
 
-  // ── Venäjä / Kiovan Rus (far northwest — Kiev ~30°E, 50°N) ──
+  // ── Venäjä / Kiovan Rus ──
   const russia: Partial<HexTile>[] = [
     { q: 0, r: 0, terrain: 'tundra' },
     { q: 1, r: 0, terrain: 'tundra' },
+    { q: 2, r: 0, terrain: 'tundra' },
     { q: 0, r: 1, terrain: 'forest', name: 'Novgorod', isCity: true },
     { q: 1, r: 1, terrain: 'forest' },
+    { q: 2, r: 1, terrain: 'forest' },
     { q: 0, r: 2, terrain: 'forest' },
     { q: 1, r: 2, terrain: 'forest' },
     { q: 0, r: 3, terrain: 'city', name: 'Kiev', isCity: true, isCapital: true },
     { q: 1, r: 3, terrain: 'forest' },
     { q: 0, r: 4, terrain: 'steppe' },
+    { q: 1, r: 4, terrain: 'steppe' },
   ];
   russia.forEach((h, i) => tiles.push({ id: `rus-${i}`, region: 'Venäjä', ...h } as HexTile));
 
-  // ── Kipchak Steppe (Pontic-Caspian, north of Caucasus) ──
+  // ── Kipchak Steppe ──
   const kipchak: Partial<HexTile>[] = [
     { q: 2, r: 2, terrain: 'steppe' },
     { q: 3, r: 2, terrain: 'steppe' },
@@ -202,18 +205,22 @@ const generateHexGrid = (): HexTile[] => {
     { q: 6, r: 3, terrain: 'steppe' },
     { q: 7, r: 2, terrain: 'steppe' },
     { q: 7, r: 3, terrain: 'steppe' },
+    { q: 3, r: 1, terrain: 'steppe' },
+    { q: 4, r: 1, terrain: 'steppe' },
+    { q: 5, r: 1, terrain: 'steppe' },
   ];
   kipchak.forEach((h, i) => tiles.push({ id: `kip-${i}`, region: 'Kipchak', ...h } as HexTile));
 
-  // ── Kaukasia (between Black Sea & Caspian) ──
+  // ── Kaukasia ──
   const caucasus: Partial<HexTile>[] = [
     { q: 3, r: 4, terrain: 'mountain' },
     { q: 4, r: 4, terrain: 'city', name: 'Tbilisi', isCity: true, isCapital: true },
-    { q: 2, r: 3, terrain: 'mountain' },
+    { q: 2, r: 4, terrain: 'mountain' },
+    { q: 3, r: 5, terrain: 'mountain' },
   ];
   caucasus.forEach((h, i) => tiles.push({ id: `cau-${i}`, region: 'Kaukasia', ...h } as HexTile));
 
-  // ── Khwarezmia (Central Asia / Transoxiana) ──
+  // ── Khwarezmia ──
   const khwarezm: Partial<HexTile>[] = [
     { q: 6, r: 4, terrain: 'city', name: 'Urgench', isCity: true, isCapital: true },
     { q: 7, r: 4, terrain: 'city', name: 'Bukhara', isCity: true },
@@ -223,33 +230,68 @@ const generateHexGrid = (): HexTile[] => {
     { q: 8, r: 5, terrain: 'mountain' },
     { q: 6, r: 5, terrain: 'desert' },
     { q: 5, r: 5, terrain: 'desert' },
+    { q: 9, r: 5, terrain: 'desert' },
   ];
   khwarezm.forEach((h, i) => tiles.push({ id: `khw-${i}`, region: 'Khwarezmia', ...h } as HexTile));
 
-  // ── Persia / Abbasidi (southwest) ──
+  // ── Persia / Abbasidi ──
   const persia: Partial<HexTile>[] = [
     { q: 4, r: 5, terrain: 'desert' },
-    { q: 3, r: 5, terrain: 'city', name: 'Bagdad', isCity: true, isCapital: true },
-    { q: 4, r: 6, terrain: 'desert' },
+    { q: 4, r: 6, terrain: 'city', name: 'Bagdad', isCity: true, isCapital: true },
+    { q: 5, r: 6, terrain: 'desert' },
     { q: 3, r: 6, terrain: 'desert' },
-    { q: 5, r: 6, terrain: 'mountain', name: 'Zagros' },
-    { q: 2, r: 4, terrain: 'sea' }, // Black Sea
-    { q: 2, r: 5, terrain: 'sea' }, // Mediterranean
-    { q: 6, r: 6, terrain: 'city', name: 'Isfahan', isCity: true },
+    { q: 6, r: 6, terrain: 'mountain', name: 'Zagros' },
+    { q: 7, r: 6, terrain: 'city', name: 'Isfahan', isCity: true },
+    { q: 3, r: 7, terrain: 'desert' },
+    { q: 4, r: 7, terrain: 'desert' },
+    { q: 5, r: 7, terrain: 'desert' },
   ];
   persia.forEach((h, i) => tiles.push({ id: `per-${i}`, region: 'Persia', ...h } as HexTile));
 
-  // ── Kara-Khitai (between Khwarezm and Mongolia) ──
+  // ── Seas ──
+  const seas: Partial<HexTile>[] = [
+    { q: 2, r: 5, terrain: 'sea', name: 'Mustameri' },
+    { q: 1, r: 5, terrain: 'sea' },
+    { q: 2, r: 6, terrain: 'sea', name: 'Välimeri' },
+    { q: 1, r: 6, terrain: 'sea' },
+    { q: 0, r: 5, terrain: 'sea' },
+    { q: 0, r: 6, terrain: 'sea' },
+    // Kaspianmeri
+    { q: 5, r: 3, terrain: 'sea', name: 'Kaspianmeri' },
+    // Itäiset meret
+    { q: 18, r: 3, terrain: 'sea' },
+    { q: 18, r: 4, terrain: 'sea' },
+    { q: 18, r: 5, terrain: 'sea' },
+    { q: 18, r: 6, terrain: 'sea' },
+    { q: 18, r: 7, terrain: 'sea' },
+    { q: 18, r: 8, terrain: 'sea' },
+    { q: 17, r: 5, terrain: 'sea' },
+    { q: 17, r: 6, terrain: 'sea' },
+    { q: 17, r: 7, terrain: 'sea' },
+    { q: 17, r: 8, terrain: 'sea' },
+    // Intian valtameri
+    { q: 6, r: 9, terrain: 'sea', name: 'Arabiameri' },
+    { q: 7, r: 10, terrain: 'sea' },
+    { q: 8, r: 10, terrain: 'sea' },
+    { q: 5, r: 9, terrain: 'sea' },
+    { q: 4, r: 8, terrain: 'sea' },
+    { q: 5, r: 8, terrain: 'sea' },
+  ];
+  seas.forEach((h, i) => tiles.push({ id: `sea-${i}`, region: 'Persia', ...h } as HexTile));
+
+  // ── Kara-Khitai ──
   const karaKhitai: Partial<HexTile>[] = [
     { q: 9, r: 3, terrain: 'steppe', name: 'Balasagun', isCity: true, isCapital: true },
     { q: 10, r: 3, terrain: 'steppe' },
     { q: 9, r: 4, terrain: 'steppe' },
     { q: 10, r: 4, terrain: 'mountain', name: 'Tien Shan' },
     { q: 8, r: 3, terrain: 'steppe' },
+    { q: 10, r: 5, terrain: 'desert' },
+    { q: 11, r: 5, terrain: 'desert' },
   ];
   karaKhitai.forEach((h, i) => tiles.push({ id: `kkh-${i}`, region: 'Kara-Khitai', ...h } as HexTile));
 
-  // ── Mongolia (center) ──
+  // ── Mongolia ──
   const mongolia: Partial<HexTile>[] = [
     { q: 11, r: 2, terrain: 'steppe', name: 'Karakorum', isCity: true, isCapital: true },
     { q: 12, r: 2, terrain: 'steppe' },
@@ -267,27 +309,40 @@ const generateHexGrid = (): HexTile[] => {
     { q: 8, r: 2, terrain: 'steppe' },
     { q: 14, r: 1, terrain: 'forest' },
     { q: 14, r: 2, terrain: 'steppe' },
-    // Northern forests (Siberia edge)
+    // Northern Siberia
+    { q: 3, r: 0, terrain: 'tundra' },
+    { q: 4, r: 0, terrain: 'tundra' },
+    { q: 5, r: 0, terrain: 'tundra' },
+    { q: 6, r: 0, terrain: 'tundra' },
+    { q: 7, r: 0, terrain: 'tundra' },
+    { q: 8, r: 0, terrain: 'tundra' },
+    { q: 9, r: 0, terrain: 'tundra' },
     { q: 10, r: 0, terrain: 'tundra' },
     { q: 11, r: 0, terrain: 'tundra' },
     { q: 12, r: 0, terrain: 'tundra' },
     { q: 13, r: 0, terrain: 'forest' },
+    { q: 14, r: 0, terrain: 'forest' },
+    { q: 15, r: 0, terrain: 'forest' },
+    { q: 16, r: 0, terrain: 'tundra' },
+    { q: 17, r: 0, terrain: 'tundra' },
+    // Extra steppe
+    { q: 6, r: 1, terrain: 'forest' },
+    { q: 7, r: 1, terrain: 'forest' },
   ];
   mongolia.forEach((h, i) => tiles.push({ id: `mng-${i}`, region: 'Mongolia', ...h } as HexTile));
 
-  // ── Xi Xia (between Mongolia and Jin, northwest China) ──
+  // ── Xi Xia ──
   const xiXia: Partial<HexTile>[] = [
     { q: 12, r: 4, terrain: 'city', name: 'Zhongxing', isCity: true, isCapital: true },
     { q: 11, r: 4, terrain: 'desert' },
     { q: 13, r: 3, terrain: 'desert' },
     { q: 13, r: 4, terrain: 'mountain' },
+    { q: 12, r: 5, terrain: 'desert', name: 'Gobi' },
+    { q: 13, r: 5, terrain: 'desert' },
   ];
   xiXia.forEach((h, i) => tiles.push({ id: `xix-${i}`, region: 'Xi Xia', ...h } as HexTile));
 
-  // ── Gobi Desert (between Mongolia and China) ──
-  // Absorbed into Xi Xia / Mongolia terrain
-
-  // ── Jin Dynasty (northeast China) ──
+  // ── Jin Dynasty ──
   const jin: Partial<HexTile>[] = [
     { q: 15, r: 2, terrain: 'city', name: 'Zhongdu', isCity: true, isCapital: true },
     { q: 15, r: 3, terrain: 'river', name: 'Huangjoki' },
@@ -299,13 +354,15 @@ const generateHexGrid = (): HexTile[] => {
     { q: 16, r: 4, terrain: 'river' },
     { q: 15, r: 1, terrain: 'forest' },
     { q: 16, r: 1, terrain: 'forest' },
-    // Manchuria
     { q: 17, r: 1, terrain: 'forest' },
     { q: 17, r: 2, terrain: 'forest' },
+    { q: 17, r: 3, terrain: 'steppe' },
+    { q: 17, r: 4, terrain: 'river' },
+    { q: 14, r: 5, terrain: 'river' },
   ];
   jin.forEach((h, i) => tiles.push({ id: `jin-${i}`, region: 'Jin', ...h } as HexTile));
 
-  // ── Song Dynasty (southeast China — Hangzhou ~120°E, 30°N) ──
+  // ── Song Dynasty ──
   const song: Partial<HexTile>[] = [
     { q: 16, r: 7, terrain: 'city', name: 'Lin\'an', isCity: true, isCapital: true },
     { q: 15, r: 7, terrain: 'river', name: 'Jangtse' },
@@ -313,18 +370,26 @@ const generateHexGrid = (): HexTile[] => {
     { q: 14, r: 8, terrain: 'mountain' },
     { q: 15, r: 8, terrain: 'river' },
     { q: 16, r: 8, terrain: 'river' },
-    { q: 17, r: 5, terrain: 'sea' }, // East China Sea
-    { q: 17, r: 6, terrain: 'sea' },
-    { q: 17, r: 7, terrain: 'sea' },
-    { q: 17, r: 8, terrain: 'sea' },
     { q: 13, r: 7, terrain: 'mountain' },
     { q: 13, r: 8, terrain: 'river', name: 'Guangzhou' },
+    { q: 15, r: 5, terrain: 'river' },
+    { q: 16, r: 5, terrain: 'river' },
+    { q: 15, r: 6, terrain: 'river' },
+    { q: 16, r: 6, terrain: 'river' },
+    { q: 14, r: 6, terrain: 'mountain' },
+    { q: 12, r: 8, terrain: 'mountain' },
+    { q: 13, r: 9, terrain: 'sea' },
+    { q: 14, r: 9, terrain: 'sea' },
+    { q: 15, r: 9, terrain: 'sea' },
+    { q: 16, r: 9, terrain: 'sea' },
+    { q: 17, r: 9, terrain: 'sea' },
+    { q: 18, r: 9, terrain: 'sea' },
   ];
   song.forEach((h, i) => tiles.push({ id: `sng-${i}`, region: 'Song', ...h } as HexTile));
 
-  // ── Intia / Delhi (south — Delhi ~77°E, 28°N) ──
+  // ── Intia / Delhi ──
   const india: Partial<HexTile>[] = [
-    { q: 8, r: 9, terrain: 'city', name: 'Delhi', isCity: true, isCapital: true },
+    { q: 8, r: 8, terrain: 'city', name: 'Delhi', isCity: true, isCapital: true },
     { q: 7, r: 7, terrain: 'mountain', name: 'Hindukuš' },
     { q: 8, r: 7, terrain: 'mountain', name: 'Khyber' },
     { q: 9, r: 6, terrain: 'mountain', name: 'Himalaja' },
@@ -333,24 +398,62 @@ const generateHexGrid = (): HexTile[] => {
     { q: 12, r: 6, terrain: 'mountain' },
     { q: 13, r: 6, terrain: 'mountain' },
     { q: 7, r: 8, terrain: 'mountain' },
-    { q: 8, r: 8, terrain: 'mountain' },
     { q: 9, r: 7, terrain: 'mountain' },
     { q: 7, r: 9, terrain: 'river', name: 'Indus' },
-    { q: 9, r: 9, terrain: 'river', name: 'Ganges' },
+    { q: 8, r: 9, terrain: 'river' },
+    { q: 9, r: 8, terrain: 'river', name: 'Ganges' },
+    { q: 9, r: 9, terrain: 'river' },
     { q: 10, r: 7, terrain: 'mountain' },
+    { q: 10, r: 8, terrain: 'steppe' },
+    { q: 11, r: 7, terrain: 'mountain' },
+    { q: 12, r: 7, terrain: 'mountain' },
+    { q: 6, r: 7, terrain: 'desert' },
+    { q: 6, r: 8, terrain: 'desert' },
+    { q: 10, r: 9, terrain: 'river' },
+    { q: 11, r: 8, terrain: 'forest' },
+    { q: 11, r: 9, terrain: 'sea' },
+    { q: 12, r: 9, terrain: 'sea' },
   ];
   india.forEach((h, i) => tiles.push({ id: `ind-${i}`, region: 'Intia', ...h } as HexTile));
+
+  // ── Filler hexes — neutral/unclaimed territory ──
+  const fillers: Partial<HexTile>[] = [
+    // Arabian peninsula
+    { q: 1, r: 7, terrain: 'desert' },
+    { q: 2, r: 7, terrain: 'desert' },
+    { q: 2, r: 8, terrain: 'desert' },
+    { q: 3, r: 8, terrain: 'sea' },
+    { q: 0, r: 7, terrain: 'sea' },
+    { q: 0, r: 8, terrain: 'sea' },
+    { q: 1, r: 8, terrain: 'sea' },
+    // Central gap fillers
+    { q: 8, r: 6, terrain: 'mountain' },
+    { q: 9, r: 5, terrain: 'desert' },
+    // Korean peninsula
+    { q: 18, r: 1, terrain: 'forest' },
+    { q: 18, r: 2, terrain: 'forest' },
+    // Bottom row
+    { q: 0, r: 9, terrain: 'sea' },
+    { q: 1, r: 9, terrain: 'sea' },
+    { q: 2, r: 9, terrain: 'sea' },
+    { q: 3, r: 9, terrain: 'sea' },
+    { q: 4, r: 9, terrain: 'sea' },
+    { q: 5, r: 10, terrain: 'sea' },
+    { q: 6, r: 10, terrain: 'sea' },
+    { q: 7, r: 10, terrain: 'sea' },
+  ];
+  fillers.forEach((h, i) => tiles.push({ id: `fil-${i}`, region: 'Persia', ...h } as HexTile));
 
   return tiles;
 };
 
 // ─── Rendering ──────────────────────────────────────────────────────
-const HEX_SIZE = 38;
+const HEX_SIZE = 30;
 
 const hexToPixel = (q: number, r: number) => {
   const x = HEX_SIZE * (3 / 2 * q);
   const y = HEX_SIZE * (Math.sqrt(3) / 2 * q + Math.sqrt(3) * r);
-  return { x: x + 80, y: y + 70 };
+  return { x: x + 60, y: y + 70 };
 };
 
 const hexPath = (size: number) => {
@@ -506,7 +609,7 @@ export const PrintableGameBoard = () => {
   const [boardType, setBoardType] = useState<'image' | 'svg'>('image');
   const tiles = generateHexGrid();
 
-  const BOARD_WIDTH = 1100;
+  const BOARD_WIDTH = 920;
   const BOARD_HEIGHT = 620;
 
   const handlePrint = () => { setSelectedTile(null); setTimeout(() => window.print(), 100); };
@@ -539,12 +642,44 @@ export const PrintableGameBoard = () => {
 
       {boardType === 'image' && (
         <div className="space-y-4">
-          <div className="overflow-auto border-4 border-amber-700 rounded-lg bg-amber-50" style={{ maxHeight: '80vh' }}>
+          <div className="relative overflow-auto rounded-xl shadow-2xl" style={{ maxHeight: '80vh' }}>
+            {/* Decorative frame */}
+            <div className="absolute inset-0 pointer-events-none z-10 rounded-xl" style={{ 
+              boxShadow: 'inset 0 0 0 6px #8B4513, inset 0 0 0 8px #D2691E, inset 0 0 0 10px #8B4513',
+              borderRadius: '0.75rem'
+            }} />
+            {/* Title overlay */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+              <div className="px-6 py-2 rounded-lg" style={{ backgroundColor: 'rgba(93, 58, 26, 0.85)' }}>
+                <h3 className="text-center font-display font-bold text-amber-100 text-lg tracking-wide">MONGOLIEN VALTAKUNTA — EURAASIA 1206 AD</h3>
+                <p className="text-center text-amber-200/70 text-xs">Historiallisesti tarkka kartta · Genghis Khanin vallan alku</p>
+              </div>
+            </div>
+            {/* Legend overlay */}
+            <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
+              <div className="px-4 py-3 rounded-lg text-xs space-y-1" style={{ backgroundColor: 'rgba(245, 230, 200, 0.9)' }}>
+                <p className="font-bold text-amber-900 text-sm mb-1">Valtakunnat</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                  {Object.entries(regionColors).slice(0, 8).map(([region, color]) => (
+                    <div key={region} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: color }} />
+                      <span style={{ color: '#5D3A1A' }}>{region}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Compass overlay */}
+            <div className="absolute top-4 right-4 z-20 pointer-events-none">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,248,231,0.9)', border: '2px solid #8B4513' }}>
+                <span className="text-amber-900 font-bold text-sm">N ↑</span>
+              </div>
+            </div>
             <img src={gameBoardImage} alt="Mongolien Valtakunta - 1206 AD pelilauta" className="w-full h-auto" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: zoom > 1 ? `${100 * zoom}%` : '100%' }} />
           </div>
-          <div className="text-sm text-muted-foreground bg-green-100 border border-green-300 p-4 rounded-lg print:hidden">
-            <p className="font-medium text-green-800 mb-2">✅ AI-Generoitu korkearesoluutiokartta</p>
-            <p className="text-green-700">Kartta kattaa Euraasian vuonna 1206 — mongolien vallan alku.</p>
+          <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg print:hidden">
+            <p className="font-medium mb-1">🗺️ AI-generoitu korkearesoluutiokartta</p>
+            <p>Kartta kattaa Euraasian vuonna 1206 — mongolien vallan alku. Käytä zoomia yksityiskohtien tarkasteluun.</p>
           </div>
         </div>
       )}
@@ -619,64 +754,50 @@ export const PrintableGameBoard = () => {
                   </pattern>
                 </defs>
 
-                {/* Full background fill — no white gaps */}
-                <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#d8cbb0" />
-
-                {/* Large geographic background fills covering ALL empty space */}
-                {/* Northern Siberia tundra — full top strip */}
-                <path d="M 0 0 L 1100 0 L 1100 130 Q 950 100 800 110 Q 600 90 400 105 Q 200 95 0 115 Z" fill="url(#bg-tundra)" opacity="0.6" />
-                {/* Siberian forests — broad strip below tundra */}
-                <path d="M 0 115 Q 100 100 250 120 Q 400 130 550 110 Q 650 100 750 120 L 750 180 Q 600 170 450 180 Q 300 190 150 175 Q 50 165 0 180 Z" fill="url(#bg-forest)" opacity="0.35" />
-                {/* Russian forests — west */}
-                <path d="M 0 115 Q 80 100 150 125 Q 220 160 200 220 Q 160 280 100 300 Q 50 290 0 260 Z" fill="url(#bg-forest)" opacity="0.45" />
-                {/* Kipchak steppe belt — wide central band */}
-                <path d="M 80 160 Q 200 130 400 150 Q 550 160 650 190 Q 700 240 650 280 Q 500 300 300 280 Q 150 260 80 220 Z" fill="url(#bg-steppe)" opacity="0.4" />
-                {/* Mongolian steppe — large NE region */}
-                <path d="M 550 70 Q 700 50 900 80 Q 960 130 940 200 Q 880 240 750 230 Q 600 220 530 180 Q 510 130 530 90 Z" fill="url(#bg-steppe)" opacity="0.35" />
-                {/* Central Asian deserts (Karakum, Kyzylkum) */}
-                <path d="M 270 260 Q 400 230 540 260 Q 580 320 540 370 Q 430 400 320 370 Q 260 330 270 260 Z" fill="url(#bg-desert)" opacity="0.4" />
-                {/* Gobi Desert — large */}
-                <path d="M 620 190 Q 740 170 840 210 Q 880 280 850 340 Q 760 380 660 340 Q 600 290 620 190 Z" fill="url(#bg-desert)" opacity="0.35" />
-                {/* Tibet & Himalaya mountains — wide belt */}
-                <path d="M 420 340 Q 560 310 750 350 Q 830 400 800 470 Q 700 510 550 500 Q 420 480 380 420 Q 390 370 420 340 Z" fill="url(#bg-mountain)" opacity="0.45" />
-                {/* Hindu Kush / Karakoram */}
-                <path d="M 340 320 Q 430 300 500 340 Q 530 400 490 460 Q 400 490 340 450 Q 300 400 320 350 Z" fill="url(#bg-mountain)" opacity="0.4" />
-                {/* Persian/Arabian region */}
-                <path d="M 0 300 Q 100 280 230 310 Q 340 340 380 410 Q 370 490 300 540 Q 180 560 80 520 Q 20 460 0 400 Z" fill="url(#bg-desert)" opacity="0.4" />
-                {/* Chinese farmland — broader */}
-                <path d="M 810 230 Q 930 210 1000 270 Q 1040 350 1000 440 Q 930 480 850 440 Q 790 370 800 290 Z" fill="url(#bg-forest)" opacity="0.3" />
-                {/* South China & SE Asia */}
-                <path d="M 820 440 Q 940 410 1000 470 Q 1040 560 1000 620 L 800 620 Q 780 530 800 460 Z" fill="url(#bg-forest)" opacity="0.25" />
-                {/* Indian subcontinent */}
-                <path d="M 380 480 Q 540 450 650 520 Q 690 590 650 620 L 350 620 Q 330 560 360 500 Z" fill="url(#bg-steppe)" opacity="0.3" />
-                {/* Black Sea */}
-                <path d="M 30 270 Q 110 250 180 280 Q 200 330 170 370 Q 100 400 40 370 Q 10 330 30 270 Z" fill="url(#bg-water)" opacity="0.5" />
-                {/* Caspian Sea */}
-                <path d="M 230 210 Q 270 180 300 230 Q 310 320 290 400 Q 250 430 230 380 Q 210 290 230 210 Z" fill="url(#bg-water)" opacity="0.5" />
-                {/* Aral Sea */}
-                <path d="M 330 220 Q 370 200 390 230 Q 400 270 380 300 Q 340 310 320 280 Q 310 250 330 220 Z" fill="url(#bg-water)" opacity="0.45" />
-                {/* East seas — Pacific coast, full right strip */}
-                <path d="M 980 0 L 1100 0 L 1100 620 L 950 620 Q 960 500 970 380 Q 985 250 980 150 Z" fill="url(#bg-water)" opacity="0.4" />
-                {/* South bottom fill — avoid any remaining white */}
-                <path d="M 0 520 Q 200 510 400 530 Q 600 550 800 540 Q 950 550 1100 530 L 1100 620 L 0 620 Z" fill="url(#bg-desert)" opacity="0.15" />
+                {/* Full background fill */}
+                <rect width={BOARD_WIDTH} height={BOARD_HEIGHT} fill="#c8bda0" />
+                {/* Tundra — top strip */}
+                <path d={`M 0 0 L ${BOARD_WIDTH} 0 L ${BOARD_WIDTH} 100 Q ${BOARD_WIDTH*0.7} 80 ${BOARD_WIDTH*0.4} 90 Q ${BOARD_WIDTH*0.2} 85 0 95 Z`} fill="url(#bg-tundra)" opacity="0.6" />
+                {/* Steppe belt */}
+                <path d={`M 60 100 Q ${BOARD_WIDTH*0.4} 80 ${BOARD_WIDTH*0.7} 110 Q ${BOARD_WIDTH*0.8} 160 ${BOARD_WIDTH*0.7} 200 Q ${BOARD_WIDTH*0.4} 220 100 200 Q 40 180 60 100 Z`} fill="url(#bg-steppe)" opacity="0.35" />
+                {/* Forest west */}
+                <path d="M 0 95 Q 60 85 120 110 Q 160 140 150 200 Q 120 250 70 260 Q 30 250 0 230 Z" fill="url(#bg-forest)" opacity="0.4" />
+                {/* Desert central */}
+                <path d={`M 200 230 Q 350 200 480 240 Q 520 300 480 350 Q 370 380 260 350 Q 190 310 200 230 Z`} fill="url(#bg-desert)" opacity="0.35" />
+                {/* Gobi */}
+                <path d={`M 520 170 Q 620 150 700 190 Q 730 240 710 290 Q 640 320 560 290 Q 500 250 520 170 Z`} fill="url(#bg-desert)" opacity="0.3" />
+                {/* Tibet/Himalaya */}
+                <path d={`M 340 310 Q 480 280 650 320 Q 720 370 690 430 Q 580 460 440 440 Q 320 420 310 360 Z`} fill="url(#bg-mountain)" opacity="0.45" />
+                {/* Persia/Arabia */}
+                <path d={`M 0 260 Q 100 240 200 280 Q 300 310 320 380 Q 300 460 200 500 Q 100 510 40 470 Q 0 420 0 360 Z`} fill="url(#bg-desert)" opacity="0.35" />
+                {/* China farmland */}
+                <path d={`M 680 200 Q 780 180 840 240 Q 870 320 840 400 Q 780 430 710 390 Q 660 330 670 260 Z`} fill="url(#bg-forest)" opacity="0.25" />
+                {/* South China */}
+                <path d={`M 700 400 Q 800 380 860 440 Q ${BOARD_WIDTH} 520 ${BOARD_WIDTH} 620 L 680 620 Q 660 510 680 430 Z`} fill="url(#bg-forest)" opacity="0.2" />
+                {/* India */}
+                <path d={`M 300 430 Q 450 400 560 460 Q 600 540 560 620 L 260 620 Q 250 530 280 460 Z`} fill="url(#bg-steppe)" opacity="0.25" />
+                {/* East seas */}
+                <path d={`M ${BOARD_WIDTH-60} 0 L ${BOARD_WIDTH} 0 L ${BOARD_WIDTH} 620 L ${BOARD_WIDTH-80} 620 Q ${BOARD_WIDTH-70} 400 ${BOARD_WIDTH-60} 200 Z`} fill="url(#bg-water)" opacity="0.4" />
+                {/* South seas */}
+                <path d={`M 0 480 Q 100 470 200 490 L 250 620 L 0 620 Z`} fill="url(#bg-water)" opacity="0.3" />
 
                 <rect x={8} y={8} width={BOARD_WIDTH - 16} height={BOARD_HEIGHT - 16} fill="none" stroke="#8B4513" strokeWidth={3} />
                 <rect x={16} y={16} width={BOARD_WIDTH - 32} height={BOARD_HEIGHT - 32} fill="none" stroke="#D2691E" strokeWidth={1} />
 
-                <text x={BOARD_WIDTH / 2} y={40} textAnchor="middle" fontSize={24} fontWeight="bold" fill="#5D3A1A" className="font-display">MONGOLIEN VALTAKUNTA — EURAASIA 1206 AD</text>
-                <text x={BOARD_WIDTH / 2} y={58} textAnchor="middle" fontSize={11} fill="#8B4513">Historiallisesti tarkka kartta · Genghis Khanin vallan alku</text>
+                <text x={BOARD_WIDTH / 2} y={35} textAnchor="middle" fontSize={18} fontWeight="bold" fill="#5D3A1A" className="font-display">MONGOLIEN VALTAKUNTA — EURAASIA 1206 AD</text>
+                <text x={BOARD_WIDTH / 2} y={50} textAnchor="middle" fontSize={9} fill="#8B4513">Historiallisesti tarkka kartta · Genghis Khanin vallan alku</text>
 
                 {/* Silk Road */}
                 <path d={silkRoadSvgPath} fill="none" stroke="#DAA520" strokeWidth={3} strokeDasharray="8,4" opacity={0.6} />
 
                 {/* Compass rose */}
-                <g transform={`translate(${BOARD_WIDTH - 60}, 80)`}>
-                  <circle cx={0} cy={0} r={20} fill="#FFF8E7" stroke="#8B4513" strokeWidth={1} />
-                  <text x={0} y={-8} textAnchor="middle" fontSize={10} fontWeight="bold" fill="#5D3A1A">P</text>
-                  <text x={0} y={18} textAnchor="middle" fontSize={8} fill="#8B4513">E</text>
-                  <text x={12} y={5} textAnchor="middle" fontSize={8} fill="#8B4513">I</text>
-                  <text x={-12} y={5} textAnchor="middle" fontSize={8} fill="#8B4513">L</text>
-                  <line x1={0} y1={-18} x2={0} y2={-4} stroke="#5D3A1A" strokeWidth={2} />
+                <g transform={`translate(${BOARD_WIDTH - 45}, 65)`}>
+                  <circle cx={0} cy={0} r={16} fill="#FFF8E7" stroke="#8B4513" strokeWidth={1} />
+                  <text x={0} y={-5} textAnchor="middle" fontSize={8} fontWeight="bold" fill="#5D3A1A">P</text>
+                  <text x={0} y={14} textAnchor="middle" fontSize={7} fill="#8B4513">E</text>
+                  <text x={10} y={4} textAnchor="middle" fontSize={7} fill="#8B4513">I</text>
+                  <text x={-10} y={4} textAnchor="middle" fontSize={7} fill="#8B4513">L</text>
+                  <line x1={0} y1={-14} x2={0} y2={-3} stroke="#5D3A1A" strokeWidth={1.5} />
                 </g>
 
                 {tiles.map(tile => (
@@ -685,20 +806,20 @@ export const PrintableGameBoard = () => {
 
                 {/* Region labels */}
                 {[
-                  { label: 'VENÄJÄ', q: 1.5, r: 1.5, size: 11 },
-                  { label: 'KIPČAKIT', q: 5, r: 2, size: 10 },
-                  { label: 'KAUKASIA', q: 3.5, r: 3.5, size: 8 },
-                  { label: 'KHWAREZMIA', q: 7, r: 4.5, size: 10 },
-                  { label: 'PERSIA', q: 3.5, r: 5.5, size: 10 },
-                  { label: 'KARA-KHITAI', q: 9.5, r: 3.5, size: 9 },
-                  { label: 'MONGOLIA', q: 11, r: 1.5, size: 13 },
-                  { label: 'XI XIA', q: 12, r: 3.5, size: 9 },
-                  { label: 'JIN', q: 15.5, r: 2.5, size: 12 },
-                  { label: 'SONG', q: 15, r: 5.5, size: 11 },
-                  { label: 'INTIA', q: 8.5, r: 6.5, size: 10 },
-                  { label: 'TIIBET', q: 10, r: 6, size: 9 },
-                  { label: 'GOBI', q: 12, r: 3, size: 8 },
-                  { label: 'SIPERIA', q: 7, r: 0.5, size: 9 },
+                  { label: 'VENÄJÄ', q: 1, r: 1.5, size: 8 },
+                  { label: 'KIPČAKIT', q: 4.5, r: 2.5, size: 8 },
+                  { label: 'KAUKASIA', q: 3, r: 4.5, size: 7 },
+                  { label: 'KHWAREZMIA', q: 7, r: 4.5, size: 7 },
+                  { label: 'PERSIA', q: 4, r: 6.5, size: 8 },
+                  { label: 'KARA-KHITAI', q: 9.5, r: 3.5, size: 7 },
+                  { label: 'MONGOLIA', q: 11, r: 1.5, size: 10 },
+                  { label: 'XI XIA', q: 12, r: 4.5, size: 7 },
+                  { label: 'JIN', q: 16, r: 2.5, size: 9 },
+                  { label: 'SONG', q: 15, r: 6.5, size: 8 },
+                  { label: 'INTIA', q: 8.5, r: 8.5, size: 8 },
+                  { label: 'TIIBET', q: 11, r: 6.5, size: 7 },
+                  { label: 'GOBI', q: 12.5, r: 3.5, size: 7 },
+                  { label: 'SIPERIA', q: 7, r: 0.3, size: 8 },
                 ].map(({ label, q, r, size }) => {
                   const { x, y } = hexToPixel(q, r);
                   return <text key={label} x={x} y={y} textAnchor="middle" fontSize={size} fontWeight="bold" fill="#5D3A1A" opacity={0.5} className="pointer-events-none">{label}</text>;
