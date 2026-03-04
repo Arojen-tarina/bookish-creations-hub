@@ -23,19 +23,19 @@ const CardTile = ({ card }: { card: GameCard }) => {
     <div className="w-[63mm] h-[88mm] bg-gradient-to-b from-amber-50 to-amber-100 border-2 rounded-lg flex flex-col overflow-hidden break-inside-avoid"
       style={{ borderColor: typeInfo.borderColor.replace('border-', '') }}>
       {/* Header */}
-      <div className={`${typeInfo.color} text-white px-2 py-1 flex items-center justify-between`}>
-        <span className="text-base">{typeInfo.icon}</span>
-        <span className="font-bold text-[9px] uppercase tracking-wide">{typeInfo.name}</span>
-        <span className="text-base">{typeInfo.icon}</span>
+      <div className={`${typeInfo.color} text-white px-2 py-1.5 flex items-center justify-between`}>
+        <span className="text-lg">{typeInfo.icon}</span>
+        <span className="font-bold text-[10px] uppercase tracking-wider">{typeInfo.name}</span>
+        <span className="text-lg">{typeInfo.icon}</span>
       </div>
 
       {/* Name */}
-      <div className="px-2 py-1 bg-gradient-to-r from-amber-200 to-amber-100 border-b border-amber-300">
-        <h3 className="font-bold text-[10px] text-amber-900 text-center leading-tight">{card.name}</h3>
+      <div className="px-2 py-1.5 bg-gradient-to-r from-amber-200 to-amber-100 border-b-2 border-amber-400">
+        <h3 className="font-bold text-xs text-amber-900 text-center leading-tight">{card.name}</h3>
       </div>
 
-      {/* Image */}
-      <div className="h-20 mx-1.5 mt-1.5 rounded border border-amber-400 overflow-hidden bg-amber-200 flex items-center justify-center">
+      {/* Image — slightly shorter to give text more room */}
+      <div className="h-16 mx-1.5 mt-1.5 rounded border border-amber-400 overflow-hidden bg-amber-200 flex items-center justify-center">
         <img
           src={getImageUrl(card.id)}
           alt={card.name}
@@ -48,23 +48,23 @@ const CardTile = ({ card }: { card: GameCard }) => {
         />
       </div>
 
-      {/* Description + Effect */}
-      <div className="flex-1 px-2 py-1">
-        <p className="text-[8px] text-amber-800 italic text-center mb-1">{card.description}</p>
-        <div className="bg-amber-200/50 rounded p-1 border border-amber-300">
-          <p className="text-[8px] text-amber-900 font-medium text-center">{card.effect}</p>
+      {/* Description + Effect — larger text, better contrast */}
+      <div className="flex-1 px-2 py-1.5 flex flex-col gap-1">
+        <p className="text-[9px] leading-tight text-amber-800 italic text-center">{card.description}</p>
+        <div className="bg-amber-900/90 rounded p-1.5 border border-amber-700 flex-shrink-0">
+          <p className="text-[9px] leading-tight text-amber-100 font-bold text-center">{card.effect}</p>
         </div>
         {card.cost && (
-          <p className="text-[8px] text-amber-700 text-center mt-0.5">💰 {card.cost}</p>
+          <p className="text-[9px] font-semibold text-amber-700 text-center">💰 {card.cost}</p>
         )}
       </div>
 
       {/* Footer */}
-      <div className="px-2 py-0.5 bg-amber-200 border-t border-amber-300 flex items-center justify-between">
-        <span className="text-[7px] text-amber-700">{card.id}</span>
-        <div className="flex items-center gap-0.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${rarity.color}`}></span>
-          <span className="text-[7px] text-amber-700">{rarity.name}</span>
+      <div className="px-2 py-1 bg-amber-200 border-t-2 border-amber-400 flex items-center justify-between">
+        <span className="text-[8px] font-mono text-amber-600">{card.id}</span>
+        <div className="flex items-center gap-1">
+          <span className={`w-2 h-2 rounded-full ${rarity.color}`}></span>
+          <span className="text-[8px] font-semibold text-amber-700">{rarity.name}</span>
         </div>
       </div>
     </div>
