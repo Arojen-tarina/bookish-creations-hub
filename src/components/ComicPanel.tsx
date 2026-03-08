@@ -1,3 +1,10 @@
+/**
+ * ComicPanel.tsx — Sarjakuvapaneeli-komponentti
+ *
+ * Uudelleenkäytettävä korttityylinen container, jota käytetään
+ * kaikkialla sisältöpaneelien kehyksenä. Tukee kolmea varianttia:
+ * default, accent ja primary.
+ */
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 

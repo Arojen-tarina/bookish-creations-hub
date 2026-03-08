@@ -1,3 +1,9 @@
+/**
+ * Layout.tsx — Sivuston perusasettelu
+ *
+ * Käärii jokaisen sivun Navigation + main + Footer -rakenteeseen.
+ * Main-sisältö saa pt-16 navigaatiopalkin alle.
+ */
 import { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";

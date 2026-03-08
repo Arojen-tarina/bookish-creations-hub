@@ -1,3 +1,9 @@
+/**
+ * Footer.tsx — Sivuston alatunniste
+ *
+ * Näyttää navigaatiolinkit, yhteystiedot ja tekijänoikeusmerkinnän.
+ * Käytetään Layout-komponentissa jokaisella sivulla.
+ */
 import { Link } from "react-router-dom";
 
 export const Footer = () => {
