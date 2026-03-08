@@ -1,3 +1,9 @@
+/**
+ * GameHUD.tsx — Pelin yläpaneeli (Head-Up Display, vanha versio)
+ *
+ * Näyttää vuoron, vaiheen, resurssit ja kontrollipainikkeet.
+ * Käytetään MongolianGame-komponentissa (heksilautapeli).
+ */
 import { GameState, RESOURCE_INFO, Faction } from '@/types/game';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

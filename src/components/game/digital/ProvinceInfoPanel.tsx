@@ -1,3 +1,10 @@
+/**
+ * ProvinceInfoPanel.tsx — Provinssin tietopaneeli
+ *
+ * Näyttää valitun provinssin yksityiskohtaiset tiedot:
+ * omistaja, maasto, verot, miesvoima, puolustus, linnoitus,
+ * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
+ */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

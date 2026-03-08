@@ -1,3 +1,9 @@
+/**
+ * FactionSelect.tsx — Heimonvalintanäkymä (vanha heksilauta-versio)
+ *
+ * Näyttää 4 heimoa (mongoli, Kiina, Persia, Venäjä) kortteina
+ * aloitusjoukkoineen ja voittoehtojen kera. Käytetään MongolianGame-komponentissa.
+ */
 import { FactionId, FACTIONS, AI_PERSONALITIES } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

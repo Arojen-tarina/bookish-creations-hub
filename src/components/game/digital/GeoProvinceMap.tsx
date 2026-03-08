@@ -1,5 +1,11 @@
+/**
+ * GeoProvinceMap.tsx — GeoJSON-pohjainen provinssikartta (d3-geo)
+ *
+ * SVG-kartta Mercator-projektiolla. Näyttää provinssit monikulmioina
+ * väritettynä omistajan/maaston mukaan. Tukee zoom/pan, armeijanäkymä,
+ * hyökkäyskohteet ja Silkkitien reitti.
+ */
 // GeoJSON-based Province Map with d3-geo projection
-import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react';
 import { geoMercator, geoPath, GeoPath, GeoPermissibleObjects } from 'd3-geo';
 import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { EURASIA_1206_GEOJSON, ProvinceProperties, PROVINCE_ADJACENCY_GRAPH } from '@/data/eurasia-1206.geojson';

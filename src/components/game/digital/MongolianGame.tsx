@@ -1,3 +1,9 @@
+/**
+ * MongolianGame.tsx — Vanha heksipohjainen peli (legacy)
+ *
+ * Alkuperäinen pelitoteutus heksilauta-mekanismilla (TabletopBoard + GameUI).
+ * Korvattu ProvinceGame-komponentilla, mutta säilytetty referenssinä.
+ */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useGameState } from '@/hooks/useGameState';
 import { useSaveManager } from '@/hooks/useSaveManager';

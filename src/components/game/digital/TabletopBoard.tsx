@@ -1,3 +1,9 @@
+/**
+ * TabletopBoard.tsx — Heksipohjainen pelilauta (vanha versio)
+ *
+ * SVG-pelilauta heksakenttinä maastoväreillä, yksiköillä ja rakennuksilla.
+ * Tukee zoom/pan ja klikkaustoiminnot. Käytetään MongolianGame-komponentissa.
+ */
 import { HexTile, Unit, Building, FactionId, TERRAIN_INFO, FACTIONS, UNIT_INFO, BUILDING_INFO } from '@/types/game';
 
 interface TabletopBoardProps {
