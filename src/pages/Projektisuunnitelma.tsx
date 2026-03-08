@@ -1,3 +1,11 @@
+/**
+ * Projektisuunnitelma.tsx — Liiketoimintasuunnitelma-sivu
+ *
+ * Esittelee "Arojen Tarina" -projektin kokonaisuudessaan:
+ * tiivistelmä, romaanin suunnitelma (teemat, mytologia),
+ * tuotteet ja palvelut, liiketoimintasuunnitelma (talous, markkinointi)
+ * ja riskianalyysi. Välilehtinä (Tabs) toteutettu.
+ */
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

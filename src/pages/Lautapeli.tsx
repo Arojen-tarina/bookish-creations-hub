@@ -1,3 +1,11 @@
+/**
+ * Lautapeli.tsx — Lautapelin sääntödokumenttisivu
+ *
+ * Kokoaa kaikki lautapelin osiot yhdelle sivulle:
+ * yleiskuvaus, pelilauta, komponentit, heimot, mekaniikka,
+ * taistelu, resurssit, diplomatia, voittoehdot, erityissäännöt,
+ * strategiat, laajennusideat, visuaaliset mock-upit ja yhteenveto.
+ */
 import { Layout } from "@/components/Layout";
 import { GameOverview } from "@/components/game/GameOverview";
 import { GameIntroduction } from "@/components/game/GameIntroduction";

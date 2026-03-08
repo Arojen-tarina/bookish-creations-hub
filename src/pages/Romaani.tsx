@@ -1,3 +1,9 @@
+/**
+ * Romaani.tsx — Romaanin pääsivu
+ *
+ * Esittelee "Arojen Tarina" -romaanin: juoni, kirjan kansi,
+ * trilogian kolme osaa linkkeineen, ja päähahmot.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";

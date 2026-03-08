@@ -1,3 +1,9 @@
+/**
+ * OtaYhteytta.tsx — Ota yhteyttä -sivu
+ *
+ * Yritystiedot, yhteydenottolomake ja tiimijäsenten portfoliokortit.
+ * Lomake lähettää viestin backend-funktiolle (send-contact-email).
+ */
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

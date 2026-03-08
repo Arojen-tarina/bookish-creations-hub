@@ -1,3 +1,9 @@
+/**
+ * MateriaalitPDF.tsx — Sääntökirja + pelilauta PDF-tulostussivu
+ *
+ * Tulostettava A4-kokoinen sääntökirja (10 osiota) ja pelilautakuva.
+ * Sisältää korttien referenssitaulukot ja peliohjeet.
+ */
 import { useEffect } from "react";
 import gameBoardImage from "@/assets/game-board-map.png";
 import {

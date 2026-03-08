@@ -1,3 +1,9 @@
+/**
+ * LukuOsa3.tsx — Romaanin kolmas osa: "Koettelemus"
+ *
+ * Luvut 11–15: Naisten rooli, ulkomaalaiset, johtajat,
+ * verot ja korruptio, kultainen aika.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";

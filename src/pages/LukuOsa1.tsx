@@ -1,3 +1,9 @@
+/**
+ * LukuOsa1.tsx — Romaanin ensimmäinen osa: "Yhdistyminen"
+ *
+ * Luvut 1–5: Arojen maa, ruoka ja tavat, vapaus, talven karuus, kunnia.
+ * Navigaatio edelliseen (romaani) ja seuraavaan (osa 2) osaan.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
