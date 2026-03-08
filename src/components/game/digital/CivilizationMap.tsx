@@ -1,3 +1,18 @@
+/**
+ * CivilizationMap.tsx — Sivilisaatiokartta (täysi SVG-versio)
+ * 
+ * Pelin pääkarttanäkymä, joka piirtää koko Euraasian vuonna 1206.
+ * Sisältää:
+ * - Maastoalueet (steppejä, aavikkoja, vuoristoja, metsiä, taigatä, tundraa)
+ * - Vesistöt (Kaspianmeri, Baikaljärvi, Mustameri jne.)
+ * - Joet (Volga, Jangtse, Silkkitie jne.)
+ * - Vuoristoketjut lumisine huippuineen (Himalaja, Ural, Altai)
+ * - Provinssiheksagonit värikoodattuina omistajan ja maaston mukaan
+ * - Armeijaikoni ja hyökkäyskohteiden korostus
+ * - Zoom, panorointi ja minikartta
+ *
+ * Tämä on raskaampi mutta visuaalisesti rikkaampi vaihtoehto ProvinceMap-komponentille.
+ */
 import { useState, useCallback, useMemo, useRef, memo, useEffect } from 'react';
 import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { ZoomIn, ZoomOut, Maximize2, Compass, Sword, Users, Shield } from 'lucide-react';

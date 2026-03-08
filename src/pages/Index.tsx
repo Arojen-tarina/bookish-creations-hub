@@ -1,3 +1,13 @@
+/**
+ * Index.tsx — Etusivu / Landing Page
+ * 
+ * Projektin pääsivu, joka esittelee "Arojen Tarina" -maailman kolme kokemusta:
+ * 1. Romaani (historiallis-fantastinen trilogia)
+ * 2. Lautapeli (fyysinen strategiapeli 2–5 pelaajalle)
+ * 3. Digipeli (selainpohjainen digitaalinen versio)
+ * 
+ * Sisältää hero-osion, teemabannerin ja kolme posterityylistä linkkikorttia.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";

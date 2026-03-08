@@ -1,4 +1,15 @@
-// Battle Display Component - Animated battle visualization
+/**
+ * BattleDisplay.tsx — Taistelunäyttö (animoitu)
+ * 
+ * Näyttää taistelun vaihe vaiheelta modaalissa kun kaksi armeijaa kohtaavat:
+ * 1. Ratsuväen rynnäkkö — ratsuväki iskee ensin
+ * 2. Nuolisade — jousiampujien tulitus
+ * 3. Jalkaväen yhteenotto — lähitaistelu
+ * 4. Ratkaiseva isku — voittaja selviää
+ * 
+ * Jokainen vaihe näytetään 1,5 sekunnin välein animaatiolla.
+ * Lopuksi näytetään tappiot ja voittaja.
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { Army, FactionId, FACTION_DATA_1206 } from '@/types/province';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';

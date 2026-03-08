@@ -1,3 +1,16 @@
+/**
+ * ProvinceMap.tsx — Provinssikartta (yksinkertainen SVG-versio)
+ * 
+ * Pelilaudan 2D-karttanäkymä, jossa provinssit esitetään heksagoneina.
+ * Ominaisuudet:
+ * - Zoom (hiiren rulla tai painikkeet) ja panorointi (raahaamalla)
+ * - Minikartta vasemmassa alakulmassa pikanavigoinnille
+ * - Hover-tooltip: provinssin nimi, omistaja, verot, maasto, linnoitukset
+ * - Silkkitien reitit näkyvät katkoviivoina provinssien välillä
+ * - Provinssien väri kertoo omistajan, koko kehitystason
+ * 
+ * Tämä on vaihtoehtoinen, kevyempi karttanäkymä verrattuna CivilizationMap-komponenttiin.
+ */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { ZoomIn, ZoomOut, Maximize2, Navigation } from 'lucide-react';
