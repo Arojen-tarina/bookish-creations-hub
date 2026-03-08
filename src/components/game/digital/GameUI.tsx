@@ -1,3 +1,15 @@
+/**
+ * GameUI.tsx — Pelin käyttöliittymäpaneeli (HUD)
+ * 
+ * Pelin oikean laidan ohjauspaneeli, joka näyttää:
+ * - Vuoro- ja vaiheilmaisin (suunnittelu → toiminta → rakennus → tapahtuma → hallinto)
+ * - Pelaajan resurssit (kulta, ruoka, hevoset, rauta, silkki)
+ * - Rakennusvalikko (linnoitukset, markkinat, temppeli jne.)
+ * - Rekrytointivalikko (ratsuväki, jalkaväki)
+ * - Valtakunnan tilastot (alueet, kaupungit, pisteet)
+ * - Tapahtumaloki ja pelaajien lista
+ * - Voitto- ja tapahtumamodaalit
+ */
 import { GameState, GamePhase, BuildingType, FACTIONS, RESOURCE_INFO, BUILDING_INFO, UNIT_INFO, AI_PERSONALITIES } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

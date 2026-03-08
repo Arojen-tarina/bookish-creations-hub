@@ -1,3 +1,13 @@
+/**
+ * AudioSettings.tsx — Ääniasetukset
+ * 
+ * Pelin äänenvoimakkuuden hallintapaneeli. Sisältää kolme liukusäädintä:
+ * - Päävolyymi (master): kaikki äänet
+ * - Musiikki: taustamusiikki
+ * - Äänitehosteet (SFX): taisteluäänet, klikkaukset yms.
+ * 
+ * Tukee myös kaikkien äänten mykistystä yhdellä napilla.
+ */
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

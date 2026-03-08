@@ -1,3 +1,13 @@
+/**
+ * GameBoard.tsx — Pelilaudan esittely
+ * 
+ * Staattinen esittelysivu, joka kuvaa lautapelin fyysistä pelilautaa:
+ * - Seitsemän maantieteellistä aluetta (Mongoliasteppi, Gobi, Kiina jne.)
+ * - Kuusi maastotyyppiä ja niiden pelimekaaniset vaikutukset
+ * - Konseptitaide pelilaudasta
+ * 
+ * Käytetään lautapelin sääntösivulla (/lautapeli).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Mountain, TreePine, Waves, Building2, Wheat, Sun } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";

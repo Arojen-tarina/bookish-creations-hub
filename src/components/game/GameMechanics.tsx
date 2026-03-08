@@ -1,3 +1,14 @@
+/**
+ * GameMechanics.tsx — Vuoromekaniikan esittely
+ * 
+ * Staattinen esittelysivu, joka selittää lautapelin neljä vuorovaihetta:
+ * 1. Suunnitteluvaihe (Kurultai-kokous) — korttien nosto ja taktiikan valinta
+ * 2. Toimintavaihe — liikkuminen, hyökkäys, rakentaminen ja kauppa
+ * 3. Hallintovaihe — resurssien keräys ja ylläpitokustannukset
+ * 4. Tapahtumavaihe — satunnaiset tapahtumakorttien vaikutukset
+ * 
+ * Käytetään lautapelin sääntösivulla (/lautapeli).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { ScrollText, Swords, Building, Sparkles } from "lucide-react";
 
