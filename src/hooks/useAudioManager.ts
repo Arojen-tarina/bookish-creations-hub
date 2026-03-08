@@ -1,3 +1,10 @@
+/**
+ * useAudioManager.ts — Äänihallinta
+ *
+ * Hallinnoi pelin ääniä: taustamusiikki (Web Audio API),
+ * klikkaus-, valinta-, vahvistus- ja vuoronvaihtoäänet.
+ * Tukee master/musiikki/SFX -äänenvoimakkuuksia ja mykistystä.
+ */
 import { useCallback, useRef, useEffect, useState } from 'react';
 
 interface AudioSettings {

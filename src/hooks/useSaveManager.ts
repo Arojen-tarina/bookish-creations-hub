@@ -1,3 +1,9 @@
+/**
+ * useSaveManager.ts — Pelitallennusten hallinta (localStorage)
+ *
+ * 5 tallennuspaikkaa + autosave. Tukee tallennusta, latausta, poistoa,
+ * vientiä (JSON) ja tuontia. Validoi ja migroi tallennetun datan.
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { SaveData, SaveMetadata, ProvinceGameState, CURRENT_SAVE_VERSION, FactionId } from '@/types/province';
 

@@ -1,3 +1,10 @@
+/**
+ * game.ts — Heksipohjaisen pelin tyypit ja vakiot
+ *
+ * Sisältää: FactionId, TerrainType, GamePhase, HexTile, Unit, Building,
+ * Resources, GameState, FACTIONS, TERRAIN_INFO, AI_PERSONALITIES jne.
+ * Käytetään MongolianGame-versiossa (vanha heksilauta).
+ */
 // Game Types for Mongolien Valtakunta Digital Game
 
 export type FactionId = 'mongol' | 'china' | 'persia' | 'russia';

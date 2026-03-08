@@ -1,3 +1,9 @@
+/**
+ * useGeneratedCardImages.ts — AI-generoitujen korttikuvien lataus
+ *
+ * Lataa generated_cards-taulusta korttien kuvat (id → image_url)
+ * ja tarjoaa ne Map-rakenteena komponenteille.
+ */
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 

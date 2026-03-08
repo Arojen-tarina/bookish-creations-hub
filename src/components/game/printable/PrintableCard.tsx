@@ -1,3 +1,9 @@
+/**
+ * PrintableCard.tsx — Tulostettavan pelikortin komponentti
+ *
+ * Renderöi yksittäisen kortin (63×88 mm) ja korttiarkin (PrintableCardSheet)
+ * A4-sivuille 3×3-ruudukossa tulostusta varten.
+ */
 import { GameCard, cardTypeInfo, rarityInfo } from "@/data/gameCards";
 import { useGeneratedCardImages } from "@/hooks/useGeneratedCardImages";
 

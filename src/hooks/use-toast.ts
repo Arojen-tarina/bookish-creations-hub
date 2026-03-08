@@ -1,3 +1,9 @@
+/**
+ * use-toast.ts — Toast-ilmoitusten hallinta (shadcn/ui)
+ *
+ * Reducer-pohjainen ilmoitusjärjestelmä: toast(), dismiss(),
+ * automaattinen poisto ja ilmoitusten rajoittaminen (TOAST_LIMIT=1).
+ */
 import * as React from "react";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";

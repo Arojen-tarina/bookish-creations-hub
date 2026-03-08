@@ -1,3 +1,10 @@
+/**
+ * eurasia-1206.geojson.ts — Euraasian kartan GeoJSON-data
+ *
+ * Yksinkertaistetut monikulmiot provinssien rajoille pelitarkoituksiin.
+ * Sisältää ProvinceProperties-rajapinnan ja PROVINCE_ADJACENCY_GRAPH:n
+ * (naapuruuskartta armeijan liikkumista varten).
+ */
 // GeoJSON data for Eurasia 1206 provinces
 // This is a simplified representation for game purposes
 

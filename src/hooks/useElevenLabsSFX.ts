@@ -1,5 +1,11 @@
+/**
+ * useElevenLabsSFX.ts — ElevenLabs-ääniefektit
+ *
+ * Generoi ja toistaa ääniefektejä backend-funktiolla (elevenlabs-sfx).
+ * Tukee välimuistia (SFXCache), esilataamista ja 10+ pelitilanne-ääntä
+ * (stepin tuuli, ratsuväen rynnäkkö, taistelun alku/voitto/häviö jne.).
+ */
 // Hook for playing ElevenLabs-generated sound effects
-import { useCallback, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SFXCache {

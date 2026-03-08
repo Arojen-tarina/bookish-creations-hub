@@ -1,3 +1,8 @@
+/**
+ * use-mobile.tsx — Mobiilitunnistus-hook
+ *
+ * Palauttaa true jos näytön leveys on alle 768px (MOBILE_BREAKPOINT).
+ */
 import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;

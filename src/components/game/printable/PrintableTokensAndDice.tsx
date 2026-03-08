@@ -1,3 +1,9 @@
+/**
+ * PrintableTokensAndDice.tsx — Tulostettavat nappulat ja nopat
+ *
+ * Renderöi leikattavat pelinappulat (6 faktiota × 5 yksikkötyyppiä),
+ * erikoisnopat (D6, taistelumodit), resurssi- ja diplomatiamerkit.
+ */
 // Tulostettavat pelinappulat ja nopat Mongolien Valtakunta -lautapeliin
 
 const factions = [

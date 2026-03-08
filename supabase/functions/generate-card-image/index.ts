@@ -1,3 +1,9 @@
+/**
+ * generate-card-image/index.ts — Korttikuvien generointi (Edge Function)
+ *
+ * Generoi pelikorttien kuvat AI:lla ja tallentaa ne Storageen.
+ * Tallentaa metatiedot generated_cards-tauluun.
+ */
 // Supabase Edge Function for generating card images and storing them
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";

@@ -1,3 +1,9 @@
+/**
+ * useGameState.ts — Heksipohjaisen pelin tilan hallinta (vanha versio)
+ *
+ * Hallinnoi pelitilaa: vuorot, vaiheet, yksiköt, taistelut, resurssit,
+ * rakentaminen ja tekoälyn vuorot. Käytetään MongolianGame-komponentissa.
+ */
 import { useState, useCallback } from 'react';
 import {
   GameState,

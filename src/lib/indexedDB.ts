@@ -1,3 +1,10 @@
+/**
+ * indexedDB.ts — IndexedDB-tallennuskerros suurille pelidatoille
+ *
+ * Tarjoaa rajapinnan pelitallennusten ja asetusten tallentamiseen
+ * selainten IndexedDB-tietokantaan (idb-kirjastolla).
+ * Vaihtoehto localStoragelle suurille datamäärille.
+ */
 // IndexedDB wrapper for large game data storage
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { SaveData, ProvinceGameState, CURRENT_SAVE_VERSION, SaveMetadata } from '@/types/province';

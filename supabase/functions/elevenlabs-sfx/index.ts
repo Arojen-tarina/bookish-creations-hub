@@ -1,3 +1,9 @@
+/**
+ * elevenlabs-sfx/index.ts — Ääniefektien generointi (Edge Function)
+ *
+ * Generoi ääniefektejä ElevenLabs API:lla ja tallentaa ne Storageen.
+ * Tukee välimuistia (tarkistaa onko ääni jo generoitu).
+ */
 // ElevenLabs Sound Effects Generation Edge Function
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
