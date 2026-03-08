@@ -6,6 +6,7 @@
  * (stepin tuuli, ratsuväen rynnäkkö, taistelun alku/voitto/häviö jne.).
  */
 // Hook for playing ElevenLabs-generated sound effects
+import { useRef, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SFXCache {

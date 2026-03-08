@@ -6,6 +6,7 @@
  * persoonallisuuspohjaiset strategiat (aggressiivinen, puolustava, kaupallinen).
  */
 // AI Diplomacy System - Handles AI faction diplomatic decisions
+import { useCallback } from 'react';
 import { 
   Faction, 
   DiplomaticRelation, 
