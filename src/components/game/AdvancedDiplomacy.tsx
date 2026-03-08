@@ -1,3 +1,11 @@
+/**
+ * AdvancedDiplomacy.tsx — Diplomatian täydet säännöt
+ *
+ * Sisältää:
+ * - 4 sopimustyyppiä (rauha, kauppa, dynastinen liitto, vasallisuhde)
+ * - Diplomaattiset toiminnot (lähettiläs, lahja, uhkavaatimus, salamurha)
+ * - Verenvihajärjestelmä ja sen säännöt
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Handshake, Heart, Coins, Skull, AlertTriangle, Scale, Crown, Users } from "lucide-react";
 

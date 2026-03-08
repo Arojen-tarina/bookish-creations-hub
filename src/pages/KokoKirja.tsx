@@ -1,3 +1,9 @@
+/**
+ * KokoKirja.tsx — Koko romaanin lukusivu
+ *
+ * Näyttää "Arojen Tarina" -romaanin kokonaisuudessaan yhdellä sivulla.
+ * Sisältää sisällysluettelon, kaikki 15 lukua ja scroll-to-top -painikkeen.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";

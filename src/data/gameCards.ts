@@ -1,3 +1,10 @@
+/**
+ * gameCards.ts — Pelikorttien data (180 korttia)
+ *
+ * Määrittelee CardType, GameCard-rajapinnan ja kaikki kortit:
+ * strategia (60), diplomatia (40), teknologia (30), resurssi (50).
+ * Sisältää myös korttityyppien ja harvinaisuuksien metatiedot.
+ */
 // Kaikki 180 pelikorttia Mongolien Valtakunta -lautapeliin
 
 export type CardType = 'strategy' | 'diplomacy' | 'technology' | 'resource';

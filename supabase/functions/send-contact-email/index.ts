@@ -1,3 +1,9 @@
+/**
+ * send-contact-email/index.ts — Yhteydenottoviestin lähetys (Edge Function)
+ *
+ * Vastaanottaa nimen, sähköpostin ja viestin, ja lähettää sen
+ * sähköpostina Resend-palvelun kautta.
+ */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {

@@ -1,3 +1,15 @@
+/**
+ * PrintableMaterials.tsx — Tulostettavien materiaalien koontisivu
+ *
+ * Välilehtijärjestelmä (Tabs), jossa:
+ * - Pelilauta (PrintableGameBoard)
+ * - Nappulat ja nopat (PrintableTokensAndDice)
+ * - AI-kuvageneraattori (CardImageGenerator)
+ * - Sääntökirja (PrintableRulebook, inline)
+ * - Korttiarkit: strategia, diplomatia, teknologia, resurssit
+ *
+ * Tulostuksessa kaikki materiaalit renderöidään peräkkäin.
+ */
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,10 @@
+/**
+ * BookCover.tsx — Kirjan kansikomponentti
+ *
+ * Renderöi interaktiivisen kirjan kannen, joka toimii linkkinä
+ * koko romaanin lukusivulle (/luku/koko-kirja).
+ * Sisältää hover-animaatiot ja kirjan selkärangan visuaalisen efektin.
+ */
 import { Link } from "react-router-dom";
 import comicArt from "@/assets/comic-panel.png";
 

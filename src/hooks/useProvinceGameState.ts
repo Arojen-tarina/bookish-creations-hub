@@ -1,3 +1,10 @@
+/**
+ * useProvinceGameState.ts — Provinssipohjaisen pelin tilan hallinta
+ *
+ * Pelin ydinlogiikka: valtakuntien alustus, armeijan liikuttaminen,
+ * taistelut, linnoitusten rakennus, rekrytointi, diplomatia,
+ * tekoälin vuorot ja voitonehtojen tarkistus. Vuosi 1206 -aloitus.
+ */
 import { useState, useCallback, useEffect } from 'react';
 import {
   Province,

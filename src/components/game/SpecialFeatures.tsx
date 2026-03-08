@@ -1,3 +1,11 @@
+/**
+ * SpecialFeatures.tsx — Erityispiirteet
+ *
+ * Sisältää:
+ * - Heimopäällikön kehityspolut (soturi, kauppias, kulttuurivaikuttaja)
+ * - Sääefektit ja sesongit (talvi, kesä, sateet, kuivuus)
+ * - Historialliset tapahtumat (Genghis Khan, Silkkitie, Mustasurma jne.)
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Crown, Cloud, ScrollText, Swords, Handshake, Lightbulb } from "lucide-react";
 

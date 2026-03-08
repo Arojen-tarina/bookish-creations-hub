@@ -1,3 +1,9 @@
+/**
+ * DetailedFactions.tsx — Heimojen yksityiskohtainen kuvaus
+ *
+ * Näyttää 4 heimon (mongoli, Kiina, Persia, Venäjä) täydet tiedot:
+ * vahvuudet, heikkoudet, erikoiskyky, alkuasetelma ja pelityyli.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Sword, Shield, Coins, Sparkles, AlertTriangle, Users, Zap, Crown } from "lucide-react";
 

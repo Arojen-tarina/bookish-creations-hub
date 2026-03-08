@@ -1,3 +1,10 @@
+/**
+ * VisualMockups.tsx — Visuaaliset mock-up -tarpeet
+ *
+ * Listaa 6 mock-up -kategoriaa (pelilauta, korttitaide, miniatyyrit,
+ * heimosymbolit, sääntökirja, pakkaus) spekseineen ja suunnitteluohjeet
+ * (väripaletti, typografia, kuvitustyyli).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Image, Palette, Layers, FileText, Map, CreditCard } from "lucide-react";
 

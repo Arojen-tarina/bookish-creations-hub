@@ -1,3 +1,9 @@
+/**
+ * CardImageGenerator.tsx — AI-korttikuvien generointityökalu
+ *
+ * UI korttikuvien generoimiseen backend-funktiolla. Näyttää
+ * edistymispalkin, generoidut kuvat ja mahdollisuuden keskeyttää.
+ */
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';

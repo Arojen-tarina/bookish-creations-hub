@@ -1,3 +1,9 @@
+/**
+ * ExpansionIdeas.tsx — Laajennusideat
+ *
+ * Esittelee 4 suurta laajennusta (Eurooppa, Silkkitie, dynastia, kulttuuri)
+ * ja 4 mini-laajennusta (komentajat, katastrofit, salatehtävät, soolo).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Puzzle, Globe, Anchor, BookOpen, Sparkles } from "lucide-react";
 

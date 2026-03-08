@@ -1,3 +1,9 @@
+/**
+ * StrategicConsiderations.tsx — Strategiset näkökohdat
+ *
+ * Esittelee 3 päästrategiaa edut/haittoineen:
+ * aggressiivinen valloitus, ekonominen hegemonia, diplomaattinen manipulaatio.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Swords, TrendingUp, Users } from "lucide-react";
 

@@ -1,3 +1,11 @@
+/**
+ * GameComponents.tsx — Pelin osat ja materiaalit
+ *
+ * Listaa kaikki fyysiset peliosat:
+ * - Heimopalat (5 yksikkötyyppiä, 4 väriä)
+ * - 180 korttia (strategia, diplomatia, teknologia, resurssi)
+ * - Muut osat (nopat, voittopistemerkit, kauppareittitokenit, linnoitukset)
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Swords, Shield, Crown, Package, Dices, MapPin, Castle } from "lucide-react";
 

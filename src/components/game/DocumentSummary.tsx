@@ -1,3 +1,9 @@
+/**
+ * DocumentSummary.tsx — Pelisuunnitteludokumentin yhteenveto
+ *
+ * Listaa kaikki 13 dokumentin osiota ja niiden statuksen.
+ * Näyttää seuraavat askeleet (mock-upit, testipelaus, prototyyppi, joukkorahoitus).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { CheckCircle, FileText, Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";

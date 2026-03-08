@@ -1,3 +1,9 @@
+/**
+ * Factions.tsx — Heimojen yleiskatsaus
+ *
+ * Näyttää 4 heimon perustiedot: nimi, bonus ja alkuasetelma.
+ * Tiivistetympi versio kuin DetailedFactions.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 
 const factions = [

@@ -1,3 +1,10 @@
+/**
+ * PelinEsittely.tsx — Lautapelin visuaalinen esittelysivu
+ *
+ * Näyttää miltä valmis peli näyttää: pelilauta, pelitilanne,
+ * esimerkkikortit (strategia, diplomatia, teknologia),
+ * tulostettavat materiaalit ja tilastot.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ComicPanel } from "@/components/ComicPanel";

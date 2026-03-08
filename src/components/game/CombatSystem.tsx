@@ -1,3 +1,9 @@
+/**
+ * CombatSystem.tsx — Taistelujärjestelmän yleiskuvaus
+ *
+ * Esittää hyökkäysmekanismin 5 vaihetta ja erikoistaistelut:
+ * kaupunkien piirittäminen, ratsuväen iskut ja linnoitusten valtaaminen.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Swords, Shield, Castle, Zap } from "lucide-react";
 

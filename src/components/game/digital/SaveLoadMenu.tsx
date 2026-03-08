@@ -1,3 +1,9 @@
+/**
+ * SaveLoadMenu.tsx — Tallenna/Lataa -valikko
+ *
+ * 5 tallennuspaikkaa + autosave. Tukee tallennusta, latausta, poistoa,
+ * vientiä (JSON-tiedosto) ja tuontia. Käyttää useSaveManager-hookia.
+ */
 import { useState, useRef } from 'react';
 import { SaveMetadata, ProvinceGameState, FACTION_DATA_1206, FactionId } from '@/types/province';
 import { Button } from '@/components/ui/button';

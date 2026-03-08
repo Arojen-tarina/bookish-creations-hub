@@ -1,3 +1,9 @@
+/**
+ * GameBoard3D.tsx — 3D-pelilauta (Three.js / React Three Fiber)
+ *
+ * Renderöi provinssit 3D-palloina maastovärein, armeijat nappuloina
+ * ja yhteydet viivoina. Orbit-kontrollit zoomiin ja pyöritykseen.
+ */
 import { useRef, useMemo, useState, Suspense } from 'react';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Text, Billboard, Stars } from '@react-three/drei';

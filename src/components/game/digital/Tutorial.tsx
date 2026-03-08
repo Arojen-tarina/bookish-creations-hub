@@ -1,4 +1,10 @@
-// Tutorial Component - Interactive game tutorial
+/**
+ * Tutorial.tsx — Interaktiivinen pelitutoriaali
+ *
+ * Vaiheittainen opas pelin perusmekaniikoista (8 vaihetta):
+ * tervetuloa, kartta, resurssit, armeijat, taistelu, diplomatia, tapahtumat, voitto.
+ * Näytetään automaattisesti ensimmäisellä pelikerralla.
+ */
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';

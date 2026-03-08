@@ -1,3 +1,9 @@
+/**
+ * Navigation.tsx — Sivuston ylänavigaatio
+ *
+ * Kiinteä (fixed) navigaatiopalkki, joka sisältää logon ja linkit.
+ * Desktop: vaakasuuntainen linkkijono. Mobiili: hampurilaisvalikko.
+ */
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";

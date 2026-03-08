@@ -1,3 +1,12 @@
+/**
+ * AdvancedCombatRules.tsx — Laajennetut taistelussäännöt
+ *
+ * Esittää lautapelin edistyneet taistelumekaniikat:
+ * - Taistelumodifikaattorit (maasto, ylivoima, johtajat)
+ * - Piiritysjärjestelmän vaiheet
+ * - Vetäytymissäännöt yksikkötyypeittäin
+ * - Tuhoaminen, ryöstäminen ja erikoisyksiköt
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Swords, Shield, Target, Flame, Timer, TrendingUp } from "lucide-react";
 

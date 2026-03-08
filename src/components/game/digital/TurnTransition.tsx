@@ -1,3 +1,9 @@
+/**
+ * TurnTransition.tsx — Vuoronvaihtoanimaatiot ja -loki
+ *
+ * Sisältää TurnTransition (animoitu vuoron/vaihteen vaihto),
+ * TurnLog (tapahtumapäiväkirja) ja TurnSummary (vuoron yhteenveto).
+ */
 import { useState, useEffect } from 'react';
 import { FactionId, FACTION_DATA_1206, GamePhase } from '@/types/province';
 import { Crown, Sword, Handshake, Coins, Sparkles, Clock } from 'lucide-react';

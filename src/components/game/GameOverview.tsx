@@ -1,3 +1,9 @@
+/**
+ * GameOverview.tsx — Pelin hero-osio
+ *
+ * Näyttää pelin nimen, kuvauksen ja kolme avainlukua:
+ * 2–4 pelaajaa, 3–5 tuntia, 4 voittotietä.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Users, Clock, Target } from "lucide-react";
 

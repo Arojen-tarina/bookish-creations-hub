@@ -1,5 +1,11 @@
+/**
+ * useDiplomacyAI.ts — Tekoälyn diplomatiajärjestelmä
+ *
+ * Laskee tekoälyfaktioiden diplomaattiset päätökset:
+ * sopimuspyyntöjen arviointi, uhka-analyysit, rajakitka,
+ * persoonallisuuspohjaiset strategiat (aggressiivinen, puolustava, kaupallinen).
+ */
 // AI Diplomacy System - Handles AI faction diplomatic decisions
-import { useCallback } from 'react';
 import { 
   Faction, 
   DiplomaticRelation, 

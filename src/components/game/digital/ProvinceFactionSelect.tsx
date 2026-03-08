@@ -1,3 +1,9 @@
+/**
+ * ProvinceFactionSelect.tsx — Valtakunnanvalinta (provinssipeli, vuosi 1206)
+ *
+ * Näyttää 7 pelattavaa valtakuntaa (mongoli, Jin, Song, Xixia, Khwarezm, Rus, Kipchak)
+ * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
+ */
 import { FactionId, FACTION_DATA_1206 } from '@/types/province';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

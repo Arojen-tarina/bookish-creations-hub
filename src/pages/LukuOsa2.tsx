@@ -1,3 +1,9 @@
+/**
+ * LukuOsa2.tsx — Romaanin toinen osa: "Valloitus"
+ *
+ * Luvut 6–10: Uhraukset ja henget, soturin ominaisuudet, ratsastus,
+ * paini ja miekkailu, sukupuolet ja arvot.
+ */
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";

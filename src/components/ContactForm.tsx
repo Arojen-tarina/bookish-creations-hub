@@ -1,3 +1,9 @@
+/**
+ * ContactForm.tsx — Yhteydenottolomake
+ *
+ * Validoitu lomake (zod + react-hook-form), joka lähettää viestin
+ * backend-funktioon (send-contact-email). Kentät: nimi, sähköposti, viesti.
+ */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

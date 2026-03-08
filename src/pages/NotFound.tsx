@@ -1,3 +1,9 @@
+/**
+ * NotFound.tsx — 404-virhe­sivu
+ *
+ * Näytetään kun käyttäjä navigoi olemattomaan osoitteeseen.
+ * Logittaa virheellisen reitin konsoliin.
+ */
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 

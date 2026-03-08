@@ -1,3 +1,9 @@
+/**
+ * DiplomacyPanel.tsx — Digipelin diplomatiapaneeli
+ *
+ * Näyttää suhteet muihin valtakuntiin (luottamus, uhka, rajakitka),
+ * voimassa olevat sopimukset ja mahdollistaa uusien ehdottamisen/purkamisen.
+ */
 import { useState } from 'react';
 import { FactionId, Faction, DiplomaticRelation, TreatyType, FACTION_DATA_1206 } from '@/types/province';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

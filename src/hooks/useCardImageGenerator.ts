@@ -1,3 +1,10 @@
+/**
+ * useCardImageGenerator.ts — Korttikuvien generointi ja hallinta
+ *
+ * Generoi pelikorttien kuvat backend-funktiolla (generate-card-image)
+ * erissä (BATCH_SIZE=1). Lataa olemassa olevat kuvat tietokannasta
+ * ja seuraa generointiprosessin edistymistä.
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { GameCard } from '@/data/gameCards';

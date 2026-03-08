@@ -1,3 +1,10 @@
+/**
+ * provinces-1206.ts — Provinssidata vuoden 1206 aloitusta varten
+ *
+ * ~40 provinssia historiallisesti tärkeiltä alueilta (Mongolia, Kiina,
+ * Keski-Aasia, Persia, Venäjä). Sisältää maaston, verot, miesvoiman,
+ * kauppatavarat, Silkkitie-merkinnät ja aloitusomistajat.
+ */
 // Province data for 1206 start - Eurasian map with ~250 provinces
 // Simplified version focusing on historically important regions
 

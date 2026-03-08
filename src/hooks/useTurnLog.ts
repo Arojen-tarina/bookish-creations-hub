@@ -1,3 +1,10 @@
+/**
+ * useTurnLog.ts — Vuoroloki (tapahtumapäiväkirja)
+ *
+ * Tallentaa pelin tapahtumat (liikkeet, taistelut, valtaukset, sopimukset,
+ * rakennukset, rekrytoinnit, tulot) vuorokohtaisesti.
+ * Tarjoaa apufunktiot lokiviestien luomiseen.
+ */
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { FactionId, GamePhase } from '@/types/province';
 

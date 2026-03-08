@@ -1,3 +1,10 @@
+/**
+ * province.ts — Provinssipohjaisen pelin tyypit ja vakiot
+ *
+ * Sisältää: Province, Faction, Army, DiplomaticRelation, ProvinceGameState,
+ * FACTION_DATA_1206, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO jne.
+ * Käytetään ProvinceGame-versiossa (vuosi 1206 -aloitus).
+ */
 // Province-based map types for Mongolian Empire 1206 start
 
 export interface Province {

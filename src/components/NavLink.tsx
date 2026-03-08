@@ -1,3 +1,9 @@
+/**
+ * NavLink.tsx — Navigaatiolinkki-wrapper
+ *
+ * Yhdistää React Routerin NavLink-komponentin cn()-apufunktioon,
+ * jotta aktiivinen ja pending-tila saavat omat luokkansa.
+ */
 import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";

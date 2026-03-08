@@ -1,3 +1,22 @@
+/**
+ * App.tsx — Sovelluksen juurikomponentti
+ *
+ * Määrittelee kaikki reitit (React Router) ja globaalit providerit:
+ * - QueryClientProvider (React Query)
+ * - TooltipProvider, Toaster, Sonner (UI-ilmoitukset)
+ *
+ * Reitit:
+ *   /              Etusivu
+ *   /romaani       Romaanisivu
+ *   /lautapeli     Lautapelin sääntödokumentti
+ *   /digipeli      Digitaalinen strategiapeli
+ *   /tulosta       Tulostettavat materiaalit
+ *   /esittely      Pelin visuaalinen esittely
+ *   /kortit-pdf    Korttien PDF-tulostus
+ *   /materiaalit-pdf  Sääntökirja + pelilauta PDF
+ *   /luku/osa-1..3 Romaanin osat
+ *   /ota-yhteytta  Yhteydenottolomake
+ */
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";

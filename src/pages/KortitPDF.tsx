@@ -1,3 +1,10 @@
+/**
+ * KortitPDF.tsx — Pelikorttien PDF-tulostussivu
+ *
+ * Renderöi kaikki 180 pelikorttia A4-sivuille tulostettavassa muodossa.
+ * Kortit näytetään 3×3 -ruudukossa sivua kohden, kansilehden kera.
+ * Käyttää AI-generoituja kuvia Supabase Storagesta.
+ */
 import { useEffect } from "react";
 import {
   allCards,

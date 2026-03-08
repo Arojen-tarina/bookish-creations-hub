@@ -1,3 +1,15 @@
+/**
+ * ProvinceGame.tsx — Digipelin pääkomponentti (provinssipohjainen)
+ *
+ * Kokoaa koko digitaalisen strategiapelin:
+ * - Valtakunnanvalinta (ProvinceFactionSelect)
+ * - 3D-kartta (GameBoard3D) + GeoJSON-kartta (GeoProvinceMap)
+ * - HUD: resurssit, vuoro, vaihe, kontrollit
+ * - Sivupaneeli: provinssitiedot, diplomatia, ääni, loki
+ * - Taistelunäkymä (BattleDisplay), tapahtumat (EventCard)
+ * - Vuoronvaihtoanimaatiot (TurnTransition), tutoriaali (Tutorial)
+ * - Tekoälydiplomatia (useDiplomacyAI), ääniefektit (useElevenLabsSFX)
+ */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProvinceGameState } from '@/hooks/useProvinceGameState';
 import { useAudioManager } from '@/hooks/useAudioManager';
