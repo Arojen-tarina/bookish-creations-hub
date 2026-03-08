@@ -5,7 +5,7 @@
  * ja näyttää ne modaalina, jossa pelaaja valitsee toimenpiteen.
  * Painotettu satunnaisvalinta (weight-based).
  */
-// Event Card Component - Shows random game events
+import { useState } from 'react';
 import { GameEvent, ActiveGameEvent, FactionId, FACTION_DATA_1206, GameEventType, EventChoice } from '@/types/province';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
