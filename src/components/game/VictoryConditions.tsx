@@ -1,3 +1,9 @@
+/**
+ * VictoryConditions.tsx — Voittoehdot
+ *
+ * Neljä voittotietä: sotilaallinen (60% kaupungeista), ekonominen (50 pistettä),
+ * kulttuurinen (8 rakennusta + diplomatia), teknologinen (12 korttia).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Trophy, Coins, Users, Lightbulb } from "lucide-react";
 

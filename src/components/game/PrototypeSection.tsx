@@ -1,3 +1,9 @@
+/**
+ * PrototypeSection.tsx — Tulostettavan prototyypin esittely
+ *
+ * Ohjaa käyttäjää tulostamaan kotiversio pelistä.
+ * Listaa materiaalit (sääntökirja, 4 korttikategoriaa) ja tulostusohje.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Link } from "react-router-dom";
 import { Printer, Download, FileText, CreditCard, Package, Dices, Map } from "lucide-react";

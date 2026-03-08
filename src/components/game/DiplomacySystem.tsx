@@ -1,3 +1,9 @@
+/**
+ * DiplomacySystem.tsx — Diplomatian yleiskatsaus
+ *
+ * Esittelee 4 diplomaattista sopimustyyppiä (liitto, kauppa, tributti, dynastia)
+ * ja petoksen/verenvihojen mekaniikat lyhyesti.
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Handshake, Heart, Coins, AlertTriangle, Skull } from "lucide-react";
 

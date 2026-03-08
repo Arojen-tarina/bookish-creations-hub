@@ -1,3 +1,9 @@
+/**
+ * GameIntroduction.tsx — Pelin yleiskuvaus ja johdanto
+ *
+ * Kertoo mikä "Mongolien Valtakunta" on, pelin tavoite,
+ * ainutlaatuiset piirteet ja historiallinen tausta (vuosi 1206).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Scroll, Target, Sparkles, Globe } from "lucide-react";
 

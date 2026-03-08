@@ -1,3 +1,9 @@
+/**
+ * ResourceSystem.tsx — Resurssijärjestelmä
+ *
+ * Esittelee pelin 5 resurssia (hevoset, kulta, ruoka, käsityöläiset, karja)
+ * ja niiden lähteet (steppialueet, viljelysalueet, kaupungit, kauppareitit).
+ */
 import { ComicPanel } from "@/components/ComicPanel";
 
 const resources = [
