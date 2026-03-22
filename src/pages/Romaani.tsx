@@ -167,27 +167,40 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Characters */}
+      {/* Characters - grouped by category */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-12">
             Hahmot
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {characters.map((character) => (
-              <ComicPanel key={character.name}>
-                <span className="text-xs uppercase tracking-wide text-accent font-semibold">
-                  {character.role}
-                </span>
-                <h3 className="font-display text-xl font-bold mt-1 mb-2">
-                  {character.name}
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {character.description}
-                </p>
-              </ComicPanel>
-            ))}
+          <div className="max-w-5xl mx-auto space-y-12">
+            {(["main", "family", "allies", "enemies", "spirits"] as const).map((cat) => {
+              const group = characters.filter((c) => c.category === cat);
+              if (group.length === 0) return null;
+              return (
+                <div key={cat}>
+                  <h3 className={`font-display text-xl font-semibold mb-4 ${categoryColors[cat]}`}>
+                    {categoryLabels[cat]}
+                  </h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {group.map((character) => (
+                      <ComicPanel key={character.name} variant={cat === "spirits" ? "accent" : cat === "enemies" ? "primary" : "default"}>
+                        <span className={`text-xs uppercase tracking-wide font-semibold ${categoryColors[cat]}`}>
+                          {character.role}
+                        </span>
+                        <h4 className="font-display text-lg font-bold mt-1 mb-2">
+                          {character.name}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {character.description}
+                        </p>
+                      </ComicPanel>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
