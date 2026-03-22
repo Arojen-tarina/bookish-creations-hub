@@ -21,7 +21,7 @@ const characters = [
   {
     name: "Naran",
     role: "Sisko",
-    description: "Temüün sisko, vahva ja suojeleva nainen.",
+    description: "Temüün sisko, vahva ja suojeleva nainen, joka ottaa lyöntejä vastaan sisarustensa puolesta.",
   },
   {
     name: "Ganbaatar",
@@ -41,7 +41,37 @@ const characters = [
   {
     name: "Erdenetögs \"Böö\"",
     role: "Shamaani",
-    description: "Yliluonnollisten voimien välittäjä ja Temüün henkinen opas.",
+    description: "Yliluonnollisten voimien välittäjä ja Temüün henkinen opas, joka ohjaa hänen kohtaloaan.",
+  },
+  {
+    name: "Sarantuya",
+    role: "Temüün vaimo",
+    description: "Herkkä ja sisäänpäin kääntynyt nainen, joka istuu valtaistuimella Temüün rinnalla.",
+  },
+  {
+    name: "Möngke",
+    role: "Pikkuveli",
+    description: "Temüün nuorempi veli, jonka hyvinvoinnista Temüü kantaa vastuuta lapsuudesta asti.",
+  },
+  {
+    name: "Altantsetseg",
+    role: "Pikkusisko",
+    description: "Temüün nuorempi sisko, joka kasvaa vaikeissa oloissa vahvaksi naiseksi.",
+  },
+  {
+    name: "Khüleg",
+    role: "Henkivartija",
+    description: "Temüün uskollinen henkivartija, joka taistelee hänen rinnallaan heimojohtajien teltassa.",
+  },
+  {
+    name: "Darga",
+    role: "Vihollisjohtaja",
+    description: "Vihamielisen heimon päällikkö, jonka Temüün armeija lopulta kukistaa.",
+  },
+  {
+    name: "Odval",
+    role: "Kätilö ja parantaja",
+    description: "Heimon vanha viisas nainen, joka hoitaa haavoittuneita ja avustaa synnytyksessä.",
   },
 ];
 
