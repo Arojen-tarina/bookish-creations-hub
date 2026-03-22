@@ -51,7 +51,7 @@ export const TurnTransition = ({
 
   useEffect(() => {
     // Animation sequence
-    const timers: NodeJS.Timeout[] = [];
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
     // Stage 1: Fade in
     timers.push(setTimeout(() => setAnimationStage(1), 100));

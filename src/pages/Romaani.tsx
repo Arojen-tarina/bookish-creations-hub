@@ -11,69 +11,7 @@ import { BookCover } from "@/components/BookCover";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";
-
-const characters = [
-  {
-    name: "Temüü \"Baatar\"",
-    role: "Päähenkilö",
-    description: "Nuori soturi, joka kasvaa mieheksi ja yhdistää heimot.",
-  },
-  {
-    name: "Naran",
-    role: "Sisko",
-    description: "Temüün sisko, vahva ja suojeleva nainen, joka ottaa lyöntejä vastaan sisarustensa puolesta.",
-  },
-  {
-    name: "Ganbaatar",
-    role: "Isä",
-    description: "Juoppo ja väkivaltainen isä, jonka Temüü haastaa kaksintaisteluun.",
-  },
-  {
-    name: "Bolormaa",
-    role: "Äiti",
-    description: "Sydämellinen äiti, joka pitää perheen koossa vaikeuksien keskellä.",
-  },
-  {
-    name: "Batu",
-    role: "Johtaja",
-    description: "Sotajohtaja, joka näkee potentiaalin nuoressa Temüüssä.",
-  },
-  {
-    name: "Erdenetögs \"Böö\"",
-    role: "Shamaani",
-    description: "Yliluonnollisten voimien välittäjä ja Temüün henkinen opas, joka ohjaa hänen kohtaloaan.",
-  },
-  {
-    name: "Sarantuya",
-    role: "Temüün vaimo",
-    description: "Herkkä ja sisäänpäin kääntynyt nainen, joka istuu valtaistuimella Temüün rinnalla.",
-  },
-  {
-    name: "Möngke",
-    role: "Pikkuveli",
-    description: "Temüün nuorempi veli, jonka hyvinvoinnista Temüü kantaa vastuuta lapsuudesta asti.",
-  },
-  {
-    name: "Altantsetseg",
-    role: "Pikkusisko",
-    description: "Temüün nuorempi sisko, joka kasvaa vaikeissa oloissa vahvaksi naiseksi.",
-  },
-  {
-    name: "Khüleg",
-    role: "Henkivartija",
-    description: "Temüün uskollinen henkivartija, joka taistelee hänen rinnallaan heimojohtajien teltassa.",
-  },
-  {
-    name: "Darga",
-    role: "Vihollisjohtaja",
-    description: "Vihamielisen heimon päällikkö, jonka Temüün armeija lopulta kukistaa.",
-  },
-  {
-    name: "Odval",
-    role: "Kätilö ja parantaja",
-    description: "Heimon vanha viisas nainen, joka hoitaa haavoittuneita ja avustaa synnytyksessä.",
-  },
-];
+import { characters, categoryLabels, categoryColors } from "@/data/characters";
 
 const trilogyParts = [
   {
@@ -229,27 +167,40 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Characters */}
+      {/* Characters - grouped by category */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold text-center mb-12">
             Hahmot
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {characters.map((character) => (
-              <ComicPanel key={character.name}>
-                <span className="text-xs uppercase tracking-wide text-accent font-semibold">
-                  {character.role}
-                </span>
-                <h3 className="font-display text-xl font-bold mt-1 mb-2">
-                  {character.name}
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {character.description}
-                </p>
-              </ComicPanel>
-            ))}
+          <div className="max-w-5xl mx-auto space-y-12">
+            {(["main", "family", "allies", "enemies", "spirits"] as const).map((cat) => {
+              const group = characters.filter((c) => c.category === cat);
+              if (group.length === 0) return null;
+              return (
+                <div key={cat}>
+                  <h3 className={`font-display text-xl font-semibold mb-4 ${categoryColors[cat]}`}>
+                    {categoryLabels[cat]}
+                  </h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {group.map((character) => (
+                      <ComicPanel key={character.name} variant={cat === "spirits" ? "accent" : cat === "enemies" ? "primary" : "default"}>
+                        <span className={`text-xs uppercase tracking-wide font-semibold ${categoryColors[cat]}`}>
+                          {character.role}
+                        </span>
+                        <h4 className="font-display text-lg font-bold mt-1 mb-2">
+                          {character.name}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {character.description}
+                        </p>
+                      </ComicPanel>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
