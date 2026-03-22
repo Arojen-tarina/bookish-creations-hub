@@ -13,69 +13,6 @@ import { BookOpen } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";
 import { characters, categoryLabels, categoryColors } from "@/data/characters";
 
-const characters = [
-  {
-    name: "Temüü \"Baatar\"",
-    role: "Päähenkilö",
-    description: "Nuori soturi, joka kasvaa mieheksi ja yhdistää heimot.",
-  },
-  {
-    name: "Naran",
-    role: "Sisko",
-    description: "Temüün sisko, vahva ja suojeleva nainen, joka ottaa lyöntejä vastaan sisarustensa puolesta.",
-  },
-  {
-    name: "Ganbaatar",
-    role: "Isä",
-    description: "Juoppo ja väkivaltainen isä, jonka Temüü haastaa kaksintaisteluun.",
-  },
-  {
-    name: "Bolormaa",
-    role: "Äiti",
-    description: "Sydämellinen äiti, joka pitää perheen koossa vaikeuksien keskellä.",
-  },
-  {
-    name: "Batu",
-    role: "Johtaja",
-    description: "Sotajohtaja, joka näkee potentiaalin nuoressa Temüüssä.",
-  },
-  {
-    name: "Erdenetögs \"Böö\"",
-    role: "Shamaani",
-    description: "Yliluonnollisten voimien välittäjä ja Temüün henkinen opas, joka ohjaa hänen kohtaloaan.",
-  },
-  {
-    name: "Sarantuya",
-    role: "Temüün vaimo",
-    description: "Herkkä ja sisäänpäin kääntynyt nainen, joka istuu valtaistuimella Temüün rinnalla.",
-  },
-  {
-    name: "Möngke",
-    role: "Pikkuveli",
-    description: "Temüün nuorempi veli, jonka hyvinvoinnista Temüü kantaa vastuuta lapsuudesta asti.",
-  },
-  {
-    name: "Altantsetseg",
-    role: "Pikkusisko",
-    description: "Temüün nuorempi sisko, joka kasvaa vaikeissa oloissa vahvaksi naiseksi.",
-  },
-  {
-    name: "Khüleg",
-    role: "Henkivartija",
-    description: "Temüün uskollinen henkivartija, joka taistelee hänen rinnallaan heimojohtajien teltassa.",
-  },
-  {
-    name: "Darga",
-    role: "Vihollisjohtaja",
-    description: "Vihamielisen heimon päällikkö, jonka Temüün armeija lopulta kukistaa.",
-  },
-  {
-    name: "Odval",
-    role: "Kätilö ja parantaja",
-    description: "Heimon vanha viisas nainen, joka hoitaa haavoittuneita ja avustaa synnytyksessä.",
-  },
-];
-
 const trilogyParts = [
   {
     number: "I",
