@@ -10,8 +10,9 @@ import { ComicPanel } from "@/components/ComicPanel";
 import { BookCover } from "@/components/BookCover";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import comicArt from "@/assets/comic-panel.png";
-import { characters, categoryLabels, categoryColors } from "@/data/characters";
+import { characters, categoryLabels, categoryColors, type Character } from "@/data/characters";
 
 const trilogyParts = [
   {
@@ -167,40 +168,52 @@ const Romaani = () => {
         </div>
       </section>
 
-      {/* Characters - grouped by category */}
+      {/* Characters - collapsible categories */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl font-bold text-center mb-12">
+          <h2 className="font-display text-3xl font-bold text-center mb-4">
             Hahmot
           </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            Klikkaa kategoriaa nähdäksesi hahmot
+          </p>
 
-          <div className="max-w-5xl mx-auto space-y-12">
-            {(["main", "family", "allies", "enemies", "spirits"] as const).map((cat) => {
-              const group = characters.filter((c) => c.category === cat);
-              if (group.length === 0) return null;
-              return (
-                <div key={cat}>
-                  <h3 className={`font-display text-xl font-semibold mb-4 ${categoryColors[cat]}`}>
-                    {categoryLabels[cat]}
-                  </h3>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {group.map((character) => (
-                      <ComicPanel key={character.name} variant={cat === "spirits" ? "accent" : cat === "enemies" ? "primary" : "default"}>
-                        <span className={`text-xs uppercase tracking-wide font-semibold ${categoryColors[cat]}`}>
-                          {character.role}
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="multiple" className="space-y-3">
+              {(["main", "family", "allies", "enemies", "spirits"] as const).map((cat) => {
+                const group = characters.filter((c) => c.category === cat);
+                if (group.length === 0) return null;
+                return (
+                  <AccordionItem key={cat} value={cat} className="border rounded-sm bg-card px-4">
+                    <AccordionTrigger className="hover:no-underline">
+                      <span className={`font-display text-lg font-semibold ${categoryColors[cat]}`}>
+                        {categoryLabels[cat]}
+                        <span className="text-muted-foreground text-sm font-normal ml-2">
+                          ({group.length})
                         </span>
-                        <h4 className="font-display text-lg font-bold mt-1 mb-2">
-                          {character.name}
-                        </h4>
-                        <p className="text-muted-foreground text-sm">
-                          {character.description}
-                        </p>
-                      </ComicPanel>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 pb-2">
+                        {group.map((character) => (
+                          <ComicPanel key={character.name} variant={cat === "spirits" ? "accent" : cat === "enemies" ? "primary" : "default"}>
+                            <span className={`text-xs uppercase tracking-wide font-semibold ${categoryColors[cat]}`}>
+                              {character.role}
+                            </span>
+                            <h4 className="font-display text-lg font-bold mt-1 mb-2">
+                              {character.name}
+                            </h4>
+                            <p className="text-muted-foreground text-sm">
+                              {character.description}
+                            </p>
+                          </ComicPanel>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
           </div>
         </div>
       </section>
