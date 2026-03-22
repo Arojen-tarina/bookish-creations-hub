@@ -11,6 +11,7 @@ import { BookCover } from "@/components/BookCover";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import comicArt from "@/assets/comic-panel.png";
+import { characters, categoryLabels, categoryColors } from "@/data/characters";
 
 const characters = [
   {
