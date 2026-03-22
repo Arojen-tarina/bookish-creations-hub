@@ -10,8 +10,9 @@ import { ComicPanel } from "@/components/ComicPanel";
 import { BookCover } from "@/components/BookCover";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import comicArt from "@/assets/comic-panel.png";
-import { characters, categoryLabels, categoryColors } from "@/data/characters";
+import { characters, categoryLabels, categoryColors, type Character } from "@/data/characters";
 
 const trilogyParts = [
   {
