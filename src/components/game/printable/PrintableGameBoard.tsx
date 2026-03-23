@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Printer, ZoomIn, ZoomOut, X, MapPin, Shield, Swords, Coins, Mountain, TreePine, Waves, Sun, Building2, Wheat, Image, Grid3X3 } from 'lucide-react';
+import { BoardMapSVG } from './BoardMapSVG';
 import gameBoardImage from '@/assets/game-board-map.png';
 import { FACTION_DATA_1206, PROVINCE_TERRAIN_INFO, type FactionId } from '@/types/province';
 
@@ -625,7 +626,7 @@ export const PrintableGameBoard = () => {
   const [zoom, setZoom] = useState(1);
   const [selectedTile, setSelectedTile] = useState<HexTile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<HexTile | null>(null);
-  const [boardType, setBoardType] = useState<'image' | 'svg'>('image');
+  const [boardType, setBoardType] = useState<'image' | 'svg' | 'circular'>('circular');
   const tiles = generateHexGrid();
 
   const BOARD_WIDTH = 920;
@@ -641,9 +642,12 @@ export const PrintableGameBoard = () => {
   return (
     <div className="space-y-6">
       {/* Tab switcher — pill style */}
-      <Tabs value={boardType} onValueChange={(v) => setBoardType(v as 'image' | 'svg')} className="print:hidden">
+      <Tabs value={boardType} onValueChange={(v) => setBoardType(v as 'image' | 'svg' | 'circular')} className="print:hidden">
         <div className="flex justify-center">
           <TabsList className="h-10 p-1 rounded-full" style={{ background: 'rgba(0,0,0,0.04)' }}>
+            <TabsTrigger value="circular" className="gap-2 rounded-full px-5 text-sm data-[state=active]:shadow-sm" style={{ fontFamily: '-apple-system, system-ui, sans-serif' }}>
+              <MapPin className="w-4 h-4" />Pelilauta
+            </TabsTrigger>
             <TabsTrigger value="image" className="gap-2 rounded-full px-5 text-sm data-[state=active]:shadow-sm" style={{ fontFamily: '-apple-system, system-ui, sans-serif' }}>
               <Image className="w-4 h-4" />AI-generoitu kartta
             </TabsTrigger>
@@ -670,6 +674,114 @@ export const PrintableGameBoard = () => {
           </span>
         )}
       </div>
+
+      {/* ═══════ Circular Board (Figma reference style) ═══════ */}
+      {boardType === 'circular' && (
+        <div className="space-y-6">
+          <BoardMapSVG />
+          
+          {/* ═══ PAINATUSOHJEET ═══ */}
+          <div className="bg-card border rounded-2xl p-6 print:hidden space-y-6">
+            <h3 className="font-display text-xl font-bold text-amber-800 flex items-center gap-2">
+              🖨️ Ammattimaiset painatusohjeet
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-6 text-sm">
+              {/* Pelilauta */}
+              <div className="space-y-2 p-4 rounded-xl bg-amber-50/50 border border-amber-200">
+                <h4 className="font-bold text-amber-800 flex items-center gap-2">📐 Pelilauta</h4>
+                <ul className="space-y-1 text-amber-900/80">
+                  <li>• <strong>Mitat:</strong> 70cm × 50cm (Risk-kokoinen)</li>
+                  <li>• <strong>Materiaali:</strong> 300–350 gsm kovapintainen pahvi</li>
+                  <li>• <strong>Alueet:</strong> 44 strategista aluetta, 5 maastotyyppiä</li>
+                  <li>• <strong>Värit:</strong> CMYK-painokelpoiset</li>
+                  <li>• <strong>Resoluutio:</strong> 300 DPI, leikkuuvarat 3mm</li>
+                </ul>
+              </div>
+
+              {/* Pelimerkit */}
+              <div className="space-y-2 p-4 rounded-xl bg-blue-50/50 border border-blue-200">
+                <h4 className="font-bold text-blue-800 flex items-center gap-2">🎲 Pelimerkit</h4>
+                <ul className="space-y-1 text-blue-900/80">
+                  <li>• <strong>Nappulat:</strong> 240 kpl (120 ratsuväki + 120 jalkaväki)</li>
+                  <li>• <strong>Heimot:</strong> 4 heimoa eriväreisissä (kulta, pun., sin., vihr.)</li>
+                  <li>• <strong>Linnoitukset:</strong> 8 linnoitusmerkkiä</li>
+                  <li>• <strong>Heimopäälliköt:</strong> 4 isompaa nappulaa</li>
+                  <li>• <strong>Materiaali:</strong> Puu tai muovi, 15mm korkeus</li>
+                </ul>
+              </div>
+
+              {/* Nopat */}
+              <div className="space-y-2 p-4 rounded-xl bg-red-50/50 border border-red-200">
+                <h4 className="font-bold text-red-800 flex items-center gap-2">🎲 Nopat</h4>
+                <ul className="space-y-1 text-red-900/80">
+                  <li>• <strong>Määrä:</strong> 8 kpl, 16mm standardinopat</li>
+                  <li>• <strong>Värit:</strong> Punainen & kulta</li>
+                  <li>• <strong>Vaatimus:</strong> Tasapainoiset, pyöristetyt kulmat</li>
+                </ul>
+              </div>
+
+              {/* Kortit */}
+              <div className="space-y-2 p-4 rounded-xl bg-green-50/50 border border-green-200">
+                <h4 className="font-bold text-green-800 flex items-center gap-2">🎴 Kortit</h4>
+                <ul className="space-y-1 text-green-900/80">
+                  <li>• <strong>Yhteensä:</strong> 180 korttia (4 pakkaa)</li>
+                  <li>• <strong>Koko:</strong> 63.5mm × 88.9mm (pokerikortti)</li>
+                  <li>• <strong>Materiaali:</strong> 310 gsm, laminoitu molemmin puolin</li>
+                  <li>• <strong>Pakat:</strong> Strategia, Diplomatia, Teknologia, Resurssit</li>
+                </ul>
+              </div>
+
+              {/* Pakkaus */}
+              <div className="space-y-2 p-4 rounded-xl bg-purple-50/50 border border-purple-200">
+                <h4 className="font-bold text-purple-800 flex items-center gap-2">📦 Pakkaus</h4>
+                <ul className="space-y-1 text-purple-900/80">
+                  <li>• <strong>Koko:</strong> 40cm × 27cm × 5.5cm</li>
+                  <li>• <strong>Tyyli:</strong> Risk-tyyppinen klappilaatikko</li>
+                  <li>• <strong>Sisältö:</strong> Lokerot komponenteille</li>
+                  <li>• <strong>Materiaali:</strong> 1.5mm kartonki, laminoitu kansi</li>
+                </ul>
+              </div>
+
+              {/* Tekniset tiedostot */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50/50 border border-gray-200">
+                <h4 className="font-bold text-gray-800 flex items-center gap-2">💾 Tekniset tiedostot</h4>
+                <ul className="space-y-1 text-gray-700">
+                  <li>• <strong>Formaatti:</strong> PDF/X-4 painovalmis</li>
+                  <li>• <strong>Väriprofiili:</strong> CMYK (ISO Coated v2)</li>
+                  <li>• <strong>Resoluutio:</strong> 300 DPI (min. 266 DPI)</li>
+                  <li>• <strong>Leikkuuvarat:</strong> 3mm joka sivulle</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Kustannusarvio */}
+            <div className="p-4 rounded-xl bg-amber-100/60 border border-amber-300">
+              <h4 className="font-bold text-amber-900 flex items-center gap-2 mb-3">💰 Kustannusarviot</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="font-semibold text-amber-800">Prototyyppi (10 kpl erä)</p>
+                  <p className="text-2xl font-bold text-amber-900">45–65€<span className="text-sm font-normal">/kpl</span></p>
+                </div>
+                <div>
+                  <p className="font-semibold text-amber-800">Tuotanto (1000 kpl erä)</p>
+                  <p className="text-2xl font-bold text-amber-900">12–18€<span className="text-sm font-normal">/kpl</span></p>
+                </div>
+              </div>
+            </div>
+
+            {/* Valmistajat */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <h4 className="font-bold text-slate-800 flex items-center gap-2 mb-2">🏭 Suositellut valmistajat</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                {['The Game Crafter', 'Ludofact', 'Panda GM', 'Cartamundi'].map(name => (
+                  <div key={name} className="p-2 rounded-lg bg-white border text-center font-medium text-slate-700">{name}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══════ AI Image Board ═══════ */}
       {boardType === 'image' && (
