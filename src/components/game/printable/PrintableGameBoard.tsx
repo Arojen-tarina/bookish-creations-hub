@@ -641,9 +641,12 @@ export const PrintableGameBoard = () => {
   return (
     <div className="space-y-6">
       {/* Tab switcher — pill style */}
-      <Tabs value={boardType} onValueChange={(v) => setBoardType(v as 'image' | 'svg')} className="print:hidden">
+      <Tabs value={boardType} onValueChange={(v) => setBoardType(v as 'image' | 'svg' | 'circular')} className="print:hidden">
         <div className="flex justify-center">
           <TabsList className="h-10 p-1 rounded-full" style={{ background: 'rgba(0,0,0,0.04)' }}>
+            <TabsTrigger value="circular" className="gap-2 rounded-full px-5 text-sm data-[state=active]:shadow-sm" style={{ fontFamily: '-apple-system, system-ui, sans-serif' }}>
+              <MapPin className="w-4 h-4" />Pelilauta
+            </TabsTrigger>
             <TabsTrigger value="image" className="gap-2 rounded-full px-5 text-sm data-[state=active]:shadow-sm" style={{ fontFamily: '-apple-system, system-ui, sans-serif' }}>
               <Image className="w-4 h-4" />AI-generoitu kartta
             </TabsTrigger>
