@@ -36,28 +36,23 @@ const MAP_BOUNDS = {
 const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
 const MAP_HEIGHT = MAP_BOUNDS.maxY - MAP_BOUNDS.minY;
 
-// Calculate province polygon from center point (simplified hexagonal approximation)
-const getProvincePolygon = (center: { x: number; y: number }, size: number = 2): string => {
-  const points = [];
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 3) * i - Math.PI / 6;
-    const x = center.x + size * Math.cos(angle);
-    const y = center.y + size * Math.sin(angle);
-    points.push(`${x},${y}`);
-  }
-  return points.join(' ');
+// Terrain colors matching the board reference
+const TERRAIN_COLORS: Record<string, string> = {
+  steppe: '#c8a860',
+  grassland: '#9ab860',
+  farmland: '#7aaa38',
+  desert: '#c89060',
+  mountain: '#7a7a8a',
+  forest: '#4a7a4a',
+  taiga: '#3a6a3a',
+  tundra: '#a8b8c8',
+  hills: '#8a8a6a',
+  marsh: '#5a8a66',
 };
 
-interface ProvincePolygonProps {
-  province: Province;
-  isSelected: boolean;
-  isHighlighted: boolean;
-  isPlayerOwned: boolean;
-  onClick: () => void;
-  onHover: (province: Province | null) => void;
-}
+const CIRCLE_RADIUS = 1.5;
 
-const ProvincePolygon = ({
+const ProvinceCircle = ({
   province,
   isSelected,
   isHighlighted,
@@ -65,96 +60,83 @@ const ProvincePolygon = ({
   onClick,
   onHover,
 }: ProvincePolygonProps) => {
-  const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : null;
-  
-  // Determine province size based on development
-  const size = 1.5 + province.developmentLevel * 0.2;
-  const polygon = getProvincePolygon(province.center, size);
-  
-  // Determine fill color
-  let fillColor = terrainInfo.color;
-  if (province.ownerId) {
-    fillColor = ownerColor || fillColor;
-  }
-  
-  // Stroke styling
-  let strokeColor = '#374151';
-  let strokeWidth = 0.15;
-  
-  if (isSelected) {
-    strokeColor = '#fbbf24';
-    strokeWidth = 0.4;
-  } else if (isHighlighted) {
-    strokeColor = '#22c55e';
-    strokeWidth = 0.3;
-  } else if (province.ownerId) {
-    strokeColor = ownerColor || strokeColor;
-    strokeWidth = 0.2;
-  }
-  
+  const terrainColor = TERRAIN_COLORS[province.terrain] || '#888888';
+  const r = CIRCLE_RADIUS + (province.isCapital ? 0.3 : 0) + province.developmentLevel * 0.05;
+
+  let borderColor = ownerColor || '#5a5a5a';
+  let borderWidth = 0.2;
+  if (isSelected) { borderColor = '#fbbf24'; borderWidth = 0.35; }
+  else if (isHighlighted) { borderColor = '#22c55e'; borderWidth = 0.3; }
+  else if (ownerColor) { borderWidth = 0.25; }
+
   return (
     <g
       onClick={onClick}
       onMouseEnter={() => onHover(province)}
       onMouseLeave={() => onHover(null)}
-      className="cursor-pointer transition-all duration-150"
+      className="cursor-pointer"
     >
-      {/* Province polygon */}
-      <polygon
-        points={polygon}
-        fill={fillColor}
-        fillOpacity={province.ownerId ? 0.7 : 0.5}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        className="transition-all duration-150 hover:brightness-110"
+      {/* Faction glow ring */}
+      {ownerColor && (
+        <circle
+          cx={province.center.x} cy={province.center.y}
+          r={r + 0.4}
+          fill="none" stroke={ownerColor} strokeWidth={0.12} opacity={0.5}
+        />
+      )}
+
+      {/* Main circle */}
+      <circle
+        cx={province.center.x} cy={province.center.y}
+        r={r}
+        fill={terrainColor}
+        stroke={borderColor}
+        strokeWidth={borderWidth}
+        opacity={0.9}
       />
-      
-      {/* Selection glow */}
+
+      {/* Selection pulse */}
       {isSelected && (
-        <polygon
-          points={polygon}
-          fill="none"
-          stroke="#fbbf24"
-          strokeWidth={0.6}
-          strokeOpacity={0.5}
+        <circle
+          cx={province.center.x} cy={province.center.y}
+          r={r + 0.5}
+          fill="none" stroke="#fbbf24" strokeWidth={0.15} opacity={0.6}
           className="animate-pulse"
         />
       )}
-      
-      {/* Capital marker */}
+
+      {/* Capital dashed ring */}
       {province.isCapital && (
         <circle
-          cx={province.center.x}
-          cy={province.center.y}
-          r={0.5}
-          fill="#fbbf24"
-          stroke="#1f2937"
-          strokeWidth={0.1}
+          cx={province.center.x} cy={province.center.y}
+          r={r + 0.15}
+          fill="none" stroke="#ffd700" strokeWidth={0.1} strokeDasharray="0.3,0.2"
         />
       )}
-      
-      {/* Fort indicator */}
+
+      {/* Crossed swords (army indicator) */}
+      {province.garrison > 0 && (
+        <g transform={`translate(${province.center.x},${province.center.y - 0.2})`}>
+          <line x1={-0.5} y1={0.5} x2={0.35} y2={-0.6} stroke="#3a2a1a" strokeWidth={0.12} strokeLinecap="round" />
+          <line x1={0.5} y1={0.5} x2={-0.35} y2={-0.6} stroke="#3a2a1a" strokeWidth={0.12} strokeLinecap="round" />
+        </g>
+      )}
+
+      {/* Fort icon */}
       {province.fortLevel > 0 && (
         <rect
-          x={province.center.x - 0.3}
-          y={province.center.y - 0.3}
-          width={0.6}
-          height={0.6}
-          fill="#6b7280"
-          stroke="#1f2937"
-          strokeWidth={0.05}
+          x={province.center.x + r * 0.5} y={province.center.y - r * 0.8}
+          width={0.5} height={0.5} rx={0.05}
+          fill="#556b2f" stroke="#3a3a2a" strokeWidth={0.04}
         />
       )}
-      
-      {/* Silk Road indicator */}
+
+      {/* Silk Road dot */}
       {province.hasSilkRoad && (
         <circle
-          cx={province.center.x + 0.8}
-          cy={province.center.y - 0.8}
-          r={0.3}
-          fill="#f59e0b"
-          fillOpacity={0.8}
+          cx={province.center.x + r * 0.6} cy={province.center.y + r * 0.6}
+          r={0.25} fill="#f59e0b" opacity={0.8}
         />
       )}
     </g>
