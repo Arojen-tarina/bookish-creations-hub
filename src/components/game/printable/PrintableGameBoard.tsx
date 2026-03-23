@@ -625,7 +625,7 @@ export const PrintableGameBoard = () => {
   const [zoom, setZoom] = useState(1);
   const [selectedTile, setSelectedTile] = useState<HexTile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<HexTile | null>(null);
-  const [boardType, setBoardType] = useState<'image' | 'svg'>('image');
+  const [boardType, setBoardType] = useState<'image' | 'svg' | 'circular'>('circular');
   const tiles = generateHexGrid();
 
   const BOARD_WIDTH = 920;
