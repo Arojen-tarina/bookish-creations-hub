@@ -448,7 +448,7 @@ export const ProvinceMap = ({
         {/* Province polygons */}
         <g filter="url(#map-glow)">
           {provinces.map(province => (
-            <ProvincePolygon
+            <ProvinceCircle
               key={province.id}
               province={province}
               isSelected={province.id === selectedProvinceId}
