@@ -36,6 +36,15 @@ const MAP_BOUNDS = {
 const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
 const MAP_HEIGHT = MAP_BOUNDS.maxY - MAP_BOUNDS.minY;
 
+interface ProvincePolygonProps {
+  province: Province;
+  isSelected: boolean;
+  isHighlighted: boolean;
+  isPlayerOwned: boolean;
+  onClick: () => void;
+  onHover: (province: Province | null) => void;
+}
+
 // Terrain colors matching the board reference
 const TERRAIN_COLORS: Record<string, string> = {
   steppe: '#c8a860',
