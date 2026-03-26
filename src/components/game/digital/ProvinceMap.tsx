@@ -37,6 +37,15 @@ const DEFAULT_VIEW = {
 const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
 const MAP_HEIGHT = MAP_BOUNDS.maxY - MAP_BOUNDS.minY;
 
+interface ProvinceMapProps {
+  provinces: Province[];
+  selectedProvinceId: string | null;
+  onProvinceClick: (provinceId: string) => void;
+  playerFaction: FactionId;
+  highlightedProvinces?: string[];
+  showArmies?: boolean;
+}
+
 interface ProvincePolygonProps {
   province: Province;
   isSelected: boolean;
