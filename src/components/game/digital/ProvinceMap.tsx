@@ -385,8 +385,8 @@ export const ProvinceMap = ({
 
   // Navigate from minimap
   const handleMinimapNavigate = useCallback((x: number, y: number) => {
-    const centerX = MAP_BOUNDS.minX + MAP_WIDTH / 2;
-    const centerY = MAP_BOUNDS.minY + MAP_HEIGHT / 2;
+    const centerX = DEFAULT_VIEW.x + DEFAULT_VIEW.width / 2;
+    const centerY = DEFAULT_VIEW.y + DEFAULT_VIEW.height / 2;
     setPan({
       x: (centerX - x) * zoom,
       y: (centerY - y) * zoom,
