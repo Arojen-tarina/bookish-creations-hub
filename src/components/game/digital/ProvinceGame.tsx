@@ -1,289 +1,54 @@
 /**
- * ProvinceGame.tsx — Digipelin pääkomponentti (provinssipohjainen)
+ * ProvinceGame.tsx — Pelattava MVP-strategiapeli
  *
- * Kokoaa koko digitaalisen strategiapelin:
- * - Valtakunnanvalinta (ProvinceFactionSelect)
- * - 3D-kartta (GameBoard3D) + GeoJSON-kartta (GeoProvinceMap)
- * - HUD: resurssit, vuoro, vaihe, kontrollit
- * - Sivupaneeli: provinssitiedot, diplomatia, ääni, loki
- * - Taistelunäkymä (BattleDisplay), tapahtumat (EventCard)
- * - Vuoronvaihtoanimaatiot (TurnTransition), tutoriaali (Tutorial)
- * - Tekoälydiplomatia (useDiplomacyAI), ääniefektit (useElevenLabsSFX)
+ * Kokonainen vuoropohjainen pelilooppi:
+ * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useProvinceGameState } from '@/hooks/useProvinceGameState';
-import { useAudioManager } from '@/hooks/useAudioManager';
-import { useSaveManager } from '@/hooks/useSaveManager';
-import { useDiplomacyAI } from '@/hooks/useDiplomacyAI';
-import { useElevenLabsSFX, GAME_SFX, GameSFXKey } from '@/hooks/useElevenLabsSFX';
-import { useTurnLog, createLogMessage } from '@/hooks/useTurnLog';
+import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
-import { GameBoard3D } from './GameBoard3D';
+import { ProvinceMap } from './ProvinceMap';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
 import { DiplomacyPanel } from './DiplomacyPanel';
-import { AudioSettings } from './AudioSettings';
-import { BattleDisplay, BattleResult } from './BattleDisplay';
-import { EventCard, getRandomEvent, GAME_EVENTS } from './EventCard';
-import { Tutorial, TutorialButton } from './Tutorial';
-import { TurnTransition, TurnLog, TurnSummary } from './TurnTransition';
-import { FACTION_DATA_1206, ActiveGameEvent, GamePhase } from '@/types/province';
+import { BattleDisplay } from './BattleDisplay';
+import { CardHand } from './CardHand';
+import { PhaseBar } from './PhaseBar';
+import { VictoryGoals } from './VictoryGoals';
+import { GameOverScreen } from './GameOverScreen';
+import { FACTION_DATA_1206 } from '@/types/province';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  Maximize2, 
-  Minimize2, 
-  ArrowLeft,
-  Map,
-  Handshake,
-  Settings,
-  ArrowRight,
-  Clock,
-  Crown,
-  Coins,
-  Users,
-  Sword,
-  RotateCcw,
-  Trophy,
-  Volume2,
-  ScrollText,
-  Target,
-  Crosshair,
+  Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
+  Clock, Coins, Users, Sword, RotateCcw, Trophy, ScrollText,
+  Target, Crosshair, Wheat, Wrench, HelpCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 export const ProvinceGame = () => {
   const {
-    gameStarted,
-    playerFaction,
-    gameState,
-    pendingBattle,
-    clearBattle,
-    startGame,
-    selectProvince,
-    selectArmy,
-    moveArmy,
-    endPhase,
-    resetGame,
-    proposeTreaty,
-    breakTreaty,
-    buildFort,
-    recruitArmy,
-    getArmiesInProvince,
-    getPlayerFaction,
-    canMoveTo,
+    gameStarted, playerFaction, gameState,
+    pendingBattle, clearBattle,
+    startGame, selectProvince, selectArmy, moveArmy,
+    nextPhase, endTurn, resetGame,
+    playCard, buildStructure, recruitArmy,
+    proposeTreaty, breakTreaty,
+    getArmiesInProvince, getPlayerFaction, canMoveTo,
   } = useProvinceGameState();
-  
-  const audio = useAudioManager();
-  const { playGameSFX, isLoading: sfxLoading, preloadSounds } = useElevenLabsSFX({ 
-    volume: audio.settings.sfxVolume * audio.settings.masterVolume,
-    cacheEnabled: true 
-  });
-  const { calculateAIDiplomacy, evaluateTreatyProposal } = useDiplomacyAI();
-  const { entries: logEntries, addEntry: addLogEntry, getEntriesForTurn } = useTurnLog();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('province');
-  const [sfxEnabled, setSfxEnabled] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [activeEvent, setActiveEvent] = useState<ActiveGameEvent | null>(null);
-  const [hasSeenTutorial, setHasSeenTutorial] = useState(() => {
-    return localStorage.getItem('mongolian_game_tutorial_seen') === 'true';
-  });
   const [attackMode, setAttackMode] = useState(false);
-  
-  // Turn transition state
-  const [showTurnTransition, setShowTurnTransition] = useState(false);
-  const [showTurnSummary, setShowTurnSummary] = useState(false);
-  const [isNewTurn, setIsNewTurn] = useState(false);
-  const [lastTurnIncome, setLastTurnIncome] = useState(0);
-  const [lastManpowerGain, setLastManpowerGain] = useState(0);
-  
-  const lastPhaseRef = useRef<string | null>(null);
-  const lastTurnRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Show tutorial on first game start
-  useEffect(() => {
-    if (gameStarted && gameState && !hasSeenTutorial) {
-      setShowTutorial(true);
-    }
-  }, [gameStarted, hasSeenTutorial]);
-  
-  // Handle tutorial completion
-  const handleTutorialComplete = useCallback(() => {
-    setHasSeenTutorial(true);
-    localStorage.setItem('mongolian_game_tutorial_seen', 'true');
-    setShowTutorial(false);
-  }, []);
-  
-  // Trigger random event in event phase
-  useEffect(() => {
-    if (!gameState || !playerFaction) return;
-    
-    if (gameState.phase === 'event' && !activeEvent) {
-      // 40% chance for an event each turn
-      if (Math.random() < 0.4) {
-        const newEvent = getRandomEvent(playerFaction, gameState.turn);
-        setActiveEvent(newEvent);
-        if (sfxEnabled) {
-          playGameSFX('turn_start');
-        }
-      }
-    }
-  }, [gameState?.phase, gameState?.turn]);
-  
-  // Handle event resolution
-  const handleEventResolve = useCallback((choiceIndex: number) => {
-    if (!activeEvent || !playerFaction) return;
-    
-    const choice = activeEvent.event.choices?.[choiceIndex];
-    if (choice) {
-      toast.success(`Valitsit: ${choice.text}`, {
-        description: choice.effect,
-      });
-    }
-    
-    setActiveEvent(null);
-  }, [activeEvent, playerFaction]);
-
-  // Start ambient on game start + preload SFX
-  useEffect(() => {
-    if (gameStarted && gameState) {
-      audio.playAmbient();
-      // Preload commonly used sounds
-      if (sfxEnabled) {
-        preloadSounds(['steppe_wind', 'cavalry_charge', 'battle_win']);
-      }
-    }
-    return () => audio.stopAmbient();
-  }, [gameStarted, sfxEnabled]);
-  
-  // Turn and phase transition detection
-  useEffect(() => {
-    if (!gameState || !playerFaction) return;
-    
-    const currentPhase = gameState.phase;
-    const currentTurn = gameState.turn;
-    const prevPhase = lastPhaseRef.current;
-    const prevTurn = lastTurnRef.current;
-    
-    // Detect new turn
-    if (currentTurn > prevTurn && prevTurn > 0) {
-      // Calculate income for summary
-      const playerFactionData = gameState.factions.find(f => f.id === playerFaction);
-      const ownedProvinces = gameState.provinces.filter(p => p.ownerId === playerFaction);
-      const income = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-      const manpower = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.5);
-      
-      setLastTurnIncome(income);
-      setLastManpowerGain(manpower);
-      setIsNewTurn(true);
-      setShowTurnTransition(true);
-      
-      // Log income
-      addLogEntry({
-        turn: currentTurn,
-        phase: 'economy',
-        type: 'income',
-        message: createLogMessage.incomeCollected(income),
-        details: `+${manpower} miesvoimaa kerätty`,
-        factionId: playerFaction,
-      });
-    } else if (prevPhase && prevPhase !== currentPhase) {
-      // Phase change within same turn
-      setIsNewTurn(false);
-      setShowTurnTransition(true);
-    }
-    
-    lastPhaseRef.current = currentPhase;
-    lastTurnRef.current = currentTurn;
-    
-    // AI Diplomacy processing at turn end (when phase changes from 'event' back to 'planning')
-    if (prevPhase === 'event' && currentPhase === 'planning') {
-      // Process each AI faction's diplomatic decisions
-      gameState.factions.forEach(faction => {
-        if (faction.id === playerFaction || faction.isPlayer) return;
-        
-        const aiDecisions = calculateAIDiplomacy(
-          faction,
-          gameState.factions,
-          gameState.relations,
-          gameState.provinces,
-          gameState.turn
-        );
-        
-        // Execute AI diplomatic decisions
-        aiDecisions.forEach(decision => {
-          if (decision.type === 'propose_treaty' && decision.targetFactionId && decision.treatyType) {
-            // AI proposing treaty to player
-            if (decision.targetFactionId === playerFaction) {
-              const factionData = FACTION_DATA_1206[faction.id];
-              toast.info(`${factionData.name} ehdottaa: ${decision.treatyType}`, {
-                description: decision.reason,
-                action: {
-                  label: 'Hyväksy',
-                  onClick: () => proposeTreaty(faction.id, decision.treatyType!),
-                },
-              });
-              
-              addLogEntry({
-                turn: gameState.turn,
-                phase: 'diplomacy',
-                type: 'treaty',
-                message: `${factionData.name} ehdotti sopimusta`,
-                factionId: faction.id,
-              });
-            }
-          } else if (decision.type === 'break_treaty' && decision.targetFactionId && decision.treatyType) {
-            // AI breaking treaty
-            if (decision.targetFactionId === playerFaction) {
-              const factionData = FACTION_DATA_1206[faction.id];
-              toast.warning(`${factionData.name} rikkoi sopimuksen: ${decision.treatyType}`, {
-                description: decision.reason,
-              });
-              breakTreaty(faction.id, decision.treatyType!);
-              
-              addLogEntry({
-                turn: gameState.turn,
-                phase: 'diplomacy',
-                type: 'treaty',
-                message: createLogMessage.treatyBroken(decision.treatyType, factionData.name),
-                factionId: faction.id,
-              });
-            }
-          }
-        });
-      });
-    }
-  }, [gameState?.phase, gameState?.turn, addLogEntry]);
-  
-  // Play phase-specific sounds
-  useEffect(() => {
-    if (!sfxEnabled || !gameState) return;
-    
-    const phaseSFX: Record<string, GameSFXKey> = {
-      military: 'battle_start',
-      diplomacy: 'treaty_signed',
-      event: 'turn_start',
-    };
-    
-    const sfxKey = phaseSFX[gameState.phase];
-    if (sfxKey) {
-      playGameSFX(sfxKey);
-    }
-  }, [gameState?.phase, sfxEnabled]);
-
-  // Fullscreen handlers
+  // Fullscreen
   const toggleFullscreen = useCallback(async () => {
     if (!containerRef.current) return;
-    audio.playClick();
-    
     try {
       if (!document.fullscreenElement) {
         await containerRef.current.requestFullscreen();
@@ -292,79 +57,42 @@ export const ProvinceGame = () => {
         await document.exitFullscreen();
         setIsFullscreen(false);
       }
-    } catch (err) {
-      console.error('Fullscreen error:', err);
-    }
-  }, [audio]);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    } catch (err) { console.error(err); }
   }, []);
 
-  // Handle province click
+  useEffect(() => {
+    const h = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', h);
+    return () => document.removeEventListener('fullscreenchange', h);
+  }, []);
+
+  // Show AI log after turn end
+  useEffect(() => {
+    if (gameState?.aiLog && gameState.aiLog.length > 0) {
+      gameState.aiLog.forEach((msg, i) => {
+        setTimeout(() => toast.info(msg, { duration: 3000 }), i * 500);
+      });
+    }
+  }, [gameState?.turn]);
+
+  // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
-    audio.playSelect();
+    if (!gameState) return;
     
-    if (gameState?.selectedArmyId) {
-      // Try to move selected army
-      const canMove = canMoveTo(gameState.selectedArmyId, provinceId);
-      if (canMove) {
-        const army = gameState.armies.find(a => a.id === gameState.selectedArmyId);
-        const fromProvince = gameState.provinces.find(p => p.id === army?.provinceId);
-        const toProvince = gameState.provinces.find(p => p.id === provinceId);
-        
+    if (gameState.selectedArmyId && (gameState.phase === 'move' || gameState.phase === 'battle')) {
+      if (canMoveTo(gameState.selectedArmyId, provinceId)) {
         moveArmy(gameState.selectedArmyId, provinceId);
-        audio.playConfirm();
-        if (sfxEnabled) playGameSFX('cavalry_charge');
-        
-        // Log the movement
-        if (army && fromProvince && toProvince) {
-          addLogEntry({
-            turn: gameState.turn,
-            phase: gameState.phase,
-            type: 'move',
-            message: createLogMessage.armyMoved('Armeija', fromProvince.name, toProvince.name),
-            factionId: playerFaction!,
-          });
-        }
+        setAttackMode(false);
         return;
       }
     }
-    
     selectProvince(provinceId);
-  }, [audio, gameState, canMoveTo, moveArmy, selectProvince, sfxEnabled, playGameSFX, addLogEntry, playerFaction]);
+  }, [gameState, canMoveTo, moveArmy, selectProvince]);
 
-  // Handle end phase
-  const handleEndPhase = useCallback(() => {
-    audio.playTurnEnd();
-    if (sfxEnabled) playGameSFX('turn_end');
-    endPhase();
-  }, [audio, endPhase, sfxEnabled, playGameSFX]);
-
-  // Handle game start
-  const handleStartGame = useCallback((factionId: typeof playerFaction) => {
-    if (factionId) {
-      audio.playConfirm();
-      startGame(factionId);
-    }
-  }, [audio, startGame]);
-
-  // Handle reset
-  const handleReset = useCallback(() => {
-    audio.stopAmbient();
-    resetGame();
-  }, [audio, resetGame]);
-
-  // Faction select screen
+  // Faction select
   if (!gameStarted || !playerFaction) {
-    return <ProvinceFactionSelect onSelect={handleStartGame} />;
+    return <ProvinceFactionSelect onSelect={(f) => f && startGame(f)} />;
   }
-
-  // Loading
   if (!gameState) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-950 via-amber-950/30 to-slate-950">
@@ -373,7 +101,7 @@ export const ProvinceGame = () => {
             <div className="absolute inset-0 rounded-full border-4 border-amber-500/30" />
             <div className="absolute inset-0 rounded-full border-4 border-amber-500 border-t-transparent animate-spin" />
           </div>
-          <p className="text-xl text-amber-200 font-display animate-pulse">Ladataan karttaa...</p>
+          <p className="text-xl text-amber-200 animate-pulse">Ladataan...</p>
         </div>
       </div>
     );
@@ -382,467 +110,377 @@ export const ProvinceGame = () => {
   const playerFactionData = getPlayerFaction();
   const selectedProvince = gameState.provinces.find(p => p.id === gameState.selectedProvinceId);
   const selectedProvinceArmies = selectedProvince ? getArmiesInProvince(selectedProvince.id) : [];
-  
-  // Get available moves for selected army - separate peaceful moves from attacks
   const selectedArmy = gameState.armies.find(a => a.id === gameState.selectedArmyId);
   
-  // Calculate which provinces can be moved to (peaceful) vs attacked (has enemy)
+  // Compute available moves/attacks for selected army
   const { availableMoves, attackableProvinces } = (() => {
-    if (!selectedArmy) return { availableMoves: [], attackableProvinces: [] };
-    
+    if (!selectedArmy) return { availableMoves: [] as string[], attackableProvinces: [] as string[] };
     const moveable = gameState.provinces.filter(p => canMoveTo(selectedArmy.id, p.id));
     const peaceful: string[] = [];
     const attacks: string[] = [];
-    
-    moveable.forEach(province => {
-      const hasEnemyArmy = gameState.armies.some(
-        a => a.provinceId === province.id && a.ownerId !== selectedArmy.ownerId
-      );
-      const isEnemyTerritory = province.ownerId !== null && 
-        province.ownerId !== selectedArmy.ownerId;
-      
-      if (hasEnemyArmy) {
-        attacks.push(province.id);
-      } else if (isEnemyTerritory) {
-        // Enemy territory but no army - can capture peacefully
-        attacks.push(province.id);
-      } else {
-        peaceful.push(province.id);
-      }
+    moveable.forEach(p => {
+      const hasEnemy = gameState.armies.some(a => a.provinceId === p.id && a.ownerId !== selectedArmy.ownerId);
+      const isEnemyTerritory = p.ownerId !== null && p.ownerId !== selectedArmy.ownerId;
+      if (hasEnemy || isEnemyTerritory) attacks.push(p.id);
+      else peaceful.push(p.id);
     });
-    
     return { availableMoves: peaceful, attackableProvinces: attacks };
   })();
 
-  const phaseNames: Record<string, string> = {
-    planning: 'Suunnittelu',
-    military: 'Sotilaalliset',
-    diplomacy: 'Diplomatia',
-    economy: 'Talous',
-    event: 'Tapahtumat',
-  };
+  const isVictory = gameState.gameOver && gameState.winnerId === playerFaction;
+  const isDefeat = gameState.gameOver && gameState.winnerId !== playerFaction;
 
   return (
-    <div 
-      ref={containerRef}
-      className="fixed inset-0 w-screen min-h-[100dvh] overflow-hidden bg-slate-950"
-      style={{ height: '100dvh' }}
-    >
+    <div ref={containerRef} className="fixed inset-0 w-screen min-h-[100dvh] overflow-hidden bg-slate-950" style={{ height: '100dvh' }}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: `radial-gradient(ellipse at 30% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
-                       radial-gradient(ellipse at 70% 80%, rgba(180, 83, 9, 0.1) 0%, transparent 50%)`,
-        }}
-      />
       
-      {/* Vignette */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 200px 60px rgba(0,0,0,0.7)' }}
-      />
-
-      {/* Top HUD */}
-      <div className="fixed top-0 left-0 right-0 h-14 z-30">
-        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-xl border-b border-amber-700/20" />
-        <div className="relative h-full flex items-center justify-between px-4">
-          {/* Left - Faction & Year */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-slate-800/50 rounded-xl px-3 py-1.5 border border-amber-700/20">
-              <span 
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: playerFactionData?.color }}
-              />
-              <span className="text-amber-100 font-bold hidden sm:block">
-                {playerFactionData?.name}
-              </span>
+      {/* ============= TOP HUD ============= */}
+      <div className="fixed top-0 left-0 right-0 h-12 z-30">
+        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
+        <div className="relative h-full flex items-center justify-between px-3">
+          {/* Left: Faction + Year */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
+              <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: playerFactionData?.color }} />
+              <span className="text-amber-100 font-bold text-sm hidden sm:block">{playerFactionData?.name}</span>
             </div>
-            
-            <div className="flex items-center gap-2 bg-slate-800/50 rounded-xl px-3 py-1.5 border border-amber-700/20">
-              <Clock className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-200 font-mono">{gameState.year}</span>
-              <span className="text-amber-200/50 text-sm">Vuoro {gameState.turn}</span>
+            <div className="flex items-center gap-1.5 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-amber-200 font-mono text-sm">{gameState.year}</span>
+              <span className="text-amber-200/40 text-xs">V{gameState.turn}</span>
             </div>
-            
-            <Badge className="bg-amber-600">{phaseNames[gameState.phase]}</Badge>
           </div>
           
-          {/* Center - Resources */}
+          {/* Center: Resources */}
           {playerFactionData && (
-            <div className="hidden md:flex items-center gap-3 bg-slate-800/30 rounded-xl px-3 py-1.5">
-              <div className="flex items-center gap-1.5" title="Valtionkassa">
-                <Coins className="w-4 h-4 text-amber-400" />
-                <span className="text-amber-100 font-bold">{playerFactionData.treasury}</span>
+            <div className="flex items-center gap-3 bg-slate-800/30 rounded-lg px-3 py-1">
+              <div className="flex items-center gap-1" title="Kulta">
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-amber-100 font-bold text-sm">{playerFactionData.treasury}</span>
               </div>
-              <div className="flex items-center gap-1.5" title="Miesvoima">
-                <Users className="w-4 h-4 text-blue-400" />
-                <span className="text-blue-100 font-bold">{playerFactionData.manpower}</span>
+              <div className="flex items-center gap-1" title="Ruoka">
+                <Wheat className="w-3.5 h-3.5 text-green-400" />
+                <span className="text-green-100 font-bold text-sm">{gameState.food}</span>
               </div>
-              <div className="flex items-center gap-1.5" title="Hevoset">
-                <span className="text-lg">🐴</span>
-                <span className="text-green-100 font-bold">{playerFactionData.horses}</span>
+              <div className="flex items-center gap-1" title="Hevoset">
+                <span className="text-sm">🐴</span>
+                <span className="text-blue-100 font-bold text-sm">{playerFactionData.horses}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Miesvoima">
+                <Users className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-blue-100 font-bold text-sm">{playerFactionData.manpower}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Käsityöläiset">
+                <Wrench className="w-3.5 h-3.5 text-orange-400" />
+                <span className="text-orange-100 font-bold text-sm">{gameState.artisans}</span>
               </div>
             </div>
           )}
           
-          {/* Right - Controls */}
+          {/* Right: Controls */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFullscreen}
-              className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30"
-            >
-              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+            <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </Button>
-            
-            <Button
-              onClick={handleEndPhase}
-              className="bg-amber-600 hover:bg-amber-500"
-              disabled={gameState.gameOver}
-            >
-              Seuraava
-              <ArrowRight className="w-4 h-4 ml-1" />
+            <Button variant="ghost" size="sm" onClick={() => setShowSidebar(!showSidebar)} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 text-xs h-8">
+              {showSidebar ? '◀ Piilota' : '▶ Valikko'}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Main game area */}
-      <div className="relative h-full pt-14 flex">
+      {/* ============= PHASE BAR ============= */}
+      <div className="fixed top-12 left-0 right-0 z-20 px-3 py-1.5">
+        <PhaseBar
+          currentPhase={gameState.phase}
+          onNextPhase={nextPhase}
+          onEndTurn={endTurn}
+        />
+      </div>
+
+      {/* ============= MAIN GAME AREA ============= */}
+      <div className="relative h-full pt-[88px] flex">
         {/* Map */}
-        <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[400px]' : ''}`}>
-          <div className="absolute inset-0 p-2">
-            <GameBoard3D
+        <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[380px]' : ''}`}>
+          <div className="absolute inset-0 p-1">
+            <ProvinceMap
               provinces={gameState.provinces}
-              armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
-              selectedArmyId={gameState.selectedArmyId}
               onProvinceClick={handleProvinceClick}
-              onArmyClick={selectArmy}
               playerFaction={playerFaction}
-              highlightedProvinces={attackMode ? [] : availableMoves}
-              attackableProvinces={attackableProvinces}
-              attackModeActive={attackMode}
+              highlightedProvinces={attackMode ? attackableProvinces : [...availableMoves, ...attackableProvinces]}
             />
           </div>
+          
+          {/* Army indicators on map */}
+          {gameState.armies.filter(a => a.ownerId === playerFaction).length > 0 && selectedArmy && (
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
+              <div className="bg-green-900/90 backdrop-blur-sm text-green-100 text-xs px-4 py-2 rounded-full border border-green-500/30">
+                Armeija valittu: 🐴{selectedArmy.cavalry} ⚔️{selectedArmy.infantry} • Liikettä: {selectedArmy.movementLeft} • Klikkaa kohdealuetta kartalla
+              </div>
+            </div>
+          )}
         </div>
         
-        {/* Sidebar */}
-        <div 
-          className={`fixed top-14 right-0 bottom-0 w-[400px] bg-slate-900/95 backdrop-blur-xl border-l border-amber-700/20 shadow-2xl transition-transform duration-300 z-20 overflow-hidden ${
-            showSidebar ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          <div className="h-full overflow-y-auto p-4 scrollbar-thin">
+        {/* ============= SIDEBAR ============= */}
+        <div className={`fixed top-[88px] right-0 bottom-0 w-[380px] bg-slate-900/95 backdrop-blur-xl border-l border-amber-700/20 shadow-2xl transition-transform duration-300 z-20 overflow-hidden ${
+          showSidebar ? 'translate-x-0' : 'translate-x-full'
+        }`}>
+          <div className="h-full overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full bg-slate-800/50 mb-4 grid grid-cols-4">
-                <TabsTrigger value="province" className="text-xs px-2">
-                  <Map className="w-3.5 h-3.5 mr-1" />
-                  Alue
+              <TabsList className="w-full bg-slate-800/50 mb-3 grid grid-cols-4">
+                <TabsTrigger value="province" className="text-xs px-1.5">
+                  <Map className="w-3 h-3 mr-1" />Alue
                 </TabsTrigger>
-                <TabsTrigger value="log" className="text-xs px-2">
-                  <ScrollText className="w-3.5 h-3.5 mr-1" />
-                  Loki
+                <TabsTrigger value="goals" className="text-xs px-1.5">
+                  <Trophy className="w-3 h-3 mr-1" />Tavoite
                 </TabsTrigger>
-                <TabsTrigger value="diplomacy" className="text-xs px-2">
-                  <Handshake className="w-3.5 h-3.5 mr-1" />
-                  Dipl.
+                <TabsTrigger value="log" className="text-xs px-1.5">
+                  <ScrollText className="w-3 h-3 mr-1" />Loki
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="text-xs px-2">
-                  <Settings className="w-3.5 h-3.5 mr-1" />
-                  Aset.
+                <TabsTrigger value="diplomacy" className="text-xs px-1.5">
+                  <Handshake className="w-3 h-3 mr-1" />Dipl.
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="province" className="space-y-4">
+              {/* ============= PROVINCE TAB ============= */}
+              <TabsContent value="province" className="space-y-3">
                 {selectedProvince ? (
-                  <ProvinceInfoPanel
-                    province={selectedProvince}
-                    armies={selectedProvinceArmies}
-                    playerFaction={playerFaction}
-                    onBuildFort={() => {
-                      audio.playConfirm();
-                      buildFort(selectedProvince.id);
-                    }}
-                    onRecruitArmy={() => {
-                      audio.playConfirm();
-                      recruitArmy(selectedProvince.id);
-                    }}
-                    canBuildFort={playerFactionData ? playerFactionData.treasury >= 50 : false}
-                    canRecruit={playerFactionData ? playerFactionData.treasury >= 30 && playerFactionData.manpower >= 10 : false}
-                  />
+                  <>
+                    <ProvinceInfoPanel
+                      province={selectedProvince}
+                      armies={selectedProvinceArmies}
+                      playerFaction={playerFaction}
+                      onBuildFort={() => buildStructure(selectedProvince.id, 'fortress')}
+                      onRecruitArmy={() => recruitArmy(selectedProvince.id)}
+                      canBuildFort={playerFactionData ? playerFactionData.treasury >= 50 : false}
+                      canRecruit={playerFactionData ? playerFactionData.treasury >= 20 && playerFactionData.manpower >= 5 : false}
+                    />
+                    
+                    {/* Buildings */}
+                    {selectedProvince.ownerId === playerFaction && gameState.phase === 'build' && (
+                      <Card className="bg-slate-800/50 border-amber-700/30">
+                        <CardContent className="p-3">
+                          <h4 className="text-amber-100 text-sm font-semibold mb-2">🏗️ Rakenna</h4>
+                          <div className="space-y-2">
+                            {(Object.entries(BUILDING_INFO) as [MVPBuildingType, typeof BUILDING_INFO[MVPBuildingType]][]).map(([type, info]) => {
+                              const existing = gameState.buildings[selectedProvince.id] || [];
+                              const alreadyBuilt = existing.includes(type);
+                              const canAfford = playerFactionData && playerFactionData.treasury >= info.cost.gold && gameState.artisans >= (info.cost.artisans || 0);
+                              
+                              return (
+                                <Button
+                                  key={type}
+                                  variant="outline"
+                                  className={`w-full justify-start text-xs ${alreadyBuilt ? 'opacity-50' : ''}`}
+                                  disabled={alreadyBuilt || !canAfford}
+                                  onClick={() => buildStructure(selectedProvince.id, type)}
+                                >
+                                  <span className="mr-2">{info.emoji}</span>
+                                  {info.name} ({info.cost.gold}🪙{info.cost.artisans ? ` ${info.cost.artisans}🔧` : ''})
+                                  <span className="ml-auto text-amber-200/60">{info.effect}</span>
+                                </Button>
+                              );
+                            })}
+                          </div>
+                          
+                          {/* Existing buildings */}
+                          {(gameState.buildings[selectedProvince.id] || []).length > 0 && (
+                            <div className="mt-2 pt-2 border-t border-slate-700">
+                              <p className="text-amber-200/60 text-xs mb-1">Rakennettu:</p>
+                              <div className="flex gap-1">
+                                {(gameState.buildings[selectedProvince.id] || []).map(b => (
+                                  <Badge key={b} className="text-xs">{BUILDING_INFO[b].emoji} {BUILDING_INFO[b].name}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+                    
+                    {/* Army selection */}
+                    {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && (gameState.phase === 'move' || gameState.phase === 'battle') && (
+                      <Card className="bg-green-900/30 border-green-700/30">
+                        <CardContent className="p-3">
+                          <h4 className="text-green-200 text-sm font-semibold mb-2 flex items-center gap-1">
+                            <Sword className="w-3.5 h-3.5" /> Armeijat
+                          </h4>
+                          <div className="space-y-1.5">
+                            {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).map(army => (
+                              <Button
+                                key={army.id}
+                                variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
+                                className={`w-full justify-start text-xs ${
+                                  gameState.selectedArmyId === army.id ? 'bg-green-600' : 'border-green-600 text-green-200'
+                                }`}
+                                onClick={() => { selectArmy(army.id); setAttackMode(false); }}
+                                disabled={army.movementLeft <= 0}
+                              >
+                                🐴 {army.cavalry} ⚔️ {army.infantry} 🏗 {army.siege}
+                                <span className="ml-auto">{army.movementLeft > 0 ? `👟${army.movementLeft}` : '⏳'}</span>
+                              </Button>
+                            ))}
+                          </div>
+                          
+                          {gameState.selectedArmyId && (
+                            <div className="mt-2 pt-2 border-t border-green-700/30 flex gap-3 text-[10px]">
+                              {availableMoves.length > 0 && (
+                                <span className="text-green-300">🟢 Liiku ({availableMoves.length})</span>
+                              )}
+                              {attackableProvinces.length > 0 && (
+                                <span className="text-red-300">🔴 Hyökkää ({attackableProvinces.length})</span>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
                 ) : (
                   <Card className="bg-stone-800/50 border-stone-700/50">
                     <CardContent className="p-6 text-center text-stone-400">
-                      <Map className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Valitse provinssi kartalta</p>
-                    </CardContent>
-                  </Card>
-                )}
-                
-                {/* Army selection with attack info */}
-                {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && (
-                  <Card className={`border transition-all duration-300 ${
-                    attackMode 
-                      ? 'bg-red-900/50 border-red-500/50 shadow-lg shadow-red-500/20' 
-                      : 'bg-green-900/30 border-green-700/30'
-                  }`}>
-                    <CardContent className="p-4">
-                      <h4 className={`font-semibold mb-2 flex items-center gap-2 ${
-                        attackMode ? 'text-red-200' : 'text-green-200'
-                      }`}>
-                        {attackMode ? (
-                          <>
-                            <Crosshair className="w-4 h-4 animate-pulse" />
-                            Valitse hyökkäyskohde kartalta!
-                          </>
-                        ) : (
-                          <>
-                            <Sword className="w-4 h-4" />
-                            Valitse armeija
-                          </>
-                        )}
-                      </h4>
-                      
-                      <div className="space-y-2">
-                        {selectedProvinceArmies
-                          .filter(a => a.ownerId === playerFaction)
-                          .map(army => (
-                            <Button
-                              key={army.id}
-                              variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
-                              className={`w-full justify-start ${
-                                gameState.selectedArmyId === army.id 
-                                  ? attackMode ? 'bg-red-600' : 'bg-green-600' 
-                                  : attackMode ? 'border-red-600 text-red-200' : 'border-green-600 text-green-200'
-                              }`}
-                              onClick={() => {
-                                audio.playSelect();
-                                selectArmy(army.id);
-                                setAttackMode(false);
-                              }}
-                              disabled={army.movementLeft <= 0}
-                            >
-                              🐴 {army.cavalry} ⚔️ {army.infantry}
-                              <span className="ml-auto text-xs">
-                                {army.movementLeft > 0 ? `👟 ${army.movementLeft}` : 'Ei liikettä'}
-                              </span>
-                            </Button>
-                          ))}
-                      </div>
-                      
-                      {/* Attack button when army selected */}
-                      {gameState.selectedArmyId && attackableProvinces.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                          <Button
-                            variant={attackMode ? 'destructive' : 'outline'}
-                            className={`w-full font-bold ${
-                              attackMode 
-                                ? 'bg-red-600 hover:bg-red-500 animate-pulse' 
-                                : 'border-red-500 text-red-300 hover:bg-red-900/50'
-                            }`}
-                            onClick={() => {
-                              setAttackMode(!attackMode);
-                              if (!attackMode && sfxEnabled) {
-                                playGameSFX('battle_start');
-                              }
-                            }}
-                          >
-                            <Target className="w-4 h-4 mr-2" />
-                            {attackMode ? 'Peruuta hyökkäys' : `Hyökkää! (${attackableProvinces.length} kohdetta)`}
-                          </Button>
-                          
-                          {attackMode && (
-                            <p className="text-xs text-red-200 text-center animate-pulse">
-                              🔴 Klikkaa punaista provinssia kartalta hyökätäksesi
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Move/Attack legend */}
-                      {gameState.selectedArmyId && !attackMode && (availableMoves.length > 0 || attackableProvinces.length > 0) && (
-                        <div className="mt-4 pt-3 border-t border-green-700/30">
-                          <p className="text-xs text-green-200/70 mb-2">Vaihtoehdot:</p>
-                          <div className="flex gap-4 text-xs">
-                            {availableMoves.length > 0 && (
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded border-2 border-green-500 bg-green-500/30" />
-                                <span className="text-green-300">Liiku ({availableMoves.length})</span>
-                              </div>
-                            )}
-                            {attackableProvinces.length > 0 && (
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded border-2 border-red-500 bg-red-500/30" />
-                                <span className="text-red-300">Hyökkäys ({attackableProvinces.length})</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
+                      <Map className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Valitse provinssi kartalta</p>
                     </CardContent>
                   </Card>
                 )}
               </TabsContent>
               
-              <TabsContent value="log" className="space-y-4">
+              {/* ============= GOALS TAB ============= */}
+              <TabsContent value="goals" className="space-y-3">
                 <Card className="bg-slate-800/50 border-amber-700/30">
-                  <CardContent className="p-4">
-                    <h4 className="text-amber-100 font-semibold mb-3 flex items-center gap-2">
+                  <CardContent className="p-3">
+                    <VictoryGoals
+                      provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
+                      totalProvinces={gameState.provinces.length}
+                      treasury={playerFactionData?.treasury || 0}
+                      techCount={gameState.playedTechCards?.length || 0}
+                      targetProvinces={VICTORY_TARGETS.provinces}
+                      targetGold={VICTORY_TARGETS.gold}
+                      targetTech={VICTORY_TARGETS.tech}
+                    />
+                  </CardContent>
+                </Card>
+                
+                {/* Active bonuses */}
+                {(gameState.attackBonus > 0 || gameState.defenseBonus > 0 || gameState.movementBonus > 0) && (
+                  <Card className="bg-purple-900/30 border-purple-700/30">
+                    <CardContent className="p-3">
+                      <h4 className="text-purple-200 text-xs font-bold mb-1">✨ Aktiiviset bonukset</h4>
+                      {gameState.attackBonus > 0 && <p className="text-xs text-red-300">⚔️ +{gameState.attackBonus} hyökkäys</p>}
+                      {gameState.defenseBonus > 0 && <p className="text-xs text-blue-300">🛡️ +{gameState.defenseBonus} puolustus</p>}
+                      {gameState.movementBonus > 0 && <p className="text-xs text-green-300">🐴 +{gameState.movementBonus} liike</p>}
+                    </CardContent>
+                  </Card>
+                )}
+                
+                {/* Played tech cards */}
+                {(gameState.playedTechCards?.length || 0) > 0 && (
+                  <Card className="bg-green-900/30 border-green-700/30">
+                    <CardContent className="p-3">
+                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length}/{VICTORY_TARGETS.tech})</h4>
+                      {gameState.playedTechCards.map(c => (
+                        <p key={c.id} className="text-xs text-green-300">• {c.name}: {c.parsedEffect.description}</p>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+                
+                {/* Game stats */}
+                <Card className="bg-slate-800/50 border-slate-700/30">
+                  <CardContent className="p-3 space-y-1">
+                    <h4 className="text-amber-100 text-xs font-bold">📊 Tilastot</h4>
+                    <p className="text-xs text-slate-300">Alueet: {gameState.provinces.filter(p => p.ownerId === playerFaction).length}/{gameState.provinces.length}</p>
+                    <p className="text-xs text-slate-300">Armeijat: {gameState.armies.filter(a => a.ownerId === playerFaction).length}</p>
+                    <p className="text-xs text-slate-300">Kortit kädessä: {gameState.hand?.length || 0}</p>
+                    <p className="text-xs text-slate-300">Rakennukset: {Object.values(gameState.buildings).flat().length}</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              {/* ============= LOG TAB ============= */}
+              <TabsContent value="log" className="space-y-3">
+                <Card className="bg-slate-800/50 border-amber-700/30">
+                  <CardContent className="p-3">
+                    <h4 className="text-amber-100 text-sm font-semibold mb-2 flex items-center gap-2">
                       <ScrollText className="w-4 h-4 text-amber-400" />
-                      Tapahtumaloki - Vuoro {gameState.turn}
+                      AI-tapahtumaloki
                     </h4>
                     <ScrollArea className="h-[400px]">
-                      <TurnLog entries={logEntries} maxVisible={50} />
+                      {gameState.aiLog && gameState.aiLog.length > 0 ? (
+                        <div className="space-y-1">
+                          {gameState.aiLog.map((msg, i) => (
+                            <p key={i} className="text-xs text-slate-300 border-l-2 border-amber-600/30 pl-2 py-0.5">{msg}</p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-500">Ei tapahtumia vielä. Lopeta vuoro nähdäksesi AI:n toiminnot.</p>
+                      )}
                     </ScrollArea>
                   </CardContent>
                 </Card>
               </TabsContent>
               
+              {/* ============= DIPLOMACY TAB ============= */}
               <TabsContent value="diplomacy">
                 <DiplomacyPanel
                   factions={gameState.factions}
                   relations={gameState.relations}
                   playerFaction={playerFaction}
-                  onProposeTreaty={(target, type) => {
-                    audio.playConfirm();
-                    proposeTreaty(target, type);
-                  }}
-                  onBreakTreaty={(target, type) => {
-                    audio.playError();
-                    breakTreaty(target, type);
-                  }}
+                  onProposeTreaty={proposeTreaty}
+                  onBreakTreaty={breakTreaty}
                 />
-              </TabsContent>
-              
-              <TabsContent value="settings" className="space-y-4">
-                <AudioSettings
-                  settings={audio.settings}
-                  onMasterVolumeChange={audio.setMasterVolume}
-                  onMusicVolumeChange={audio.setMusicVolume}
-                  onSfxVolumeChange={audio.setSfxVolume}
-                  onToggleMute={audio.toggleMute}
-                />
-                
-                {/* ElevenLabs SFX Toggle */}
-                <Card className="bg-slate-800/50 border-amber-700/30">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Volume2 className="w-4 h-4 text-amber-400" />
-                        <span className="text-amber-100 text-sm">AI-äänitehosteet</span>
-                      </div>
-                      <Button
-                        variant={sfxEnabled ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSfxEnabled(!sfxEnabled)}
-                        disabled={!!sfxLoading}
-                        className={sfxEnabled ? "bg-green-600 hover:bg-green-500" : "border-amber-600"}
-                      >
-                        {sfxLoading ? 'Ladataan...' : sfxEnabled ? 'Päällä' : 'Pois'}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-amber-200/60 mt-2">
-                      Käyttää ElevenLabs AI:ta generoimaan realistisia ääniefektejä
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Button
-                  variant="destructive"
-                  className="w-full"
-                  onClick={handleReset}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Aloita alusta
-                </Button>
               </TabsContent>
             </Tabs>
+            
+            {/* Reset button at bottom */}
+            <div className="mt-4 pt-3 border-t border-slate-700/30">
+              <Button variant="destructive" size="sm" className="w-full text-xs" onClick={resetGame}>
+                <RotateCcw className="w-3.5 h-3.5 mr-1" /> Aloita alusta
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Victory dialog */}
-      <Dialog open={gameState.gameOver}>
-        <DialogContent className="bg-gradient-to-br from-amber-900 to-amber-950 border-amber-600 text-white">
-          <DialogHeader>
-            <div className="flex justify-center mb-4">
-              <Trophy className="w-20 h-20 text-amber-400 animate-pulse" />
-            </div>
-            <DialogTitle className="text-3xl text-center text-amber-100">Voitto!</DialogTitle>
-            <DialogDescription className="text-center text-amber-200 text-lg">
-              Olet valloittanut tarpeeksi provinsseja hallitaksesi Euraasian!
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="justify-center">
-            <Button onClick={handleReset} size="lg" className="bg-amber-600 hover:bg-amber-500">
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Pelaa uudestaan
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ============= CARD HAND (bottom) ============= */}
+      {gameState.hand && (
+        <div className={`fixed bottom-0 left-0 z-20 bg-slate-900/95 backdrop-blur-xl border-t border-amber-700/20 p-2 transition-all ${
+          showSidebar ? 'right-[380px]' : 'right-0'
+        }`}>
+          <CardHand
+            cards={gameState.hand}
+            onPlayCard={playCard}
+            canPlay={gameState.phase === 'cards'}
+            deckSize={gameState.deck?.length || 0}
+            discardSize={gameState.discard?.length || 0}
+          />
+        </div>
+      )}
 
-      {/* Tutorial */}
-      <Tutorial
-        isOpen={showTutorial}
-        onClose={() => setShowTutorial(false)}
-        onComplete={handleTutorialComplete}
+      {/* ============= OVERLAYS ============= */}
+      <GameOverScreen
+        isOpen={gameState.gameOver}
+        isVictory={isVictory}
+        winCondition={gameState.winCondition}
+        turn={gameState.turn}
+        year={gameState.year}
+        onRestart={resetGame}
       />
       
-      {/* Battle Display */}
       <BattleDisplay
         battle={pendingBattle}
         onClose={clearBattle}
-        onPlaySound={sfxEnabled ? (sound) => playGameSFX(sound as GameSFXKey) : undefined}
       />
-      
-      {/* Event Card */}
-      <EventCard
-        activeEvent={activeEvent}
-        playerFaction={playerFaction}
-        onResolve={handleEventResolve}
-        onClose={() => setActiveEvent(null)}
-      />
-      
-      {/* Turn Transition Animation */}
-      {showTurnTransition && (
-        <TurnTransition
-          turn={gameState.turn}
-          year={gameState.year}
-          phase={gameState.phase}
-          factionId={playerFaction}
-          isNewTurn={isNewTurn}
-          onComplete={() => setShowTurnTransition(false)}
-        />
-      )}
-      
-      {/* Turn Summary Modal (show after new turn transition) */}
-      {showTurnSummary && playerFactionData && (
-        <TurnSummary
-          turn={gameState.turn - 1}
-          year={gameState.year - 1}
-          factionId={playerFaction}
-          income={lastTurnIncome}
-          manpowerGain={lastManpowerGain}
-          provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
-          armiesCount={gameState.armies.filter(a => a.ownerId === playerFaction).length}
-          onClose={() => setShowTurnSummary(false)}
-        />
-      )}
-      
-      {/* Tutorial help button */}
-      <TutorialButton onClick={() => setShowTutorial(true)} />
 
       {/* Back link */}
       <Link 
         to="/"
-        className="fixed bottom-4 left-4 z-30 flex items-center gap-2 text-amber-200/50 hover:text-amber-200 transition-colors text-sm group"
+        className="fixed bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group"
       >
-        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+        <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
         <span className="opacity-0 group-hover:opacity-100 transition-opacity">Etusivulle</span>
       </Link>
     </div>
