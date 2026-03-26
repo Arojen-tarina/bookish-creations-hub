@@ -28,10 +28,10 @@ const MAP_BOUNDS = {
 
 // Default view zoomed into Eurasia
 const DEFAULT_VIEW = {
-  x: 54,
-  y: 6,
-  width: 38,
-  height: 21,
+  x: 44,
+  y: 1,
+  width: 54,
+  height: 32,
 };
 
 const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
@@ -69,7 +69,7 @@ const TERRAIN_COLORS: Record<string, string> = {
   marsh: '#5a8a66',
 };
 
-const CIRCLE_RADIUS = 1.5;
+const CIRCLE_RADIUS = 1.0;
 
 const ProvinceCircle = ({
   province,
