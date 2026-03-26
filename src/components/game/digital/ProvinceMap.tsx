@@ -15,22 +15,23 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { ZoomIn, ZoomOut, Maximize2, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import worldMapImg from '@/assets/world-map.png';
 
-interface ProvinceMapProps {
-  provinces: Province[];
-  selectedProvinceId: string | null;
-  onProvinceClick: (provinceId: string) => void;
-  playerFaction: FactionId;
-  highlightedProvinces?: string[];
-  showArmies?: boolean;
-}
-
-// Map bounds for Eurasia (simplified view)
+// Full world map coordinate system (Robinson projection approximation)
+// x: 0-100 (left to right), y: 0-56 (top to bottom)
 const MAP_BOUNDS = {
-  minX: 5,
-  maxX: 75,
-  minY: 5,
-  maxY: 60,
+  minX: 0,
+  maxX: 100,
+  minY: 0,
+  maxY: 56,
+};
+
+// Default view zoomed into Eurasia
+const DEFAULT_VIEW = {
+  x: 54,
+  y: 6,
+  width: 38,
+  height: 21,
 };
 
 const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
@@ -327,12 +328,10 @@ export const ProvinceMap = ({
 
   // Calculate viewBox based on zoom and pan
   const viewBox = useMemo(() => {
-    const baseWidth = MAP_WIDTH;
-    const baseHeight = MAP_HEIGHT;
-    const width = baseWidth / zoom;
-    const height = baseHeight / zoom;
-    const x = MAP_BOUNDS.minX + (baseWidth - width) / 2 - pan.x / zoom;
-    const y = MAP_BOUNDS.minY + (baseHeight - height) / 2 - pan.y / zoom;
+    const width = DEFAULT_VIEW.width / zoom;
+    const height = DEFAULT_VIEW.height / zoom;
+    const x = DEFAULT_VIEW.x + (DEFAULT_VIEW.width - width) / 2 - pan.x / zoom;
+    const y = DEFAULT_VIEW.y + (DEFAULT_VIEW.height - height) / 2 - pan.y / zoom;
     
     return { x, y, width, height };
   }, [zoom, pan]);
@@ -340,10 +339,10 @@ export const ProvinceMap = ({
   // Zoom controls
   const handleZoomIn = () => setZoom(prev => Math.min(prev * 1.5, 5));
   const handleZoomOut = () => setZoom(prev => Math.max(prev / 1.5, 0.5));
-  const handleResetView = () => {
+  const handleResetView = useCallback(() => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  };
+  }, []);
 
   // Pan handling
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -412,13 +411,14 @@ export const ProvinceMap = ({
           </filter>
         </defs>
         
-        {/* Ocean/background */}
-        <rect
-          x={MAP_BOUNDS.minX - 5}
-          y={MAP_BOUNDS.minY - 5}
-          width={MAP_WIDTH + 10}
-          height={MAP_HEIGHT + 10}
-          fill="#1e3a5f"
+        {/* World map background */}
+        <image
+          href={worldMapImg}
+          x={MAP_BOUNDS.minX}
+          y={MAP_BOUNDS.minY}
+          width={MAP_WIDTH}
+          height={MAP_HEIGHT}
+          preserveAspectRatio="xMidYMid slice"
         />
         
         {/* Province connections (roads) */}
