@@ -137,7 +137,7 @@ export const FactionSelect = ({ onSelect }: FactionSelectProps) => {
       {/* Instructions */}
       <div className="mt-12 text-center text-amber-200/50 text-sm max-w-2xl">
         <p className="mb-2">
-          <strong>Voittoehdot:</strong> Valloita 60% kaupungeista (sotilaallinen), kerää 50 pistettä ja 5 kauppareittiä (taloudellinen), tai eliminoi kaikki vastustajat.
+          <strong>Voittoehdot:</strong> Valloita 60% alueista (sotilaallinen), kerää 50 pistettä ja 5 Silkkitien provinssia (taloudellinen), tai eliminoi kaikki vastustajat.
         </p>
         <p>
           Peli on vuoropohjainen strategiapeli jossa johdat heimoasi valloittamaan Aasian stepin.

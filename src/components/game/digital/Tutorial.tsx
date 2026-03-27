@@ -109,7 +109,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     icon: Handshake,
     tips: [
       'Hyökkäämättömyyssopimus suojaa selustasi',
-      'Kauppasopimus tuo lisätuloja',
+      'Verosopimus tuo lisätuloja',
       'Liitto tarkoittaa yhteistä puolustusta',
       'Varo sopimuksen rikkomista - se tuhoaa luottamuksen',
     ],

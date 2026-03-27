@@ -18,8 +18,8 @@ const mockupNeeds = [
     specs: [
       "Koko: 60x80 cm taitettava lauta",
       "Maastotyypit selkeästi eroteltuna väreillä",
-      "Kaupunkilaatat omilla symboleillaan",
-      "Kauppareitit korostettuina viivoina",
+      "Pääkaupungit omilla symboleillaan",
+      "Silkkitie korostettuna viivana",
       "Alueiden nimet sekä latinaksi että mongoliksi"
     ],
     style: "Historiallinen karttaestetiikka, pergamenttitekstuuri, vanhat kartografiaelementit"
@@ -48,7 +48,7 @@ const mockupNeeds = [
       "Ratsuväki: Mongolijousiampuja hevosen selässä",
       "Jalkaväki: Keihäsmies kilpineen",
       "Heimopäällikkö: Korotettu figuuri valtikkoineen",
-      "Kauppias: Kamelikaravaani tai ratsastaja"
+      "Tiedustelija: Vakooja viitassaan"
     ],
     style: "Historiallisesti tarkat asut ja varusteet, 28mm mittakaava"
   },

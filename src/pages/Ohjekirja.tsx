@@ -385,7 +385,7 @@ const createSections = (): RuleSection[] => [
             { name: "Mongolit", bonus: "Johtajabonus +30%, ratsuväki erinomainen", color: "bg-blue-900/30" },
             { name: "Naimaanit", bonus: "Vahva talous ja diplomatia", color: "bg-purple-900/30" },
             { name: "Merkitit", bonus: "Tasapainoinen, vahva jalkaväki", color: "bg-green-900/30" },
-            { name: "Keraatit", bonus: "Diplomatia ja kaupankäynti", color: "bg-yellow-900/30" },
+            { name: "Keraatit", bonus: "Diplomatia ja veronkeruu", color: "bg-yellow-900/30" },
             { name: "Tataarit", bonus: "Aggressiivinen, sotilasbonus", color: "bg-red-900/30" },
             { name: "Tangutit", bonus: "Linnoitusten mestari, puolustus", color: "bg-orange-900/30" },
           ].map((f) => (

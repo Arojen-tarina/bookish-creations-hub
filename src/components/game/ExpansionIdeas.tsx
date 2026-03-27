@@ -24,14 +24,14 @@ const expansions = [
   {
     icon: Anchor,
     name: "Silkkitien Herrat",
-    subtitle: "Kauppalaajennus",
-    description: "Syvennä taloudellista peliä uusilla kauppamekaniikoilla, karavaanieilla ja merireiteillä. Intian ja Kiinan merikauppa avautuu.",
+    subtitle: "Talouslaajennus",
+    description: "Syvennä taloudellista peliä uusilla resurssimekaniikoilla, karavaanieilla ja merireiteillä. Intian ja Kiinan yhteydet avautuvat.",
     contents: [
       "Merireittilaatta-järjestelmä",
-      "30 kauppakorttia erikoishyödykkeineen",
+      "30 resurssikorttia erikoishyödykkeineen",
       "Karavaaninjohtaja-yksiköt",
-      "Kauppaportti-linnoitukset",
-      "Monopoli- ja hintamanipulaatiomekaniikat"
+      "Varastolinnoitukset",
+      "Monopoli- ja resurssinhallintamekaniikat"
     ]
   },
   {

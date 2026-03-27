@@ -26,8 +26,8 @@ const terrainTypes = [
   { icon: Sun, name: "Steppialueet", effect: "Nopea ratsastus, karjanhoito" },
   { icon: Mountain, name: "Vuoristo", effect: "Hidas kulku, puolustusetu" },
   { icon: TreePine, name: "Metsät", effect: "Jalkaväen etu, puuvarannot" },
-  { icon: Waves, name: "Autiomaa", effect: "Vaikea ylitys, kauppareitit" },
-  { icon: Wheat, name: "Jokilaaksot", effect: "Viljelysmaita, kaupankäynti" },
+  { icon: Waves, name: "Autiomaa", effect: "Vaikea ylitys, Silkkitie" },
+  { icon: Wheat, name: "Jokilaaksot", effect: "Viljelysmaita, resursseja" },
   { icon: Building2, name: "Kaupunkivaltiot", effect: "Linnoitukset, käsityöläisyys" },
 ];
 

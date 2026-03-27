@@ -40,7 +40,7 @@ interface RegionInfo {
 // ─── Apple-style soft terrain palette ────────────────────────────────
 const terrainInfo: Record<string, TerrainInfo> = {
   steppe:   { name: 'Steppialue',   icon: Sun,       movement: 'Nopea (+1)',         combat: 'Ratsuväki +2',            resources: 'Hevoset, Karja',        special: 'Mongolit: lisäbonus' },
-  desert:   { name: 'Autiomaa',     icon: Waves,     movement: 'Hidas (-1)',          combat: 'Ei etuja',                resources: 'Kauppareitit',          special: 'Vaatii lisäruokaa' },
+  desert:   { name: 'Autiomaa',     icon: Waves,     movement: 'Hidas (-1)',          combat: 'Ei etuja',                resources: 'Silkkitie',             special: 'Vaatii lisäruokaa' },
   mountain: { name: 'Vuoristo',     icon: Mountain,  movement: 'Eritt. hidas (-2)',   combat: 'Puolustaja +3',           resources: 'Malmit',                special: 'Estää ratsuväen' },
   forest:   { name: 'Metsä',        icon: TreePine,  movement: 'Normaali',            combat: 'Jalkaväki +1, Ratsu -1',  resources: 'Puu, Turkikset',        special: 'Venäläiset: lisäbonus' },
   river:    { name: 'Jokilaakso',   icon: Wheat,     movement: 'Normaali',            combat: 'Puolustaja +1',           resources: 'Ruoka, Kauppa',         special: 'Kaupungit +1 kultaa' },
@@ -99,7 +99,7 @@ const regionInfo: Record<string, RegionInfo> = {
     description: FACTION_DATA_1206.xixia.name + ' — Tangut-kansan buddhalainen valtakunta.',
     capital: 'Zhongxing',
     faction: FACTION_DATA_1206.xixia.name,
-    bonuses: ['Silkkitie +10%', 'Puolustusetu', 'Kauppiaat'],
+    bonuses: ['Silkkitie +10%', 'Puolustusetu', 'Tiedustelijat'],
     historicalNote: 'Genghis Khanin ensimmäinen suuri valloituskohde. Xi Xia tuhottiin 1227.'
   },
   'Khwarezmia': {
@@ -163,7 +163,7 @@ const regionInfo: Record<string, RegionInfo> = {
     description: 'Georgian ja Armenian kristityt kuningaskunnat.',
     capital: 'Tbilisi',
     faction: 'Georgian kuningaskunta',
-    bonuses: ['Vuoristopuolustus +2', 'Kristilliset liittolaiset', 'Kauppareitit'],
+    bonuses: ['Vuoristopuolustus +2', 'Kristilliset liittolaiset', 'Silkkitie'],
     historicalNote: 'Georgia oli alueellinen suurvalta kuningatar Tamarin (1184–1213) aikana.'
   },
 };

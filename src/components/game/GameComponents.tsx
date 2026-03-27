@@ -4,7 +4,7 @@
  * Listaa kaikki fyysiset peliosat:
  * - Heimopalat (5 yksikkötyyppiä, 4 väriä)
  * - 180 korttia (strategia, diplomatia, teknologia, resurssi)
- * - Muut osat (nopat, voittopistemerkit, kauppareittitokenit, linnoitukset)
+ * - Muut osat (nopat, voittopistemerkit, Silkkitie-tokenit, linnoitukset)
  */
 import { ComicPanel } from "@/components/ComicPanel";
 import { Swords, Shield, Crown, Package, Dices, MapPin, Castle } from "lucide-react";
@@ -13,13 +13,13 @@ const unitTypes = [
   { icon: Swords, name: "Ratsuväkiyksikkö", count: "20/väri", desc: "Nopeat hyökkäysjoukot" },
   { icon: Shield, name: "Jalkaväkiyksikkö", count: "15/väri", desc: "Puolustus ja piirittäminen" },
   { icon: Crown, name: "Kaaninpalvelija", count: "8/väri", desc: "Hallinto ja veronkeruu" },
-  { icon: Package, name: "Kauppiasmatkustaja", count: "6/väri", desc: "Kaupankäynti ja diplomatia" },
+  { icon: Package, name: "Tiedustelija", count: "6/väri", desc: "Vakoilu ja tiedustelu" },
   { icon: Crown, name: "Heimopäällikkö", count: "1/väri", desc: "Johtajahahmo (kriittinen!)" },
 ];
 
 const cardTypes = [
   { name: "Strategiakortit", count: 60, desc: "Erikoistaktiikat ja historialliset tapahtumat" },
-  { name: "Diplomatiakortit", count: 40, desc: "Liittolaisuudet, kauppasopimukset, häät" },
+  { name: "Diplomatiakortit", count: 40, desc: "Liittolaisuudet, sopimukset, häät" },
   { name: "Teknologiakortit", count: 30, desc: "Sotatekniikat, hallinnolliset innovaatiot" },
   { name: "Resurssikortit", count: 50, desc: "Hevoset, kulta, käsityöläiset, ruoka" },
 ];
@@ -27,8 +27,8 @@ const cardTypes = [
 const otherComponents = [
   { icon: Dices, name: "Erikoisnopat", desc: "6 kpl D6 modifioiduilla symboleilla" },
   { icon: Crown, name: "Voittopistemerkit", desc: "100 kpl neutraalia markkeria" },
-  { icon: MapPin, name: "Kauppareittitokenit", desc: "20 kpl, sijoitettavissa kauppateiden varteen" },
-  { icon: Castle, name: "Linnoitusmerkit", desc: "30 kpl, kaupunkien vahvistamiseen" },
+  { icon: MapPin, name: "Silkkitie-tokenit", desc: "20 kpl, sijoitettavissa Silkkitien varteen" },
+  { icon: Castle, name: "Linnoitusmerkit", desc: "30 kpl, provinssien vahvistamiseen" },
 ];
 
 export const GameComponents = () => {
