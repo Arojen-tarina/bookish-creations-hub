@@ -48,6 +48,20 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
 };
 
 // ============= EXTENDED STATE =============
+export interface ResourceCollectionResult {
+  taxIncome: number;
+  manpowerGain: number;
+  marketBonus: number;
+  foodChange: number;
+}
+
+export interface AIActionLog {
+  factionName: string;
+  factionColor: string;
+  description: string;
+  targetProvinceId?: string;
+}
+
 export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   phase: MVPPhase;
   
@@ -71,6 +85,11 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   
   // AI log
   aiLog: string[];
+  aiActionLog: AIActionLog[]; // structured AI action log for animation
+  
+  // Resource collection
+  resourcesCollected: boolean;
+  lastCollection: ResourceCollectionResult | null;
   
   // Win condition
   winCondition: string | null;
