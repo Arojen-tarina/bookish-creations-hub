@@ -30,13 +30,47 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
       
       <div className="relative z-10 max-w-5xl w-full">
         {/* Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-amber-100 mb-2">
             Mongolien Valtakunta
           </h1>
           <p className="text-amber-200/60 text-lg">
             Vuosi 1206 — Valitse valtakuntasi
           </p>
+        </div>
+
+        {/* Quick how-to-play guide */}
+        <div className="bg-slate-800/60 border border-amber-700/30 rounded-2xl p-5 mb-6 max-w-3xl mx-auto">
+          <h2 className="text-amber-200 font-bold text-base mb-3 text-center">📜 Näin pelaat</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-stone-300">
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">🪙</span>
+              <div><span className="text-amber-200 font-bold">1. Resurssit</span> — Kerää kultaa ja miehiä alueilta automaattisesti.</div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">🃏</span>
+              <div><span className="text-amber-200 font-bold">2. Kortit</span> — Nosta kortti ja pelaa bonuksia kädestäsi.</div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">🐴</span>
+              <div><span className="text-amber-200 font-bold">3. Liike</span> — Valitse armeija ja liikuta viereiseen alueeseen.</div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">⚔️</span>
+              <div><span className="text-amber-200 font-bold">4. Taistelu</span> — Hyökkää vihollisalueelle, nopat ratkaisevat.</div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">🏗️</span>
+              <div><span className="text-amber-200 font-bold">5. Rakenna</span> — Rakenna leiri, markkina tai linnoitus.</div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none">🏁</span>
+              <div><span className="text-amber-200 font-bold">6. Lopeta</span> — AI-pelaajat tekevät vuoronsa.</div>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-700/50 text-center text-[11px] text-amber-200/50">
+            🏆 Voita valloittamalla 30 provinssia, keräämällä 500 kultaa tai pelaamalla 5 teknologiakorttia
+          </div>
         </div>
         
         {/* Faction grid */}
