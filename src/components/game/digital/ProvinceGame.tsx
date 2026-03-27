@@ -232,8 +232,11 @@ export const ProvinceGame = () => {
           <div className="absolute inset-0 p-1">
             <ProvinceMap
               provinces={gameState.provinces}
+              armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
+              selectedArmyId={gameState.selectedArmyId}
               onProvinceClick={handleProvinceClick}
+              onArmyClick={selectArmy}
               playerFaction={playerFaction}
               highlightedProvinces={attackMode ? attackableProvinces : [...availableMoves, ...attackableProvinces]}
             />
@@ -549,6 +552,7 @@ export const ProvinceGame = () => {
               <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '100px' }}>
                 <ProvinceMap
                   provinces={gameState.provinces}
+                  armies={gameState.armies}
                   selectedProvinceId={gameState.selectedProvinceId}
                   onProvinceClick={selectProvince}
                   playerFaction={playerFaction}
