@@ -207,13 +207,15 @@ export const ProvinceGame = () => {
         />
       </div>
 
-      {/* ============= FLOATING NEXT PHASE BUTTON ============= */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      {/* ============= FLOATING NEXT PHASE BUTTON (above cards) ============= */}
+      <div className={`fixed bottom-[120px] left-1/2 -translate-x-1/2 z-30 ${
+        showSidebar ? 'lg:-translate-x-[calc(50%+190px)]' : ''
+      }`}>
         {gameState.phase !== 'end' ? (
           <Button
             size="lg"
             onClick={nextPhase}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-amber-900/50 border-2 border-amber-400/30 rounded-full animate-pulse hover:animate-none"
+            className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-amber-900/50 border-2 border-amber-400/30 rounded-full"
           >
             Seuraava vaihe ➡️
           </Button>
@@ -221,7 +223,7 @@ export const ProvinceGame = () => {
           <Button
             size="lg"
             onClick={endTurn}
-            className="bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-red-900/50 border-2 border-red-400/30 rounded-full animate-pulse hover:animate-none"
+            className="bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-red-900/50 border-2 border-red-400/30 rounded-full"
           >
             Lopeta vuoro 🏁
           </Button>
@@ -497,8 +499,8 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= CARD HAND (bottom) ============= */}
-      {gameState.hand && (
-        <div className={`fixed bottom-0 left-0 z-20 bg-slate-900/95 backdrop-blur-xl border-t border-amber-700/20 p-2 transition-all ${
+      {gameState.hand && gameState.hand.length > 0 && (
+        <div className={`fixed bottom-0 left-0 z-40 bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/40 p-3 transition-all ${
           showSidebar ? 'right-[380px]' : 'right-0'
         }`}>
           <CardHand
@@ -508,7 +510,7 @@ export const ProvinceGame = () => {
               const eff = card.parsedEffect;
               toast.success(`🃏 ${card.name}`, { description: eff.description });
             }}
-            canPlay={gameState.phase === 'cards' || gameState.phase === 'move' || gameState.phase === 'battle' || gameState.phase === 'build' || gameState.phase === 'resource'}
+            canPlay={gameState.phase !== 'end'}
             currentPhase={gameState.phase}
             deckSize={gameState.deck?.length || 0}
             discardSize={gameState.discard?.length || 0}
