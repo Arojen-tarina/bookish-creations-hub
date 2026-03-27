@@ -12,13 +12,14 @@ import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 100;
 
-interface ProvinceMapProps {
+export interface ProvinceMapProps {
   provinces: Province[];
   selectedProvinceId: string | null;
   onProvinceClick: (provinceId: string) => void;
   playerFaction: FactionId;
   highlightedProvinces?: string[];
   showArmies?: boolean;
+  isMinimap?: boolean;
 }
 
 const TOKEN_RADIUS = 2.2;
