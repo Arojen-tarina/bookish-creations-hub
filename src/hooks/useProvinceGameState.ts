@@ -588,21 +588,14 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       let newState = { ...prev };
       const aiLog: string[] = [];
+      const aiActionLog: AIActionLog[] = [];
       
-      // 1. Collect resources for all factions
+      // 1. Collect resources for AI factions only (player collects in resource phase)
       const newFactions = newState.factions.map(faction => {
+        if (faction.id === playerFaction) return faction; // Player already collected
         const ownedProvinces = newState.provinces.filter(p => p.ownerId === faction.id);
-        let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+        const taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
         const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-        
-        // Market bonus
-        if (faction.id === playerFaction) {
-          const marketCount = Object.entries(newState.buildings).filter(([pid, buildings]) => {
-            const p = newState.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('market');
-          }).length;
-          taxIncome += marketCount * 3;
-        }
         
         return { ...faction, treasury: faction.treasury + taxIncome, manpower: faction.manpower + manpowerGain };
       });
