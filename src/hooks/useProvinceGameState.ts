@@ -271,6 +271,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       // AI
       aiLog: [],
+      aiActionLog: [],
+      resourcesCollected: false,
+      lastCollection: null,
       winCondition: null,
     };
     
