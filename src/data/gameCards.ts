@@ -160,7 +160,7 @@ export const technologyCards: GameCard[] = [
   { id: 'tek-012', type: 'technology', name: 'Viestijärjestelmä', description: 'Nopea tiedonkulku', effect: 'Kortteja voi pelata viereisilläkin alueilla', cost: '3 käsityöläistä', rarity: 'rare' },
   { id: 'tek-013', type: 'technology', name: 'Maanviljelystekniikka', description: 'Parannettu sato', effect: '+1 ruoka per viljelysalue', cost: '1 käsityöläinen', rarity: 'common' },
   { id: 'tek-014', type: 'technology', name: 'Kaupankäyntitaito', description: 'Neuvottelutaidot', effect: 'Resurssien vaihto 2:1 sijaan 3:1', cost: '1 käsityöläinen', rarity: 'common' },
-  { id: 'tek-015', type: 'technology', name: 'Kirjoitustaito', description: 'Dokumentointi', effect: '+1 diplomatiapiste per vuoro', cost: '2 käsityöläistä', rarity: 'uncommon' },
+  { id: 'tek-015', type: 'technology', name: 'Kirjoitustaito', description: 'Dokumentointi', effect: '+1 kulta per vuoro', cost: '2 käsityöläistä', rarity: 'uncommon' },
   { id: 'tek-016', type: 'technology', name: 'Lakinuudistus', description: 'Jasan laki', effect: '-1 kapinariski alueillasi', cost: '2 käsityöläistä', rarity: 'uncommon' },
   { id: 'tek-017', type: 'technology', name: 'Tieverkosto', description: 'Parannetut tiet', effect: '+1 liike kaikille yksiköille omilla alueilla', cost: '3 käsityöläistä + 2 kultaa', rarity: 'rare' },
   { id: 'tek-018', type: 'technology', name: 'Varastointijärjestelmä', description: 'Tehokas logistiikka', effect: 'Resurssit eivät vanhene', cost: '1 käsityöläinen', rarity: 'common' },
