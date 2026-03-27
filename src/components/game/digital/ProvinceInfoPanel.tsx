@@ -215,8 +215,13 @@ export const ProvinceInfoPanel = ({
               className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
             >
               <Sword className="w-4 h-4 mr-2" />
-              Rekrytoi armeija (30 💰, 10 👥)
+              Rekrytoi armeija (20 💰, 5 👥)
             </Button>
+            {!canRecruit && isPlayerOwned && (
+              <p className="text-xs text-amber-300/60 text-center">
+                ⚠️ Rekrytointi vaatii pääkaupungin tai leirin (⛺)
+              </p>
+            )}
           </div>
         )}
       </CardContent>
