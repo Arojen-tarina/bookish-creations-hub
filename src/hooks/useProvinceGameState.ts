@@ -48,6 +48,20 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
 };
 
 // ============= EXTENDED STATE =============
+export interface ResourceCollectionResult {
+  taxIncome: number;
+  manpowerGain: number;
+  marketBonus: number;
+  foodChange: number;
+}
+
+export interface AIActionLog {
+  factionName: string;
+  factionColor: string;
+  description: string;
+  targetProvinceId?: string;
+}
+
 export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   phase: MVPPhase;
   
@@ -71,6 +85,11 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   
   // AI log
   aiLog: string[];
+  aiActionLog: AIActionLog[]; // structured AI action log for animation
+  
+  // Resource collection
+  resourcesCollected: boolean;
+  lastCollection: ResourceCollectionResult | null;
   
   // Win condition
   winCondition: string | null;
@@ -199,6 +218,7 @@ export interface UseProvinceGameStateReturn {
   getArmiesInProvince: (provinceId: string) => Army[];
   canMoveTo: (armyId: string, targetProvinceId: string) => boolean;
   endPhase: () => void;
+  collectResources: () => void;
 }
 
 export const useProvinceGameState = (): UseProvinceGameStateReturn => {
@@ -252,6 +272,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       // AI
       aiLog: [],
+      aiActionLog: [],
+      resourcesCollected: false,
+      lastCollection: null,
       winCondition: null,
     };
     
@@ -487,7 +510,48 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     });
   }, [playerFaction]);
 
-  // ============= NEXT PHASE =============
+  // ============= COLLECT RESOURCES =============
+  const collectResources = useCallback(() => {
+    setGameState(prev => {
+      if (!prev || !playerFaction || prev.resourcesCollected) return prev;
+      
+      const faction = prev.factions.find(f => f.id === playerFaction);
+      if (!faction) return prev;
+      
+      const ownedProvinces = prev.provinces.filter(p => p.ownerId === playerFaction);
+      let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+      const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+      
+      const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
+        const p = prev.provinces.find(pr => pr.id === pid);
+        return p?.ownerId === playerFaction && buildings.includes('market');
+      }).length;
+      const marketBonus = marketCount * 3;
+      taxIncome += marketBonus;
+      
+      const playerArmyCount = prev.armies.filter(a => a.ownerId === playerFaction).length;
+      const foodUpkeep = -playerArmyCount;
+      const farmland = prev.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+      const foodGain = Math.floor(farmland * 0.5);
+      const foodChange = foodUpkeep + foodGain;
+      
+      const newFactions = prev.factions.map(f =>
+        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+      );
+      
+      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, foodChange };
+      
+      return {
+        ...prev,
+        factions: newFactions,
+        food: Math.max(0, prev.food + foodChange),
+        resourcesCollected: true,
+        lastCollection: collection,
+      };
+    });
+  }, [playerFaction]);
+
+
   const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
   
   const nextPhase = useCallback(() => {
@@ -524,30 +588,20 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       let newState = { ...prev };
       const aiLog: string[] = [];
+      const aiActionLog: AIActionLog[] = [];
       
-      // 1. Collect resources for all factions
+      // 1. Collect resources for AI factions only (player collects in resource phase)
       const newFactions = newState.factions.map(faction => {
+        if (faction.id === playerFaction) return faction; // Player already collected
         const ownedProvinces = newState.provinces.filter(p => p.ownerId === faction.id);
-        let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+        const taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
         const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-        
-        // Market bonus
-        if (faction.id === playerFaction) {
-          const marketCount = Object.entries(newState.buildings).filter(([pid, buildings]) => {
-            const p = newState.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('market');
-          }).length;
-          taxIncome += marketCount * 3;
-        }
         
         return { ...faction, treasury: faction.treasury + taxIncome, manpower: faction.manpower + manpowerGain };
       });
       
-      // 2. Food upkeep for player
-      const playerArmyCount = newState.armies.filter(a => a.ownerId === playerFaction).length;
-      let newFood = newState.food - playerArmyCount; // 1 food per army
-      const ownedFarmland = newState.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-      newFood += Math.floor(ownedFarmland * 0.5);
+      // 2. Food: skip player (already handled in collectResources), just track for state
+      let newFood = newState.food;
       
       // 3. AI turns
       let newArmies = [...newState.armies];
@@ -669,6 +723,22 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         }
       }
       
+      // Build structured AI action log from aiLog strings
+      // Parse "FactionName: description" format
+      for (const msg of aiLog) {
+        const colonIdx = msg.indexOf(':');
+        if (colonIdx > 0) {
+          const fName = msg.substring(0, colonIdx).trim();
+          const desc = msg.substring(colonIdx + 1).trim();
+          const fData = newFactions.find(f => f.name === fName);
+          aiActionLog.push({
+            factionName: fName,
+            factionColor: fData?.color || '#888',
+            description: `${fName}: ${desc}`,
+          });
+        }
+      }
+      
       // Remove destroyed armies
       newArmies = newArmies.filter(a => a.cavalry + a.infantry > 0);
       
@@ -720,6 +790,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         winnerId,
         winCondition,
         aiLog,
+        aiActionLog,
+        resourcesCollected: false,
+        lastCollection: null,
         attackBonus: 0,
         defenseBonus: 0,
         movementBonus: 0,
@@ -805,6 +878,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,
     getRelation, getPlayerFaction, getArmiesInProvince, canMoveTo,
-    endPhase,
+    endPhase, collectResources,
   };
 };
