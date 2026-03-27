@@ -13,6 +13,7 @@ import {
   Menu, 
   X, 
   HelpCircle,
+  BookOpen,
   Clock,
   Brain,
   Crown,
