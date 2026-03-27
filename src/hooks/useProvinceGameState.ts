@@ -36,7 +36,7 @@ export const VICTORY_TARGETS = {
 };
 
 // ============= BUILDING TYPES =============
-export type MVPBuildingType = 'camp' | 'market' | 'fortress';
+export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop';
 
 export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
@@ -45,6 +45,7 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
   camp: { name: 'Leiri', emoji: '⛺', cost: { gold: 15 }, effect: '+2 ruokaa/vuoro, spawn-piste' },
   market: { name: 'Markkina', emoji: '🏪', cost: { gold: 25, artisans: 1 }, effect: '+3 kultaa/vuoro' },
   fortress: { name: 'Linnoitus', emoji: '🏯', cost: { gold: 50, artisans: 2 }, effect: '+3 puolustus' },
+  workshop: { name: 'Paja', emoji: '🔨', cost: { gold: 30, artisans: 1 }, effect: '+1 käsityöläinen/vuoro' },
 };
 
 // ============= EXTENDED STATE =============
