@@ -293,9 +293,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     setGameState(prev => {
       if (!prev) return null;
       const army = prev.armies.find(a => a.id === armyId);
+      // Don't allow selecting AI armies
+      if (army && army.ownerId !== playerFaction) return prev;
       return { ...prev, selectedArmyId: armyId, selectedProvinceId: army?.provinceId || prev.selectedProvinceId };
     });
-  }, []);
+  }, [playerFaction]);
 
   // ============= CAN MOVE =============
   const canMoveTo = useCallback((armyId: string, targetProvinceId: string): boolean => {
