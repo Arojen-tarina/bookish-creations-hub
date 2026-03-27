@@ -47,7 +47,7 @@ const mongoliaProvinces: Province[] = [
   }),
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', null, {
     baseTax: 1, baseManpower: 1,
-    center: { x: 63, y: 38 },
+    center: { x: 64, y: 36 },
   }),
   p('baikal', 'Baikaljärvi', 'mongolia', 'taiga', 'mongol', {
     baseTax: 2, baseManpower: 3, tradeGood: 'fur',
@@ -345,7 +345,7 @@ const centralAsiaProvinces: Province[] = [
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', null, {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 43, y: 27 },
+    center: { x: 42, y: 25 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', null, {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
@@ -381,7 +381,7 @@ const caucasusProvinces: Province[] = [
   }),
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 4, baseManpower: 5, tradeGood: 'iron',
-    center: { x: 15, y: 42 },
+    center: { x: 13, y: 43 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
