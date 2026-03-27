@@ -761,23 +761,31 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
             if (!target) continue;
             
             const defenders = newArmies.filter(a => a.provinceId === action.targetProvinceId && a.ownerId !== faction.id);
-            if (defenders.length > 0) {
-              const result = resolveCombat(army, defenders[0], target);
+            // Check garrison if no field armies defend
+            const garrison = defenders.length === 0 && target.ownerId && target.ownerId !== faction.id
+              ? createProvinceGarrison(target)
+              : null;
+            const defender = defenders[0] || garrison;
+            
+            if (defender) {
+              const result = resolveCombat(army, defender, target);
               if (result.attackerWins) {
                 newArmies[armyIdx] = {
                   ...army, provinceId: action.targetProvinceId!, movementLeft: 0,
                   cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
                   infantry: Math.max(0, army.infantry - result.attackerInfantryLoss),
                 };
-                if (result.defenderDestroyed) {
-                  newArmies = newArmies.filter(a => a.id !== defenders[0].id);
-                } else {
-                  const dIdx = newArmies.findIndex(a => a.id === defenders[0].id);
-                  newArmies[dIdx] = {
-                    ...defenders[0],
-                    cavalry: Math.max(0, defenders[0].cavalry - result.defenderCavalryLoss),
-                    infantry: Math.max(0, defenders[0].infantry - result.defenderInfantryLoss),
-                  };
+                if (defenders[0]) {
+                  if (result.defenderDestroyed) {
+                    newArmies = newArmies.filter(a => a.id !== defenders[0].id);
+                  } else {
+                    const dIdx = newArmies.findIndex(a => a.id === defenders[0].id);
+                    newArmies[dIdx] = {
+                      ...defenders[0],
+                      cavalry: Math.max(0, defenders[0].cavalry - result.defenderCavalryLoss),
+                      infantry: Math.max(0, defenders[0].infantry - result.defenderInfantryLoss),
+                    };
+                  }
                 }
                 const pIdx = newProvinces.findIndex(p => p.id === action.targetProvinceId);
                 newProvinces[pIdx] = { ...newProvinces[pIdx], ownerId: faction.id };
@@ -791,7 +799,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
                 aiLog.push(`${faction.name}: Hyökkäys epäonnistui - ${target.name}`);
               }
             } else {
-              // No defenders, just take it
+              // No defenders and no garrison, just take it
               newArmies[armyIdx] = { ...army, provinceId: action.targetProvinceId!, movementLeft: 0 };
               const pIdx = newProvinces.findIndex(p => p.id === action.targetProvinceId);
               newProvinces[pIdx] = { ...newProvinces[pIdx], ownerId: faction.id };
