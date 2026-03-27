@@ -556,10 +556,26 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
         
-        const aiActions = calculateAIActions(faction, newArmies, newProvinces, newArmies);
+        const aiActions = calculateAIActions(faction, newArmies, newProvinces, newArmies, newState.relations);
         
         for (const action of aiActions) {
-          if (action.type === 'move' && action.armyId && action.targetProvinceId) {
+          if (action.type === 'merge' && action.armyId && action.mergeIntoId) {
+            const sourceIdx = newArmies.findIndex(a => a.id === action.armyId);
+            const targetIdx = newArmies.findIndex(a => a.id === action.mergeIntoId);
+            if (sourceIdx !== -1 && targetIdx !== -1) {
+              const source = newArmies[sourceIdx];
+              const target = newArmies[targetIdx];
+              newArmies[targetIdx] = {
+                ...target,
+                cavalry: target.cavalry + source.cavalry,
+                infantry: target.infantry + source.infantry,
+                siege: target.siege + source.siege,
+                morale: Math.round((target.morale + source.morale) / 2),
+              };
+              newArmies = newArmies.filter(a => a.id !== action.armyId);
+              aiLog.push(`${faction.name}: Yhdisti armeijat`);
+            }
+          } else if (action.type === 'move' && action.armyId && action.targetProvinceId) {
             const armyIdx = newArmies.findIndex(a => a.id === action.armyId);
             if (armyIdx !== -1) {
               const army = newArmies[armyIdx];
@@ -617,15 +633,34 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
               newProvinces[pIdx] = { ...newProvinces[pIdx], ownerId: faction.id };
               aiLog.push(`${faction.name}: Valloitti ${target.name}`);
             }
+          } else if (action.type === 'build_fort' && action.targetProvinceId) {
+            const fIdx = newFactions.findIndex(f => f.id === faction.id);
+            if (newFactions[fIdx].treasury >= 50) {
+              newFactions[fIdx] = { ...newFactions[fIdx], treasury: newFactions[fIdx].treasury - 50 };
+              const pIdx = newProvinces.findIndex(p => p.id === action.targetProvinceId);
+              if (pIdx !== -1) {
+                newProvinces[pIdx] = { ...newProvinces[pIdx], fortLevel: Math.min(3, newProvinces[pIdx].fortLevel + 1) };
+              }
+              aiLog.push(`${faction.name}: ${action.description}`);
+            }
+          } else if (action.type === 'build_market' && action.targetProvinceId) {
+            const fIdx = newFactions.findIndex(f => f.id === faction.id);
+            if (newFactions[fIdx].treasury >= 25) {
+              newFactions[fIdx] = { ...newFactions[fIdx], treasury: newFactions[fIdx].treasury - 25 };
+              aiLog.push(`${faction.name}: ${action.description}`);
+            }
           } else if (action.type === 'recruit' && action.targetProvinceId) {
-            if (faction.treasury >= 30 && faction.manpower >= 10) {
-              const fIdx = newFactions.findIndex(f => f.id === faction.id);
+            const fIdx = newFactions.findIndex(f => f.id === faction.id);
+            if (newFactions[fIdx].treasury >= 30 && newFactions[fIdx].manpower >= 10) {
               newFactions[fIdx] = { ...newFactions[fIdx], treasury: newFactions[fIdx].treasury - 30, manpower: newFactions[fIdx].manpower - 10 };
+              const horsesAvail = newFactions[fIdx].horses || 0;
+              const cavCount = Math.min(4, Math.floor(horsesAvail / 2));
+              newFactions[fIdx] = { ...newFactions[fIdx], horses: newFactions[fIdx].horses - cavCount * 2 };
               newArmies.push({
                 id: generateId(),
                 ownerId: faction.id,
                 provinceId: action.targetProvinceId,
-                cavalry: 3, infantry: 5, siege: 0,
+                cavalry: cavCount, infantry: 6, siege: 0,
                 morale: 70, supply: 20, movementLeft: 0, leaderBonus: 0,
               });
               aiLog.push(`${faction.name}: Rekrytoi armeijan`);
