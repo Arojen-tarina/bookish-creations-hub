@@ -582,6 +582,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
       const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
       
+      // Silk Road bonus: +2 gold per Silk Road province
+      const silkRoadCount = ownedProvinces.filter(p => p.hasSilkRoad).length;
+      const silkRoadBonus = silkRoadCount * 2;
+      taxIncome += silkRoadBonus;
+      
       const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
         const p = prev.provinces.find(pr => pr.id === pid);
         return p?.ownerId === playerFaction && buildings.includes('market');

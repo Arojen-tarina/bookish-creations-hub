@@ -215,7 +215,7 @@ const ProvinceTooltip = ({
           </div>
         )}
         {province.hasSilkRoad && (
-          <div className="text-amber-400 text-xs mt-1">🛤️ Silkkitien varrella</div>
+          <div className="text-amber-400 text-xs mt-1">🛤️ Silkkitien varrella (+2 💰/vuoro)</div>
         )}
         {province.unrest > 0 && (
           <div className="text-red-400 text-xs mt-1">⚠️ Levottomuus: {province.unrest}%</div>
