@@ -39,6 +39,7 @@ export const ProvinceGame = () => {
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
     getArmiesInProvince, getPlayerFaction, canMoveTo,
+    collectResources,
   } = useProvinceGameState();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
