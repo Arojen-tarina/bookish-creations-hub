@@ -346,6 +346,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           defenderLosses: { cavalry: result.defenderCavalryLoss, infantry: result.defenderInfantryLoss },
           attackerMoraleLoss: result.attackerWins ? 10 : 20,
           defenderMoraleLoss: result.attackerWins ? 20 : 10,
+          attackRoll: result.attackRoll,
+          defenseRoll: result.defenseRoll,
         };
         setTimeout(() => setPendingBattle(battleResult), 50);
         
