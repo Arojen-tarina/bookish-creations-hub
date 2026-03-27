@@ -503,8 +503,13 @@ export const ProvinceGame = () => {
         }`}>
           <CardHand
             cards={gameState.hand}
-            onPlayCard={playCard}
-            canPlay={gameState.phase === 'cards'}
+            onPlayCard={(card) => {
+              playCard(card);
+              const eff = card.parsedEffect;
+              toast.success(`🃏 ${card.name}`, { description: eff.description });
+            }}
+            canPlay={gameState.phase === 'cards' || gameState.phase === 'move' || gameState.phase === 'battle' || gameState.phase === 'build' || gameState.phase === 'resource'}
+            currentPhase={gameState.phase}
             deckSize={gameState.deck?.length || 0}
             discardSize={gameState.discard?.length || 0}
           />
