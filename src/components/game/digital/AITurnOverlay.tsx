@@ -38,9 +38,13 @@ export const AITurnOverlay = ({ actions, isVisible, onComplete }: AITurnOverlayP
   const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    if (!isVisible || actions.length === 0) {
+    if (!isVisible) {
       setVisibleCount(0);
       setIsDone(false);
+      return;
+    }
+    if (actions.length === 0) {
+      onComplete();
       return;
     }
 
