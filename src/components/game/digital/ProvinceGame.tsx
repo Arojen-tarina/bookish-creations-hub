@@ -502,6 +502,12 @@ export const ProvinceGame = () => {
       )}
 
       {/* ============= OVERLAYS ============= */}
+      <AITurnOverlay
+        actions={gameState.aiActionLog || []}
+        isVisible={showAIOverlay}
+        onComplete={useCallback(() => setShowAIOverlay(false), [])}
+      />
+
       <GameOverScreen
         isOpen={gameState.gameOver}
         isVictory={isVictory}
