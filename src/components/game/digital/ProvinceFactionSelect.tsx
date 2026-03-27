@@ -8,7 +8,7 @@ import { FactionId, FACTION_DATA_1206 } from '@/types/province';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Crown, Sword, Coins, Shield, Users } from 'lucide-react';
+import { Crown, Sword, Coins, Shield, Users, BookOpen } from 'lucide-react';
 
 interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId) => void;
@@ -79,6 +79,19 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               <div className="text-[10px] text-amber-200 font-bold">5 teknologiaa</div>
               <div className="text-[9px] text-stone-500">Teknologiavoitto</div>
             </div>
+          </div>
+          
+          {/* Ohjekirja link */}
+          <div className="text-center mt-3">
+            <a
+              href="/ohjekirja"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 text-sm transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              Avaa ohjekirja uudessa välilehdessä
+            </a>
           </div>
         </div>
         
