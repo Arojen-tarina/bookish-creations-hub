@@ -723,6 +723,22 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         }
       }
       
+      // Build structured AI action log from aiLog strings
+      // Parse "FactionName: description" format
+      for (const msg of aiLog) {
+        const colonIdx = msg.indexOf(':');
+        if (colonIdx > 0) {
+          const fName = msg.substring(0, colonIdx).trim();
+          const desc = msg.substring(colonIdx + 1).trim();
+          const fData = newFactions.find(f => f.name === fName);
+          aiActionLog.push({
+            factionName: fName,
+            factionColor: fData?.color || '#888',
+            description: `${fName}: ${desc}`,
+          });
+        }
+      }
+      
       // Remove destroyed armies
       newArmies = newArmies.filter(a => a.cavalry + a.infantry > 0);
       
