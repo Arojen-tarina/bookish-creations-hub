@@ -142,6 +142,30 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
 };
 
 // ============= COMBAT =============
+const createProvinceGarrison = (province: Province): Army | null => {
+  if (!province.ownerId) return null;
+
+  const infantry = Math.max(
+    province.garrison,
+    province.fortLevel > 0 ? province.fortLevel * 3 + Math.max(1, Math.floor(province.developmentLevel / 2)) : 0,
+  );
+
+  if (infantry <= 0) return null;
+
+  return {
+    id: `garrison-${province.id}`,
+    ownerId: province.ownerId,
+    provinceId: province.id,
+    cavalry: 0,
+    infantry,
+    siege: 0,
+    morale: Math.min(95, 55 + province.fortLevel * 10 + province.developmentLevel * 2),
+    supply: 20,
+    movementLeft: 0,
+    leaderBonus: 0,
+  };
+};
+
 const resolveCombat = (
   attacker: Army,
   defender: Army,
@@ -159,34 +183,40 @@ const resolveCombat = (
   defenseRoll: number;
 } => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[terrain.terrain];
-  
-  const attackerPower = (attacker.cavalry * 3 + attacker.infantry * 1.5 + attacker.siege)
-    * (1 + attacker.leaderBonus)
-    * (attacker.morale / 100)
-    + attackBonus;
-  
-  const defenderPower = (defender.cavalry * 2 + defender.infantry * 2 + defender.siege)
-    * (1 + terrainInfo.defenseBonus * 0.2)
-    * (1 + terrain.fortLevel * 0.3)
-    * (defender.morale / 100)
-    + defenseBonus;
-  
+  const calculateLoss = (units: number, ratio: number) =>
+    units <= 0 ? 0 : Math.max(1, Math.round(units * ratio * (0.6 + Math.random() * 0.4)));
+
+  const attackerPower = (
+    attacker.cavalry * 3 +
+    attacker.infantry * 1.5 +
+    attacker.siege
+  ) * (1 + attacker.leaderBonus) * (attacker.morale / 100) + attackBonus;
+
+  const defenderPower = (
+    defender.cavalry * 2 +
+    defender.infantry * 2 +
+    defender.siege
+  ) * (1 + terrainInfo.defenseBonus * 0.2) * (1 + terrain.fortLevel * 0.35) * (defender.morale / 100) + defenseBonus;
+
   const attackRoll = Math.floor(Math.random() * 6) + 1;
   const defenseRoll = Math.floor(Math.random() * 6) + 1;
-  
-  const ratio = (attackerPower + attackRoll * 2) / (defenderPower + defenseRoll * 2);
-  const attackerWins = ratio > 0.9;
-  
-  const baseLossRatio = attackerWins ? 0.15 : 0.35;
-  const defenderLossRatio = attackerWins ? 0.45 : 0.15;
-  
+  const ratio = (attackerPower + attackRoll * 2) / Math.max(1, defenderPower + defenseRoll * 2);
+  const attackerWins = ratio > 0.95;
+
+  const attackerLossRatio = attackerWins ? 0.14 : 0.32;
+  const defenderLossRatio = attackerWins ? 0.42 : 0.16;
+  const defenderRemaining =
+    defender.cavalry + defender.infantry -
+    calculateLoss(defender.cavalry, defenderLossRatio) -
+    calculateLoss(defender.infantry, defenderLossRatio);
+
   return {
     attackerWins,
-    defenderDestroyed: attackerWins && Math.random() > 0.35,
-    attackerCavalryLoss: Math.max(1, Math.floor(attacker.cavalry * baseLossRatio * (0.5 + Math.random() * 0.5))),
-    attackerInfantryLoss: Math.max(1, Math.floor(attacker.infantry * baseLossRatio * (0.5 + Math.random() * 0.5))),
-    defenderCavalryLoss: Math.max(1, Math.floor(defender.cavalry * defenderLossRatio)),
-    defenderInfantryLoss: Math.max(1, Math.floor(defender.infantry * defenderLossRatio)),
+    defenderDestroyed: attackerWins && defenderRemaining <= 0,
+    attackerCavalryLoss: calculateLoss(attacker.cavalry, attackerLossRatio),
+    attackerInfantryLoss: calculateLoss(attacker.infantry, attackerLossRatio),
+    defenderCavalryLoss: calculateLoss(defender.cavalry, defenderLossRatio),
+    defenderInfantryLoss: calculateLoss(defender.infantry, defenderLossRatio),
     attackRoll,
     defenseRoll,
   };
@@ -329,19 +359,23 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
       const moveCost = Math.max(1, terrainInfo.movementCost - (prev.movementBonus > 0 ? 1 : 0));
       
-      // Check for combat
+      // Check for combat (enemy army OR fortified/garrisoned enemy province)
       const enemyArmies = prev.armies.filter(a => a.provinceId === targetProvinceId && a.ownerId !== army.ownerId);
+      const provinceGarrison = targetProvince.ownerId && targetProvince.ownerId !== army.ownerId
+        ? createProvinceGarrison(targetProvince)
+        : null;
+      const defender = enemyArmies[0] || provinceGarrison;
       let newArmies = [...prev.armies];
       let newProvinces = [...prev.provinces];
       
-      if (enemyArmies.length > 0) {
-        const result = resolveCombat(army, enemyArmies[0], targetProvince, prev.attackBonus, prev.defenseBonus);
+      if (defender) {
+        const result = resolveCombat(army, defender, targetProvince, prev.attackBonus, prev.defenseBonus);
         
         const battleResult: BattleResult = {
           attacker: { ...army },
-          defender: { ...enemyArmies[0] },
+          defender: { ...defender },
           attackerFaction: army.ownerId,
-          defenderFaction: enemyArmies[0].ownerId,
+          defenderFaction: defender.ownerId,
           provinceName: targetProvince.name,
           winner: result.attackerWins ? 'attacker' : 'defender',
           attackerLosses: { cavalry: result.attackerCavalryLoss, infantry: result.attackerInfantryLoss },
@@ -360,20 +394,29 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
             infantry: Math.max(0, army.infantry - result.attackerInfantryLoss),
             morale: Math.max(20, army.morale - 10),
           };
-          if (result.defenderDestroyed) {
-            newArmies = newArmies.filter(a => a.id !== enemyArmies[0].id);
-          } else {
-            const defIdx = newArmies.findIndex(a => a.id === enemyArmies[0].id);
-            newArmies[defIdx] = {
-              ...enemyArmies[0],
-              cavalry: Math.max(0, enemyArmies[0].cavalry - result.defenderCavalryLoss),
-              infantry: Math.max(0, enemyArmies[0].infantry - result.defenderInfantryLoss),
-              morale: Math.max(20, enemyArmies[0].morale - 20),
-            };
+
+          if (enemyArmies[0]) {
+            if (result.defenderDestroyed) {
+              newArmies = newArmies.filter(a => a.id !== enemyArmies[0].id);
+            } else {
+              const defIdx = newArmies.findIndex(a => a.id === enemyArmies[0].id);
+              newArmies[defIdx] = {
+                ...enemyArmies[0],
+                cavalry: Math.max(0, enemyArmies[0].cavalry - result.defenderCavalryLoss),
+                infantry: Math.max(0, enemyArmies[0].infantry - result.defenderInfantryLoss),
+                morale: Math.max(20, enemyArmies[0].morale - 20),
+              };
+            }
           }
+
           const pIdx = newProvinces.findIndex(p => p.id === targetProvinceId);
           if (pIdx !== -1) {
-            newProvinces[pIdx] = { ...newProvinces[pIdx], ownerId: army.ownerId, unrest: 30 };
+            newProvinces[pIdx] = {
+              ...newProvinces[pIdx],
+              ownerId: army.ownerId,
+              unrest: 30,
+              garrison: provinceGarrison ? Math.max(0, defender.infantry - result.defenderInfantryLoss) : newProvinces[pIdx].garrison,
+            };
           }
         } else {
           newArmies[armyIndex] = {
@@ -450,7 +493,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   // ============= BUILD STRUCTURE =============
   const buildStructure = useCallback((provinceId: string, type: MVPBuildingType) => {
     setGameState(prev => {
-      if (!prev || !playerFaction) return prev;
+      if (!prev || !playerFaction || prev.phase !== 'build') return prev;
       const province = prev.provinces.find(p => p.id === provinceId);
       if (!province || province.ownerId !== playerFaction) return prev;
       
@@ -460,16 +503,22 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (info.cost.artisans && prev.artisans < info.cost.artisans) return prev;
       
       const existing = prev.buildings[provinceId] || [];
-      if (existing.includes(type)) return prev; // Already built
+      if (existing.includes(type)) return prev;
       
       const newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - info.cost.gold } : f);
       const newArtisans = prev.artisans - (info.cost.artisans || 0);
       const newBuildings = { ...prev.buildings, [provinceId]: [...existing, type] };
       
-      // Apply building effect
       let newProvinces = prev.provinces;
       if (type === 'fortress') {
-        newProvinces = prev.provinces.map(p => p.id === provinceId ? { ...p, fortLevel: Math.min(3, p.fortLevel + 1) } : p);
+        newProvinces = prev.provinces.map(p => p.id === provinceId
+          ? {
+              ...p,
+              fortLevel: Math.min(3, p.fortLevel + 1),
+              garrison: Math.max(p.garrison, 2 + Math.min(4, p.fortLevel + 1)),
+            }
+          : p,
+        );
       }
       
       return { ...prev, factions: newFactions, artisans: newArtisans, buildings: newBuildings, provinces: newProvinces };
