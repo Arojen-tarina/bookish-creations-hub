@@ -5,7 +5,7 @@
  * interaktiivisina pelinappuloina laudan päälle.
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
-import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
+import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import gameBoardImg from '@/assets/game-board.jpg';
@@ -14,8 +14,11 @@ const BOARD_SIZE = 100;
 
 export interface ProvinceMapProps {
   provinces: Province[];
+  armies: Army[];
   selectedProvinceId: string | null;
+  selectedArmyId?: string | null;
   onProvinceClick: (provinceId: string) => void;
+  onArmyClick?: (armyId: string) => void;
   playerFaction: FactionId;
   highlightedProvinces?: string[];
   showArmies?: boolean;
@@ -264,8 +267,11 @@ const Minimap = ({
 
 export const ProvinceMap = ({
   provinces,
+  armies,
   selectedProvinceId,
+  selectedArmyId,
   onProvinceClick,
+  onArmyClick,
   playerFaction,
   highlightedProvinces = [],
   isMinimap = false,
