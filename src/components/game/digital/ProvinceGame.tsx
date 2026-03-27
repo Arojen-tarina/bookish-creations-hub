@@ -309,11 +309,19 @@ export const ProvinceGame = () => {
                               const hasArtisans = info.cost.artisans ? gameState.artisans >= info.cost.artisans : true;
                               const canAfford = hasGold && hasArtisans;
                               
+                              // Fortress special: can upgrade up to level 3
+                              const isFortress = type === 'fortress';
+                              const fortLevel = selectedProvince.fortLevel;
+                              const fortMaxed = isFortress && fortLevel >= 3;
+                              const fortCanUpgrade = isFortress && !fortMaxed;
+                              const showAsBuilt = isFortress ? fortMaxed : alreadyBuilt;
+                              const showBuildButton = isFortress ? fortCanUpgrade : !alreadyBuilt;
+                              
                               return (
                                 <div
                                   key={type}
                                   className={`rounded-xl border-2 overflow-hidden transition-all ${
-                                    alreadyBuilt
+                                    showAsBuilt
                                       ? 'border-green-700/40 bg-green-900/20 opacity-70'
                                       : canAfford
                                       ? 'border-amber-500/40 bg-slate-800/60 hover:border-amber-400/60 hover:bg-slate-800/80'
@@ -323,7 +331,7 @@ export const ProvinceGame = () => {
                                   <div className="flex items-center gap-3 p-3">
                                     {/* Emoji icon */}
                                     <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 ${
-                                      alreadyBuilt ? 'bg-green-800/40' : 'bg-slate-700/50'
+                                      showAsBuilt ? 'bg-green-800/40' : 'bg-slate-700/50'
                                     }`}>
                                       {info.emoji}
                                     </div>
@@ -332,14 +340,23 @@ export const ProvinceGame = () => {
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2">
                                         <span className="text-amber-100 font-bold text-sm">{info.name}</span>
-                                        {alreadyBuilt && (
+                                        {isFortress && fortLevel > 0 && (
+                                          <span className="text-[10px] bg-amber-700/50 text-amber-200 px-1.5 py-0.5 rounded-full">
+                                            Taso {fortLevel}{fortMaxed ? ' (MAX)' : ''}
+                                          </span>
+                                        )}
+                                        {!isFortress && alreadyBuilt && (
                                           <span className="text-[10px] bg-green-700/50 text-green-200 px-1.5 py-0.5 rounded-full">✓ Rakennettu</span>
                                         )}
                                       </div>
-                                      <p className="text-amber-200/60 text-xs mt-0.5">{info.effect}</p>
+                                      <p className="text-amber-200/60 text-xs mt-0.5">
+                                        {isFortress
+                                          ? `+${Math.min(3, (fortLevel + 1))} puolustus (taso ${Math.min(3, fortLevel + 1)}), garnisooni, +${Math.round(Math.min(3, (fortLevel + 1)) * 35)}% puolustusvoima`
+                                          : info.effect}
+                                      </p>
                                       
                                       {/* Cost */}
-                                      {!alreadyBuilt && (
+                                      {showBuildButton && (
                                         <div className="flex items-center gap-2 mt-1.5">
                                           <span className={`text-xs px-1.5 py-0.5 rounded ${hasGold ? 'bg-amber-800/40 text-amber-300' : 'bg-red-900/40 text-red-300'}`}>
                                             🪙 {info.cost.gold}
@@ -357,17 +374,19 @@ export const ProvinceGame = () => {
                                     </div>
                                     
                                     {/* Build button */}
-                                    {!alreadyBuilt && (
+                                    {showBuildButton && (
                                       <Button
                                         size="sm"
                                         disabled={!canAfford}
                                         onClick={() => {
                                           buildStructure(selectedProvince.id, type);
-                                          toast.success(`${info.emoji} ${info.name} rakennettu!`, { description: info.effect });
+                                          toast.success(`${info.emoji} ${info.name} ${isFortress && fortLevel > 0 ? 'päivitetty' : 'rakennettu'}!`, { 
+                                            description: isFortress ? `Linnoitustaso ${Math.min(3, fortLevel + 1)} — +${Math.round(Math.min(3, fortLevel + 1) * 35)}% puolustus` : info.effect 
+                                          });
                                         }}
                                         className="bg-amber-600 hover:bg-amber-500 text-white font-bold h-9 px-4 rounded-lg flex-shrink-0 disabled:opacity-30"
                                       >
-                                        Rakenna
+                                        {isFortress && fortLevel > 0 ? 'Päivitä' : 'Rakenna'}
                                       </Button>
                                     )}
                                   </div>

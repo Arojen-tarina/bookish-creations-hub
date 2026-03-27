@@ -26,19 +26,17 @@ interface ProvinceInfoPanelProps {
   province: Province;
   armies: Army[];
   playerFaction: FactionId;
-  onBuildFort: () => void;
   onRecruitArmy: () => void;
-  canBuildFort: boolean;
   canRecruit: boolean;
+  onBuildFort?: () => void;
+  canBuildFort?: boolean;
 }
 
 export const ProvinceInfoPanel = ({
   province,
   armies,
   playerFaction,
-  onBuildFort,
   onRecruitArmy,
-  canBuildFort,
   canRecruit,
 }: ProvinceInfoPanelProps) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
@@ -200,14 +198,6 @@ export const ProvinceInfoPanel = ({
         {/* Actions (only for player provinces) */}
         {isPlayerOwned && (
           <div className="pt-2 border-t border-stone-700 space-y-2">
-            <Button
-              onClick={onBuildFort}
-              disabled={!canBuildFort || province.fortLevel >= 3}
-              className="w-full bg-amber-600 hover:bg-amber-500"
-            >
-              <Castle className="w-4 h-4 mr-2" />
-              Rakenna linnoitus (50 💰)
-            </Button>
             <Button
               onClick={onRecruitArmy}
               disabled={!canRecruit}
