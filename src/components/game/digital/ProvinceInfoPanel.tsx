@@ -43,6 +43,7 @@ export const ProvinceInfoPanel = ({
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
   const isPlayerOwned = province.ownerId === playerFaction;
+  const totalDefenseBonus = terrainInfo.defenseBonus + province.fortLevel * 3;
   
   const playerArmies = armies.filter(a => a.ownerId === playerFaction);
   const enemyArmies = armies.filter(a => a.ownerId !== playerFaction);
@@ -95,8 +96,13 @@ export const ProvinceInfoPanel = ({
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Shield className="w-5 h-5 text-green-400 mx-auto mb-1" />
-            <div className="text-lg font-bold text-green-100">+{terrainInfo.defenseBonus}</div>
+            <div className="text-lg font-bold text-green-100">+{totalDefenseBonus}</div>
             <div className="text-xs text-stone-400">Puolustus</div>
+            {province.fortLevel > 0 && (
+              <div className="text-[10px] text-amber-300/80 mt-1">
+                maasto {terrainInfo.defenseBonus} + linnoitus {province.fortLevel * 3}
+              </div>
+            )}
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Home className="w-5 h-5 text-purple-400 mx-auto mb-1" />
@@ -110,7 +116,7 @@ export const ProvinceInfoPanel = ({
           <div className="flex items-center gap-2 bg-stone-800/50 rounded-lg p-3">
             <Castle className="w-5 h-5 text-amber-400" />
             <span className="text-stone-300">Linnoitus</span>
-            <span className="text-amber-100 font-bold ml-auto">Taso {province.fortLevel}</span>
+            <span className="text-amber-100 font-bold ml-auto">Taso {province.fortLevel} (+{province.fortLevel * 3} puolustus)</span>
           </div>
         )}
         
