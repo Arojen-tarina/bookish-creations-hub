@@ -69,12 +69,10 @@ export const ProvinceGame = () => {
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
 
-  // Show AI log after turn end
+  // Show AI overlay after turn end
   useEffect(() => {
-    if (gameState?.aiLog && gameState.aiLog.length > 0) {
-      gameState.aiLog.forEach((msg, i) => {
-        setTimeout(() => toast.info(msg, { duration: 3000 }), i * 500);
-      });
+    if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
+      setShowAIOverlay(true);
     }
   }, [gameState?.turn]);
 
