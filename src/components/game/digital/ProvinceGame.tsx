@@ -46,6 +46,7 @@ export const ProvinceGame = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
+  const [showAIOverlay, setShowAIOverlay] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fullscreen
