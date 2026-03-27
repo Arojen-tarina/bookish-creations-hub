@@ -510,7 +510,48 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     });
   }, [playerFaction]);
 
-  // ============= NEXT PHASE =============
+  // ============= COLLECT RESOURCES =============
+  const collectResources = useCallback(() => {
+    setGameState(prev => {
+      if (!prev || !playerFaction || prev.resourcesCollected) return prev;
+      
+      const faction = prev.factions.find(f => f.id === playerFaction);
+      if (!faction) return prev;
+      
+      const ownedProvinces = prev.provinces.filter(p => p.ownerId === playerFaction);
+      let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+      const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+      
+      const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
+        const p = prev.provinces.find(pr => pr.id === pid);
+        return p?.ownerId === playerFaction && buildings.includes('market');
+      }).length;
+      const marketBonus = marketCount * 3;
+      taxIncome += marketBonus;
+      
+      const playerArmyCount = prev.armies.filter(a => a.ownerId === playerFaction).length;
+      const foodUpkeep = -playerArmyCount;
+      const farmland = prev.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+      const foodGain = Math.floor(farmland * 0.5);
+      const foodChange = foodUpkeep + foodGain;
+      
+      const newFactions = prev.factions.map(f =>
+        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+      );
+      
+      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, foodChange };
+      
+      return {
+        ...prev,
+        factions: newFactions,
+        food: Math.max(0, prev.food + foodChange),
+        resourcesCollected: true,
+        lastCollection: collection,
+      };
+    });
+  }, [playerFaction]);
+
+
   const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
   
   const nextPhase = useCallback(() => {
