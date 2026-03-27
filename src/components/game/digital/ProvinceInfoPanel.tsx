@@ -26,19 +26,17 @@ interface ProvinceInfoPanelProps {
   province: Province;
   armies: Army[];
   playerFaction: FactionId;
-  onBuildFort: () => void;
   onRecruitArmy: () => void;
-  canBuildFort: boolean;
   canRecruit: boolean;
+  onBuildFort?: () => void;
+  canBuildFort?: boolean;
 }
 
 export const ProvinceInfoPanel = ({
   province,
   armies,
   playerFaction,
-  onBuildFort,
   onRecruitArmy,
-  canBuildFort,
   canRecruit,
 }: ProvinceInfoPanelProps) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
