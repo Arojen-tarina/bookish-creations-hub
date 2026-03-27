@@ -623,7 +623,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
       );
       
-      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, foodChange };
+      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange };
       
       return {
         ...prev,
