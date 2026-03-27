@@ -23,9 +23,10 @@ interface PhaseBarProps {
   currentPhase: MVPPhase;
   onNextPhase: () => void;
   onEndTurn: () => void;
+  disabled?: boolean;
 }
 
-export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn }: PhaseBarProps) => {
+export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = false }: PhaseBarProps) => {
   const currentIndex = PHASE_ORDER.indexOf(currentPhase);
   const info = PHASE_INFO[currentPhase];
   const isLastPhase = currentPhase === 'end';
