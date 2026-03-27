@@ -411,40 +411,46 @@ export const ProvinceMap = ({
       </svg>
 
       {/* Zoom controls */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
-        <Button variant="outline" size="icon" onClick={handleZoomIn}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <ZoomIn className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="icon" onClick={handleZoomOut}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <ZoomOut className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="icon" onClick={handleResetView}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <Maximize2 className="w-4 h-4" />
-        </Button>
-      </div>
+      {!isMinimap && (
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <Button variant="outline" size="icon" onClick={handleZoomIn}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <ZoomIn className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleZoomOut}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <ZoomOut className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleResetView}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <Maximize2 className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Minimap */}
-      <Minimap
-        provinces={provinces}
-        viewBox={viewBox}
-        playerFaction={playerFaction}
-        onNavigate={handleMinimapNavigate}
-      />
+      {!isMinimap && (
+        <Minimap
+          provinces={provinces}
+          viewBox={viewBox}
+          playerFaction={playerFaction}
+          onNavigate={handleMinimapNavigate}
+        />
+      )}
 
       {/* Tooltip */}
-      {hoveredProvince && (
+      {!isMinimap && hoveredProvince && (
         <ProvinceTooltip province={hoveredProvince} position={mousePosition} />
       )}
 
       {/* Info bar */}
-      <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
-        <span className="font-bold">Vuosi 1206</span>
-        <span className="mx-2">•</span>
-        <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
-      </div>
+      {!isMinimap && (
+        <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
+          <span className="font-bold">Vuosi 1206</span>
+          <span className="mx-2">•</span>
+          <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
+        </div>
+      )}
     </div>
   );
 };
