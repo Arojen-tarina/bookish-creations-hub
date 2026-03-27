@@ -327,18 +327,21 @@ export const ProvinceMap = ({
     });
   }, [zoom]);
 
-  // Silk road connections
-  const silkRoadLines = useMemo(() => {
-    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    const silkProvinces = provinces.filter(p => p.hasSilkRoad);
-    for (const prov of silkProvinces) {
+  // All neighbor connections (deduplicated)
+  const neighborLines = useMemo(() => {
+    const lines: { x1: number; y1: number; x2: number; y2: number; isSilkRoad: boolean }[] = [];
+    for (const prov of provinces) {
       for (const nId of prov.neighbors) {
-        const neighbor = provinces.find(p => p.id === nId);
-        if (neighbor?.hasSilkRoad && prov.id < nId) {
-          lines.push({
-            x1: prov.center.x, y1: prov.center.y,
-            x2: neighbor.center.x, y2: neighbor.center.y,
-          });
+        if (prov.id < nId) { // deduplicate
+          const neighbor = provinces.find(p => p.id === nId);
+          if (neighbor) {
+            const isSilk = prov.hasSilkRoad && neighbor.hasSilkRoad;
+            lines.push({
+              x1: prov.center.x, y1: prov.center.y,
+              x2: neighbor.center.x, y2: neighbor.center.y,
+              isSilkRoad: isSilk,
+            });
+          }
         }
       }
     }
