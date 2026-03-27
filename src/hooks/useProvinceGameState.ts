@@ -557,7 +557,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const nextPhase = useCallback(() => {
     setGameState(prev => {
       if (!prev) return null;
-      
+      console.log('[nextPhase] current phase:', prev.phase, 'resourcesCollected:', prev.resourcesCollected);
       // Auto-collect resources if skipping resource phase
       let state = { ...prev };
       if (state.phase === 'resource' && !state.resourcesCollected && playerFaction) {
