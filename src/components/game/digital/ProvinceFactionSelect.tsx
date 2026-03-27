@@ -39,37 +39,46 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
           </p>
         </div>
 
-        {/* Quick how-to-play guide */}
-        <div className="bg-slate-800/60 border border-amber-700/30 rounded-2xl p-5 mb-6 max-w-3xl mx-auto">
-          <h2 className="text-amber-200 font-bold text-base mb-3 text-center">📜 Näin pelaat</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-stone-300">
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🪙</span>
-              <div><span className="text-amber-200 font-bold">1. Resurssit</span> — Kerää kultaa ja miehiä alueilta automaattisesti.</div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🃏</span>
-              <div><span className="text-amber-200 font-bold">2. Kortit</span> — Nosta kortti ja pelaa bonuksia kädestäsi.</div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🐴</span>
-              <div><span className="text-amber-200 font-bold">3. Liike</span> — Valitse armeija ja liikuta viereiseen alueeseen.</div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">⚔️</span>
-              <div><span className="text-amber-200 font-bold">4. Taistelu</span> — Hyökkää vihollisalueelle, nopat ratkaisevat.</div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🏗️</span>
-              <div><span className="text-amber-200 font-bold">5. Rakenna</span> — Rakenna leiri, markkina tai linnoitus.</div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🏁</span>
-              <div><span className="text-amber-200 font-bold">6. Lopeta</span> — AI-pelaajat tekevät vuoronsa.</div>
-            </div>
+        {/* How to play guide */}
+        <div className="bg-slate-800/60 border border-amber-700/30 rounded-2xl p-5 mb-6 max-w-4xl mx-auto">
+          <h2 className="text-amber-200 font-bold text-lg mb-1 text-center">📜 Näin pelaat</h2>
+          <p className="text-stone-400 text-xs text-center mb-4">Joka vuoro käyt läpi 6 vaihetta järjestyksessä. Paina "Seuraava" siirtyäksesi vaiheesta toiseen.</p>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {[
+              { num: '1', icon: '🪙', title: 'Resurssit', desc: 'Saat automaattisesti kultaa ja miehiä omilta alueilta.', color: 'border-amber-700/40 bg-amber-900/10' },
+              { num: '2', icon: '🃏', title: 'Kortit', desc: 'Nosta kortti pakasta. Pelaa kortteja kädestäsi bonusten saamiseksi.', color: 'border-purple-700/40 bg-purple-900/10' },
+              { num: '3', icon: '🐴', title: 'Liikuta', desc: 'Klikkaa omaa aluettasi → valitse armeija → klikkaa viereistä aluetta.', color: 'border-green-700/40 bg-green-900/10' },
+              { num: '4', icon: '⚔️', title: 'Taistelu', desc: 'Liiku vihollisen alueelle hyökätäksesi. Nopat ratkaisevat voittajan.', color: 'border-red-700/40 bg-red-900/10' },
+              { num: '5', icon: '🏗️', title: 'Rakenna', desc: 'Rakenna leiri, markkina tai linnoitus omille alueilIesi.', color: 'border-blue-700/40 bg-blue-900/10' },
+              { num: '6', icon: '🏁', title: 'Lopeta vuoro', desc: 'AI-vastustajat tekevät omat siirtonsa. Uusi vuoro alkaa.', color: 'border-stone-600/40 bg-stone-800/20' },
+            ].map(step => (
+              <div key={step.num} className={`rounded-xl border p-3 ${step.color}`}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xl leading-none">{step.icon}</span>
+                  <span className="text-amber-100 font-bold text-sm">{step.num}. {step.title}</span>
+                </div>
+                <p className="text-stone-300 text-[11px] leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-700/50 text-center text-[11px] text-amber-200/50">
-            🏆 Voita valloittamalla 30 provinssia, keräämällä 500 kultaa tai pelaamalla 5 teknologiakorttia
+
+          <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-3 gap-2 text-center">
+            <div className="bg-amber-900/20 rounded-lg p-2">
+              <div className="text-base">🗺️</div>
+              <div className="text-[10px] text-amber-200 font-bold">30 provinssia</div>
+              <div className="text-[9px] text-stone-500">Sotilasvoitto</div>
+            </div>
+            <div className="bg-amber-900/20 rounded-lg p-2">
+              <div className="text-base">💰</div>
+              <div className="text-[10px] text-amber-200 font-bold">500 kultaa</div>
+              <div className="text-[9px] text-stone-500">Talousvoitto</div>
+            </div>
+            <div className="bg-amber-900/20 rounded-lg p-2">
+              <div className="text-base">🔬</div>
+              <div className="text-[10px] text-amber-200 font-bold">5 teknologiaa</div>
+              <div className="text-[9px] text-stone-500">Teknologiavoitto</div>
+            </div>
           </div>
         </div>
         
