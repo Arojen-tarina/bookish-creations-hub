@@ -592,8 +592,22 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const foodGain = Math.floor(farmland * 0.5) + campCount * 2;
       const foodChange = foodUpkeep + foodGain;
       
+      // Horses: steppe/grassland provinces produce horses, horse trade goods give extra
+      const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
+      const horsesGain = horseProvinces.length; // +1 hevonen per steppi/hevosprovinssi
+      
+      // Artisans: farmland/hills provinces and workshops produce artisans
+      const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
+      const workshopCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
+        const p = prev.provinces.find(pr => pr.id === pid);
+        return p?.ownerId === playerFaction && buildings.includes('workshop');
+      }).length;
+      const artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
+      // Minimum 1 artisan per turn if you own 3+ provinces
+      const finalArtisansGain = ownedProvinces.length >= 3 ? Math.max(1, artisansGain) : artisansGain;
+      
       const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
       );
       
       const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, foodChange };
@@ -602,6 +616,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         ...prev,
         factions: newFactions,
         food: Math.max(0, prev.food + foodChange),
+        artisans: prev.artisans + finalArtisansGain,
         resourcesCollected: true,
         lastCollection: collection,
       };
