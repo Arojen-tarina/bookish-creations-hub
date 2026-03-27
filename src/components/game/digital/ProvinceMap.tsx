@@ -12,13 +12,14 @@ import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 100;
 
-interface ProvinceMapProps {
+export interface ProvinceMapProps {
   provinces: Province[];
   selectedProvinceId: string | null;
   onProvinceClick: (provinceId: string) => void;
   playerFaction: FactionId;
   highlightedProvinces?: string[];
   showArmies?: boolean;
+  isMinimap?: boolean;
 }
 
 const TOKEN_RADIUS = 2.2;
@@ -267,6 +268,7 @@ export const ProvinceMap = ({
   onProvinceClick,
   playerFaction,
   highlightedProvinces = [],
+  isMinimap = false,
 }: ProvinceMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -341,15 +343,17 @@ export const ProvinceMap = ({
     <div
       ref={containerRef}
       className="relative w-full h-full overflow-hidden"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
+      onMouseDown={isMinimap ? undefined : handleMouseDown}
+      onMouseMove={isMinimap ? undefined : handleMouseMove}
+      onMouseUp={isMinimap ? undefined : handleMouseUp}
+      onMouseLeave={isMinimap ? undefined : handleMouseUp}
+      onWheel={isMinimap ? undefined : handleWheel}
       style={{
         background: '#1a1a2e',
-        border: '6px solid #5c4a32',
-        borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',
+        ...(isMinimap ? {} : {
+          border: '6px solid #5c4a32',
+          borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',
+        }),
       }}
     >
       <svg
@@ -409,40 +413,46 @@ export const ProvinceMap = ({
       </svg>
 
       {/* Zoom controls */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
-        <Button variant="outline" size="icon" onClick={handleZoomIn}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <ZoomIn className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="icon" onClick={handleZoomOut}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <ZoomOut className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="icon" onClick={handleResetView}
-          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
-          <Maximize2 className="w-4 h-4" />
-        </Button>
-      </div>
+      {!isMinimap && (
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <Button variant="outline" size="icon" onClick={handleZoomIn}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <ZoomIn className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleZoomOut}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <ZoomOut className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleResetView}
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            <Maximize2 className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Minimap */}
-      <Minimap
-        provinces={provinces}
-        viewBox={viewBox}
-        playerFaction={playerFaction}
-        onNavigate={handleMinimapNavigate}
-      />
+      {!isMinimap && (
+        <Minimap
+          provinces={provinces}
+          viewBox={viewBox}
+          playerFaction={playerFaction}
+          onNavigate={handleMinimapNavigate}
+        />
+      )}
 
       {/* Tooltip */}
-      {hoveredProvince && (
+      {!isMinimap && hoveredProvince && (
         <ProvinceTooltip province={hoveredProvince} position={mousePosition} />
       )}
 
       {/* Info bar */}
-      <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
-        <span className="font-bold">Vuosi 1206</span>
-        <span className="mx-2">•</span>
-        <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
-      </div>
+      {!isMinimap && (
+        <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
+          <span className="font-bold">Vuosi 1206</span>
+          <span className="mx-2">•</span>
+          <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
+        </div>
+      )}
     </div>
   );
 };

@@ -207,28 +207,6 @@ export const ProvinceGame = () => {
         />
       </div>
 
-      {/* ============= FLOATING NEXT PHASE BUTTON (above cards) ============= */}
-      <div className={`fixed bottom-[120px] left-1/2 -translate-x-1/2 z-30 ${
-        showSidebar ? 'lg:-translate-x-[calc(50%+190px)]' : ''
-      }`}>
-        {gameState.phase !== 'end' ? (
-          <Button
-            size="lg"
-            onClick={nextPhase}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-amber-900/50 border-2 border-amber-400/30 rounded-full"
-          >
-            Seuraava vaihe ➡️
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            onClick={endTurn}
-            className="bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-red-900/50 border-2 border-red-400/30 rounded-full"
-          >
-            Lopeta vuoro 🏁
-          </Button>
-        )}
-      </div>
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
       {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
@@ -498,25 +476,50 @@ export const ProvinceGame = () => {
         </div>
       </div>
 
-      {/* ============= CARD HAND (bottom) ============= */}
-      {gameState.hand && gameState.hand.length > 0 && (
-        <div className={`fixed bottom-0 left-0 z-40 bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/40 p-3 transition-all ${
-          showSidebar ? 'right-[380px]' : 'right-0'
-        }`}>
-          <CardHand
-            cards={gameState.hand}
-            onPlayCard={(card) => {
-              playCard(card);
-              const eff = card.parsedEffect;
-              toast.success(`🃏 ${card.name}`, { description: eff.description });
-            }}
-            canPlay={gameState.phase !== 'end'}
-            currentPhase={gameState.phase}
-            deckSize={gameState.deck?.length || 0}
-            discardSize={gameState.discard?.length || 0}
-          />
+      {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
+      <div className={`fixed bottom-0 left-0 z-40 transition-all ${
+        showSidebar ? 'right-[380px]' : 'right-0'
+      }`}>
+        <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
+          <div className="flex items-stretch">
+            {/* Minimap */}
+            <div className="w-[180px] flex-shrink-0 border-r border-slate-700/50 p-1.5">
+              <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '100px' }}>
+                <ProvinceMap
+                  provinces={gameState.provinces}
+                  selectedProvinceId={gameState.selectedProvinceId}
+                  onProvinceClick={selectProvince}
+                  playerFaction={playerFaction}
+                  highlightedProvinces={[]}
+                  isMinimap
+                />
+              </div>
+            </div>
+
+            {/* Cards */}
+            <div className="flex-1 p-3 overflow-hidden">
+              {gameState.hand && gameState.hand.length > 0 ? (
+                <CardHand
+                  cards={gameState.hand}
+                  onPlayCard={(card) => {
+                    playCard(card);
+                    const eff = card.parsedEffect;
+                    toast.success(`🃏 ${card.name}`, { description: eff.description });
+                  }}
+                  canPlay={gameState.phase !== 'end'}
+                  currentPhase={gameState.phase}
+                  deckSize={gameState.deck?.length || 0}
+                  discardSize={gameState.discard?.length || 0}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-amber-200/40 text-sm">
+                  Ei kortteja kädessä • 📦 {gameState.deck?.length || 0} pakassa
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* ============= OVERLAYS ============= */}
       <AITurnOverlay

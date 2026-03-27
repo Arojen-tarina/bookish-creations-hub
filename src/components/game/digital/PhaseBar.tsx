@@ -1,11 +1,10 @@
 /**
- * PhaseBar.tsx — Vuoron vaihepalkki ja ohjeet
+ * PhaseBar.tsx — Vuoron vaihepalkki
  * 
- * Näyttää kaikki vuoron vaiheet, korostaa aktiivisen vaiheen
- * ja kertoo pelaajalle mitä voi tehdä.
+ * Isompi, selkeämpi vaihepalkki integroidulla Seuraava/Lopeta-napilla.
  */
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Flag } from 'lucide-react';
 
 export type MVPPhase = 'resource' | 'cards' | 'move' | 'battle' | 'build' | 'end';
 
@@ -14,7 +13,7 @@ const PHASE_INFO: Record<MVPPhase, { label: string; emoji: string; hint: string 
   cards: { label: 'Kortit', emoji: '🃏', hint: 'Nosta kortti ja pelaa kortteja kädestäsi.' },
   move: { label: 'Liike', emoji: '🐴', hint: 'Valitse armeija ja liikuta sitä viereiseen alueeseen.' },
   battle: { label: 'Taistelu', emoji: '⚔️', hint: 'Hyökkää viereistä vihollista vastaan.' },
-  build: { label: 'Rakenna', emoji: '🏗️', hint: 'Rakenna leiri, markkina tai linnoitus. Rekrytoi armeija.' },
+  build: { label: 'Rakenna', emoji: '🏗️', hint: 'Rakenna leiri, markkina tai linnoitus.' },
   end: { label: 'Lopeta', emoji: '🏁', hint: 'Lopeta vuoro ja anna AI-pelaajien toimia.' },
 };
 
@@ -30,46 +29,51 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn }: PhaseBarProps
   const currentIndex = PHASE_ORDER.indexOf(currentPhase);
   const info = PHASE_INFO[currentPhase];
   const isLastPhase = currentPhase === 'end';
-  
+
   return (
-    <div className="bg-slate-900/90 backdrop-blur-md border border-amber-700/20 rounded-xl px-4 py-2">
-      {/* Phase steps */}
-      <div className="flex items-center gap-1 mb-2">
+    <div className="bg-slate-900/95 backdrop-blur-xl border border-amber-600/30 rounded-2xl shadow-2xl shadow-black/40">
+      {/* Phase steps row */}
+      <div className="flex items-center px-3 pt-2.5 pb-1.5 gap-0.5">
         {PHASE_ORDER.map((phase, idx) => {
           const pInfo = PHASE_INFO[phase];
           const isDone = idx < currentIndex;
           const isCurrent = phase === currentPhase;
-          
+
           return (
-            <div key={phase} className="flex items-center">
-              <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-all ${
-                isCurrent 
-                  ? 'bg-amber-600 text-white font-bold scale-105'
+            <div key={phase} className="flex items-center flex-1">
+              <div className={`flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-lg text-xs transition-all ${
+                isCurrent
+                  ? 'bg-amber-500 text-white font-black shadow-lg shadow-amber-500/30 scale-[1.05]'
                   : isDone
-                  ? 'bg-green-900/50 text-green-300'
-                  : 'bg-slate-800/50 text-slate-500'
+                  ? 'bg-green-800/40 text-green-300'
+                  : 'bg-slate-800/40 text-slate-500'
               }`}>
-                {isDone ? <Check className="w-3 h-3" /> : <span>{pInfo.emoji}</span>}
-                <span className="hidden sm:inline">{pInfo.label}</span>
+                {isDone ? <Check className="w-3.5 h-3.5" /> : <span className="text-sm">{pInfo.emoji}</span>}
+                <span className="hidden md:inline text-[11px]">{pInfo.label}</span>
               </div>
               {idx < PHASE_ORDER.length - 1 && (
-                <div className={`w-3 h-0.5 mx-0.5 ${idx < currentIndex ? 'bg-green-600' : 'bg-slate-700'}`} />
+                <div className={`w-4 h-0.5 mx-0.5 flex-shrink-0 rounded ${idx < currentIndex ? 'bg-green-500' : 'bg-slate-700'}`} />
               )}
             </div>
           );
         })}
       </div>
-      
-      {/* Current phase hint + action */}
-      <div className="flex items-center justify-between">
-        <p className="text-amber-200/80 text-xs">{info.emoji} {info.hint}</p>
+
+      {/* Hint + action row */}
+      <div className="flex items-center justify-between px-3 pb-2.5 gap-3">
+        <p className="text-amber-200/90 text-sm font-medium flex-1">
+          <span className="text-base mr-1">{info.emoji}</span>
+          {info.hint}
+        </p>
         {isLastPhase ? (
-          <Button size="sm" onClick={onEndTurn} className="bg-red-600 hover:bg-red-500 text-xs h-7">
-            Lopeta vuoro 🏁
+          <Button onClick={onEndTurn} className="bg-red-600 hover:bg-red-500 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-red-900/40 flex-shrink-0">
+            <Flag className="w-4 h-4 mr-1.5" />
+            Lopeta vuoro
           </Button>
         ) : (
-          <Button size="sm" onClick={onNextPhase} className="bg-amber-600 hover:bg-amber-500 text-xs h-7">
-            Seuraava <ArrowRight className="w-3 h-3 ml-1" />
+          <Button onClick={onNextPhase} className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-amber-900/40 flex-shrink-0">
+            Seuraava
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         )}
       </div>
