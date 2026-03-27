@@ -202,8 +202,8 @@ export const ProvinceGame = () => {
 
       {/* ============= RESOURCE COLLECTION PANEL ============= */}
       {gameState.phase === 'resource' && !gameState.resourcesCollected && (
-        <div className="fixed top-[88px] left-1/2 -translate-x-1/2 z-30 mt-14">
-          <Card className="bg-amber-950/95 backdrop-blur-xl border-amber-600/50 shadow-2xl">
+        <div className="fixed top-[160px] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <Card className="bg-amber-950/95 backdrop-blur-xl border-amber-600/50 shadow-2xl pointer-events-auto">
             <CardContent className="p-4 text-center">
               <h3 className="text-amber-100 font-bold text-lg mb-2">🪙 Resurssien keräys</h3>
               <p className="text-amber-200/70 text-sm mb-3">
@@ -223,8 +223,8 @@ export const ProvinceGame = () => {
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
       {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
-        <div className="fixed top-[88px] left-1/2 -translate-x-1/2 z-30 mt-14">
-          <Card className="bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
+        <div className="fixed top-[160px] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <Card className="bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in pointer-events-auto">
             <CardContent className="p-4 text-center">
               <h3 className="text-green-100 font-bold text-lg mb-2">✅ Resurssit kerätty!</h3>
               <div className="flex items-center justify-center gap-4 text-sm">
