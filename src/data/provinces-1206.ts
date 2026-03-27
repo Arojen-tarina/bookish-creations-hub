@@ -43,11 +43,11 @@ const mongoliaProvinces: Province[] = [
   }),
   p('gobi_north', 'Pohjois-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 2,
-    center: { x: 58, y: 36 },
+    center: { x: 57, y: 34 },
   }),
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', null, {
     baseTax: 1, baseManpower: 1,
-    center: { x: 62, y: 40 },
+    center: { x: 63, y: 38 },
   }),
   p('baikal', 'Baikaljärvi', 'mongolia', 'taiga', 'mongol', {
     baseTax: 2, baseManpower: 3, tradeGood: 'fur',
@@ -63,7 +63,7 @@ const mongoliaProvinces: Province[] = [
   }),
   p('altai', 'Altai', 'mongolia', 'mountain', null, {
     baseTax: 1, baseManpower: 2, fortLevel: 1,
-    center: { x: 42, y: 25 },
+    center: { x: 40, y: 22 },
   }),
 ];
 
@@ -100,7 +100,7 @@ const jinProvinces: Province[] = [
   }),
   p('shanxi_north', 'Pohjois-Shanxi', 'jin_china', 'hills', 'jin', {
     baseTax: 4, baseManpower: 6, tradeGood: 'iron',
-    center: { x: 68, y: 44 },
+    center: { x: 69, y: 45 },
   }),
   p('liaoyang', 'Liaoyang', 'manchuria', 'grassland', 'jin', {
     baseTax: 4, baseManpower: 6, fortLevel: 1,
@@ -137,11 +137,11 @@ const xixiaProvinces: Province[] = [
   }),
   p('xixia_north', 'Pohjois-Xia', 'xixia', 'steppe', 'xixia', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 58, y: 38 },
+    center: { x: 59, y: 39 },
   }),
   p('ordos', 'Ordos', 'xixia', 'desert', 'xixia', {
     baseTax: 1, baseManpower: 3,
-    center: { x: 66, y: 42 },
+    center: { x: 65, y: 40 },
   }),
 ];
 
@@ -203,7 +203,7 @@ const khwarezmProvinces: Province[] = [
   }),
   p('urgench', 'Urgench', 'khwarezm', 'grassland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 2,
-    center: { x: 24, y: 36 },
+    center: { x: 25, y: 37 },
   }),
   p('merv', 'Merv', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, hasSilkRoad: true,
@@ -227,7 +227,7 @@ const khwarezmProvinces: Province[] = [
   }),
   p('khiva', 'Khiva', 'khwarezm', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 20, y: 32 },
+    center: { x: 18, y: 30 },
   }),
   p('kashgar', 'Kashgar', 'central_asia', 'desert', 'khwarezm', {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true, tradeGood: 'silk',
@@ -251,7 +251,7 @@ const persiaProvinces: Province[] = [
   }),
   p('ray', 'Ray (Tehran)', 'persia', 'hills', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 18, y: 46 },
+    center: { x: 17, y: 45 },
   }),
   p('kerman', 'Kerman', 'persia', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
@@ -305,19 +305,19 @@ const kipchakProvinces: Province[] = [
   p('sarkel', 'Sarkel', 'kipchak', 'steppe', 'kipchak', {
     isCapital: true, baseTax: 3, baseManpower: 6, fortLevel: 1, developmentLevel: 2,
     tradeGood: 'horses',
-    center: { x: 22, y: 34 },
+    center: { x: 23, y: 35 },
   }),
   p('kipchak_west', 'Länsi-Kipčak', 'kipchak', 'steppe', 'kipchak', {
     baseTax: 2, baseManpower: 5, tradeGood: 'horses',
-    center: { x: 18, y: 38 },
+    center: { x: 17, y: 37 },
   }),
   p('kipchak_central', 'Keski-Kipčak', 'kipchak', 'steppe', 'kipchak', {
     baseTax: 2, baseManpower: 5, tradeGood: 'livestock',
-    center: { x: 30, y: 24 },
+    center: { x: 29, y: 22 },
   }),
   p('kipchak_east', 'Itä-Kipčak', 'kipchak', 'steppe', 'kipchak', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 36, y: 22 },
+    center: { x: 34, y: 20 },
   }),
   p('volga_bulgars', 'Volgan Bulgaria', 'kipchak', 'grassland', null, {
     baseTax: 4, baseManpower: 5, tradeGood: 'fur',
@@ -325,7 +325,7 @@ const kipchakProvinces: Province[] = [
   }),
   p('khazaria', 'Khazaria', 'kipchak', 'steppe', null, {
     baseTax: 3, baseManpower: 4,
-    center: { x: 20, y: 42 },
+    center: { x: 21, y: 43 },
   }),
 ];
 
@@ -345,11 +345,11 @@ const centralAsiaProvinces: Province[] = [
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', null, {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 40, y: 26 },
+    center: { x: 42, y: 28 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', null, {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
-    center: { x: 36, y: 28 },
+    center: { x: 35, y: 30 },
   }),
 ];
 
@@ -381,11 +381,11 @@ const caucasusProvinces: Province[] = [
   }),
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 4, baseManpower: 5, tradeGood: 'iron',
-    center: { x: 16, y: 44 },
+    center: { x: 15, y: 42 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 20, y: 48 },
+    center: { x: 21, y: 49 },
   }),
 ];
 
