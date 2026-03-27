@@ -23,9 +23,10 @@ interface PhaseBarProps {
   currentPhase: MVPPhase;
   onNextPhase: () => void;
   onEndTurn: () => void;
+  disabled?: boolean;
 }
 
-export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn }: PhaseBarProps) => {
+export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = false }: PhaseBarProps) => {
   const currentIndex = PHASE_ORDER.indexOf(currentPhase);
   const info = PHASE_INFO[currentPhase];
   const isLastPhase = currentPhase === 'end';
@@ -63,15 +64,15 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn }: PhaseBarProps
       <div className="flex items-center justify-between px-3 pb-2.5 gap-3">
         <p className="text-amber-200/90 text-sm font-medium flex-1">
           <span className="text-base mr-1">{info.emoji}</span>
-          {info.hint}
+          {disabled ? '⏳ AI-pelaajat toimivat...' : info.hint}
         </p>
         {isLastPhase ? (
-          <Button onClick={onEndTurn} className="bg-red-600 hover:bg-red-500 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-red-900/40 flex-shrink-0">
+          <Button disabled={disabled} onClick={onEndTurn} className="bg-red-600 hover:bg-red-500 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-red-900/40 flex-shrink-0 disabled:opacity-40">
             <Flag className="w-4 h-4 mr-1.5" />
             Lopeta vuoro
           </Button>
         ) : (
-          <Button onClick={onNextPhase} className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-amber-900/40 flex-shrink-0">
+          <Button disabled={disabled} onClick={onNextPhase} className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 h-9 text-sm rounded-xl shadow-lg shadow-amber-900/40 flex-shrink-0 disabled:opacity-40">
             Seuraava
             <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
