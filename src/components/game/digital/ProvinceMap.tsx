@@ -343,15 +343,17 @@ export const ProvinceMap = ({
     <div
       ref={containerRef}
       className="relative w-full h-full overflow-hidden"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
+      onMouseDown={isMinimap ? undefined : handleMouseDown}
+      onMouseMove={isMinimap ? undefined : handleMouseMove}
+      onMouseUp={isMinimap ? undefined : handleMouseUp}
+      onMouseLeave={isMinimap ? undefined : handleMouseUp}
+      onWheel={isMinimap ? undefined : handleWheel}
       style={{
         background: '#1a1a2e',
-        border: '6px solid #5c4a32',
-        borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',
+        ...(isMinimap ? {} : {
+          border: '6px solid #5c4a32',
+          borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',
+        }),
       }}
     >
       <svg
