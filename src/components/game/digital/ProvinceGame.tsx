@@ -226,6 +226,7 @@ export const ProvinceGame = () => {
             Lopeta vuoro 🏁
           </Button>
         )}
+      </div>
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
       {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
