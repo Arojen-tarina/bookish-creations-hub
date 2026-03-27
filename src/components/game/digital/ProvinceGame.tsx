@@ -215,11 +215,21 @@ export const ProvinceGame = () => {
           <Card className="bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
             <CardContent className="p-4 text-center">
               <h3 className="text-green-100 font-bold text-lg mb-2">✅ Resurssit kerätty!</h3>
-              <div className="flex items-center justify-center gap-4 text-sm">
+              <div className="flex items-center justify-center gap-4 text-sm flex-wrap">
                 <span className="text-amber-300">🪙 +{gameState.lastCollection.taxIncome} kultaa</span>
                 <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} miehiä</span>
                 <span className="text-green-300">🌾 {gameState.lastCollection.foodChange >= 0 ? '+' : ''}{gameState.lastCollection.foodChange} ruokaa</span>
               </div>
+              {(gameState.lastCollection.silkRoadBonus > 0 || gameState.lastCollection.marketBonus > 0) && (
+                <div className="flex items-center justify-center gap-3 text-xs text-stone-400 mt-1">
+                  {gameState.lastCollection.silkRoadBonus > 0 && (
+                    <span className="text-amber-400">🛤️ Silkkitie +{gameState.lastCollection.silkRoadBonus}</span>
+                  )}
+                  {gameState.lastCollection.marketBonus > 0 && (
+                    <span className="text-amber-400">🏪 Markkinat +{gameState.lastCollection.marketBonus}</span>
+                  )}
+                </div>
+              )}
               <p className="text-green-200/60 text-xs mt-2">Jatka seuraavaan vaiheeseen →</p>
             </CardContent>
           </Card>

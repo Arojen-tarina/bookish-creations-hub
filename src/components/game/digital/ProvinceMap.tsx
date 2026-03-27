@@ -215,7 +215,7 @@ const ProvinceTooltip = ({
           </div>
         )}
         {province.hasSilkRoad && (
-          <div className="text-amber-400 text-xs mt-1">🛤️ Silkkitien varrella</div>
+          <div className="text-amber-400 text-xs mt-1">🛤️ Silkkitien varrella (+2 💰/vuoro)</div>
         )}
         {province.unrest > 0 && (
           <div className="text-red-400 text-xs mt-1">⚠️ Levottomuus: {province.unrest}%</div>
@@ -407,49 +407,126 @@ export const ProvinceMap = ({
           />
         ))}
 
-        {/* Army markers */}
-        {!isMinimap && armies.map(army => {
-          const province = provinces.find(p => p.id === army.provinceId);
-          if (!province) return null;
-          const ownerColor = FACTION_DATA_1206[army.ownerId]?.color || '#888';
-          const isSelected = army.id === selectedArmyId;
-          const isPlayer = army.ownerId === playerFaction;
-          const sameProvArmies = armies.filter(a => a.provinceId === army.provinceId);
-          const idx = sameProvArmies.indexOf(army);
-          const offsetX = idx * 3.5 - (sameProvArmies.length - 1) * 1.75;
-          const center = projectPoint(province.center.x, province.center.y);
-          const ax = center.x + offsetX;
-          const ay = center.y - 3.5;
+        {/* Army markers — compact badges attached to province tokens */}
+        {!isMinimap && (() => {
+          // Group armies by province
+          const armiesByProvince: Record<string, Army[]> = {};
+          armies.forEach(army => {
+            if (!armiesByProvince[army.provinceId]) armiesByProvince[army.provinceId] = [];
+            armiesByProvince[army.provinceId].push(army);
+          });
 
-          return (
-            <g
-              key={army.id}
-              onClick={(e) => { e.stopPropagation(); onArmyClick?.(army.id); }}
-              className="cursor-pointer"
-            >
-              <circle cx={ax} cy={ay} r={2.8} fill={ownerColor} opacity={0.3} />
-              {isSelected && (
-                <circle cx={ax} cy={ay} r={3.2} fill="none" stroke="#fbbf24" strokeWidth={0.4} className="animate-pulse" />
-              )}
-              <circle
-                cx={ax} cy={ay} r={2.2}
-                fill={ownerColor}
-                stroke={isSelected ? '#fbbf24' : isPlayer ? '#fbbf24' : '#1a1a1a'}
-                strokeWidth={isSelected ? 0.5 : 0.25}
-              />
-              <text x={ax} y={ay + 0.7} textAnchor="middle" fontSize={2.2} className="pointer-events-none select-none">
-                {army.cavalry > army.infantry ? '🐴' : '⚔️'}
-              </text>
-              <rect x={ax - 2.5} y={ay + 2.5} width={5} height={1.8} rx={0.9} fill="rgba(0,0,0,0.85)" stroke={ownerColor} strokeWidth={0.15} />
-              <text x={ax} y={ay + 3.8} textAnchor="middle" fontSize={1} fontWeight="bold" fill="white" className="pointer-events-none select-none">
-                {army.cavalry + army.infantry}
-              </text>
-              {isPlayer && (
-                <circle cx={ax + 1.8} cy={ay - 1.8} r={0.7} fill={army.movementLeft > 0 ? '#22c55e' : '#ef4444'} stroke="#1a1a1a" strokeWidth={0.15} />
-              )}
-            </g>
-          );
-        })}
+          return Object.entries(armiesByProvince).map(([provinceId, provArmies]) => {
+            const province = provinces.find(p => p.id === provinceId);
+            if (!province) return null;
+            const center = projectPoint(province.center.x, province.center.y);
+            const r = TOKEN_RADIUS + (province.isCapital ? 0.5 : 0);
+
+            // Separate player and enemy armies
+            const playerArmies = provArmies.filter(a => a.ownerId === playerFaction);
+            const enemyArmies = provArmies.filter(a => a.ownerId !== playerFaction);
+
+            const badges: JSX.Element[] = [];
+
+            // Render a compact army badge
+            const renderBadge = (
+              armyGroup: Army[],
+              isPlayer: boolean,
+              offsetAngle: number,
+            ) => {
+              if (armyGroup.length === 0) return;
+              const totalUnits = armyGroup.reduce((s, a) => s + a.cavalry + a.infantry, 0);
+              const totalCav = armyGroup.reduce((s, a) => s + a.cavalry, 0);
+              const totalInf = armyGroup.reduce((s, a) => s + a.infantry, 0);
+              const hasMovement = armyGroup.some(a => a.movementLeft > 0);
+              const anySelected = armyGroup.some(a => a.id === selectedArmyId);
+              const mainArmy = armyGroup[0];
+              const ownerColor = FACTION_DATA_1206[mainArmy.ownerId]?.color || '#888';
+
+              // Position badge at edge of token
+              const rad = (offsetAngle * Math.PI) / 180;
+              const badgeR = 1.4;
+              const dist = r + badgeR + 0.2;
+              const bx = center.x + Math.cos(rad) * dist;
+              const by = center.y + Math.sin(rad) * dist;
+
+              badges.push(
+                <g
+                  key={`badge-${provinceId}-${isPlayer ? 'p' : 'e'}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Select first army (or cycle through if already selected)
+                    if (onArmyClick) {
+                      const currentIdx = armyGroup.findIndex(a => a.id === selectedArmyId);
+                      const nextIdx = (currentIdx + 1) % armyGroup.length;
+                      onArmyClick(armyGroup[nextIdx].id);
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
+                  {/* Selection glow */}
+                  {anySelected && (
+                    <circle cx={bx} cy={by} r={badgeR + 0.5} fill="none" stroke="#fbbf24" strokeWidth={0.3} className="animate-pulse" />
+                  )}
+
+                  {/* Badge circle */}
+                  <circle
+                    cx={bx} cy={by} r={badgeR}
+                    fill={ownerColor}
+                    stroke={anySelected ? '#fbbf24' : '#1a1a1a'}
+                    strokeWidth={anySelected ? 0.4 : 0.2}
+                  />
+
+                  {/* Unit count */}
+                  <text
+                    x={bx} y={by + 0.5}
+                    textAnchor="middle"
+                    fontSize={1.4}
+                    fontWeight="bold"
+                    fill="white"
+                    className="pointer-events-none select-none"
+                    style={{ textShadow: '0 0 2px rgba(0,0,0,0.9)' }}
+                  >
+                    {totalUnits}
+                  </text>
+
+                  {/* Movement indicator (green/red dot) for player */}
+                  {isPlayer && (
+                    <circle
+                      cx={bx + badgeR * 0.7}
+                      cy={by - badgeR * 0.7}
+                      r={0.4}
+                      fill={hasMovement ? '#22c55e' : '#ef4444'}
+                      stroke="#1a1a1a"
+                      strokeWidth={0.1}
+                    />
+                  )}
+
+                  {/* Stack indicator if multiple armies */}
+                  {armyGroup.length > 1 && (
+                    <text
+                      x={bx - badgeR * 0.7}
+                      y={by - badgeR * 0.5}
+                      textAnchor="middle"
+                      fontSize={0.9}
+                      fill="#fbbf24"
+                      fontWeight="bold"
+                      className="pointer-events-none select-none"
+                    >
+                      ×{armyGroup.length}
+                    </text>
+                  )}
+                </g>,
+              );
+            };
+
+            // Place player armies bottom-right, enemy top-left
+            renderBadge(playerArmies, true, 315);   // bottom-right
+            renderBadge(enemyArmies, false, 135);    // top-left
+
+            return <g key={`armies-${provinceId}`}>{badges}</g>;
+          });
+        })()}
 
         {/* Province labels when zoomed */}
         {zoom > 1.5 && provinces.map(province => {

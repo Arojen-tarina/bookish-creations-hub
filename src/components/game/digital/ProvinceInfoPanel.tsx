@@ -133,7 +133,10 @@ export const ProvinceInfoPanel = ({
         {province.hasSilkRoad && (
           <div className="flex items-center gap-2 bg-amber-900/30 rounded-lg p-3 border border-amber-700/30">
             <TrendingUp className="w-5 h-5 text-amber-400" />
-            <span className="text-amber-200">Silkkitien varrella</span>
+            <div>
+              <span className="text-amber-200">Silkkitien varrella</span>
+              <span className="text-xs text-amber-300/70 ml-2">+2 💰/vuoro</span>
+            </div>
           </div>
         )}
         
