@@ -201,14 +201,6 @@ export const ProvinceInfoPanel = ({
         {isPlayerOwned && (
           <div className="pt-2 border-t border-stone-700 space-y-2">
             <Button
-              onClick={onBuildFort}
-              disabled={!canBuildFort || province.fortLevel >= 3}
-              className="w-full bg-amber-600 hover:bg-amber-500"
-            >
-              <Castle className="w-4 h-4 mr-2" />
-              Rakenna linnoitus (50 💰)
-            </Button>
-            <Button
               onClick={onRecruitArmy}
               disabled={!canRecruit}
               variant="outline"

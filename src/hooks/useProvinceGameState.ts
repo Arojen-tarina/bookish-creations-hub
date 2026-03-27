@@ -504,7 +504,13 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (info.cost.artisans && prev.artisans < info.cost.artisans) return prev;
       
       const existing = prev.buildings[provinceId] || [];
-      if (existing.includes(type)) return prev;
+      // Fortress can be built multiple times (upgrades fortLevel up to 3)
+      if (type === 'fortress') {
+        const currentFortLevel = province.fortLevel;
+        if (currentFortLevel >= 3) return prev; // Max level reached
+      } else {
+        if (existing.includes(type)) return prev; // Other buildings only once
+      }
       
       const newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - info.cost.gold } : f);
       const newArtisans = prev.artisans - (info.cost.artisans || 0);
