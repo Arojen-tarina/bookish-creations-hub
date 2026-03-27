@@ -327,18 +327,21 @@ export const ProvinceMap = ({
     });
   }, [zoom]);
 
-  // Silk road connections
-  const silkRoadLines = useMemo(() => {
-    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    const silkProvinces = provinces.filter(p => p.hasSilkRoad);
-    for (const prov of silkProvinces) {
+  // All neighbor connections (deduplicated)
+  const neighborLines = useMemo(() => {
+    const lines: { x1: number; y1: number; x2: number; y2: number; isSilkRoad: boolean }[] = [];
+    for (const prov of provinces) {
       for (const nId of prov.neighbors) {
-        const neighbor = provinces.find(p => p.id === nId);
-        if (neighbor?.hasSilkRoad && prov.id < nId) {
-          lines.push({
-            x1: prov.center.x, y1: prov.center.y,
-            x2: neighbor.center.x, y2: neighbor.center.y,
-          });
+        if (prov.id < nId) { // deduplicate
+          const neighbor = provinces.find(p => p.id === nId);
+          if (neighbor) {
+            const isSilk = prov.hasSilkRoad && neighbor.hasSilkRoad;
+            lines.push({
+              x1: prov.center.x, y1: prov.center.y,
+              x2: neighbor.center.x, y2: neighbor.center.y,
+              isSilkRoad: isSilk,
+            });
+          }
         }
       }
     }
@@ -375,15 +378,15 @@ export const ProvinceMap = ({
           preserveAspectRatio="xMidYMid slice"
         />
 
-        {/* Silk Road routes */}
-        {silkRoadLines.map((l, i) => (
+        {/* Neighbor connections */}
+        {neighborLines.map((l, i) => (
           <line
-            key={`silk-${i}`}
+            key={`conn-${i}`}
             x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-            stroke="#c9342b"
-            strokeWidth={0.5}
-            strokeOpacity={0.7}
-            strokeDasharray="1.2,0.6"
+            stroke={l.isSilkRoad ? '#c9342b' : '#8b3a3a'}
+            strokeWidth={l.isSilkRoad ? 0.5 : 0.35}
+            strokeOpacity={l.isSilkRoad ? 0.7 : 0.5}
+            strokeDasharray={l.isSilkRoad ? '1.2,0.6' : '0.8,0.5'}
           />
         ))}
 
