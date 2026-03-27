@@ -142,6 +142,30 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
 };
 
 // ============= COMBAT =============
+const createProvinceGarrison = (province: Province): Army | null => {
+  if (!province.ownerId) return null;
+
+  const infantry = Math.max(
+    province.garrison,
+    province.fortLevel > 0 ? province.fortLevel * 3 + Math.max(1, Math.floor(province.developmentLevel / 2)) : 0,
+  );
+
+  if (infantry <= 0) return null;
+
+  return {
+    id: `garrison-${province.id}`,
+    ownerId: province.ownerId,
+    provinceId: province.id,
+    cavalry: 0,
+    infantry,
+    siege: 0,
+    morale: Math.min(95, 55 + province.fortLevel * 10 + province.developmentLevel * 2),
+    supply: 20,
+    movementLeft: 0,
+    leaderBonus: 0,
+  };
+};
+
 const resolveCombat = (
   attacker: Army,
   defender: Army,
@@ -159,34 +183,40 @@ const resolveCombat = (
   defenseRoll: number;
 } => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[terrain.terrain];
-  
-  const attackerPower = (attacker.cavalry * 3 + attacker.infantry * 1.5 + attacker.siege)
-    * (1 + attacker.leaderBonus)
-    * (attacker.morale / 100)
-    + attackBonus;
-  
-  const defenderPower = (defender.cavalry * 2 + defender.infantry * 2 + defender.siege)
-    * (1 + terrainInfo.defenseBonus * 0.2)
-    * (1 + terrain.fortLevel * 0.3)
-    * (defender.morale / 100)
-    + defenseBonus;
-  
+  const calculateLoss = (units: number, ratio: number) =>
+    units <= 0 ? 0 : Math.max(1, Math.round(units * ratio * (0.6 + Math.random() * 0.4)));
+
+  const attackerPower = (
+    attacker.cavalry * 3 +
+    attacker.infantry * 1.5 +
+    attacker.siege
+  ) * (1 + attacker.leaderBonus) * (attacker.morale / 100) + attackBonus;
+
+  const defenderPower = (
+    defender.cavalry * 2 +
+    defender.infantry * 2 +
+    defender.siege
+  ) * (1 + terrainInfo.defenseBonus * 0.2) * (1 + terrain.fortLevel * 0.35) * (defender.morale / 100) + defenseBonus;
+
   const attackRoll = Math.floor(Math.random() * 6) + 1;
   const defenseRoll = Math.floor(Math.random() * 6) + 1;
-  
-  const ratio = (attackerPower + attackRoll * 2) / (defenderPower + defenseRoll * 2);
-  const attackerWins = ratio > 0.9;
-  
-  const baseLossRatio = attackerWins ? 0.15 : 0.35;
-  const defenderLossRatio = attackerWins ? 0.45 : 0.15;
-  
+  const ratio = (attackerPower + attackRoll * 2) / Math.max(1, defenderPower + defenseRoll * 2);
+  const attackerWins = ratio > 0.95;
+
+  const attackerLossRatio = attackerWins ? 0.14 : 0.32;
+  const defenderLossRatio = attackerWins ? 0.42 : 0.16;
+  const defenderRemaining =
+    defender.cavalry + defender.infantry -
+    calculateLoss(defender.cavalry, defenderLossRatio) -
+    calculateLoss(defender.infantry, defenderLossRatio);
+
   return {
     attackerWins,
-    defenderDestroyed: attackerWins && Math.random() > 0.35,
-    attackerCavalryLoss: Math.max(1, Math.floor(attacker.cavalry * baseLossRatio * (0.5 + Math.random() * 0.5))),
-    attackerInfantryLoss: Math.max(1, Math.floor(attacker.infantry * baseLossRatio * (0.5 + Math.random() * 0.5))),
-    defenderCavalryLoss: Math.max(1, Math.floor(defender.cavalry * defenderLossRatio)),
-    defenderInfantryLoss: Math.max(1, Math.floor(defender.infantry * defenderLossRatio)),
+    defenderDestroyed: attackerWins && defenderRemaining <= 0,
+    attackerCavalryLoss: calculateLoss(attacker.cavalry, attackerLossRatio),
+    attackerInfantryLoss: calculateLoss(attacker.infantry, attackerLossRatio),
+    defenderCavalryLoss: calculateLoss(defender.cavalry, defenderLossRatio),
+    defenderInfantryLoss: calculateLoss(defender.infantry, defenderLossRatio),
     attackRoll,
     defenseRoll,
   };
