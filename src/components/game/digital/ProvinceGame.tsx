@@ -69,6 +69,13 @@ export const ProvinceGame = () => {
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
 
+  // Auto-collect resources when entering resource phase
+  useEffect(() => {
+    if (gameState?.phase === 'resource' && !gameState.resourcesCollected) {
+      collectResources();
+    }
+  }, [gameState?.phase, gameState?.resourcesCollected, collectResources]);
+
   // Show AI overlay after turn end
   useEffect(() => {
     if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
