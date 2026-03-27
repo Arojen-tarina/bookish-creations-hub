@@ -42,7 +42,7 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
   effect: string;
 }> = {
-  camp: { name: 'Leiri', emoji: '⛺', cost: { gold: 15 }, effect: 'Hallinta/spawn-piste' },
+  camp: { name: 'Leiri', emoji: '⛺', cost: { gold: 15 }, effect: '+2 ruokaa/vuoro, spawn-piste' },
   market: { name: 'Markkina', emoji: '🏪', cost: { gold: 25, artisans: 1 }, effect: '+3 kultaa/vuoro' },
   fortress: { name: 'Linnoitus', emoji: '🏯', cost: { gold: 50, artisans: 2 }, effect: '+3 puolustus' },
 };
@@ -534,7 +534,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const playerArmyCount = prev.armies.filter(a => a.ownerId === playerFaction).length;
       const foodUpkeep = -playerArmyCount;
       const farmland = prev.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-      const foodGain = Math.floor(farmland * 0.5);
+      const campCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
+        const p = prev.provinces.find(pr => pr.id === pid);
+        return p?.ownerId === playerFaction && buildings.includes('camp');
+      }).length;
+      const foodGain = Math.floor(farmland * 0.5) + campCount * 2;
       const foodChange = foodUpkeep + foodGain;
       
       const newFactions = prev.factions.map(f =>
@@ -575,7 +579,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           taxIncome += marketCount * 3;
           const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
           const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5);
+          const aiCampCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+            const p = state.provinces.find(pr => pr.id === pid);
+            return p?.ownerId === playerFaction && buildings.includes('camp');
+          }).length;
+          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5) + aiCampCount * 2;
           
           state = {
             ...state,
