@@ -1,41 +1,16 @@
 /**
- * ProvinceMap.tsx — Provinssikartta (yksinkertainen SVG-versio)
+ * ProvinceMap.tsx — Kuvitettu pelilautakartta
  * 
- * Pelilaudan 2D-karttanäkymä, jossa provinssit esitetään heksagoneina.
- * Ominaisuudet:
- * - Zoom (hiiren rulla tai painikkeet) ja panorointi (raahaamalla)
- * - Minikartta vasemmassa alakulmassa pikanavigoinnille
- * - Hover-tooltip: provinssin nimi, omistaja, verot, maasto, linnoitukset
- * - Silkkitien reitit näkyvät katkoviivoina provinssien välillä
- * - Provinssien väri kertoo omistajan, koko kehitystason
- * 
- * Tämä on vaihtoehtoinen, kevyempi karttanäkymä verrattuna CivilizationMap-komponenttiin.
+ * Käyttää kuvitettua lautapelikuvaa taustana ja renderöi provinssit
+ * interaktiivisina pelinappuloina laudan päälle.
  */
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Province, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
-import { ZoomIn, ZoomOut, Maximize2, Navigation } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import worldMapImg from '@/assets/world-map.png';
+import gameBoardImg from '@/assets/game-board.jpg';
 
-// Full world map coordinate system (Robinson projection approximation)
-// x: 0-100 (left to right), y: 0-56 (top to bottom)
-const MAP_BOUNDS = {
-  minX: 0,
-  maxX: 100,
-  minY: 0,
-  maxY: 56,
-};
-
-// Default view zoomed into Eurasia
-const DEFAULT_VIEW = {
-  x: 44,
-  y: 1,
-  width: 54,
-  height: 32,
-};
-
-const MAP_WIDTH = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
-const MAP_HEIGHT = MAP_BOUNDS.maxY - MAP_BOUNDS.minY;
+const BOARD_SIZE = 100;
 
 interface ProvinceMapProps {
   provinces: Province[];
@@ -46,48 +21,25 @@ interface ProvinceMapProps {
   showArmies?: boolean;
 }
 
-interface ProvincePolygonProps {
-  province: Province;
-  isSelected: boolean;
-  isHighlighted: boolean;
-  isPlayerOwned: boolean;
-  onClick: () => void;
-  onHover: (province: Province | null) => void;
-}
+const TOKEN_RADIUS = 2.2;
 
-// Terrain colors matching the board reference
-const TERRAIN_COLORS: Record<string, string> = {
-  steppe: '#c8a860',
-  grassland: '#9ab860',
-  farmland: '#7aaa38',
-  desert: '#c89060',
-  mountain: '#7a7a8a',
-  forest: '#4a7a4a',
-  taiga: '#3a6a3a',
-  tundra: '#a8b8c8',
-  hills: '#8a8a6a',
-  marsh: '#5a8a66',
-};
-
-const CIRCLE_RADIUS = 1.0;
-
-const ProvinceCircle = ({
+const ProvinceToken = ({
   province,
   isSelected,
   isHighlighted,
   isPlayerOwned,
   onClick,
   onHover,
-}: ProvincePolygonProps) => {
-  const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : null;
-  const terrainColor = TERRAIN_COLORS[province.terrain] || '#888888';
-  const r = CIRCLE_RADIUS + (province.isCapital ? 0.3 : 0) + province.developmentLevel * 0.05;
-
-  let borderColor = ownerColor || '#5a5a5a';
-  let borderWidth = 0.2;
-  if (isSelected) { borderColor = '#fbbf24'; borderWidth = 0.35; }
-  else if (isHighlighted) { borderColor = '#22c55e'; borderWidth = 0.3; }
-  else if (ownerColor) { borderWidth = 0.25; }
+}: {
+  province: Province;
+  isSelected: boolean;
+  isHighlighted: boolean;
+  isPlayerOwned: boolean;
+  onClick: () => void;
+  onHover: (p: Province | null) => void;
+}) => {
+  const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : '#888';
+  const r = TOKEN_RADIUS + (province.isCapital ? 0.5 : 0);
 
   return (
     <g
@@ -96,147 +48,104 @@ const ProvinceCircle = ({
       onMouseLeave={() => onHover(null)}
       className="cursor-pointer"
     >
-      {/* Faction glow ring */}
-      {ownerColor && (
-        <circle
-          cx={province.center.x} cy={province.center.y}
-          r={r + 0.4}
-          fill="none" stroke={ownerColor} strokeWidth={0.12} opacity={0.5}
-        />
-      )}
-
-      {/* Main circle */}
+      {/* Shadow */}
       <circle
-        cx={province.center.x} cy={province.center.y}
+        cx={province.center.x + 0.3}
+        cy={province.center.y + 0.3}
         r={r}
-        fill={terrainColor}
-        stroke={borderColor}
-        strokeWidth={borderWidth}
+        fill="rgba(0,0,0,0.4)"
+      />
+
+      {/* Token base */}
+      <circle
+        cx={province.center.x}
+        cy={province.center.y}
+        r={r}
+        fill={ownerColor}
+        stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : '#1a1a1a'}
+        strokeWidth={isSelected ? 0.6 : 0.3}
         opacity={0.9}
+      />
+
+      {/* Inner detail */}
+      <circle
+        cx={province.center.x}
+        cy={province.center.y}
+        r={r * 0.6}
+        fill="none"
+        stroke="rgba(255,255,255,0.3)"
+        strokeWidth={0.15}
       />
 
       {/* Selection pulse */}
       {isSelected && (
         <circle
-          cx={province.center.x} cy={province.center.y}
-          r={r + 0.5}
-          fill="none" stroke="#fbbf24" strokeWidth={0.15} opacity={0.6}
+          cx={province.center.x}
+          cy={province.center.y}
+          r={r + 0.8}
+          fill="none"
+          stroke="#fbbf24"
+          strokeWidth={0.25}
+          opacity={0.7}
           className="animate-pulse"
         />
       )}
 
-      {/* Capital dashed ring */}
+      {/* Capital crown */}
       {province.isCapital && (
-        <circle
-          cx={province.center.x} cy={province.center.y}
-          r={r + 0.15}
-          fill="none" stroke="#ffd700" strokeWidth={0.1} strokeDasharray="0.3,0.2"
-        />
+        <text
+          x={province.center.x}
+          y={province.center.y + 0.5}
+          textAnchor="middle"
+          fontSize={2}
+          className="pointer-events-none select-none"
+        >
+          👑
+        </text>
       )}
 
-      {/* Crossed swords (army indicator) */}
-      {province.garrison > 0 && (
-        <g transform={`translate(${province.center.x},${province.center.y - 0.2})`}>
-          <line x1={-0.5} y1={0.5} x2={0.35} y2={-0.6} stroke="#3a2a1a" strokeWidth={0.12} strokeLinecap="round" />
-          <line x1={0.5} y1={0.5} x2={-0.35} y2={-0.6} stroke="#3a2a1a" strokeWidth={0.12} strokeLinecap="round" />
-        </g>
+      {/* Garrison indicator */}
+      {province.garrison > 0 && !province.isCapital && (
+        <text
+          x={province.center.x}
+          y={province.center.y + 0.6}
+          textAnchor="middle"
+          fontSize={1.6}
+          fill="#fff"
+          fontWeight="bold"
+          className="pointer-events-none select-none"
+          style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}
+        >
+          ⚔
+        </text>
       )}
 
-      {/* Fort icon */}
+      {/* Fort marker */}
       {province.fortLevel > 0 && (
         <rect
-          x={province.center.x + r * 0.5} y={province.center.y - r * 0.8}
-          width={0.5} height={0.5} rx={0.05}
-          fill="#556b2f" stroke="#3a3a2a" strokeWidth={0.04}
+          x={province.center.x + r * 0.5}
+          y={province.center.y - r * 0.9}
+          width={1.2}
+          height={1.2}
+          rx={0.15}
+          fill="#4a5568"
+          stroke="#1a1a1a"
+          strokeWidth={0.1}
         />
       )}
 
-      {/* Silk Road dot */}
+      {/* Silk Road marker */}
       {province.hasSilkRoad && (
         <circle
-          cx={province.center.x + r * 0.6} cy={province.center.y + r * 0.6}
-          r={0.25} fill="#f59e0b" opacity={0.8}
+          cx={province.center.x + r * 0.6}
+          cy={province.center.y + r * 0.6}
+          r={0.5}
+          fill="#f59e0b"
+          stroke="#92400e"
+          strokeWidth={0.1}
         />
       )}
     </g>
-  );
-};
-
-// Minimap component
-const Minimap = ({
-  provinces,
-  viewBox,
-  playerFaction,
-  onNavigate,
-}: {
-  provinces: Province[];
-  viewBox: { x: number; y: number; width: number; height: number };
-  playerFaction: FactionId;
-  onNavigate: (x: number, y: number) => void;
-}) => {
-  const minimapRef = useRef<SVGSVGElement>(null);
-  
-  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!minimapRef.current) return;
-    
-    const rect = minimapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * MAP_WIDTH + MAP_BOUNDS.minX;
-    const y = ((e.clientY - rect.top) / rect.height) * MAP_HEIGHT + MAP_BOUNDS.minY;
-    
-    onNavigate(x, y);
-  };
-  
-  return (
-    <div className="absolute bottom-4 left-4 w-48 h-32 bg-stone-900/90 border border-amber-700/30 rounded-lg overflow-hidden shadow-xl">
-      <svg
-        ref={minimapRef}
-        viewBox={`${MAP_BOUNDS.minX} ${MAP_BOUNDS.minY} ${MAP_WIDTH} ${MAP_HEIGHT}`}
-        className="w-full h-full cursor-pointer"
-        onClick={handleClick}
-      >
-        {/* Background */}
-        <rect
-          x={MAP_BOUNDS.minX}
-          y={MAP_BOUNDS.minY}
-          width={MAP_WIDTH}
-          height={MAP_HEIGHT}
-          fill="#1e293b"
-        />
-        
-        {/* Provinces (simplified) */}
-        {provinces.map(province => {
-          const color = province.ownerId 
-            ? FACTION_DATA_1206[province.ownerId]?.color 
-            : '#475569';
-          
-          return (
-            <circle
-              key={province.id}
-              cx={province.center.x}
-              cy={province.center.y}
-              r={0.8}
-              fill={color}
-              fillOpacity={0.8}
-            />
-          );
-        })}
-        
-        {/* Viewport indicator */}
-        <rect
-          x={viewBox.x}
-          y={viewBox.y}
-          width={viewBox.width}
-          height={viewBox.height}
-          fill="none"
-          stroke="#fbbf24"
-          strokeWidth={0.5}
-        />
-      </svg>
-      
-      <div className="absolute top-1 left-1 text-[8px] text-amber-200/60 font-bold">
-        KARTTA
-      </div>
-    </div>
   );
 };
 
@@ -254,68 +163,100 @@ const ProvinceTooltip = ({
   
   return (
     <div
-      className="absolute z-50 pointer-events-none bg-stone-900/95 border border-amber-700/50 rounded-lg p-3 shadow-2xl min-w-[200px]"
+      className="absolute z-50 pointer-events-none bg-stone-900/95 border-2 border-amber-700/60 rounded-lg p-3 shadow-2xl min-w-[220px]"
       style={{
         left: position.x + 15,
         top: position.y + 15,
-        transform: position.x > window.innerWidth - 250 ? 'translateX(-100%)' : undefined,
+        transform: position.x > window.innerWidth - 260 ? 'translateX(-110%)' : undefined,
       }}
     >
       <div className="flex items-center gap-2 mb-2">
         <span className="text-lg">{terrainInfo.emoji}</span>
-        <span className="text-amber-100 font-bold">{province.name}</span>
+        <span className="text-amber-100 font-bold text-sm">{province.name}</span>
         {province.isCapital && <span className="text-amber-400">👑</span>}
       </div>
-      
-      <div className="space-y-1 text-sm text-stone-300">
+      <div className="space-y-1 text-xs text-stone-300">
         <div className="flex justify-between">
           <span>Omistaja:</span>
-          <span style={{ color: owner?.color }}>
-            {owner?.name || 'Neutraali'}
-          </span>
+          <span style={{ color: owner?.color }}>{owner?.name || 'Neutraali'}</span>
         </div>
-        
         <div className="flex justify-between">
           <span>Maasto:</span>
           <span>{terrainInfo.name}</span>
         </div>
-        
         <div className="flex justify-between">
           <span>Verot:</span>
           <span>💰 {province.baseTax}</span>
         </div>
-        
         <div className="flex justify-between">
           <span>Miesvoima:</span>
           <span>👥 {province.baseManpower}</span>
         </div>
-        
         {province.fortLevel > 0 && (
           <div className="flex justify-between">
             <span>Linnoitus:</span>
             <span>🏯 Taso {province.fortLevel}</span>
           </div>
         )}
-        
         {tradeGood && (
           <div className="flex justify-between">
             <span>Kauppatavara:</span>
             <span>{tradeGood.emoji} {tradeGood.name}</span>
           </div>
         )}
-        
         {province.hasSilkRoad && (
-          <div className="text-amber-400 text-xs mt-1">
-            🛤️ Silkkitien varrella
-          </div>
+          <div className="text-amber-400 text-xs mt-1">🛤️ Silkkitien varrella</div>
         )}
-        
         {province.unrest > 0 && (
-          <div className="text-red-400 text-xs mt-1">
-            ⚠️ Levottomuus: {province.unrest}%
-          </div>
+          <div className="text-red-400 text-xs mt-1">⚠️ Levottomuus: {province.unrest}%</div>
         )}
       </div>
+    </div>
+  );
+};
+
+// Minimap
+const Minimap = ({
+  provinces,
+  viewBox,
+  playerFaction,
+  onNavigate,
+}: {
+  provinces: Province[];
+  viewBox: { x: number; y: number; width: number; height: number };
+  playerFaction: FactionId;
+  onNavigate: (x: number, y: number) => void;
+}) => {
+  const ref = useRef<SVGSVGElement>(null);
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * BOARD_SIZE;
+    const y = ((e.clientY - rect.top) / rect.height) * BOARD_SIZE;
+    onNavigate(x, y);
+  };
+
+  return (
+    <div className="absolute bottom-4 left-4 w-40 h-40 bg-stone-900/90 border-2 border-amber-700/40 rounded-lg overflow-hidden shadow-xl">
+      <svg ref={ref} viewBox={`0 0 ${BOARD_SIZE} ${BOARD_SIZE}`} className="w-full h-full cursor-pointer" onClick={handleClick}>
+        <image href={gameBoardImg} x={0} y={0} width={BOARD_SIZE} height={BOARD_SIZE} />
+        {provinces.map(p => (
+          <circle
+            key={p.id}
+            cx={p.center.x}
+            cy={p.center.y}
+            r={1.2}
+            fill={p.ownerId ? FACTION_DATA_1206[p.ownerId]?.color : '#666'}
+            fillOpacity={0.9}
+          />
+        ))}
+        <rect
+          x={viewBox.x} y={viewBox.y}
+          width={viewBox.width} height={viewBox.height}
+          fill="none" stroke="#fbbf24" strokeWidth={0.8}
+        />
+      </svg>
+      <div className="absolute top-1 left-1 text-[8px] text-amber-200/60 font-bold">KARTTA</div>
     </div>
   );
 };
@@ -335,25 +276,20 @@ export const ProvinceMap = ({
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Calculate viewBox based on zoom and pan
+  const defaultView = { x: 0, y: 0, width: BOARD_SIZE, height: BOARD_SIZE };
+
   const viewBox = useMemo(() => {
-    const width = DEFAULT_VIEW.width / zoom;
-    const height = DEFAULT_VIEW.height / zoom;
-    const x = DEFAULT_VIEW.x + (DEFAULT_VIEW.width - width) / 2 - pan.x / zoom;
-    const y = DEFAULT_VIEW.y + (DEFAULT_VIEW.height - height) / 2 - pan.y / zoom;
-    
-    return { x, y, width, height };
+    const w = defaultView.width / zoom;
+    const h = defaultView.height / zoom;
+    const x = (BOARD_SIZE - w) / 2 - pan.x / zoom;
+    const y = (BOARD_SIZE - h) / 2 - pan.y / zoom;
+    return { x, y, width: w, height: h };
   }, [zoom, pan]);
 
-  // Zoom controls
-  const handleZoomIn = () => setZoom(prev => Math.min(prev * 1.5, 5));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev / 1.5, 0.5));
-  const handleResetView = useCallback(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
+  const handleZoomIn = () => setZoom(prev => Math.min(prev * 1.4, 4));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev / 1.4, 0.8));
+  const handleResetView = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []);
 
-  // Pan handling
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button === 0) {
       setIsDragging(true);
@@ -363,158 +299,131 @@ export const ProvinceMap = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
-    
     if (isDragging) {
-      setPan({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
+      setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
   }, [isDragging, dragStart]);
 
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+  const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
-  // Wheel zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(prev => Math.max(0.5, Math.min(5, prev * delta)));
+    setZoom(prev => Math.max(0.8, Math.min(4, prev * delta)));
   }, []);
 
-  // Navigate from minimap
   const handleMinimapNavigate = useCallback((x: number, y: number) => {
-    const centerX = DEFAULT_VIEW.x + DEFAULT_VIEW.width / 2;
-    const centerY = DEFAULT_VIEW.y + DEFAULT_VIEW.height / 2;
     setPan({
-      x: (centerX - x) * zoom,
-      y: (centerY - y) * zoom,
+      x: (BOARD_SIZE / 2 - x) * zoom,
+      y: (BOARD_SIZE / 2 - y) * zoom,
     });
   }, [zoom]);
 
+  // Silk road connections
+  const silkRoadLines = useMemo(() => {
+    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+    const silkProvinces = provinces.filter(p => p.hasSilkRoad);
+    for (const prov of silkProvinces) {
+      for (const nId of prov.neighbors) {
+        const neighbor = provinces.find(p => p.id === nId);
+        if (neighbor?.hasSilkRoad && prov.id < nId) {
+          lines.push({
+            x1: prov.center.x, y1: prov.center.y,
+            x2: neighbor.center.x, y2: neighbor.center.y,
+          });
+        }
+      }
+    }
+    return lines;
+  }, [provinces]);
+
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950"
+      className="relative w-full h-full overflow-hidden"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onWheel={handleWheel}
+      style={{
+        background: '#1a1a2e',
+        border: '6px solid #5c4a32',
+        borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',
+      }}
     >
-      {/* Map SVG */}
       <svg
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
         className="w-full h-full"
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        {/* Definitions */}
-        <defs>
-          <filter id="map-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="0.3" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        
-        {/* World map background */}
+        {/* Board image */}
         <image
-          href={worldMapImg}
-          x={MAP_BOUNDS.minX}
-          y={MAP_BOUNDS.minY}
-          width={MAP_WIDTH}
-          height={MAP_HEIGHT}
+          href={gameBoardImg}
+          x={0} y={0}
+          width={BOARD_SIZE} height={BOARD_SIZE}
           preserveAspectRatio="xMidYMid slice"
         />
-        
-        {/* Province connections (roads) */}
-        {provinces.filter(p => p.hasSilkRoad).map(province => (
-          province.neighbors
-            .filter(nId => provinces.find(p => p.id === nId)?.hasSilkRoad)
-            .map(neighborId => {
-              const neighbor = provinces.find(p => p.id === neighborId);
-              if (!neighbor || province.id > neighborId) return null;
-              
-              return (
-                <line
-                  key={`${province.id}-${neighborId}`}
-                  x1={province.center.x}
-                  y1={province.center.y}
-                  x2={neighbor.center.x}
-                  y2={neighbor.center.y}
-                  stroke="#f59e0b"
-                  strokeWidth={0.2}
-                  strokeOpacity={0.4}
-                  strokeDasharray="0.5,0.3"
-                />
-              );
-            })
+
+        {/* Silk Road routes */}
+        {silkRoadLines.map((l, i) => (
+          <line
+            key={`silk-${i}`}
+            x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+            stroke="#c9342b"
+            strokeWidth={0.5}
+            strokeOpacity={0.7}
+            strokeDasharray="1.2,0.6"
+          />
         ))}
-        
-        {/* Province polygons */}
-        <g filter="url(#map-glow)">
-          {provinces.map(province => (
-            <ProvinceCircle
-              key={province.id}
-              province={province}
-              isSelected={province.id === selectedProvinceId}
-              isHighlighted={highlightedProvinces.includes(province.id)}
-              isPlayerOwned={province.ownerId === playerFaction}
-              onClick={() => onProvinceClick(province.id)}
-              onHover={setHoveredProvince}
-            />
-          ))}
-        </g>
-        
-        {/* Province labels (only when zoomed in) */}
+
+        {/* Province tokens */}
+        {provinces.map(province => (
+          <ProvinceToken
+            key={province.id}
+            province={province}
+            isSelected={province.id === selectedProvinceId}
+            isHighlighted={highlightedProvinces.includes(province.id)}
+            isPlayerOwned={province.ownerId === playerFaction}
+            onClick={() => onProvinceClick(province.id)}
+            onHover={setHoveredProvince}
+          />
+        ))}
+
+        {/* Province labels when zoomed */}
         {zoom > 1.5 && provinces.map(province => (
           <text
             key={`label-${province.id}`}
             x={province.center.x}
-            y={province.center.y + 2.5}
+            y={province.center.y + 4}
             textAnchor="middle"
-            fontSize={0.8}
-            fill="#e2e8f0"
-            fillOpacity={0.8}
+            fontSize={1.4}
+            fill="#f5e6c8"
+            fontWeight="bold"
             className="pointer-events-none select-none"
-            style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}
+            style={{ textShadow: '0 0 3px rgba(0,0,0,0.9)' }}
           >
             {province.name}
           </text>
         ))}
       </svg>
-      
+
       {/* Zoom controls */}
       <div className="absolute top-4 right-4 flex flex-col gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomIn}
-          className="bg-stone-900/80 border-amber-700/30 text-amber-200 hover:bg-stone-800"
-        >
+        <Button variant="outline" size="icon" onClick={handleZoomIn}
+          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
           <ZoomIn className="w-4 h-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomOut}
-          className="bg-stone-900/80 border-amber-700/30 text-amber-200 hover:bg-stone-800"
-        >
+        <Button variant="outline" size="icon" onClick={handleZoomOut}
+          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
           <ZoomOut className="w-4 h-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleResetView}
-          className="bg-stone-900/80 border-amber-700/30 text-amber-200 hover:bg-stone-800"
-        >
+        <Button variant="outline" size="icon" onClick={handleResetView}
+          className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
           <Maximize2 className="w-4 h-4" />
         </Button>
       </div>
-      
+
       {/* Minimap */}
       <Minimap
         provinces={provinces}
@@ -522,17 +431,14 @@ export const ProvinceMap = ({
         playerFaction={playerFaction}
         onNavigate={handleMinimapNavigate}
       />
-      
-      {/* Province tooltip */}
+
+      {/* Tooltip */}
       {hoveredProvince && (
-        <ProvinceTooltip
-          province={hoveredProvince}
-          position={mousePosition}
-        />
+        <ProvinceTooltip province={hoveredProvince} position={mousePosition} />
       )}
-      
-      {/* Map info */}
-      <div className="absolute top-4 left-4 bg-stone-900/80 border border-amber-700/30 rounded-lg px-3 py-2 text-sm text-amber-200/80">
+
+      {/* Info bar */}
+      <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
         <span className="font-bold">Vuosi 1206</span>
         <span className="mx-2">•</span>
         <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
