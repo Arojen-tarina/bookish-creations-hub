@@ -1193,47 +1193,62 @@ export const CivilizationMap = ({
                 className="cursor-pointer"
                 style={{ transition: 'transform 0.2s ease' }}
               >
+                {/* Outer glow for visibility */}
+                <circle
+                  cx={armyX}
+                  cy={armyY}
+                  r={22}
+                  fill={ownerColor}
+                  opacity={0.25}
+                />
+                
                 {/* Selection ring */}
                 {isSelected && (
                   <circle
                     cx={armyX}
                     cy={armyY}
-                    r={20}
+                    r={24}
                     fill="none"
                     stroke="#fbbf24"
                     strokeWidth={3}
                     className="animate-pulse"
-                    opacity={0.8}
+                    opacity={0.9}
                   />
                 )}
                 
-                {/* Army background */}
+                {/* Army background - larger */}
                 <circle
                   cx={armyX}
                   cy={armyY}
-                  r={14}
+                  r={17}
                   fill={ownerColor}
-                  stroke={isPlayerArmy ? '#fbbf24' : '#1f2937'}
-                  strokeWidth={isPlayerArmy ? 2.5 : 2}
+                  stroke={isSelected ? '#fbbf24' : isPlayerArmy ? '#fbbf24' : '#1f2937'}
+                  strokeWidth={isSelected ? 3 : isPlayerArmy ? 2.5 : 2}
                   filter={isSelected ? 'url(#province-glow)' : undefined}
                 />
                 
-                {/* Army icon */}
-                <g transform={`translate(${armyX - 6}, ${armyY - 6})`}>
-                  {army.cavalry > army.infantry ? (
-                    // Cavalry-heavy - horse icon
-                    <path
-                      d="M6 4c-.5 0-.75.25-1 .75s-.5.75-1 .75c-.75 0-1.25-.5-1.75-1L1 6l.5 1.5 1 .5c.5 0 1-.5 1.5-.5h2l1 1.5h2l-.5-2-1-1c0-.5-.25-1-.5-1.5l-1-.5z"
-                      fill="white"
-                      transform="scale(1.3)"
-                    />
-                  ) : (
-                    // Infantry-heavy - sword icon
-                    <Sword className="w-3 h-3 text-white" />
-                  )}
-                </g>
+                {/* Army emoji icon - always visible */}
+                <text
+                  x={armyX}
+                  y={armyY + 5}
+                  textAnchor="middle"
+                  fontSize={16}
+                  className="pointer-events-none select-none"
+                >
+                  {army.cavalry > army.infantry ? '🐴' : '⚔️'}
+                </text>
                 
-                {/* Unit count */}
+                {/* Unit count badge - always visible */}
+                <rect
+                  x={armyX - 16}
+                  y={armyY + 16}
+                  width={32}
+                  height={14}
+                  rx={7}
+                  fill="rgba(0,0,0,0.85)"
+                  stroke={ownerColor}
+                  strokeWidth={1.5}
+                />
                 <text
                   x={armyX}
                   y={armyY + 26}
@@ -1241,21 +1256,32 @@ export const CivilizationMap = ({
                   fontSize={9}
                   fontWeight="bold"
                   fill="white"
-                  style={{ textShadow: '0 0 4px rgba(0,0,0,0.9)' }}
+                  className="pointer-events-none select-none"
                 >
-                  {army.cavalry > 0 && `🐴${army.cavalry}`}
-                  {army.infantry > 0 && ` ⚔${army.infantry}`}
+                  {`${army.cavalry}🐴 ${army.infantry}⚔`}
                 </text>
                 
                 {/* Movement indicator */}
                 {isPlayerArmy && army.movementLeft > 0 && (
                   <circle
-                    cx={armyX + 10}
-                    cy={armyY - 10}
-                    r={5}
+                    cx={armyX + 14}
+                    cy={armyY - 14}
+                    r={6}
                     fill="#22c55e"
                     stroke="#1f2937"
-                    strokeWidth={1}
+                    strokeWidth={1.5}
+                  />
+                )}
+                
+                {/* No movement left indicator */}
+                {isPlayerArmy && army.movementLeft === 0 && (
+                  <circle
+                    cx={armyX + 14}
+                    cy={armyY - 14}
+                    r={6}
+                    fill="#ef4444"
+                    stroke="#1f2937"
+                    strokeWidth={1.5}
                   />
                 )}
               </g>
