@@ -204,6 +204,7 @@ export const ProvinceGame = () => {
           currentPhase={gameState.phase}
           onNextPhase={nextPhase}
           onEndTurn={endTurn}
+          disabled={showAIOverlay}
         />
       </div>
 
