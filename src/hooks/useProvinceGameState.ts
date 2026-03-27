@@ -878,6 +878,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,
     getRelation, getPlayerFaction, getArmiesInProvince, canMoveTo,
-    endPhase,
+    endPhase, collectResources,
   };
 };
