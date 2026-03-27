@@ -167,6 +167,17 @@ export const GameHUD = ({
             <HelpCircle className="w-5 h-5" />
           </Button>
           
+          {/* Ohjekirja link */}
+          <a
+            href="/ohjekirja"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-md text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 transition-all"
+            title="Avaa ohjekirja"
+          >
+            <BookOpen className="w-5 h-5" />
+          </a>
+          
           {/* Fullscreen button */}
           <Button
             variant="ghost"
