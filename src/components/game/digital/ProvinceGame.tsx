@@ -207,28 +207,6 @@ export const ProvinceGame = () => {
         />
       </div>
 
-      {/* ============= FLOATING NEXT PHASE BUTTON (above cards) ============= */}
-      <div className={`fixed bottom-[120px] left-1/2 -translate-x-1/2 z-30 ${
-        showSidebar ? 'lg:-translate-x-[calc(50%+190px)]' : ''
-      }`}>
-        {gameState.phase !== 'end' ? (
-          <Button
-            size="lg"
-            onClick={nextPhase}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-amber-900/50 border-2 border-amber-400/30 rounded-full"
-          >
-            Seuraava vaihe ➡️
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            onClick={endTurn}
-            className="bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-3 text-base shadow-2xl shadow-red-900/50 border-2 border-red-400/30 rounded-full"
-          >
-            Lopeta vuoro 🏁
-          </Button>
-        )}
-      </div>
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
       {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
