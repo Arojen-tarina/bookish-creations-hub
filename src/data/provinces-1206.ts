@@ -544,3 +544,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
 ALL_PROVINCES_1206.forEach(province => {
   province.neighbors = PROVINCE_ADJACENCY[province.id] || [];
 });
+
+// Helper used by game state hook
+export const getProvincesWithAdjacency = (): Province[] =>
+  ALL_PROVINCES_1206.map(p => ({ ...p, neighbors: PROVINCE_ADJACENCY[p.id] || [] }));
