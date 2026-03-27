@@ -600,11 +600,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         return { ...faction, treasury: faction.treasury + taxIncome, manpower: faction.manpower + manpowerGain };
       });
       
-      // 2. Food upkeep for player
-      const playerArmyCount = newState.armies.filter(a => a.ownerId === playerFaction).length;
-      let newFood = newState.food - playerArmyCount; // 1 food per army
-      const ownedFarmland = newState.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-      newFood += Math.floor(ownedFarmland * 0.5);
+      // 2. Food: skip player (already handled in collectResources), just track for state
+      let newFood = newState.food;
       
       // 3. AI turns
       let newArmies = [...newState.armies];
