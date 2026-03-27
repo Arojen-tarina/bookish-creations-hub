@@ -100,7 +100,7 @@ export const diplomacyCards: GameCard[] = [
   { id: 'dip-005', type: 'diplomacy', name: 'Ikuinen Ystävyys', description: 'Veljesliitto', effect: 'Jaettu voitto: molemmat voittavat jos toinen voittaa', rarity: 'legendary' },
   { id: 'dip-006', type: 'diplomacy', name: 'Aselepo', description: 'Väliaikainen rauha', effect: '1 vuoro rauhaa, ei voi hyökätä', rarity: 'common' },
   { id: 'dip-007', type: 'diplomacy', name: 'Salaliitto', description: 'Salainen sopimus', effect: 'Liitto jota muut eivät näe', rarity: 'rare' },
-  { id: 'dip-008', type: 'diplomacy', name: 'Vastavuoroisuus', description: 'Tasapuolinen sopimus', effect: 'Molemmat saavat +1 diplomatiapiste', rarity: 'common' },
+  { id: 'dip-008', type: 'diplomacy', name: 'Vastavuoroisuus', description: 'Tasapuolinen sopimus', effect: 'Molemmat saavat +2 kultaa', rarity: 'common' },
   { id: 'dip-009', type: 'diplomacy', name: 'Suojelusopimus', description: 'Vahvemman turva', effect: 'Suojele heikompaa: saat tributin', rarity: 'uncommon' },
   { id: 'dip-010', type: 'diplomacy', name: 'Yhteinen Rajalinja', description: 'Rajanmäärittely', effect: 'Ei riitoja rajasta 5 vuoroon', rarity: 'common' },
   
@@ -126,17 +126,17 @@ export const diplomacyCards: GameCard[] = [
   { id: 'dip-027', type: 'diplomacy', name: 'Kapinan Lietsonta', description: 'Sisäinen sekasorto', effect: 'Aiheuta kapina vihollisen alueella', rarity: 'rare' },
   { id: 'dip-028', type: 'diplomacy', name: 'Vakooja', description: 'Salatieto', effect: 'Näe vastustajan kaikki kortit', rarity: 'uncommon' },
   { id: 'dip-029', type: 'diplomacy', name: 'Lahjonnat', description: 'Korruptiota', effect: 'Osta vihollisen 1 yksikkö (3 kultaa)', rarity: 'rare' },
-  { id: 'dip-030', type: 'diplomacy', name: 'Julkinen Häpäisy', description: 'Maineen tuho', effect: 'Vastustaja menettää 2 diplomatiapistettä', rarity: 'uncommon' },
+  { id: 'dip-030', type: 'diplomacy', name: 'Julkinen Häpäisy', description: 'Maineen tuho', effect: 'Vastustaja menettää 3 kultaa', rarity: 'uncommon' },
   
   // Erikoiset diplomaattiset toimet (10)
-  { id: 'dip-031', type: 'diplomacy', name: 'Suurlähettiläs', description: 'Korkea-arvoinen edustaja', effect: '+2 kaikkiin diplomatiatoimiin tällä vuorolla', rarity: 'uncommon' },
+  { id: 'dip-031', type: 'diplomacy', name: 'Suurlähettiläs', description: 'Korkea-arvoinen edustaja', effect: '+3 kultaa kaupankäynnistä', rarity: 'uncommon' },
   { id: 'dip-032', type: 'diplomacy', name: 'Rauhanneuvottelut', description: 'Välittäjänä toimiminen', effect: 'Pakota kaksi pelaajaa rauhaan', rarity: 'rare' },
   { id: 'dip-033', type: 'diplomacy', name: 'Kulturaalinen Vaihto', description: 'Sivistyksen levitys', effect: '+1 voittopiste kulttuurista', rarity: 'uncommon' },
   { id: 'dip-034', type: 'diplomacy', name: 'Uskonnollinen Missio', description: 'Uskon levitys', effect: '+1 vaikutus naapurialueilla', rarity: 'common' },
   { id: 'dip-035', type: 'diplomacy', name: 'Kruunausseremonia', description: 'Vallan oikeuttaminen', effect: 'Heimopäällikkö saa +1 kaikkiin toimiin', rarity: 'rare' },
   { id: 'dip-036', type: 'diplomacy', name: 'Panttivanki', description: 'Vakuus sopimukselle', effect: 'Varmista sopimus: rikkominen = heimopäällikkö kuolee', rarity: 'legendary' },
-  { id: 'dip-037', type: 'diplomacy', name: 'Salaliittoneuvosto', description: 'Salainen kokous', effect: 'Suunnittele salaa 2 pelaajan kanssa', rarity: 'rare' },
-  { id: 'dip-038', type: 'diplomacy', name: 'Julkinen Julistus', description: 'Virallinen kannanotto', effect: '+1 diplomatiapiste kaikkien kanssa TAI -1 yhden kanssa', rarity: 'common' },
+  { id: 'dip-037', type: 'diplomacy', name: 'Salaliittoneuvosto', description: 'Salainen kokous', effect: 'Nosta 2 ylimääräistä korttia', rarity: 'rare' },
+  { id: 'dip-038', type: 'diplomacy', name: 'Julkinen Julistus', description: 'Virallinen kannanotto', effect: '+2 kultaa ja +1 puolustus tällä vuorolla', rarity: 'common' },
   { id: 'dip-039', type: 'diplomacy', name: 'Lunnaiden Maksu', description: 'Vangitun vapautus', effect: 'Vapauta oma heimopäällikkö (5 kultaa)', rarity: 'uncommon' },
   { id: 'dip-040', type: 'diplomacy', name: 'Imperiumin Perillinen', description: 'Kruununperijän nimeäminen', effect: 'Jos kuolet, valitsemasi pelaaja perii puolet', rarity: 'legendary' },
 ];
