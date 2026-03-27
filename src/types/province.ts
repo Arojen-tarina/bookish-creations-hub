@@ -351,11 +351,11 @@ export const TRADE_GOODS_INFO: Record<TradeGood, {
   spices: { name: 'Mausteet', emoji: '🌶️', value: 4, effect: '+25% kauppaverot' },
   gold: { name: 'Kulta', emoji: '🪙', value: 6, effect: '+3 kultaa/vuoro' },
   iron: { name: 'Rauta', emoji: '⚔️', value: 3, effect: '-20% yksiköiden kustannus' },
-  fur: { name: 'Turkikset', emoji: '🧥', value: 4, effect: '+30% diplomaattinen arvo' },
+  fur: { name: 'Turkikset', emoji: '🧥', value: 4, effect: '+2 kultaa kaupasta' },
   grain: { name: 'Vilja', emoji: '🌾', value: 2, effect: '+2 miesvoimaa' },
   salt: { name: 'Suola', emoji: '🧂', value: 3, effect: '+1 tarjonta' },
   livestock: { name: 'Karja', emoji: '🐄', value: 2, effect: '+1 miesvoimaa, +1 tarjonta' },
-  gems: { name: 'Jalokivet', emoji: '💎', value: 5, effect: '+2 diplomaattinen arvo' },
+  gems: { name: 'Jalokivet', emoji: '💎', value: 5, effect: '+3 kultaa kaupasta' },
 };
 
 export const FACTION_DATA_1206: Record<FactionId, Omit<Faction, 'isPlayer'>> = {
