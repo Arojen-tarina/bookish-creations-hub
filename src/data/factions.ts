@@ -52,7 +52,7 @@ export const detailedFactions: FactionData[] = [
       description: "Kerran pelissä voi kutsua kaikki mongoli-yksiköt yhteen alueeseen ilmaiseksi liikkumisena."
     },
     startSetup: {
-      units: ["4 ratsuväkiyksikköä", "2 jalkaväkiyksikköä", "1 heimopäällikkö", "2 kauppiasta"],
+      units: ["4 ratsuväkiyksikköä", "2 jalkaväkiyksikköä", "1 heimopäällikkö", "2 tiedustelijaa"],
       resources: "8 resurssikorttia (painotus hevosiin)",
       territory: "Mongolian keskustasangot (3 aluetta)"
     },
@@ -76,7 +76,7 @@ export const detailedFactions: FactionData[] = [
       description: "Kerran pelissä voi tuhota vihollisen linnoituksen automaattisesti piirityksessä."
     },
     startSetup: {
-      units: ["2 ratsuväkiyksikköä", "4 jalkaväkiyksikköä", "1 heimopäällikkö", "2 kauppiasta"],
+      units: ["2 ratsuväkiyksikköä", "4 jalkaväkiyksikköä", "1 heimopäällikkö", "2 tiedustelijaa"],
       resources: "6 resurssikorttia + 1 teknologiakortti",
       territory: "Pohjois-Kiinan linnoitetut kaupungit (2 aluetta)"
     },
@@ -87,22 +87,22 @@ export const detailedFactions: FactionData[] = [
     color: "bg-cyan-600",
     borderColor: "border-cyan-600",
     subtitle: "Silkkitien Kuningas",
-    description: "Kaupallinen mahti, joka hallitsee diplomatiaa ja taloudellisia verkostoja Keski-Aasiassa.",
+    description: "Taloudellinen mahti, joka hallitsee diplomatiaa ja resursseja Keski-Aasiassa.",
     strengths: [
-      { icon: Coins, text: "Kauppasopimusten arvo kaksinkertainen" },
+      { icon: Coins, text: "Verosopimuksten arvo kaksinkertainen" },
       { icon: Users, text: "+1 diplomatiakortti pelin alussa" },
       { icon: Sparkles, text: "Voi solmia 2 liittosopimusta samanaikaisesti" },
-      { icon: Crown, text: "Kauppareitit tuottavat bonusresursseja" },
+      { icon: Crown, text: "Silkkitien provinssit tuottavat bonusresursseja" },
     ],
     weakness: "Pienempi aloitusarmeija (-1 jalkaväkiyksikkö)",
     specialAbility: {
       name: "Silkkitien Monopoli",
-      description: "Kerran pelissä voi sulkea yhden kauppareitin muilta pelaajilta 3 vuoroksi."
+      description: "Kerran pelissä voi sulkea yhden Silkkitien provinssin muilta pelaajilta 3 vuoroksi."
     },
     startSetup: {
-      units: ["3 ratsuväkiyksikköä", "1 jalkaväkiyksikkö", "1 heimopäällikkö", "3 kauppiasta"],
+      units: ["3 ratsuväkiyksikköä", "1 jalkaväkiyksikkö", "1 heimopäällikkö", "3 tiedustelijaa"],
       resources: "5 resurssikorttia + 2 diplomatiakorttia",
-      territory: "Samarkand ja Bukhara (2 kaupunkia)"
+      territory: "Samarkand ja Bukhara (2 aluetta)"
     },
     playstyle: "Diplomaattinen, kaupallinen, liittolaisverkostot"
   },
@@ -124,7 +124,7 @@ export const detailedFactions: FactionData[] = [
       description: "Voi tuhota oman alueensa resurssit estääkseen vihollisen hyödyntämisen."
     },
     startSetup: {
-      units: ["2 ratsuväkiyksikköä", "4 jalkaväkiyksikköä", "1 heimopäällikkö", "1 kauppias"],
+      units: ["2 ratsuväkiyksikköä", "4 jalkaväkiyksikköä", "1 heimopäällikkö", "1 tiedustelija"],
       resources: "7 resurssikorttia (painotus ruokaan)",
       territory: "Novgorod ja Vladimir (2 ruhtinaskuntaa)"
     },

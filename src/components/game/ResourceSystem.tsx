@@ -2,16 +2,16 @@
  * ResourceSystem.tsx — Resurssijärjestelmä
  *
  * Esittelee pelin 5 resurssia (hevoset, kulta, ruoka, käsityöläiset, karja)
- * ja niiden lähteet (steppialueet, viljelysalueet, kaupungit, kauppareitit).
+ * ja niiden lähteet (steppialueet, viljelysalueet, provinssit, Silkkitie).
  */
 import { ComicPanel } from "@/components/ComicPanel";
 
 const resources = [
   { emoji: "🐎", name: "Hevoset", use: "Ratsuväen rekrytointi", source: "Steppialueet" },
-  { emoji: "🪙", name: "Kulta", use: "Kaupankäynti ja korruption maksaminen", source: "Kaupungit" },
+  { emoji: "🪙", name: "Kulta", use: "Rakentaminen ja korruption maksaminen", source: "Provinssit" },
   { emoji: "🌾", name: "Ruoka", use: "Armeijan ylläpito", source: "Viljelysalueet" },
-  { emoji: "🛠️", name: "Käsityöläiset", use: "Teknologian kehitys ja rakentaminen", source: "Kaupungit" },
-  { emoji: "🐄", name: "Karja", use: "Perustarpeet ja kaupankäynti", source: "Steppialueet" },
+  { emoji: "🛠️", name: "Käsityöläiset", use: "Teknologian kehitys ja rakentaminen", source: "Provinssit" },
+  { emoji: "🐄", name: "Karja", use: "Perustarpeet ja ylläpito", source: "Steppialueet" },
 ];
 
 export const ResourceSystem = () => {
@@ -41,8 +41,8 @@ export const ResourceSystem = () => {
             <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
               <div>• <strong>Steppialueet</strong> tuottavat hevosia ja karjaa</div>
               <div>• <strong>Viljelysalueet</strong> tuottavat ruokaa</div>
-              <div>• <strong>Kaupungit</strong> tuottavat kultaa ja käsityöläisiä</div>
-              <div>• <strong>Kauppareitit</strong> tuottavat sekalaisesti resursseja</div>
+              <div>• <strong>Provinssit</strong> tuottavat kultaa ja käsityöläisiä</div>
+              <div>• <strong>Silkkitie</strong> tuottaa bonusresursseja</div>
             </div>
           </div>
         </div>
