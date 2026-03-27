@@ -43,6 +43,7 @@ export const ProvinceInfoPanel = ({
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
   const isPlayerOwned = province.ownerId === playerFaction;
+  const totalDefenseBonus = terrainInfo.defenseBonus + province.fortLevel * 3;
   
   const playerArmies = armies.filter(a => a.ownerId === playerFaction);
   const enemyArmies = armies.filter(a => a.ownerId !== playerFaction);
