@@ -291,44 +291,105 @@ export const ProvinceGame = () => {
                     
                     {/* Buildings */}
                     {selectedProvince.ownerId === playerFaction && gameState.phase === 'build' && (
-                      <Card className="bg-slate-800/50 border-amber-700/30">
-                        <CardContent className="p-3">
-                          <h4 className="text-amber-100 text-sm font-semibold mb-2">🏗️ Rakenna</h4>
-                          <div className="space-y-2">
+                      <Card className="bg-gradient-to-b from-amber-950/40 to-slate-800/50 border-amber-600/40">
+                        <CardContent className="p-4">
+                          <h4 className="text-amber-100 font-bold text-base mb-3 flex items-center gap-2">
+                            🏗️ Rakenna — {selectedProvince.name}
+                          </h4>
+                          
+                          <div className="space-y-2.5">
                             {(Object.entries(BUILDING_INFO) as [MVPBuildingType, typeof BUILDING_INFO[MVPBuildingType]][]).map(([type, info]) => {
                               const existing = gameState.buildings[selectedProvince.id] || [];
                               const alreadyBuilt = existing.includes(type);
-                              const canAfford = playerFactionData && playerFactionData.treasury >= info.cost.gold && gameState.artisans >= (info.cost.artisans || 0);
+                              const hasGold = playerFactionData ? playerFactionData.treasury >= info.cost.gold : false;
+                              const hasArtisans = info.cost.artisans ? gameState.artisans >= info.cost.artisans : true;
+                              const canAfford = hasGold && hasArtisans;
                               
                               return (
-                                <Button
+                                <div
                                   key={type}
-                                  variant="outline"
-                                  className={`w-full justify-start text-xs ${alreadyBuilt ? 'opacity-50' : ''}`}
-                                  disabled={alreadyBuilt || !canAfford}
-                                  onClick={() => buildStructure(selectedProvince.id, type)}
+                                  className={`rounded-xl border-2 overflow-hidden transition-all ${
+                                    alreadyBuilt
+                                      ? 'border-green-700/40 bg-green-900/20 opacity-70'
+                                      : canAfford
+                                      ? 'border-amber-500/40 bg-slate-800/60 hover:border-amber-400/60 hover:bg-slate-800/80'
+                                      : 'border-slate-700/30 bg-slate-800/30 opacity-50'
+                                  }`}
                                 >
-                                  <span className="mr-2">{info.emoji}</span>
-                                  {info.name} ({info.cost.gold}🪙{info.cost.artisans ? ` ${info.cost.artisans}🔧` : ''})
-                                  <span className="ml-auto text-amber-200/60">{info.effect}</span>
-                                </Button>
+                                  <div className="flex items-center gap-3 p-3">
+                                    {/* Emoji icon */}
+                                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 ${
+                                      alreadyBuilt ? 'bg-green-800/40' : 'bg-slate-700/50'
+                                    }`}>
+                                      {info.emoji}
+                                    </div>
+                                    
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-amber-100 font-bold text-sm">{info.name}</span>
+                                        {alreadyBuilt && (
+                                          <span className="text-[10px] bg-green-700/50 text-green-200 px-1.5 py-0.5 rounded-full">✓ Rakennettu</span>
+                                        )}
+                                      </div>
+                                      <p className="text-amber-200/60 text-xs mt-0.5">{info.effect}</p>
+                                      
+                                      {/* Cost */}
+                                      {!alreadyBuilt && (
+                                        <div className="flex items-center gap-2 mt-1.5">
+                                          <span className={`text-xs px-1.5 py-0.5 rounded ${hasGold ? 'bg-amber-800/40 text-amber-300' : 'bg-red-900/40 text-red-300'}`}>
+                                            🪙 {info.cost.gold}
+                                          </span>
+                                          {info.cost.artisans && (
+                                            <span className={`text-xs px-1.5 py-0.5 rounded ${hasArtisans ? 'bg-slate-700/50 text-slate-300' : 'bg-red-900/40 text-red-300'}`}>
+                                              🔧 {info.cost.artisans}
+                                            </span>
+                                          )}
+                                          {!canAfford && (
+                                            <span className="text-red-400/70 text-[10px]">— resurssit eivät riitä</span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Build button */}
+                                    {!alreadyBuilt && (
+                                      <Button
+                                        size="sm"
+                                        disabled={!canAfford}
+                                        onClick={() => {
+                                          buildStructure(selectedProvince.id, type);
+                                          toast.success(`${info.emoji} ${info.name} rakennettu!`, { description: info.effect });
+                                        }}
+                                        className="bg-amber-600 hover:bg-amber-500 text-white font-bold h-9 px-4 rounded-lg flex-shrink-0 disabled:opacity-30"
+                                      >
+                                        Rakenna
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
                               );
                             })}
                           </div>
-                          
-                          {/* Existing buildings */}
-                          {(gameState.buildings[selectedProvince.id] || []).length > 0 && (
-                            <div className="mt-2 pt-2 border-t border-slate-700">
-                              <p className="text-amber-200/60 text-xs mb-1">Rakennettu:</p>
-                              <div className="flex gap-1">
-                                {(gameState.buildings[selectedProvince.id] || []).map(b => (
-                                  <Badge key={b} className="text-xs">{BUILDING_INFO[b].emoji} {BUILDING_INFO[b].name}</Badge>
-                                ))}
-                              </div>
+
+                          {/* Player resources summary */}
+                          {playerFactionData && (
+                            <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center gap-3 text-xs text-amber-200/60">
+                              <span>Sinulla: 🪙 {playerFactionData.treasury}</span>
+                              <span>🔧 {gameState.artisans}</span>
                             </div>
                           )}
                         </CardContent>
                       </Card>
+                    )}
+
+                    {/* Existing buildings (outside build phase) */}
+                    {selectedProvince.ownerId === playerFaction && gameState.phase !== 'build' && (gameState.buildings[selectedProvince.id] || []).length > 0 && (
+                      <div className="flex gap-1.5 flex-wrap px-1">
+                        {(gameState.buildings[selectedProvince.id] || []).map(b => (
+                          <Badge key={b} className="text-xs bg-slate-800/60 border-amber-700/30">{BUILDING_INFO[b].emoji} {BUILDING_INFO[b].name}</Badge>
+                        ))}
+                      </div>
                     )}
                     
                     {/* Army selection */}
