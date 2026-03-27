@@ -268,6 +268,7 @@ export const ProvinceMap = ({
   onProvinceClick,
   playerFaction,
   highlightedProvinces = [],
+  isMinimap = false,
 }: ProvinceMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
