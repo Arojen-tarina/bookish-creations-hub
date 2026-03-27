@@ -505,7 +505,7 @@ export const ProvinceGame = () => {
       <AITurnOverlay
         actions={gameState.aiActionLog || []}
         isVisible={showAIOverlay}
-        onComplete={useCallback(() => setShowAIOverlay(false), [])}
+        onComplete={() => setShowAIOverlay(false)}
       />
 
       <GameOverScreen
