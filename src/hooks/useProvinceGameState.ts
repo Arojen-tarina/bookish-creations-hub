@@ -557,29 +557,56 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const nextPhase = useCallback(() => {
     setGameState(prev => {
       if (!prev) return null;
-      const currentIndex = PHASE_ORDER.indexOf(prev.phase);
+      
+      // Auto-collect resources if skipping resource phase
+      let state = { ...prev };
+      if (state.phase === 'resource' && !state.resourcesCollected && playerFaction) {
+        const faction = state.factions.find(f => f.id === playerFaction);
+        if (faction) {
+          const ownedProvinces = state.provinces.filter(p => p.ownerId === playerFaction);
+          let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+          const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+          const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+            const p = state.provinces.find(pr => pr.id === pid);
+            return p?.ownerId === playerFaction && buildings.includes('market');
+          }).length;
+          taxIncome += marketCount * 3;
+          const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
+          const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5);
+          
+          state = {
+            ...state,
+            factions: state.factions.map(f =>
+              f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+            ),
+            food: Math.max(0, state.food + foodChange),
+            resourcesCollected: true,
+          };
+        }
+      }
+      
+      const currentIndex = PHASE_ORDER.indexOf(state.phase);
       if (currentIndex < PHASE_ORDER.length - 1) {
         const next = PHASE_ORDER[currentIndex + 1];
         
         // Auto-actions per phase
         if (next === 'cards') {
-          // Draw 1 card
-          if (prev.deck.length > 0) {
-            const { drawn, remaining } = drawCards(prev.deck, 1);
-            return { ...prev, phase: next, hand: [...prev.hand, ...drawn], deck: remaining };
-          } else if (prev.discard.length > 0) {
-            // Reshuffle discard into deck
-            const newDeck = shuffleDeck(prev.discard);
+          if (state.deck.length > 0) {
+            const { drawn, remaining } = drawCards(state.deck, 1);
+            return { ...state, phase: next, hand: [...state.hand, ...drawn], deck: remaining };
+          } else if (state.discard.length > 0) {
+            const newDeck = shuffleDeck(state.discard);
             const { drawn, remaining } = drawCards(newDeck, 1);
-            return { ...prev, phase: next, hand: [...prev.hand, ...drawn], deck: remaining, discard: [] };
+            return { ...state, phase: next, hand: [...state.hand, ...drawn], deck: remaining, discard: [] };
           }
         }
         
-        return { ...prev, phase: next };
+        return { ...state, phase: next };
       }
-      return prev;
+      return state;
     });
-  }, []);
+  }, [playerFaction]);
 
   // ============= END TURN =============
   const endTurn = useCallback(() => {
