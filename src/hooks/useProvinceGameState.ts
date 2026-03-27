@@ -218,6 +218,7 @@ export interface UseProvinceGameStateReturn {
   getArmiesInProvince: (provinceId: string) => Army[];
   canMoveTo: (armyId: string, targetProvinceId: string) => boolean;
   endPhase: () => void;
+  collectResources: () => void;
 }
 
 export const useProvinceGameState = (): UseProvinceGameStateReturn => {
