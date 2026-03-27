@@ -296,7 +296,13 @@ export const ProvinceGame = () => {
                       onBuildFort={() => buildStructure(selectedProvince.id, 'fortress')}
                       onRecruitArmy={() => recruitArmy(selectedProvince.id)}
                       canBuildFort={playerFactionData ? playerFactionData.treasury >= 50 : false}
-                      canRecruit={playerFactionData ? playerFactionData.treasury >= 20 && playerFactionData.manpower >= 5 : false}
+                      canRecruit={(() => {
+                        if (!playerFactionData || !selectedProvince || selectedProvince.ownerId !== playerFaction) return false;
+                        if (playerFactionData.treasury < 20 || playerFactionData.manpower < 5) return false;
+                        const hasCamp = (gameState.buildings[selectedProvince.id] || []).includes('camp');
+                        const isCapital = selectedProvince.id === playerFactionData.capitalId;
+                        return hasCamp || isCapital;
+                      })()}
                     />
                     
                     {/* Buildings */}
