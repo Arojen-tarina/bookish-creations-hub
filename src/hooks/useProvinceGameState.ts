@@ -846,6 +846,43 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       // Remove destroyed armies
       newArmies = newArmies.filter(a => a.cavalry + a.infantry > 0);
       
+      // ============= SUPPLY (TARJONTA) ATTRITION =============
+      // Each army consumes supply based on its size vs province supply limit
+      newArmies = newArmies.map(army => {
+        const province = newProvinces.find(p => p.id === army.provinceId);
+        if (!province) return army;
+        const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
+        const armySize = army.cavalry + army.infantry + army.siege;
+        const supplyLimit = province.supply + terrainInfo.supplyLimit;
+        // If army exceeds supply, lose morale and take attrition
+        if (armySize > supplyLimit) {
+          const overSupply = armySize - supplyLimit;
+          const moraleLoss = Math.min(15, overSupply * 3);
+          const attritionChance = Math.min(0.5, overSupply * 0.08);
+          const cavLoss = Math.random() < attritionChance ? Math.max(1, Math.floor(army.cavalry * 0.1)) : 0;
+          const infLoss = Math.random() < attritionChance ? Math.max(1, Math.floor(army.infantry * 0.1)) : 0;
+          return {
+            ...army,
+            morale: Math.max(10, army.morale - moraleLoss),
+            cavalry: Math.max(0, army.cavalry - cavLoss),
+            infantry: Math.max(0, army.infantry - infLoss),
+            supply: Math.max(0, army.supply - overSupply),
+          };
+        }
+        // Friendly territory restores supply and morale
+        if (province.ownerId === army.ownerId) {
+          return {
+            ...army,
+            morale: Math.min(100, army.morale + 5),
+            supply: Math.min(30, army.supply + supplyLimit),
+          };
+        }
+        return { ...army, supply: Math.max(0, army.supply - 2) };
+      });
+      
+      // Remove armies destroyed by attrition
+      newArmies = newArmies.filter(a => a.cavalry + a.infantry > 0);
+      
       // Reset movement for next turn
       newArmies = newArmies.map(a => ({ ...a, movementLeft: 3 }));
       
