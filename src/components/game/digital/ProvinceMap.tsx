@@ -443,10 +443,11 @@ export const ProvinceMap = ({
               const mainArmy = armyGroup[0];
               const ownerColor = FACTION_DATA_1206[mainArmy.ownerId]?.color || '#888';
 
-              // Position badge at edge of token
+              // Position badge at edge of token — pill shape for unit breakdown
               const rad = (offsetAngle * Math.PI) / 180;
-              const badgeR = 1.4;
-              const dist = r + badgeR + 0.2;
+              const pillH = 1.6;
+              const pillW = totalCav > 0 && totalInf > 0 ? 5.5 : 3.8;
+              const dist = r + pillH + 0.1;
               const bx = center.x + Math.cos(rad) * dist;
               const by = center.y + Math.sin(rad) * dist;
 
@@ -455,7 +456,6 @@ export const ProvinceMap = ({
                   key={`badge-${provinceId}-${isPlayer ? 'p' : 'e'}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Select first army (or cycle through if already selected)
                     if (onArmyClick) {
                       const currentIdx = armyGroup.findIndex(a => a.id === selectedArmyId);
                       const nextIdx = (currentIdx + 1) % armyGroup.length;
@@ -466,49 +466,63 @@ export const ProvinceMap = ({
                 >
                   {/* Selection glow */}
                   {anySelected && (
-                    <circle cx={bx} cy={by} r={badgeR + 0.5} fill="none" stroke="#fbbf24" strokeWidth={0.3} className="animate-pulse" />
+                    <rect
+                      x={bx - pillW / 2 - 0.4} y={by - pillH / 2 - 0.4}
+                      width={pillW + 0.8} height={pillH + 0.8}
+                      rx={pillH / 2 + 0.4}
+                      fill="none" stroke="#fbbf24" strokeWidth={0.25} className="animate-pulse"
+                    />
                   )}
 
-                  {/* Badge circle */}
-                  <circle
-                    cx={bx} cy={by} r={badgeR}
+                  {/* Pill background */}
+                  <rect
+                    x={bx - pillW / 2} y={by - pillH / 2}
+                    width={pillW} height={pillH}
+                    rx={pillH / 2}
                     fill={ownerColor}
                     stroke={anySelected ? '#fbbf24' : '#1a1a1a'}
-                    strokeWidth={anySelected ? 0.4 : 0.2}
+                    strokeWidth={anySelected ? 0.3 : 0.15}
                   />
 
-                  {/* Unit count */}
-                  <text
-                    x={bx} y={by + 0.5}
-                    textAnchor="middle"
-                    fontSize={1.4}
-                    fontWeight="bold"
-                    fill="white"
-                    className="pointer-events-none select-none"
-                    style={{ textShadow: '0 0 2px rgba(0,0,0,0.9)' }}
-                  >
-                    {totalUnits}
-                  </text>
+                  {/* Unit breakdown: 🐴 N ⚔ N */}
+                  {totalCav > 0 && totalInf > 0 ? (
+                    <>
+                      <text x={bx - 1.6} y={by + 0.5} textAnchor="middle" fontSize={1.1} className="pointer-events-none select-none">🐴</text>
+                      <text x={bx - 0.4} y={by + 0.45} textAnchor="middle" fontSize={1.1} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
+                      <text x={bx + 0.9} y={by + 0.5} textAnchor="middle" fontSize={1.1} className="pointer-events-none select-none">⚔</text>
+                      <text x={bx + 2.0} y={by + 0.45} textAnchor="middle" fontSize={1.1} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
+                    </>
+                  ) : totalCav > 0 ? (
+                    <>
+                      <text x={bx - 0.7} y={by + 0.5} textAnchor="middle" fontSize={1.2} className="pointer-events-none select-none">🐴</text>
+                      <text x={bx + 0.7} y={by + 0.45} textAnchor="middle" fontSize={1.2} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
+                    </>
+                  ) : (
+                    <>
+                      <text x={bx - 0.7} y={by + 0.5} textAnchor="middle" fontSize={1.2} className="pointer-events-none select-none">⚔</text>
+                      <text x={bx + 0.7} y={by + 0.45} textAnchor="middle" fontSize={1.2} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
+                    </>
+                  )}
 
-                  {/* Movement indicator (green/red dot) for player */}
+                  {/* Movement indicator for player */}
                   {isPlayer && (
                     <circle
-                      cx={bx + badgeR * 0.7}
-                      cy={by - badgeR * 0.7}
-                      r={0.4}
+                      cx={bx + pillW / 2 - 0.3}
+                      cy={by - pillH / 2 + 0.3}
+                      r={0.35}
                       fill={hasMovement ? '#22c55e' : '#ef4444'}
                       stroke="#1a1a1a"
                       strokeWidth={0.1}
                     />
                   )}
 
-                  {/* Stack indicator if multiple armies */}
+                  {/* Stack indicator */}
                   {armyGroup.length > 1 && (
                     <text
-                      x={bx - badgeR * 0.7}
-                      y={by - badgeR * 0.5}
+                      x={bx - pillW / 2 + 0.5}
+                      y={by - pillH / 2 + 0.1}
                       textAnchor="middle"
-                      fontSize={0.9}
+                      fontSize={0.8}
                       fill="#fbbf24"
                       fontWeight="bold"
                       className="pointer-events-none select-none"
