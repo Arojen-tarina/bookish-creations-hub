@@ -1,7 +1,7 @@
 /**
  * DiplomacySystem.tsx — Diplomatian yleiskatsaus
  *
- * Esittelee 4 diplomaattista sopimustyyppiä (liitto, kauppa, tributti, dynastia)
+ * Esittelee 4 diplomaattista sopimustyyppiä (liitto, verosopimus, tributti, dynastia)
  * ja petoksen/verenvihojen mekaniikat lyhyesti.
  */
 import { ComicPanel } from "@/components/ComicPanel";
@@ -9,7 +9,7 @@ import { Handshake, Heart, Coins, AlertTriangle, Skull } from "lucide-react";
 
 const diplomacyTypes = [
   { icon: Handshake, name: "Liittolaisuussopimukset", desc: "Yhteinen puolustus tai hyökkäys" },
-  { icon: Coins, name: "Kauppasopimukset", desc: "Resurssivaihto edullisemmin" },
+  { icon: Coins, name: "Verosopimukset", desc: "Molemmat osapuolet hyötyvät taloudellisesti" },
   { icon: AlertTriangle, name: "Tributti", desc: "Heikompi maksaa veroja vahvemmalle" },
   { icon: Heart, name: "Dynastialiitot", desc: "Avioliitot, jotka luovat pysyviä suhteita" },
 ];

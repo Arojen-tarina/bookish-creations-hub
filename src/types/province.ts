@@ -347,15 +347,15 @@ export const TRADE_GOODS_INFO: Record<TradeGood, {
   effect: string;
 }> = {
   horses: { name: 'Hevoset', emoji: '🐴', value: 3, effect: '+2 ratsuväen rekrytointi' },
-  silk: { name: 'Silkki', emoji: '🧣', value: 5, effect: '+50% kauppaverot' },
-  spices: { name: 'Mausteet', emoji: '🌶️', value: 4, effect: '+25% kauppaverot' },
+  silk: { name: 'Silkki', emoji: '🧣', value: 5, effect: '+3 kultaa/vuoro' },
+  spices: { name: 'Mausteet', emoji: '🌶️', value: 4, effect: '+2 kultaa/vuoro' },
   gold: { name: 'Kulta', emoji: '🪙', value: 6, effect: '+3 kultaa/vuoro' },
   iron: { name: 'Rauta', emoji: '⚔️', value: 3, effect: '-20% yksiköiden kustannus' },
-  fur: { name: 'Turkikset', emoji: '🧥', value: 4, effect: '+2 kultaa kaupasta' },
+  fur: { name: 'Turkikset', emoji: '🧥', value: 4, effect: '+1 tarjonta ja +1 moraali' },
   grain: { name: 'Vilja', emoji: '🌾', value: 2, effect: '+2 miesvoimaa' },
   salt: { name: 'Suola', emoji: '🧂', value: 3, effect: '+1 tarjonta' },
   livestock: { name: 'Karja', emoji: '🐄', value: 2, effect: '+1 miesvoimaa, +1 tarjonta' },
-  gems: { name: 'Jalokivet', emoji: '💎', value: 5, effect: '+3 kultaa kaupasta' },
+  gems: { name: 'Jalokivet', emoji: '💎', value: 5, effect: '+2 kultaa/vuoro ja +1 moraali' },
 };
 
 export const FACTION_DATA_1206: Record<FactionId, Omit<Faction, 'isPlayer'>> = {

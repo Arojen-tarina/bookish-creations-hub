@@ -2,7 +2,7 @@
  * diplomacy.ts — Diplomatian sääntödata
  *
  * Sisältää diplomatiajärjestelmän datan:
- * - 4 sopimustyyppiä (rauha, kauppa, dynastinen liitto, vasallisuhde)
+ * - 4 sopimustyyppiä (rauha, verosopimus, dynastinen liitto, vasallisuhde)
  * - Diplomaattiset toiminnot ja niiden hinnat
  * - Verenvihajärjestelmän säännöt
  * Käytetään AdvancedDiplomacy-komponentissa.
@@ -36,10 +36,10 @@ export const treatyTypes: TreatyTypeData[] = [
   },
   {
     icon: Coins,
-    name: "Kauppasopimus",
+    name: "Verosopimus",
     duration: "5 vuoroa",
     effect: "Molemmat saavat +1 kultaa per vuoro",
-    breakPenalty: "Menettää kaikki kauppaedut välittömästi",
+    breakPenalty: "Menettää kaikki talousedut välittömästi",
     color: "bg-amber-500"
   },
   {
@@ -61,7 +61,7 @@ export const treatyTypes: TreatyTypeData[] = [
 ];
 
 export const diplomaticActions: DiplomaticAction[] = [
-  { action: "Lähettiläs", cost: "1 kauppias", effect: "Avaa neuvottelut, +1 diplomatiapiste kyseisen pelaajan kanssa" },
+  { action: "Lähettiläs", cost: "1 palvelija", effect: "Avaa neuvottelut, +1 diplomatiapiste kyseisen pelaajan kanssa" },
   { action: "Lahja", cost: "3 resurssia", effect: "+2 diplomatiapistettä, mahdollistaa sopimusneuvottelut" },
   { action: "Uhkavaatimus", cost: "Vähintään 2:1 sotilasylivoima", effect: "Pakottaa vastustajan valitsemaan: tributti tai sota" },
   { action: "Salamurha", cost: "1 strategiakortti + 5 kultaa", effect: "50% mahdollisuus eliminoida vastustajan johtohahmo" },

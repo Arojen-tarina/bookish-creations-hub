@@ -63,13 +63,13 @@ export const strategyCards: GameCard[] = [
   // Liikkuminen ja logistiikka (15)
   { id: 'str-036', type: 'strategy', name: 'Pakkomarssit', description: 'Nopeutettu eteneminen', effect: 'Kaikki yksiköt +1 liike tällä vuorolla', rarity: 'common' },
   { id: 'str-037', type: 'strategy', name: 'Silkkitien Opas', description: 'Paikallistuntemus', effect: 'Ohita maastoesteet tällä vuorolla', rarity: 'uncommon' },
-  { id: 'str-038', type: 'strategy', name: 'Huoltojuna', description: 'Logistiikkaetu', effect: 'Siirrä resursseja ilman kauppiaita', rarity: 'common' },
+  { id: 'str-038', type: 'strategy', name: 'Huoltojuna', description: 'Logistiikkaetu', effect: 'Siirrä resursseja vapaasti omien alueiden läpi', rarity: 'common' },
   { id: 'str-039', type: 'strategy', name: 'Vakoojat Edellä', description: 'Tiedustelu ennen liikettä', effect: 'Näe viereisten alueiden yksiköt', rarity: 'common' },
   { id: 'str-040', type: 'strategy', name: 'Strateginen Vetäytyminen', description: 'Taktinen perääntyminen', effect: 'Vetäydy ilman tappioita, säilytä asemat', rarity: 'uncommon' },
   { id: 'str-041', type: 'strategy', name: 'Salamasota', description: 'Blitzkrieg-taktiikka', effect: 'Hyökkää, jos voitat voit jatkaa seuraavaan alueeseen', rarity: 'rare' },
   { id: 'str-042', type: 'strategy', name: 'Joenylitys', description: 'Insinööritaito', effect: 'Ohita joet ilman rangaistusta', rarity: 'uncommon' },
   { id: 'str-043', type: 'strategy', name: 'Vuoristoreitit', description: 'Salaiset polut', effect: 'Liiku vuoriston läpi yhdellä liikkeellä', rarity: 'rare' },
-  { id: 'str-044', type: 'strategy', name: 'Karavaanireitti', description: 'Kauppiaat tuntevat tiet', effect: 'Seuraa kauppareittejä +2 liike', rarity: 'common' },
+  { id: 'str-044', type: 'strategy', name: 'Karavaanireitti', description: 'Paikalliset tuntevat tiet', effect: 'Seuraa Silkkitietä +2 liike', rarity: 'common' },
   { id: 'str-045', type: 'strategy', name: 'Nomadien Vaellus', description: 'Jatkuva liike', effect: 'Ratsuväki liikkuu taistelun jälkeen', rarity: 'uncommon' },
   { id: 'str-046', type: 'strategy', name: 'Hevosenvaihtoasemat', description: 'Mongolilainen postilaitos', effect: 'Yksi yksikkö liikkuu 2x normaalin', rarity: 'rare' },
   { id: 'str-047', type: 'strategy', name: 'Talvileiritys', description: 'Talvimarssi', effect: 'Ohita talven liikerajoitukset', rarity: 'uncommon' },
@@ -84,7 +84,7 @@ export const strategyCards: GameCard[] = [
   { id: 'str-054', type: 'strategy', name: 'Kiinalainen Ruuti', description: 'Uusi teknologia käytössä', effect: 'Tuhoa linnoitus automaattisesti', rarity: 'legendary' },
   { id: 'str-055', type: 'strategy', name: 'Subutain Neuvot', description: 'Mestaristrategin oppi', effect: 'Kopioi vastustajan viimeisin taktiikkakortti', rarity: 'rare' },
   { id: 'str-056', type: 'strategy', name: 'Kurultai-päätös', description: 'Klaanin kokoontuminen', effect: 'Vedä 3 strategiakorttia', rarity: 'uncommon' },
-  { id: 'str-057', type: 'strategy', name: 'Silkkitien Varjot', description: 'Kauppareitin hallinta', effect: 'Estä yksi kauppareitti 2 vuoroksi', rarity: 'uncommon' },
+  { id: 'str-057', type: 'strategy', name: 'Silkkitien Varjot', description: 'Silkkitien hallinta', effect: 'Estä vihollisen resurssitulo yhdeltä provinssilla 2 vuoroksi', rarity: 'uncommon' },
   { id: 'str-058', type: 'strategy', name: 'Jasan Laki', description: 'Mongolilainen lakikokoelma', effect: 'Kaikki sopimukset ovat sitovia (ei petoksia) 3 vuoroa', rarity: 'rare' },
   { id: 'str-059', type: 'strategy', name: 'Euroopan Kauhut', description: 'Terrorin maine', effect: '-2 kaikkien vihollisten moraaliin', rarity: 'rare' },
   { id: 'str-060', type: 'strategy', name: 'Imperiumin Jakaminen', description: 'Khaanin perintö', effect: 'Jaa valtakunta: saa 2 voittopistettä per hallittu alue', rarity: 'legendary' },
@@ -104,22 +104,22 @@ export const diplomacyCards: GameCard[] = [
   { id: 'dip-009', type: 'diplomacy', name: 'Suojelusopimus', description: 'Vahvemman turva', effect: 'Suojele heikompaa: saat tributin', rarity: 'uncommon' },
   { id: 'dip-010', type: 'diplomacy', name: 'Yhteinen Rajalinja', description: 'Rajanmäärittely', effect: 'Ei riitoja rajasta 5 vuoroon', rarity: 'common' },
   
-  // Kauppasuhteet (10)
-  { id: 'dip-011', type: 'diplomacy', name: 'Kauppasopimus', description: 'Taloudellinen yhteistyö', effect: 'Molemmat +1 kulta per vuoro', rarity: 'common' },
-  { id: 'dip-012', type: 'diplomacy', name: 'Monopolisopimus', description: 'Yksinoikeus', effect: 'Hallitse yhtä kauppareittiä yksin', rarity: 'rare' },
-  { id: 'dip-013', type: 'diplomacy', name: 'Vaihtokurssi', description: 'Edullinen kauppa', effect: 'Resurssien vaihto 1:1 liittolaisen kanssa', rarity: 'uncommon' },
-  { id: 'dip-014', type: 'diplomacy', name: 'Tullivapaus', description: 'Vapaa kauppa', effect: 'Ei maksuja kauppareiteillä liittolaisen alueilla', rarity: 'uncommon' },
+  // Taloussuhteet (10)
+  { id: 'dip-011', type: 'diplomacy', name: 'Verosopimus', description: 'Taloudellinen yhteistyö', effect: 'Molemmat +1 kulta per vuoro', rarity: 'common' },
+  { id: 'dip-012', type: 'diplomacy', name: 'Resurssisopimus', description: 'Yksinoikeus', effect: 'Hallitse yhtä Silkkitien provinssia yksin', rarity: 'rare' },
+  { id: 'dip-013', type: 'diplomacy', name: 'Resurssien jako', description: 'Yhteistyön hedelmät', effect: 'Resurssien vaihto 1:1 liittolaisen kanssa', rarity: 'uncommon' },
+  { id: 'dip-014', type: 'diplomacy', name: 'Vapaa kulku', description: 'Avoimet rajat', effect: 'Vapaa liikkuminen liittolaisen alueilla', rarity: 'uncommon' },
   { id: 'dip-015', type: 'diplomacy', name: 'Teknologiavaihto', description: 'Jaettu tieto', effect: 'Vaihda teknologiakortti liittolaisen kanssa', rarity: 'rare' },
-  { id: 'dip-016', type: 'diplomacy', name: 'Karavaanituki', description: 'Logistiikka-apu', effect: '+2 kauppiaan liike liittolaisen alueilla', rarity: 'common' },
+  { id: 'dip-016', type: 'diplomacy', name: 'Huoltotuki', description: 'Logistiikka-apu', effect: '+2 liikettä liittolaisen alueilla', rarity: 'common' },
   { id: 'dip-017', type: 'diplomacy', name: 'Käsityöläisvaihto', description: 'Taitajien liikkuminen', effect: 'Siirrä käsityöläinen liittolaiselta', rarity: 'uncommon' },
-  { id: 'dip-018', type: 'diplomacy', name: 'Yhteinen Marketti', description: 'Kauppatorin jakaminen', effect: 'Molemmat +2 kultaa kerran', rarity: 'common' },
+  { id: 'dip-018', type: 'diplomacy', name: 'Yhteinen varasto', description: 'Resurssien jakaminen', effect: 'Molemmat +2 kultaa kerran', rarity: 'common' },
   { id: 'dip-019', type: 'diplomacy', name: 'Lainasopimus', description: 'Taloudellinen apu', effect: 'Lainaa 5 kultaa, maksa 7 takaisin 3 vuorossa', rarity: 'common' },
-  { id: 'dip-020', type: 'diplomacy', name: 'Silkkimonopoli', description: 'Silkkitien hallinta', effect: 'Hallitse Silkkitietä: +3 kultaa per vuoro', rarity: 'legendary' },
+  { id: 'dip-020', type: 'diplomacy', name: 'Silkkitien hallinta', description: 'Silkkitien herruus', effect: 'Hallitse Silkkitietä: +3 kultaa per vuoro', rarity: 'legendary' },
   
   // Uhkaukset ja painostus (10)
   { id: 'dip-021', type: 'diplomacy', name: 'Uhkavaatimus', description: 'Maksa tai sota', effect: 'Vastustaja maksaa 3 resurssia tai julistaa sodan', rarity: 'uncommon' },
   { id: 'dip-022', type: 'diplomacy', name: 'Tributtivaatimus', description: 'Vuosimaksu', effect: 'Vasalli maksaa 2 resurssia per vuoro', rarity: 'rare' },
-  { id: 'dip-023', type: 'diplomacy', name: 'Rajasulku', description: 'Kaupan esto', effect: 'Estä yhden pelaajan kauppa 2 vuoroksi', rarity: 'uncommon' },
+  { id: 'dip-023', type: 'diplomacy', name: 'Rajasulku', description: 'Rajojen sulkeminen', effect: 'Estä yhden pelaajan liikkuminen alueidesi läpi 2 vuoroksi', rarity: 'uncommon' },
   { id: 'dip-024', type: 'diplomacy', name: 'Kiristys', description: 'Salaisuuksien käyttö', effect: 'Vastustaja luopuu 1 kortista', rarity: 'rare' },
   { id: 'dip-025', type: 'diplomacy', name: 'Eristäytyminen', description: 'Diplomaattinen pako', effect: 'Katkaise kaikki suhteet yhteen pelaajaan', rarity: 'uncommon' },
   { id: 'dip-026', type: 'diplomacy', name: 'Sabotaasi', description: 'Vahingoittaminen', effect: 'Tuhoa vihollisen 1 rakennus', rarity: 'rare' },
@@ -129,7 +129,7 @@ export const diplomacyCards: GameCard[] = [
   { id: 'dip-030', type: 'diplomacy', name: 'Julkinen Häpäisy', description: 'Maineen tuho', effect: 'Vastustaja menettää 3 kultaa', rarity: 'uncommon' },
   
   // Erikoiset diplomaattiset toimet (10)
-  { id: 'dip-031', type: 'diplomacy', name: 'Suurlähettiläs', description: 'Korkea-arvoinen edustaja', effect: '+3 kultaa kaupankäynnistä', rarity: 'uncommon' },
+  { id: 'dip-031', type: 'diplomacy', name: 'Suurlähettiläs', description: 'Korkea-arvoinen edustaja', effect: '+3 kultaa veronkeruusta', rarity: 'uncommon' },
   { id: 'dip-032', type: 'diplomacy', name: 'Rauhanneuvottelut', description: 'Välittäjänä toimiminen', effect: 'Pakota kaksi pelaajaa rauhaan', rarity: 'rare' },
   { id: 'dip-033', type: 'diplomacy', name: 'Kulturaalinen Vaihto', description: 'Sivistyksen levitys', effect: '+1 voittopiste kulttuurista', rarity: 'uncommon' },
   { id: 'dip-034', type: 'diplomacy', name: 'Uskonnollinen Missio', description: 'Uskon levitys', effect: '+1 vaikutus naapurialueilla', rarity: 'common' },
@@ -156,10 +156,10 @@ export const technologyCards: GameCard[] = [
   { id: 'tek-010', type: 'technology', name: 'Taktinen Koulutus', description: 'Sotilaskoulutus', effect: 'Uudet yksiköt aloittavat +1 tasolla', cost: '2 käsityöläistä', rarity: 'uncommon' },
   
   // Hallinnolliset innovaatiot (10)
-  { id: 'tek-011', type: 'technology', name: 'Verojärjestelmä', description: 'Tehokas veronkeruu', effect: '+1 kulta per hallittu kaupunki', cost: '2 käsityöläistä', rarity: 'uncommon' },
+  { id: 'tek-011', type: 'technology', name: 'Verojärjestelmä', description: 'Tehokas veronkeruu', effect: '+1 kulta per hallittu alue', cost: '2 käsityöläistä', rarity: 'uncommon' },
   { id: 'tek-012', type: 'technology', name: 'Viestijärjestelmä', description: 'Nopea tiedonkulku', effect: 'Kortteja voi pelata viereisilläkin alueilla', cost: '3 käsityöläistä', rarity: 'rare' },
   { id: 'tek-013', type: 'technology', name: 'Maanviljelystekniikka', description: 'Parannettu sato', effect: '+1 ruoka per viljelysalue', cost: '1 käsityöläinen', rarity: 'common' },
-  { id: 'tek-014', type: 'technology', name: 'Kaupankäyntitaito', description: 'Neuvottelutaidot', effect: 'Resurssien vaihto 2:1 sijaan 3:1', cost: '1 käsityöläinen', rarity: 'common' },
+  { id: 'tek-014', type: 'technology', name: 'Neuvottelutaito', description: 'Diplomaattinen osaaminen', effect: 'Resurssien vaihto 2:1 sijaan 3:1', cost: '1 käsityöläinen', rarity: 'common' },
   { id: 'tek-015', type: 'technology', name: 'Kirjoitustaito', description: 'Dokumentointi', effect: '+1 kulta per vuoro', cost: '2 käsityöläistä', rarity: 'uncommon' },
   { id: 'tek-016', type: 'technology', name: 'Lakinuudistus', description: 'Jasan laki', effect: '-1 kapinariski alueillasi', cost: '2 käsityöläistä', rarity: 'uncommon' },
   { id: 'tek-017', type: 'technology', name: 'Tieverkosto', description: 'Parannetut tiet', effect: '+1 liike kaikille yksiköille omilla alueilla', cost: '3 käsityöläistä + 2 kultaa', rarity: 'rare' },

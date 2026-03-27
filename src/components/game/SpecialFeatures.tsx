@@ -2,7 +2,7 @@
  * SpecialFeatures.tsx — Erityispiirteet
  *
  * Sisältää:
- * - Heimopäällikön kehityspolut (soturi, kauppias, kulttuurivaikuttaja)
+ * - Heimopäällikön kehityspolut (soturi, diplomaatti, kulttuurivaikuttaja)
  * - Sääefektit ja sesongit (talvi, kesä, sateet, kuivuus)
  * - Historialliset tapahtumat (Genghis Khan, Silkkitie, Mustasurma jne.)
  */
@@ -11,14 +11,14 @@ import { Crown, Cloud, ScrollText, Swords, Handshake, Lightbulb } from "lucide-r
 
 const leaderPaths = [
   { icon: Swords, name: "Soturijohtaja", bonus: "Bonukset taistelussa ja armeijan liikkeessä" },
-  { icon: Handshake, name: "Kauppias-diplomaatti", bonus: "Edut neuvotteluissa ja kaupankäynnissä" },
+  { icon: Handshake, name: "Diplomaatti-hallitsija", bonus: "Edut sopimuksissa ja veronkeruussa" },
   { icon: Lightbulb, name: "Kulttuurin vaikuttaja", bonus: "Teknologian ja rakennusten kehitysbonus" },
 ];
 
 const weatherEffects = [
   { season: "Talvi", effect: "Rajoittaa liikkumista tietyillä alueilla", emoji: "❄️" },
   { season: "Kesä", effect: "Steppiheimot saavat liikkumisbonuksen", emoji: "☀️" },
-  { season: "Sateet/tulvat", effect: "Vaikuttavat kaupankäyntireitteihin", emoji: "🌧️" },
+  { season: "Sateet/tulvat", effect: "Vaikuttavat huoltoreitteihin ja liikkumiseen", emoji: "🌧️" },
   { season: "Kuivuus", effect: "Vähentää ruoantuotantoa", emoji: "🏜️" },
 ];
 

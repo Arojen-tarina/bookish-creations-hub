@@ -1,7 +1,7 @@
 /**
  * VictoryConditions.tsx — Voittoehdot
  *
- * Neljä voittotietä: sotilaallinen (60% kaupungeista), ekonominen (50 pistettä),
+ * Neljä voittotietä: sotilaallinen (60% alueista), ekonominen (50 pistettä),
  * kulttuurinen (8 rakennusta + diplomatia), teknologinen (12 korttia).
  */
 import { ComicPanel } from "@/components/ComicPanel";
@@ -14,7 +14,7 @@ const victoryTypes = [
     title: "Maailmanvalloittaja",
     color: "bg-red-500",
     conditions: [
-      "Hallitse 60% pelilaudan kaupungeista",
+      "Hallitse 60% pelilaudan alueista",
       "Eliminoi vähintään kaksi muuta heimopäällikköä",
       "Säilytä hallinto vähintään 3 vuoroa",
     ],
@@ -25,8 +25,8 @@ const victoryTypes = [
     title: "Silkkitien Herra",
     color: "bg-amber-500",
     conditions: [
-      "Kerää 50 voittopistettä kaupankäynnistä ja tributtimaksuista",
-      "Hallitse vähintään 5 merkittävää kauppareittiä",
+      "Kerää 50 voittopistettä veronkeruusta ja tributtimaksuista",
+      "Hallitse vähintään 5 Silkkitien provinssia",
       "Säilytä taloudellinen hegemonia 2 vuoroa",
     ],
   },

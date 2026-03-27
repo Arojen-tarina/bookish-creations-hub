@@ -38,7 +38,7 @@ export const GameIntroduction = () => {
                   <span className="text-primary font-medium">taloudellisen kilpailun</span> ja {" "}
                   <span className="text-primary font-medium">teknologisen edistyksen</span>. 
                   Toisin kuin monet pelit, Mongolien Valtakunta ei palkitse pelkästään aggressiota — 
-                  viisas diplomaatti tai taitava kauppias voi voittaa myös ilman suuria armeijoita.
+                  viisas diplomaatti tai taitava hallitsija voi voittaa myös ilman suuria armeijoita.
                 </p>
               </div>
             </div>
