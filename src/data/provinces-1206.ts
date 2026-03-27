@@ -43,7 +43,7 @@ const mongoliaProvinces: Province[] = [
   }),
   p('gobi_north', 'Pohjois-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 2,
-    center: { x: 57, y: 34 },
+    center: { x: 58, y: 35 },
   }),
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', null, {
     baseTax: 1, baseManpower: 1,
@@ -100,7 +100,7 @@ const jinProvinces: Province[] = [
   }),
   p('shanxi_north', 'Pohjois-Shanxi', 'jin_china', 'hills', 'jin', {
     baseTax: 4, baseManpower: 6, tradeGood: 'iron',
-    center: { x: 69, y: 45 },
+    center: { x: 68, y: 46 },
   }),
   p('liaoyang', 'Liaoyang', 'manchuria', 'grassland', 'jin', {
     baseTax: 4, baseManpower: 6, fortLevel: 1,
@@ -203,7 +203,7 @@ const khwarezmProvinces: Province[] = [
   }),
   p('urgench', 'Urgench', 'khwarezm', 'grassland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 2,
-    center: { x: 25, y: 37 },
+    center: { x: 26, y: 38 },
   }),
   p('merv', 'Merv', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, hasSilkRoad: true,
@@ -211,7 +211,7 @@ const khwarezmProvinces: Province[] = [
   }),
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 22, y: 52 },
+    center: { x: 23, y: 54 },
   }),
   p('herat', 'Herat', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
@@ -345,7 +345,7 @@ const centralAsiaProvinces: Province[] = [
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', null, {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 42, y: 28 },
+    center: { x: 43, y: 27 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', null, {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
@@ -373,7 +373,7 @@ const tibetProvinces: Province[] = [
 const caucasusProvinces: Province[] = [
   p('georgia', 'Georgia', 'caucasus', 'mountain', null, {
     baseTax: 4, baseManpower: 5, fortLevel: 1, tradeGood: 'gold',
-    center: { x: 12, y: 42 },
+    center: { x: 11, y: 40 },
   }),
   p('armenia', 'Armenia', 'caucasus', 'mountain', null, {
     baseTax: 3, baseManpower: 4, fortLevel: 1,
