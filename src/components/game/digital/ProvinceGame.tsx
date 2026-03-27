@@ -6,6 +6,7 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState';
+import { AITurnOverlay } from './AITurnOverlay';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect';
 import { ProvinceMap } from './ProvinceMap';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel';
