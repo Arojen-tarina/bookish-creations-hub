@@ -53,6 +53,7 @@ export interface ResourceCollectionResult {
   taxIncome: number;
   manpowerGain: number;
   marketBonus: number;
+  silkRoadBonus: number;
   foodChange: number;
 }
 
