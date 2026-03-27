@@ -26,6 +26,11 @@ export interface ProvinceMapProps {
 }
 
 const TOKEN_RADIUS = 2.2;
+const HEX_SPREAD = 1.12;
+const projectPoint = (x: number, y: number) => ({
+  x: 50 + (x - 50) * HEX_SPREAD,
+  y: 50 + (y - 50) * HEX_SPREAD,
+});
 
 const ProvinceToken = ({
   province,
@@ -44,6 +49,7 @@ const ProvinceToken = ({
 }) => {
   const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : '#888';
   const r = TOKEN_RADIUS + (province.isCapital ? 0.5 : 0);
+  const center = projectPoint(province.center.x, province.center.y);
 
   return (
     <g
@@ -54,16 +60,16 @@ const ProvinceToken = ({
     >
       {/* Shadow */}
       <circle
-        cx={province.center.x + 0.3}
-        cy={province.center.y + 0.3}
+        cx={center.x + 0.3}
+        cy={center.y + 0.3}
         r={r}
         fill="rgba(0,0,0,0.4)"
       />
 
       {/* Token base */}
       <circle
-        cx={province.center.x}
-        cy={province.center.y}
+        cx={center.x}
+        cy={center.y}
         r={r}
         fill={ownerColor}
         stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : '#1a1a1a'}
@@ -73,8 +79,8 @@ const ProvinceToken = ({
 
       {/* Inner detail */}
       <circle
-        cx={province.center.x}
-        cy={province.center.y}
+        cx={center.x}
+        cy={center.y}
         r={r * 0.6}
         fill="none"
         stroke="rgba(255,255,255,0.3)"
@@ -84,8 +90,8 @@ const ProvinceToken = ({
       {/* Selection pulse */}
       {isSelected && (
         <circle
-          cx={province.center.x}
-          cy={province.center.y}
+          cx={center.x}
+          cy={center.y}
           r={r + 0.8}
           fill="none"
           stroke="#fbbf24"
@@ -98,8 +104,8 @@ const ProvinceToken = ({
       {/* Capital crown */}
       {province.isCapital && (
         <text
-          x={province.center.x}
-          y={province.center.y + 0.5}
+          x={center.x}
+          y={center.y + 0.5}
           textAnchor="middle"
           fontSize={2}
           className="pointer-events-none select-none"
@@ -111,8 +117,8 @@ const ProvinceToken = ({
       {/* Garrison indicator */}
       {province.garrison > 0 && !province.isCapital && (
         <text
-          x={province.center.x}
-          y={province.center.y + 0.6}
+          x={center.x}
+          y={center.y + 0.6}
           textAnchor="middle"
           fontSize={1.6}
           fill="#fff"
@@ -127,8 +133,8 @@ const ProvinceToken = ({
       {/* Fort marker */}
       {province.fortLevel > 0 && (
         <rect
-          x={province.center.x + r * 0.5}
-          y={province.center.y - r * 0.9}
+          x={center.x + r * 0.5}
+          y={center.y - r * 0.9}
           width={1.2}
           height={1.2}
           rx={0.15}
@@ -141,8 +147,8 @@ const ProvinceToken = ({
       {/* Silk Road marker */}
       {province.hasSilkRoad && (
         <circle
-          cx={province.center.x + r * 0.6}
-          cy={province.center.y + r * 0.6}
+          cx={center.x + r * 0.6}
+          cy={center.y + r * 0.6}
           r={0.5}
           fill="#f59e0b"
           stroke="#92400e"
@@ -332,15 +338,13 @@ export const ProvinceMap = ({
     const lines: { x1: number; y1: number; x2: number; y2: number; isSilkRoad: boolean }[] = [];
     for (const prov of provinces) {
       for (const nId of prov.neighbors) {
-        if (prov.id < nId) { // deduplicate
+        if (prov.id < nId) {
           const neighbor = provinces.find(p => p.id === nId);
           if (neighbor) {
+            const from = projectPoint(prov.center.x, prov.center.y);
+            const to = projectPoint(neighbor.center.x, neighbor.center.y);
             const isSilk = prov.hasSilkRoad && neighbor.hasSilkRoad;
-            lines.push({
-              x1: prov.center.x, y1: prov.center.y,
-              x2: neighbor.center.x, y2: neighbor.center.y,
-              isSilkRoad: isSilk,
-            });
+            lines.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, isSilkRoad: isSilk });
           }
         }
       }
