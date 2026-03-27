@@ -200,7 +200,47 @@ export const ProvinceGame = () => {
         />
       </div>
 
-      {/* ============= MAIN GAME AREA ============= */}
+      {/* ============= RESOURCE COLLECTION PANEL ============= */}
+      {gameState.phase === 'resource' && !gameState.resourcesCollected && (
+        <div className="fixed top-[88px] left-1/2 -translate-x-1/2 z-30 mt-14">
+          <Card className="bg-amber-950/95 backdrop-blur-xl border-amber-600/50 shadow-2xl">
+            <CardContent className="p-4 text-center">
+              <h3 className="text-amber-100 font-bold text-lg mb-2">🪙 Resurssien keräys</h3>
+              <p className="text-amber-200/70 text-sm mb-3">
+                Hallitset {gameState.provinces.filter(p => p.ownerId === playerFaction).length} provinssia
+              </p>
+              <Button
+                onClick={collectResources}
+                className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-6"
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                Kerää resurssit
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* ============= RESOURCE COLLECTION RESULT ============= */}
+      {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
+        <div className="fixed top-[88px] left-1/2 -translate-x-1/2 z-30 mt-14">
+          <Card className="bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
+            <CardContent className="p-4 text-center">
+              <h3 className="text-green-100 font-bold text-lg mb-2">✅ Resurssit kerätty!</h3>
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <span className="text-amber-300">🪙 +{gameState.lastCollection.taxIncome} kultaa</span>
+                <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} miehiä</span>
+                <span className="text-green-300">🌾 {gameState.lastCollection.foodChange >= 0 ? '+' : ''}{gameState.lastCollection.foodChange} ruokaa</span>
+                {gameState.lastCollection.marketBonus > 0 && (
+                  <span className="text-orange-300">🏪 +{gameState.lastCollection.marketBonus} markkinabonus</span>
+                )}
+              </div>
+              <p className="text-green-200/60 text-xs mt-2">Jatka seuraavaan vaiheeseen →</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <div className="relative h-full pt-[88px] flex">
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[380px]' : ''}`}>
