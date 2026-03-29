@@ -340,43 +340,43 @@ const southEastProvinces: Province[] = [
   p('hangzhou', 'Hangzhou', 'song_china', 'farmland', 'song', {
     isCapital: true, baseTax: 12, baseManpower: 15, fortLevel: 2, developmentLevel: 5,
     isCoastal: true, tradeGood: 'silk',
-    center: { x: 84, y: 62 },
+    center: { x: 74, y: 82 },
   }),
   p('nanjing', 'Nanjing', 'song_china', 'farmland', 'song', {
     baseTax: 9, baseManpower: 12, fortLevel: 2, tradeGood: 'silk',
-    center: { x: 80, y: 56 },
+    center: { x: 70, y: 76 },
   }),
   p('suzhou', 'Suzhou', 'song_china', 'farmland', 'song', {
     baseTax: 8, baseManpower: 10, isCoastal: true, tradeGood: 'silk',
-    center: { x: 86, y: 56 },
+    center: { x: 76, y: 76 },
   }),
   p('fujian', 'Fujian', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, isCoastal: true, tradeGood: 'spices',
-    center: { x: 84, y: 70 },
+    center: { x: 74, y: 90 },
   }),
   p('guangdong', 'Guangdong', 'song_china', 'farmland', 'song', {
     baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'spices',
-    center: { x: 76, y: 76 },
+    center: { x: 66, y: 96 },
   }),
   p('jiangxi', 'Jiangxi', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, tradeGood: 'grain',
-    center: { x: 78, y: 66 },
+    center: { x: 68, y: 86 },
   }),
   p('hunan', 'Hunan', 'song_china', 'farmland', 'song', {
     baseTax: 5, baseManpower: 7, tradeGood: 'grain',
-    center: { x: 70, y: 66 },
+    center: { x: 60, y: 86 },
   }),
   p('hubei', 'Hubei', 'song_china', 'farmland', 'song', {
     baseTax: 6, baseManpower: 8, tradeGood: 'grain',
-    center: { x: 72, y: 58 },
+    center: { x: 62, y: 78 },
   }),
   p('sichuan', 'Sichuan', 'song_china', 'hills', 'song', {
     baseTax: 7, baseManpower: 10, fortLevel: 2, tradeGood: 'salt',
-    center: { x: 62, y: 58 },
+    center: { x: 52, y: 78 },
   }),
   p('yunnan', 'Yunnan', 'song_china', 'mountain', 'song', {
     baseTax: 3, baseManpower: 5, tradeGood: 'gems',
-    center: { x: 62, y: 70 },
+    center: { x: 52, y: 90 },
   }),
   // TIBET
   p('lhasa', 'Lhasa', 'tibet', 'mountain', null, {
