@@ -4,10 +4,10 @@
  * Näyttää 7 pelattavaa valtakuntaa (mongoli, Jin, Song, Xixia, Khwarezm, Rus, Kipchak)
  * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
  */
-import { FactionId, FACTION_DATA_1206 } from '@/types/province';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { Card, CardContent } from '@/components/ui/card.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
 import { Crown, Sword, Coins, Shield, Users, BookOpen } from 'lucide-react';
 
 interface ProvinceFactionSelectProps {

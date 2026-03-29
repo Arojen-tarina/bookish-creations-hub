@@ -5,9 +5,9 @@
  * Sisältää räjähdysefektit, tärinän, joukkojen vähenemisanimaatiot.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { Army, FactionId, FACTION_DATA_1206 } from '@/types/province';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Army, FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { Sword, Shield, Trophy, Skull, Flame, Zap } from 'lucide-react';
 
 export interface BattleResult {

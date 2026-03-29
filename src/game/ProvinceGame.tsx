@@ -6,14 +6,14 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
-import { AITurnOverlay } from '../components/game/digital/AITurnOverlay.tsx';
-import { ProvinceFactionSelect } from '../components/game/digital/ProvinceFactionSelect.tsx';
+import { AITurnOverlay } from './AITurnOverlay.tsx';
+import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
-import { ProvinceInfoPanel } from '../components/game/digital/ProvinceInfoPanel.tsx';
-import { DiplomacyPanel } from '../components/game/digital/DiplomacyPanel.tsx';
-import { BattleDisplay } from '../components/game/digital/BattleDisplay.tsx';
+import { ProvinceInfoPanel } from './ProvinceInfoPanel.tsx';
+import { DiplomacyPanel } from './DiplomacyPanel.tsx';
+import { BattleDisplay } from './BattleDisplay.tsx';
 import { CardHand } from './CardHand.tsx';
-import { PhaseBar } from '../components/game/digital/PhaseBar.tsx';
+import { PhaseBar } from './PhaseBar.tsx';
 import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';

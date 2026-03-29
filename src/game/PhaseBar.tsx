@@ -3,7 +3,7 @@
  * 
  * Isompi, selkeämpi vaihepalkki integroidulla Seuraava/Lopeta-napilla.
  */
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 import { ArrowRight, Check, Flag } from 'lucide-react';
 
 export type MVPPhase = 'resource' | 'cards' | 'move' | 'battle' | 'build' | 'end';

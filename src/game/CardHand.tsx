@@ -5,7 +5,7 @@
  */
 import { PlayableCard } from '@/game/cards.ts';
 import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
-import { MVPPhase } from '../components/game/digital/PhaseBar.tsx';
+import { MVPPhase } from './PhaseBar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
 

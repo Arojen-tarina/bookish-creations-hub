@@ -5,12 +5,12 @@
  * voimassa olevat sopimukset ja mahdollistaa uusien ehdottamisen/purkamisen.
  */
 import { useState } from 'react';
-import { FactionId, Faction, DiplomaticRelation, TreatyType, FACTION_DATA_1206 } from '@/types/province';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { FactionId, Faction, DiplomaticRelation, TreatyType, FACTION_DATA_1206 } from '@/types/province.ts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
+import { Progress } from '@/components/ui/progress.tsx';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Handshake, 
   Sword, 

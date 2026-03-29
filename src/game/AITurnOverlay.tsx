@@ -4,7 +4,7 @@
  * Näyttää AI-pelaajien toiminnot yksi kerrallaan viiveiden kera.
  */
 import { useState, useEffect } from 'react';
-import { AIActionLog } from '@/hooks/useProvinceGameState';
+import { AIActionLog } from '@/hooks/useProvinceGameState.ts';
 import { Brain, Swords, MapPin, Shield, Coins, Users } from 'lucide-react';
 
 interface AITurnOverlayProps {
