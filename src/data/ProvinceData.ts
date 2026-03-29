@@ -287,23 +287,23 @@ const southEastProvinces: Province[] = [
   p('xingqing', 'Xingqing', 'xixia', 'grassland', 'xixia', {
     isCapital: true, baseTax: 5, baseManpower: 7, fortLevel: 2, developmentLevel: 3,
     hasSilkRoad: true,
-    center: { x: 60, y: 47 },
+    center: { x: 57, y: 51 },
   }),
   p('ganzhou', 'Ganzhou', 'xixia', 'desert', 'xixia', {
     baseTax: 3, baseManpower: 4, hasSilkRoad: true, tradeGood: 'salt',
-    center: { x: 54, y: 45 },
+    center: { x: 51, y: 49 },
   }),
   p('liangzhou', 'Liangzhou', 'xixia', 'grassland', 'xixia', {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true,
-    center: { x: 58, y: 51 },
+    center: { x: 55, y: 55 },
   }),
   p('xixia_north', 'Pohjois-Xia', 'xixia', 'steppe', 'xixia', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 57, y: 42 },
+    center: { x: 54, y: 46 },
   }),
   p('ordos', 'Ordos', 'xixia', 'desert', 'xixia', {
     baseTax: 1, baseManpower: 3,
-    center: { x: 63, y: 43 },
+    center: { x: 60, y: 47 },
   }),
   // GOBI
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', null, {
