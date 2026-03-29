@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Province Distance Validation</title>
+    <style>
+        body { font-family: monospace; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; }
+        h1 { color: #333; border-bottom: 2px solid #333; }
+        h2 { color: #555; margin-top: 30px; }
+        .success { color: green; font-weight: bold; }
+        .warning { color: #ff6600; font-weight: bold; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th { background: #f0f0f0; padding: 10px; text-align: left; }
+        td { padding: 8px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .stats { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Province Distance Validation Report</h1>
+        <p>Date: March 29, 2026 | Data Source: ProvinceData.ts</p>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // All 83 provinces with current coordinates
+        const provinces = {
+            'novgorod': {x: 8, y: 12},
+            'pskov': {x: 6, y: 22},
+            'tver': {x: 20, y: 18},
+            'vladimir': {x: 24, y: 8},
+            'smolensk': {x: 14, y: 44},
+            'ryazan': {x: 36, y: 20},
+            'chernigov': {x: 14, y: 26},
+            'kiev': {x: 12, y: 36},
+            'volga_bulgars': {x: 28, y: 14},
+            'kipchak_central': {x: 29, y: 22},
+            'siberia_west': {x: 34, y: 10},
+            'altai': {x: 44, y: 18},
+            'dzungaria': {x: 36, y: 22},
+            'semirechye': {x: 35, y: 30},
+            'khiva': {x: 20, y: 48},
+            'karakorum': {x: 53, y: 32},
+            'mongol_east': {x: 60, y: 28},
+            'mongol_central': {x: 48, y: 28},
+            'mongol_west': {x: 38, y: 38},
+            'kerulen': {x: 70, y: 24},
+            'onon': {x: 72, y: 32},
+            'baikal': {x: 58, y: 18},
+            'gobi_north': {x: 60, y: 42},
+            'siberia_central': {x: 44, y: 6},
+            'siberia_east': {x: 54, y: 12},
+            'yakutia': {x: 68, y: 10},
+            'manchuria_north': {x: 74, y: 18},
+            'manchuria_central': {x: 78, y: 24},
+            'liaoyang': {x: 88, y: 34},
+            'liaodong': {x: 90, y: 48},
+            'hebei_north': {x: 82, y: 16},
+            'datong': {x: 72, y: 40},
+            'turfan': {x: 46, y: 34},
+            'sarkel': {x: 23, y: 35},
+            'kipchak_west': {x: 17, y: 37},
+            'khazaria': {x: 28, y: 40},
+            'georgia': {x: 2, y: 42},
+            'armenia': {x: 10, y: 54},
+            'azerbaijan': {x: 26, y: 48},
+            'shirvan': {x: 18, y: 58},
+            'urgench': {x: 24, y: 50},
+            'bukhara': {x: 26, y: 57},
+            'merv': {x: 28, y: 63},
+            'nishapur': {x: 23, y: 67},
+            'balkh': {x: 36, y: 55},
+            'herat': {x: 42, y: 63},
+            'samarkand': {x: 30, y: 42},
+            'isfahan': {x: 24, y: 64},
+            'shiraz': {x: 14, y: 71},
+            'tabriz': {x: 2, y: 54},
+            'ray': {x: 4, y: 32},
+            'kerman': {x: 30, y: 72},
+            'hormuz': {x: 20, y: 77},
+            'kashgar': {x: 42, y: 43},
+            'khotan': {x: 38, y: 50},
+            'dunhuang': {x: 52, y: 40},
+            'xingqing': {x: 54, y: 56},
+            'ganzhou': {x: 48, y: 54},
+            'liangzhou': {x: 52, y: 63},
+            'xixia_north': {x: 51, y: 48},
+            'ordos': {x: 64, y: 50},
+            'gobi_south': {x: 62, y: 38},
+            'zhongdu': {x: 78, y: 38},
+            'taiyuan': {x: 70, y: 60},
+            'kaifeng': {x: 78, y: 48},
+            'luoyang': {x: 72, y: 52},
+            'shandong': {x: 84, y: 42},
+            'shanxi_north': {x: 68, y: 46},
+            'hangzhou': {x: 74, y: 75},
+            'nanjing': {x: 70, y: 69},
+            'suzhou': {x: 82, y: 78},
+            'fujian': {x: 74, y: 83},
+            'guangdong': {x: 66, y: 89},
+            'jiangxi': {x: 68, y: 82},
+            'hunan': {x: 60, y: 79},
+            'hubei': {x: 62, y: 71},
+            'sichuan': {x: 52, y: 71},
+            'yunnan': {x: 52, y: 83},
+            'lhasa': {x: 46, y: 62},
+            'tibet_east': {x: 60, y: 58},
+            'tibet_west': {x: 36, y: 60},
+            'goryeo': {x: 94, y: 43},
+            'korea_south': {x: 88, y: 56}
+        };
+
+        function euclideanDistance(p1, p2) {
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function validate() {
+            const threshold = 6.1;
+            const provinceIds = Object.keys(provinces).sort();
+            const violations = [];
+            let totalPairs = 0;
+
+            // Calculate all pairwise distances
+            for (let i = 0; i < provinceIds.length; i++) {
+                for (let j = i + 1; j < provinceIds.length; j++) {
+                    const id1 = provinceIds[i];
+                    const id2 = provinceIds[j];
+                    const dist = euclideanDistance(provinces[id1], provinces[id2]);
+                    totalPairs++;
+
+                    if (dist < threshold) {
+                        violations.push({
+                            id1: id1,
+                            id2: id2,
+                            x1: provinces[id1].x,
+                            y1: provinces[id1].y,
+                            x2: provinces[id2].x,
+                            y2: provinces[id2].y,
+                            distance: dist
+                        });
+                    }
+                }
+            }
+
+            violations.sort((a, b) => a.distance - b.distance);
+
+            // Generate HTML report
+            let html = `<h2>Validation Results</h2>`;
+            html += `<p>Total provinces: <strong>${provinceIds.length}</strong></p>`;
+            html += `<p>Total pairwise distances: <strong>${totalPairs.toLocaleString()}</strong></p>`;
+            html += `<p>Threshold: <strong>${threshold} units</strong></p>`;
+
+            if (violations.length === 0) {
+                html += `<h3 class="success">✓ VALIDATION PASSED</h3>`;
+                html += `<p class="success">All ${totalPairs.toLocaleString()} pairwise distances are &ge; ${threshold} units</p>`;
+
+                // Calculate statistics
+                const allDistances = [];
+                for (let i = 0; i < provinceIds.length; i++) {
+                    for (let j = i + 1; j < provinceIds.length; j++) {
+                        const dist = euclideanDistance(
+                            provinces[provinceIds[i]],
+                            provinces[provinceIds[j]]
+                        );
+                        allDistances.push(dist);
+                    }
+                }
+                allDistances.sort((a, b) => a - b);
+                const mean = allDistances.reduce((a, b) => a + b, 0) / allDistances.length;
+
+                html += `<div class="stats">`;
+                html += `<h3>Distance Statistics</h3>`;
+                html += `<ul>`;
+                html += `<li>Minimum: ${Math.min(...allDistances).toFixed(4)} units</li>`;
+                html += `<li>Maximum: ${Math.max(...allDistances).toFixed(4)} units</li>`;
+                html += `<li>Mean: ${mean.toFixed(4)} units</li>`;
+                html += `<li>Median: ${allDistances[Math.floor(allDistances.length/2)].toFixed(4)} units</li>`;
+                html += `</ul></div>`;
+            } else {
+                html += `<h3 class="warning">⚠ VIOLATIONS FOUND</h3>`;
+                html += `<p class="warning">${violations.length} pairs with distance &lt; ${threshold} units</p>`;
+                html += `<table>`;
+                html += `<tr><th>#</th><th>Province 1</th><th>Coords (x, y)</th><th>Province 2</th><th>Coords (x, y)</th><th>Distance</th></tr>`;
+                
+                violations.forEach((v, idx) => {
+                    html += `<tr>`;
+                    html += `<td>${idx + 1}</td>`;
+                    html += `<td>${v.id1}</td>`;
+                    html += `<td>(${v.x1.toFixed(1)}, ${v.y1.toFixed(1)})</td>`;
+                    html += `<td>${v.id2}</td>`;
+                    html += `<td>(${v.x2.toFixed(1)}, ${v.y2.toFixed(1)})</td>`;
+                    html += `<td>${v.distance.toFixed(4)}</td>`;
+                    html += `</tr>`;
+                });
+                
+                html += `</table>`;
+            }
+
+            document.getElementById('results').innerHTML = html;
+        }
+
+        // Run validation on page load
+        validate();
+    </script>
+</body>
+</html>
