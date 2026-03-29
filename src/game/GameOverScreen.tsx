@@ -1,8 +1,8 @@
 /**
  * GameOverScreen.tsx — Voitto- ja häviöruutu
  */
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { Trophy, Skull, RotateCcw } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -18,8 +18,8 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
   return (
     <Dialog open={isOpen}>
       <DialogContent className={`border text-white ${
-        isVictory 
-          ? 'bg-gradient-to-br from-amber-900 to-amber-950 border-amber-600' 
+        isVictory
+          ? 'bg-gradient-to-br from-amber-900 to-amber-950 border-amber-600'
           : 'bg-gradient-to-br from-red-900 to-slate-950 border-red-600'
       }`}>
         <DialogHeader>

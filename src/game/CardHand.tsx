@@ -1,12 +1,12 @@
 /**
  * CardHand.tsx — Pelaajan korttikäsi
- * 
+ *
  * Selkeä korttinäkymä: kortit isompia, pelaa-nappi aina näkyvissä.
  */
-import { PlayableCard } from '@/game/cards';
-import { cardTypeInfo, rarityInfo } from '@/data/gameCards';
-import { MVPPhase } from './PhaseBar';
-import { Button } from '@/components/ui/button';
+import { PlayableCard } from '@/game/cards.ts';
+import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
+import { MVPPhase } from '../components/game/digital/PhaseBar.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
 
 const EFFECT_EMOJI: Record<string, string> = {

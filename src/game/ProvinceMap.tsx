@@ -5,9 +5,9 @@
  * interaktiivisina pelinappuloina laudan päälle.
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
-import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province';
+import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 100;

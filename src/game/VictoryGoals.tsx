@@ -1,9 +1,9 @@
 /**
  * VictoryGoals.tsx — Voittotavoitteiden paneeli
- * 
+ *
  * Näyttää kolme voittotapaa ja edistymisen kohti niitä.
  */
-import { FactionId } from '@/types/province';
+import { FactionId } from '@/types/province.ts';
 
 interface VictoryGoalsProps {
   provincesOwned: number;
@@ -27,11 +27,11 @@ export const VictoryGoals = ({
   const militaryPct = Math.min(100, (provincesOwned / targetProvinces) * 100);
   const economyPct = Math.min(100, (treasury / targetGold) * 100);
   const techPct = Math.min(100, (techCount / targetTech) * 100);
-  
+
   return (
     <div className="space-y-2">
       <h4 className="text-amber-100 text-xs font-bold flex items-center gap-1">🏆 Voittotavoitteet</h4>
-      
+
       {/* Military */}
       <div>
         <div className="flex justify-between text-[10px] mb-0.5">
@@ -42,7 +42,7 @@ export const VictoryGoals = ({
           <div className="h-full bg-red-500 rounded-full transition-all" style={{ width: `${militaryPct}%` }} />
         </div>
       </div>
-      
+
       {/* Economic */}
       <div>
         <div className="flex justify-between text-[10px] mb-0.5">
@@ -53,7 +53,7 @@ export const VictoryGoals = ({
           <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${economyPct}%` }} />
         </div>
       </div>
-      
+
       {/* Technology */}
       <div>
         <div className="flex justify-between text-[10px] mb-0.5">

@@ -5,23 +5,23 @@
  * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState';
-import { AITurnOverlay } from './AITurnOverlay';
-import { ProvinceFactionSelect } from './ProvinceFactionSelect';
-import { ProvinceMap } from './ProvinceMap';
-import { ProvinceInfoPanel } from './ProvinceInfoPanel';
-import { DiplomacyPanel } from './DiplomacyPanel';
-import { BattleDisplay } from './BattleDisplay';
-import { CardHand } from './CardHand';
-import { PhaseBar } from './PhaseBar';
-import { VictoryGoals } from './VictoryGoals';
-import { GameOverScreen } from './GameOverScreen';
-import { FACTION_DATA_1206 } from '@/types/province';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
+import { AITurnOverlay } from '../components/game/digital/AITurnOverlay.tsx';
+import { ProvinceFactionSelect } from '../components/game/digital/ProvinceFactionSelect.tsx';
+import { ProvinceMap } from './ProvinceMap.tsx';
+import { ProvinceInfoPanel } from '../components/game/digital/ProvinceInfoPanel.tsx';
+import { DiplomacyPanel } from '../components/game/digital/DiplomacyPanel.tsx';
+import { BattleDisplay } from '../components/game/digital/BattleDisplay.tsx';
+import { CardHand } from './CardHand.tsx';
+import { PhaseBar } from '../components/game/digital/PhaseBar.tsx';
+import { VictoryGoals } from './VictoryGoals.tsx';
+import { GameOverScreen } from './GameOverScreen.tsx';
+import { FACTION_DATA_1206 } from '@/types/province.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
+import { Card, CardContent } from '@/components/ui/card.tsx';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
   Clock, Coins, Users, Sword, RotateCcw, Trophy, ScrollText,

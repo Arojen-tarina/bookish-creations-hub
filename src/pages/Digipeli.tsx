@@ -4,7 +4,7 @@
  * Renderöi ProvinceGame-komponentin, joka sisältää koko digitaalisen
  * strategiapelin: kartan, HUD:n, taistelut, diplomatian ja tekoälyn.
  */
-import { ProvinceGame } from "@/components/game/digital/ProvinceGame";
+import { ProvinceGame } from "@/game/ProvinceGame.tsx";
 
 const Digipeli = () => {
   return <ProvinceGame />;
