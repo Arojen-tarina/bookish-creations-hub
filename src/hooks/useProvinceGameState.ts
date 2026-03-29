@@ -21,10 +21,10 @@ import {
   PROVINCE_TERRAIN_INFO,
 } from '@/types/province';
 import { getProvincesWithAdjacency } from '@/data/provinces-1206';
-import { BattleResult } from '@/components/game/digital/BattleDisplay';
+import { BattleResult } from '@/game/BattleDisplay.tsx';
 import { PlayableCard, createPlayableDeck, drawCards, shuffleDeck } from '@/game/cards';
 import { calculateAIActions } from '@/game/ai';
-import { MVPPhase } from '@/components/game/digital/PhaseBar';
+import { MVPPhase } from '@/game/PhaseBar.tsx';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
