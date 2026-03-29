@@ -1,5 +1,5 @@
 /**
- * provinces-1206.ts — Provinssidata vuoden 1206 aloitusta varten
+ * ProvinceData.ts — Provinssidata vuoden 1206 aloitusta varten
  *
  * ~70 provinssia historiallisesti tärkeiltä alueilta.
  * Koordinaatit on sovitettu kuvitettuun pelilautaan (0-100 x 0-100).
