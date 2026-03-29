@@ -277,7 +277,7 @@ const southEastProvinces: Province[] = [
   }),
   p('khotan', 'Khotan', 'central_asia', 'desert', null, {
     baseTax: 3, baseManpower: 3, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 46, y: 46 },
+    center: { x: 44, y: 50 },
   }),
   p('dunhuang', 'Dunhuang', 'central_asia', 'desert', null, {
     baseTax: 3, baseManpower: 3, hasSilkRoad: true,
@@ -295,11 +295,11 @@ const southEastProvinces: Province[] = [
   }),
   p('liangzhou', 'Liangzhou', 'xixia', 'grassland', 'xixia', {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true,
-    center: { x: 52, y: 60 },
+    center: { x: 52, y: 63 },
   }),
   p('xixia_north', 'Pohjois-Xia', 'xixia', 'steppe', 'xixia', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 51, y: 51 },
+    center: { x: 51, y: 48 },
   }),
   p('ordos', 'Ordos', 'xixia', 'desert', 'xixia', {
     baseTax: 1, baseManpower: 3,
@@ -348,7 +348,7 @@ const southEastProvinces: Province[] = [
   }),
   p('suzhou', 'Suzhou', 'song_china', 'farmland', 'song', {
     baseTax: 8, baseManpower: 10, isCoastal: true, tradeGood: 'silk',
-    center: { x: 76, y: 69 },
+    center: { x: 76, y: 73 },
   }),
   p('fujian', 'Fujian', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, isCoastal: true, tradeGood: 'spices',
@@ -360,7 +360,7 @@ const southEastProvinces: Province[] = [
   }),
   p('jiangxi', 'Jiangxi', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, tradeGood: 'grain',
-    center: { x: 68, y: 79 },
+    center: { x: 68, y: 82 },
   }),
   p('hunan', 'Hunan', 'song_china', 'farmland', 'song', {
     baseTax: 5, baseManpower: 7, tradeGood: 'grain',
