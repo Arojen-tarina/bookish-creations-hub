@@ -143,6 +143,77 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
   return armies;
 };
 
+const calculateProvinceCenterDistance = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Faction[]): Province[] => {
+  const factionIds = factions.map(f => f.id);
+  const targetCount = Math.floor(provinces.length / factionIds.length);
+  const currentCounts = factionIds.reduce((acc, factionId) => ({ ...acc, [factionId]: 0 }), {} as Record<FactionId, number>);
+  const updatedProvinces = provinces.map(province => ({ ...province }));
+
+  updatedProvinces.forEach(province => {
+    if (province.ownerId && currentCounts[province.ownerId] !== undefined) {
+      currentCounts[province.ownerId] += 1;
+    }
+  });
+
+  factionIds.forEach(factionId => {
+    if (currentCounts[factionId] <= targetCount) return;
+
+    const owned = updatedProvinces
+      .filter(p => p.ownerId === factionId && !p.isCapital)
+      .sort((a, b) => {
+        const aValue = a.baseTax + a.baseManpower + a.developmentLevel;
+        const bValue = b.baseTax + b.baseManpower + b.developmentLevel;
+        return aValue - bValue;
+      });
+
+    const surplus = currentCounts[factionId] - targetCount;
+    for (let i = 0; i < surplus && i < owned.length; i += 1) {
+      owned[i].ownerId = null;
+      currentCounts[factionId] -= 1;
+    }
+  });
+
+  const neutralProvinces = updatedProvinces.filter(p => p.ownerId === null);
+  const neutralPool = [...neutralProvinces];
+
+  factionIds.forEach(factionId => {
+    const need = targetCount - currentCounts[factionId];
+    if (need <= 0) return;
+
+    const faction = factions.find(f => f.id === factionId);
+    const capital = updatedProvinces.find(p => p.id === faction?.capitalId);
+    if (!capital) return;
+
+    for (let i = 0; i < need && neutralPool.length > 0; i += 1) {
+      let bestIndex = 0;
+      let bestDistance = calculateProvinceCenterDistance(capital.center, neutralPool[0].center);
+
+      for (let j = 1; j < neutralPool.length; j += 1) {
+        const distance = calculateProvinceCenterDistance(capital.center, neutralPool[j].center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = j;
+        }
+      }
+
+      const chosen = neutralPool.splice(bestIndex, 1)[0];
+      const provinceToUpdate = updatedProvinces.find(p => p.id === chosen.id);
+      if (provinceToUpdate) {
+        provinceToUpdate.ownerId = factionId;
+        currentCounts[factionId] += 1;
+      }
+    }
+  });
+
+  return updatedProvinces;
+};
+
 // ============= COMBAT =============
 const createProvinceGarrison = (province: Province): Army | null => {
   if (!province.ownerId) return null;
@@ -261,8 +332,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
   // ============= START GAME =============
   const startGame = useCallback((selectedFaction: FactionId) => {
-    const provinces = getProvincesWithAdjacency();
     const factions = createFactions(selectedFaction);
+    const provinces = equalizeStartingProvinceOwnership(getProvincesWithAdjacency(), factions);
     const relations = createDiplomaticRelations(factions);
     const armies = createStartingArmies(factions, provinces);
     const deck = createPlayableDeck();
