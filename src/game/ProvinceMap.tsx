@@ -290,11 +290,9 @@ export const ProvinceMap = ({
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const defaultView = { x: 0, y: 0, width: BOARD_SIZE, height: BOARD_SIZE };
-
   const viewBox = useMemo(() => {
-    const w = defaultView.width / zoom;
-    const h = defaultView.height / zoom;
+    const w = BOARD_SIZE / zoom;
+    const h = BOARD_SIZE / zoom;
     const x = (BOARD_SIZE - w) / 2 - pan.x / zoom;
     const y = (BOARD_SIZE - h) / 2 - pan.y / zoom;
     return { x, y, width: w, height: h };

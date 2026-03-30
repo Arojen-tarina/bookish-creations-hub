@@ -475,7 +475,7 @@ export const useGameState = () => {
         showBuildMenu: hex.ownerId === currentPlayer?.factionId && gameState.currentPhase === 'building',
       } : null);
     }
-  }, [gameState]);
+  }, [gameState, moveUnit]);
 
   const calculateAvailableMoves = (unit: Unit, hexes: HexTile[], units: Unit[]): string[] => {
     const currentHex = hexes.find(h => h.id === unit.hexId);
@@ -808,7 +808,7 @@ export const useGameState = () => {
       
       const event = prev.currentEvent;
       let newPlayers = [...prev.players];
-      let newUnits = [...prev.units];
+      const newUnits = [...prev.units];
       
       // Apply event effects
       switch (event.type) {
@@ -854,7 +854,7 @@ export const useGameState = () => {
             }
           }
           break;
-        case 'alliance':
+        case 'alliance': {
           const currentPlayer = newPlayers.find(p => p.id === prev.currentPlayerId);
           if (currentPlayer) {
             newPlayers = newPlayers.map(p => 
@@ -864,6 +864,7 @@ export const useGameState = () => {
             );
           }
           break;
+        }
       }
       
       const activeEvent: ActiveEvent = {
@@ -931,9 +932,9 @@ export const useGameState = () => {
     if (currentPlayer?.isAI && phases[nextIndex] === 'action') {
       await executeAITurn();
     }
-  }, [gameState, drawEventCard, executeAITurn]);
+  }, [gameState, drawEventCard, executeAITurn, endTurnForPlayer]);
 
-  const endTurnForPlayer = (state: GameState): GameState => {
+  const endTurnForPlayer = useCallback((state: GameState): GameState => {
     const currentPlayerIndex = state.players.findIndex(p => p.id === state.currentPlayerId);
     const nextPlayerIndex = (currentPlayerIndex + 1) % state.players.length;
     const isNewTurn = nextPlayerIndex === 0;
@@ -963,7 +964,7 @@ export const useGameState = () => {
       currentPhase: 'planning',
       ...winCheck,
     };
-  };
+  }, []);
 
   const collectResources = (state: GameState): GameState => {
     const currentPlayer = state.players.find(p => p.id === state.currentPlayerId);

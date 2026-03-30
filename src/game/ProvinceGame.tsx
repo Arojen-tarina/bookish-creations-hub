@@ -93,7 +93,7 @@ export const ProvinceGame = () => {
     if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
       setShowAIOverlay(true);
     }
-  }, [gameState?.turn]);
+  }, [gameState?.turn, gameState?.aiActionLog]);
 
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {

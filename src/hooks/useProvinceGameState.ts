@@ -35,6 +35,8 @@ export const VICTORY_TARGETS = {
   tech: 5,
 };
 
+const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
+
 // ============= BUILDING TYPES =============
 export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop';
 
@@ -478,7 +480,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         : null;
       const defender = enemyArmies[0] || provinceGarrison;
       let newArmies = [...prev.armies];
-      let newProvinces = [...prev.provinces];
+      const newProvinces = [...prev.provinces];
       
       if (defender) {
         const result = resolveCombat(army, defender, targetProvince, prev.attackBonus, prev.defenseBonus);
@@ -562,7 +564,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
       
-      let newState = { ...prev, hand: newHand, discard: newDiscard };
+      const newState = { ...prev, hand: newHand, discard: newDiscard };
       const effect = card.parsedEffect;
       
       switch (effect.type) {
@@ -746,9 +748,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     });
   }, [playerFaction]);
 
-
-  const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
-  
   const nextPhase = useCallback(() => {
     setGameState(prev => {
       if (!prev) return null;
@@ -812,7 +811,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     setGameState(prev => {
       if (!prev || !playerFaction) return null;
       
-      let newState = { ...prev };
+      const newState = { ...prev };
       const aiLog: string[] = [];
       const aiActionLog: AIActionLog[] = [];
       
@@ -827,11 +826,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       });
       
       // 2. Food: skip player (already handled in collectResources), just track for state
-      let newFood = newState.food;
+      const newFood = newState.food;
       
       // 3. AI turns
       let newArmies = [...newState.armies];
-      let newProvinces = [...newState.provinces];
+      const newProvinces = [...newState.provinces];
       
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
@@ -1108,7 +1107,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
   const buildFort = useCallback((provinceId: string) => {
     buildStructure(provinceId, 'fortress');
-  }, []);
+  }, [buildStructure]);
 
   const resolveEvent = useCallback((_choiceIndex?: number) => {}, []);
 
@@ -1142,7 +1141,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const endPhase = nextPhase;
 
   return {
-    gameStarted, playerFaction, gameState: gameState as any,
+    gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
     startGame, selectProvince, selectArmy, moveArmy,
     nextPhase, endTurn, resetGame,
