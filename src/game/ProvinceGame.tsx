@@ -5,6 +5,7 @@
  * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
@@ -41,6 +42,8 @@ export const ProvinceGame = () => {
     getArmiesInProvince, getPlayerFaction, canMoveTo,
     collectResources,
   } = useProvinceGameState();
+
+  const { playAmbient, stopAmbient } = useAudioManager();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -68,6 +71,15 @@ export const ProvinceGame = () => {
     document.addEventListener('fullscreenchange', h);
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
+
+  useEffect(() => {
+    if (gameStarted) {
+      playAmbient();
+    } else {
+      stopAmbient();
+    }
+    return () => stopAmbient();
+  }, [gameStarted, playAmbient, stopAmbient]);
 
   // Auto-collect resources when entering resource phase
   useEffect(() => {
