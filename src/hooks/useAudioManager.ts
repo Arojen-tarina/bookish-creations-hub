@@ -89,7 +89,7 @@ const createNoiseBuffer = (audioContext: AudioContext, duration: number): AudioB
   return buffer;
 };
 
-const createMusicBuffer = (audioContext: AudioContext): AudioBuffer => {
+const createMusicBuffer = (audioContext: AudioContext, variant: number = 0): AudioBuffer => {
   const sampleRate = audioContext.sampleRate;
   const durationSeconds = 16;
   const bufferSize = sampleRate * durationSeconds;
@@ -97,9 +97,13 @@ const createMusicBuffer = (audioContext: AudioContext): AudioBuffer => {
   const left = buffer.getChannelData(0);
   const right = buffer.getChannelData(1);
 
-  const droneBase = 110; // A2
-  const melodyPattern = [0, 3, 5, 7, 10, 7, 5, 3];
-  const pluckPattern = [0, 4, 7, 10, 7, 4, 0, 3];
+  const droneBase = variant === 0 ? 110 : 130;
+  const melodyPattern = variant === 0
+    ? [0, 3, 5, 7, 10, 7, 5, 3]
+    : [0, 2, 5, 7, 9, 7, 5, 2];
+  const pluckPattern = variant === 0
+    ? [0, 4, 7, 10, 7, 4, 0, 3]
+    : [0, 3, 7, 10, 8, 7, 5, 2];
 
   const getFreq = (semitones: number, octave: number = 0) =>
     droneBase * Math.pow(2, (semitones + 12 * octave) / 12);
@@ -155,6 +159,8 @@ const defaultSettings: AudioSettings = {
 export const useAudioManager = (): AudioManagerReturn => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const ambientSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const ambientTrackRef = useRef<number>(0);
+  const ambientTimeoutRef = useRef<number | null>(null);
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_KEY);
@@ -338,8 +344,10 @@ export const useAudioManager = (): AudioManagerReturn => {
     if (ambientSourceRef.current) {
       ambientSourceRef.current.stop();
     }
+    clearAmbientTimeout();
 
-    const buffer = createMusicBuffer(ctx);
+    ambientTrackRef.current = Math.random() < 0.5 ? 0 : 1;
+    const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
@@ -358,14 +366,53 @@ export const useAudioManager = (): AudioManagerReturn => {
 
     source.start();
     ambientSourceRef.current = source;
-  }, [getAudioContext, settings.muted, getEffectiveVolume]);
+
+    scheduleAmbientSwitch(ctx);
+  }, [getAudioContext, settings.muted, getEffectiveVolume, clearAmbientTimeout, scheduleAmbientSwitch]);
+
+  const clearAmbientTimeout = useCallback(() => {
+    if (ambientTimeoutRef.current !== null) {
+      window.clearTimeout(ambientTimeoutRef.current);
+      ambientTimeoutRef.current = null;
+    }
+  }, []);
 
   const stopAmbient = useCallback(() => {
     if (ambientSourceRef.current) {
       ambientSourceRef.current.stop();
       ambientSourceRef.current = null;
     }
-  }, []);
+    clearAmbientTimeout();
+  }, [clearAmbientTimeout]);
+
+  const scheduleAmbientSwitch = useCallback((ctx: AudioContext) => {
+    clearAmbientTimeout();
+    ambientTimeoutRef.current = window.setTimeout(() => {
+      ambientTrackRef.current = 1 - ambientTrackRef.current;
+      if (settings.muted) return;
+      const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
+      if (ambientSourceRef.current) {
+        ambientSourceRef.current.stop();
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = getEffectiveVolume('music') * 0.18;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      filter.Q.value = 1.2;
+
+      source.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      source.start();
+      ambientSourceRef.current = source;
+      scheduleAmbientSwitch(ctx);
+    }, 18000 + Math.random() * 12000);
+  }, [clearAmbientTimeout, getEffectiveVolume, settings.muted]);
 
   // Cleanup
   useEffect(() => {
@@ -373,11 +420,12 @@ export const useAudioManager = (): AudioManagerReturn => {
       if (ambientSourceRef.current) {
         ambientSourceRef.current.stop();
       }
+      clearAmbientTimeout();
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [clearAmbientTimeout]);
 
   return {
     settings,
