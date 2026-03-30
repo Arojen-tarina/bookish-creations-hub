@@ -91,7 +91,7 @@ const jinProvinces: Province[] = [
     center: { x: 72, y: 52 },
   }),
   p('shandong', 'Shandong', 'jin_china', 'farmland', 'jin', {
-    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'salt',
+    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'salt', hasSilkRoad: true,
     center: { x: 84, y: 42 },
   }),
   p('hebei_north', 'Pohjois-Hebei', 'jin_china', 'farmland', 'jin', {
@@ -332,7 +332,7 @@ const kipchakProvinces: Province[] = [
 // ============= CENTRAL ASIA =============
 const centralAsiaProvinces: Province[] = [
   p('khotan', 'Khotan', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, tradeGood: 'gems',
+    baseTax: 3, baseManpower: 3, tradeGood: 'gems', hasSilkRoad: true,
     center: { x: 46, y: 46 },
   }),
   p('dunhuang', 'Dunhuang', 'central_asia', 'desert', null, {
