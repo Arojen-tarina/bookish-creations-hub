@@ -1,8 +1,8 @@
 {
-  "name": "bookish-creations-hub",
+  "name": "arojen-tarinat",
   "private": true,
   "version": "0.1.0",
-  "description": "Selainstrategiapeli Mongolien valtakunnasta: diplomatiaa, kaupankäyntiä ja tekoälyvastustajia.",
+  "description": "Arojen Tarinat on selainstrategiapeli, jossa diplomatia, kaupankäynti ja tekoälyvastustajat yhdistyvät.",
   "author": "Koalabear101",
   "type": "module",
   "scripts": {

@@ -1,6 +1,6 @@
-# Bookish Creations Hub
+# Arojen Tarinat
 
-`Bookish Creations Hub` on selainstrategiapeli, jossa pelaaja rakentaa Mongolien valtakuntaa, käy kauppaa, neuvottelee diplomaattisia sopimuksia ja kohtaa tekoälyn ohjaamia vastustajia.
+`Arojen Tarinat` on selainstrategiapeli, jossa pelaaja rakentaa valtakuntaa, käy kauppaa, neuvottelee diplomaattisia sopimuksia ja kohtaa tekoälyn ohjaamia vastustajia.
 
 ## Tämän projektin sisältö
 
