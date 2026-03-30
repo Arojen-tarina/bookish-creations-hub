@@ -222,11 +222,11 @@ const khwarezmProvinces: Province[] = [
     center: { x: 36, y: 42 },
   }),
   p('ferghana', 'Ferghana', 'transoxiana', 'farmland', 'khwarezm', {
-    baseTax: 5, baseManpower: 7, tradeGood: 'horses',
+    baseTax: 5, baseManpower: 7, tradeGood: 'horses', hasSilkRoad: true,
     center: { x: 36, y: 34 },
   }),
   p('khiva', 'Khiva', 'khwarezm', 'desert', 'khwarezm', {
-    baseTax: 3, baseManpower: 4,
+    baseTax: 3, baseManpower: 4, hasSilkRoad: true,
     center: { x: 18, y: 30 },
   }),
   p('kashgar', 'Kashgar', 'central_asia', 'desert', 'khwarezm', {
@@ -238,7 +238,7 @@ const khwarezmProvinces: Province[] = [
 // ============= PERSIA =============
 const persiaProvinces: Province[] = [
   p('isfahan', 'Isfahan', 'persia', 'farmland', 'khwarezm', {
-    baseTax: 7, baseManpower: 9, fortLevel: 2, tradeGood: 'silk',
+    baseTax: 7, baseManpower: 9, fortLevel: 2, tradeGood: 'silk', hasSilkRoad: true,
     center: { x: 18, y: 58 },
   }),
   p('shiraz', 'Shiraz', 'persia', 'farmland', 'khwarezm', {
@@ -344,11 +344,11 @@ const centralAsiaProvinces: Province[] = [
     center: { x: 46, y: 34 },
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', null, {
-    baseTax: 2, baseManpower: 4, tradeGood: 'horses',
+    baseTax: 2, baseManpower: 4, tradeGood: 'horses', hasSilkRoad: true,
     center: { x: 42, y: 25 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', null, {
-    baseTax: 3, baseManpower: 5, tradeGood: 'horses',
+    baseTax: 3, baseManpower: 5, tradeGood: 'horses', hasSilkRoad: true,
     center: { x: 35, y: 30 },
   }),
 ];
@@ -372,7 +372,7 @@ const tibetProvinces: Province[] = [
 // ============= CAUCASUS =============
 const caucasusProvinces: Province[] = [
   p('georgia', 'Georgia', 'caucasus', 'mountain', null, {
-    baseTax: 4, baseManpower: 5, fortLevel: 1, tradeGood: 'gold',
+    baseTax: 4, baseManpower: 5, fortLevel: 1, tradeGood: 'gold', hasSilkRoad: true,
     center: { x: 11, y: 40 },
   }),
   p('armenia', 'Armenia', 'caucasus', 'mountain', null, {
@@ -380,7 +380,7 @@ const caucasusProvinces: Province[] = [
     center: { x: 10, y: 48 },
   }),
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
-    baseTax: 4, baseManpower: 5, tradeGood: 'iron',
+    baseTax: 4, baseManpower: 5, tradeGood: 'iron', hasSilkRoad: true,
     center: { x: 13, y: 43 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
