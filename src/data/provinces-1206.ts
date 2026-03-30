@@ -384,7 +384,7 @@ const caucasusProvinces: Province[] = [
     center: { x: 13, y: 43 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
-    baseTax: 3, baseManpower: 4,
+    baseTax: 3, baseManpower: 4, hasSilkRoad: true,
     center: { x: 21, y: 49 },
   }),
 ];
