@@ -157,15 +157,15 @@ const songProvinces: Province[] = [
     center: { x: 80, y: 56 },
   }),
   p('suzhou', 'Suzhou', 'song_china', 'farmland', 'song', {
-    baseTax: 8, baseManpower: 10, isCoastal: true, tradeGood: 'silk',
+    baseTax: 8, baseManpower: 10, isCoastal: true, tradeGood: 'silk', hasSilkRoad: true,
     center: { x: 86, y: 56 },
   }),
   p('fujian', 'Fujian', 'song_china', 'hills', 'song', {
-    baseTax: 5, baseManpower: 7, isCoastal: true, tradeGood: 'spices',
+    baseTax: 5, baseManpower: 7, isCoastal: true, tradeGood: 'spices', hasSilkRoad: true,
     center: { x: 84, y: 70 },
   }),
   p('guangdong', 'Guangdong', 'song_china', 'farmland', 'song', {
-    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'spices',
+    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'spices', hasSilkRoad: true,
     center: { x: 76, y: 76 },
   }),
   p('jiangxi', 'Jiangxi', 'song_china', 'hills', 'song', {
