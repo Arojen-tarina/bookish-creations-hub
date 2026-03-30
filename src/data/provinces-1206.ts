@@ -242,7 +242,7 @@ const persiaProvinces: Province[] = [
     center: { x: 18, y: 58 },
   }),
   p('shiraz', 'Shiraz', 'persia', 'farmland', 'khwarezm', {
-    baseTax: 6, baseManpower: 7, tradeGood: 'spices',
+    baseTax: 6, baseManpower: 7, tradeGood: 'spices', hasSilkRoad: true,
     center: { x: 14, y: 66 },
   }),
   p('tabriz', 'Tabriz', 'persia', 'hills', 'khwarezm', {
@@ -254,11 +254,11 @@ const persiaProvinces: Province[] = [
     center: { x: 17, y: 45 },
   }),
   p('kerman', 'Kerman', 'persia', 'desert', 'khwarezm', {
-    baseTax: 3, baseManpower: 4,
+    baseTax: 3, baseManpower: 4, hasSilkRoad: true,
     center: { x: 22, y: 62 },
   }),
   p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
-    baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices',
+    baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices', hasSilkRoad: true,
     center: { x: 20, y: 72 },
   }),
 ];
@@ -376,7 +376,7 @@ const caucasusProvinces: Province[] = [
     center: { x: 11, y: 40 },
   }),
   p('armenia', 'Armenia', 'caucasus', 'mountain', null, {
-    baseTax: 3, baseManpower: 4, fortLevel: 1,
+    baseTax: 3, baseManpower: 4, fortLevel: 1, hasSilkRoad: true,
     center: { x: 10, y: 48 },
   }),
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
