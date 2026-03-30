@@ -335,6 +335,42 @@ export const useAudioManager = (): AudioManagerReturn => {
     );
   }, [getAudioContext, settings.muted]);
 
+  const clearAmbientTimeout = useCallback(() => {
+    if (ambientTimeoutRef.current !== null) {
+      window.clearTimeout(ambientTimeoutRef.current);
+      ambientTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleAmbientSwitch = useCallback((ctx: AudioContext) => {
+    clearAmbientTimeout();
+    ambientTimeoutRef.current = window.setTimeout(() => {
+      ambientTrackRef.current = 1 - ambientTrackRef.current;
+      if (settings.muted) return;
+      const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
+      if (ambientSourceRef.current) {
+        ambientSourceRef.current.stop();
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = getEffectiveVolume('music') * 0.18;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      filter.Q.value = 1.2;
+
+      source.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      source.start();
+      ambientSourceRef.current = source;
+      scheduleAmbientSwitch(ctx);
+    }, 18000 + Math.random() * 12000);
+  }, [clearAmbientTimeout, getEffectiveVolume, settings.muted]);
+
   // Ambient: Background string-music loop with morin khuur / jouhikko / kantele flavor
   const playAmbient = useCallback(() => {
     if (settings.muted) return;
@@ -370,13 +406,6 @@ export const useAudioManager = (): AudioManagerReturn => {
     scheduleAmbientSwitch(ctx);
   }, [getAudioContext, settings.muted, getEffectiveVolume, clearAmbientTimeout, scheduleAmbientSwitch]);
 
-  const clearAmbientTimeout = useCallback(() => {
-    if (ambientTimeoutRef.current !== null) {
-      window.clearTimeout(ambientTimeoutRef.current);
-      ambientTimeoutRef.current = null;
-    }
-  }, []);
-
   const stopAmbient = useCallback(() => {
     if (ambientSourceRef.current) {
       ambientSourceRef.current.stop();
@@ -384,35 +413,6 @@ export const useAudioManager = (): AudioManagerReturn => {
     }
     clearAmbientTimeout();
   }, [clearAmbientTimeout]);
-
-  const scheduleAmbientSwitch = useCallback((ctx: AudioContext) => {
-    clearAmbientTimeout();
-    ambientTimeoutRef.current = window.setTimeout(() => {
-      ambientTrackRef.current = 1 - ambientTrackRef.current;
-      if (settings.muted) return;
-      const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
-      if (ambientSourceRef.current) {
-        ambientSourceRef.current.stop();
-      }
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.loop = true;
-
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = getEffectiveVolume('music') * 0.18;
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 1200;
-      filter.Q.value = 1.2;
-
-      source.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      source.start();
-      ambientSourceRef.current = source;
-      scheduleAmbientSwitch(ctx);
-    }, 18000 + Math.random() * 12000);
-  }, [clearAmbientTimeout, getEffectiveVolume, settings.muted]);
 
   // Cleanup
   useEffect(() => {
