@@ -91,7 +91,7 @@ const jinProvinces: Province[] = [
     center: { x: 72, y: 52 },
   }),
   p('shandong', 'Shandong', 'jin_china', 'farmland', 'jin', {
-    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'salt', hasSilkRoad: true,
+    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'salt',
     center: { x: 84, y: 42 },
   }),
   p('hebei_north', 'Pohjois-Hebei', 'jin_china', 'farmland', 'jin', {
@@ -149,7 +149,7 @@ const xixiaProvinces: Province[] = [
 const songProvinces: Province[] = [
   p('hangzhou', 'Hangzhou', 'song_china', 'farmland', 'song', {
     isCapital: true, baseTax: 12, baseManpower: 15, fortLevel: 2, developmentLevel: 5,
-    isCoastal: true, tradeGood: 'silk',
+    isCoastal: true, tradeGood: 'silk', hasSilkRoad: true,
     center: { x: 84, y: 62 },
   }),
   p('nanjing', 'Nanjing', 'song_china', 'farmland', 'song', {
@@ -169,19 +169,19 @@ const songProvinces: Province[] = [
     center: { x: 76, y: 76 },
   }),
   p('jiangxi', 'Jiangxi', 'song_china', 'hills', 'song', {
-    baseTax: 5, baseManpower: 7, tradeGood: 'grain',
+    baseTax: 5, baseManpower: 7, tradeGood: 'grain', hasSilkRoad: true,
     center: { x: 78, y: 66 },
   }),
   p('hunan', 'Hunan', 'song_china', 'farmland', 'song', {
-    baseTax: 5, baseManpower: 7, tradeGood: 'grain',
+    baseTax: 5, baseManpower: 7, tradeGood: 'grain', hasSilkRoad: true,
     center: { x: 70, y: 66 },
   }),
   p('hubei', 'Hubei', 'song_china', 'farmland', 'song', {
-    baseTax: 6, baseManpower: 8, tradeGood: 'grain',
+    baseTax: 6, baseManpower: 8, tradeGood: 'grain', hasSilkRoad: true,
     center: { x: 72, y: 58 },
   }),
   p('sichuan', 'Sichuan', 'song_china', 'hills', 'song', {
-    baseTax: 7, baseManpower: 10, fortLevel: 2, tradeGood: 'salt',
+    baseTax: 7, baseManpower: 10, fortLevel: 2, tradeGood: 'salt', hasSilkRoad: true,
     center: { x: 62, y: 58 },
   }),
   p('yunnan', 'Yunnan', 'song_china', 'mountain', 'song', {
