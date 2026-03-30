@@ -79,7 +79,7 @@ const jinProvinces: Province[] = [
     center: { x: 72, y: 40 },
   }),
   p('taiyuan', 'Taiyuan', 'jin_china', 'farmland', 'jin', {
-    baseTax: 6, baseManpower: 10, fortLevel: 1, tradeGood: 'grain',
+    baseTax: 6, baseManpower: 10, fortLevel: 1, tradeGood: 'grain', hasSilkRoad: true,
     center: { x: 72, y: 46 },
   }),
   p('kaifeng', 'Kaifeng', 'jin_china', 'farmland', 'jin', {
@@ -99,7 +99,7 @@ const jinProvinces: Province[] = [
     center: { x: 82, y: 34 },
   }),
   p('shanxi_north', 'Pohjois-Shanxi', 'jin_china', 'hills', 'jin', {
-    baseTax: 4, baseManpower: 6, tradeGood: 'iron',
+    baseTax: 4, baseManpower: 6, tradeGood: 'iron', hasSilkRoad: true,
     center: { x: 68, y: 46 },
   }),
   p('liaoyang', 'Liaoyang', 'manchuria', 'grassland', 'jin', {
@@ -136,7 +136,7 @@ const xixiaProvinces: Province[] = [
     center: { x: 60, y: 48 },
   }),
   p('xixia_north', 'Pohjois-Xia', 'xixia', 'steppe', 'xixia', {
-    baseTax: 2, baseManpower: 4, tradeGood: 'horses',
+    baseTax: 2, baseManpower: 4, tradeGood: 'horses', hasSilkRoad: true,
     center: { x: 59, y: 39 },
   }),
   p('ordos', 'Ordos', 'xixia', 'desert', 'xixia', {
