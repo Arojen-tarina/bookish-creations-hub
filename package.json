@@ -1,7 +1,9 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "bookish-creations-hub",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Selainstrategiapeli Mongolien valtakunnasta: diplomatiaa, kaupankäyntiä ja tekoälyvastustajia.",
+  "author": "Koalabear101",
   "type": "module",
   "scripts": {
     "dev": "vite",
