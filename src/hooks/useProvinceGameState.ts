@@ -154,6 +154,7 @@ const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Fact
   const targetCount = Math.floor(provinces.length / factionIds.length);
   const currentCounts = factionIds.reduce((acc, factionId) => ({ ...acc, [factionId]: 0 }), {} as Record<FactionId, number>);
   const updatedProvinces = provinces.map(province => ({ ...province }));
+  const provinceById = new Map(updatedProvinces.map(p => [p.id, p]));
 
   updatedProvinces.forEach(province => {
     if (province.ownerId && currentCounts[province.ownerId] !== undefined) {
@@ -161,53 +162,91 @@ const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Fact
     }
   });
 
-  factionIds.forEach(factionId => {
-    if (currentCounts[factionId] <= targetCount) return;
+  const getProvinceValue = (province: Province) => province.baseTax + province.baseManpower + province.developmentLevel;
+
+  const releaseSurplusProvinces = (factionId: FactionId, surplus: number) => {
+    const faction = factions.find(f => f.id === factionId);
+    const capital = faction ? provinceById.get(faction.capitalId) : undefined;
+    if (!capital) return;
 
     const owned = updatedProvinces
       .filter(p => p.ownerId === factionId && !p.isCapital)
       .sort((a, b) => {
-        const aValue = a.baseTax + a.baseManpower + a.developmentLevel;
-        const bValue = b.baseTax + b.baseManpower + b.developmentLevel;
-        return aValue - bValue;
+        const aDist = calculateProvinceCenterDistance(a.center, capital.center);
+        const bDist = calculateProvinceCenterDistance(b.center, capital.center);
+        const aValue = getProvinceValue(a);
+        const bValue = getProvinceValue(b);
+        return aDist === bDist ? aValue - bValue : bDist - aDist;
       });
 
-    const surplus = currentCounts[factionId] - targetCount;
     for (let i = 0; i < surplus && i < owned.length; i += 1) {
       owned[i].ownerId = null;
       currentCounts[factionId] -= 1;
     }
-  });
-
-  const neutralProvinces = updatedProvinces.filter(p => p.ownerId === null);
-  const neutralPool = [...neutralProvinces];
+  };
 
   factionIds.forEach(factionId => {
-    const need = targetCount - currentCounts[factionId];
-    if (need <= 0) return;
+    const surplus = currentCounts[factionId] - targetCount;
+    if (surplus > 0) releaseSurplusProvinces(factionId, surplus);
+  });
 
-    const faction = factions.find(f => f.id === factionId);
-    const capital = updatedProvinces.find(p => p.id === faction?.capitalId);
-    if (!capital) return;
+  const getNeutralNeighbors = (factionId: FactionId) => {
+    const ownedIds = new Set(updatedProvinces.filter(p => p.ownerId === factionId).map(p => p.id));
+    const neighbors: Province[] = [];
 
-    for (let i = 0; i < need && neutralPool.length > 0; i += 1) {
-      let bestIndex = 0;
-      let bestDistance = calculateProvinceCenterDistance(capital.center, neutralPool[0].center);
-
-      for (let j = 1; j < neutralPool.length; j += 1) {
-        const distance = calculateProvinceCenterDistance(capital.center, neutralPool[j].center);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = j;
-        }
+    updatedProvinces.forEach(province => {
+      if (province.ownerId !== null) return;
+      if (province.neighbors.some(neighborId => ownedIds.has(neighborId))) {
+        neighbors.push(province);
       }
+    });
 
-      const chosen = neutralPool.splice(bestIndex, 1)[0];
-      const provinceToUpdate = updatedProvinces.find(p => p.id === chosen.id);
-      if (provinceToUpdate) {
-        provinceToUpdate.ownerId = factionId;
-        currentCounts[factionId] += 1;
-      }
+    return neighbors.sort((a, b) => {
+      const faction = factions.find(f => f.id === factionId);
+      const capital = faction ? provinceById.get(faction.capitalId) : undefined;
+      if (!capital) return 0;
+      const aDist = calculateProvinceCenterDistance(a.center, capital.center);
+      const bDist = calculateProvinceCenterDistance(b.center, capital.center);
+      return aDist - bDist;
+    });
+  };
+
+  const neutralPool = new Set(updatedProvinces.filter(p => p.ownerId === null).map(p => p.id));
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+
+    for (const factionId of factionIds) {
+      const need = targetCount - currentCounts[factionId];
+      if (need <= 0) continue;
+
+      const adjacentNeutrals = getNeutralNeighbors(factionId).filter(p => neutralPool.has(p.id));
+      if (adjacentNeutrals.length === 0) continue;
+
+      const chosen = adjacentNeutrals[0];
+      chosen.ownerId = factionId;
+      neutralPool.delete(chosen.id);
+      currentCounts[factionId] += 1;
+      changed = true;
+    }
+  }
+
+  const remainingNeutrals = Array.from(neutralPool).map(id => provinceById.get(id)).filter(Boolean) as Province[];
+  remainingNeutrals.forEach(province => {
+    const closestFaction = factions
+      .map(faction => ({
+        factionId: faction.id,
+        distance: calculateProvinceCenterDistance(province.center, provinceById.get(faction.capitalId)?.center ?? { x: 0, y: 0 }),
+      }))
+      .sort((a, b) => a.distance - b.distance)[0];
+
+    if (!closestFaction) return;
+    const factionId = closestFaction.factionId;
+    if (currentCounts[factionId] < targetCount) {
+      province.ownerId = factionId;
+      currentCounts[factionId] += 1;
+      neutralPool.delete(province.id);
     }
   });
 
