@@ -79,7 +79,7 @@ const jinProvinces: Province[] = [
     center: { x: 72, y: 40 },
   }),
   p('taiyuan', 'Taiyuan', 'jin_china', 'farmland', 'jin', {
-    baseTax: 6, baseManpower: 10, fortLevel: 1, tradeGood: 'grain', hasSilkRoad: true,
+    baseTax: 6, baseManpower: 10, fortLevel: 1, tradeGood: 'grain',
     center: { x: 72, y: 46 },
   }),
   p('kaifeng', 'Kaifeng', 'jin_china', 'farmland', 'jin', {
@@ -99,7 +99,7 @@ const jinProvinces: Province[] = [
     center: { x: 82, y: 34 },
   }),
   p('shanxi_north', 'Pohjois-Shanxi', 'jin_china', 'hills', 'jin', {
-    baseTax: 4, baseManpower: 6, tradeGood: 'iron', hasSilkRoad: true,
+    baseTax: 4, baseManpower: 6, tradeGood: 'iron',
     center: { x: 68, y: 46 },
   }),
   p('liaoyang', 'Liaoyang', 'manchuria', 'grassland', 'jin', {
@@ -332,7 +332,7 @@ const kipchakProvinces: Province[] = [
 // ============= CENTRAL ASIA =============
 const centralAsiaProvinces: Province[] = [
   p('khotan', 'Khotan', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, hasSilkRoad: true, tradeGood: 'gems',
+    baseTax: 3, baseManpower: 3, tradeGood: 'gems',
     center: { x: 46, y: 46 },
   }),
   p('dunhuang', 'Dunhuang', 'central_asia', 'desert', null, {
