@@ -376,7 +376,7 @@ const caucasusProvinces: Province[] = [
     center: { x: 11, y: 40 },
   }),
   p('armenia', 'Armenia', 'caucasus', 'mountain', null, {
-    baseTax: 3, baseManpower: 4, fortLevel: 1,
+    baseTax: 3, baseManpower: 4, fortLevel: 1, hasSilkRoad: true,
     center: { x: 10, y: 48 },
   }),
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
