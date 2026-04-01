@@ -32,6 +32,104 @@ const projectPoint = (x: number, y: number) => ({
   y: 50 + (y - 50) * HEX_SPREAD,
 });
 
+// Coordinate Grid Component
+const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
+  if (!showGrid) return null;
+
+  const gridInterval = 10;
+  const gridLines: JSX.Element[] = [];
+  
+  // Vertical lines (X axis)
+  for (let x = 0; x <= BOARD_SIZE; x += gridInterval) {
+    gridLines.push(
+      <line
+        key={`vline-${x}`}
+        x1={x} y1={0} x2={x} y2={BOARD_SIZE}
+        stroke="#4a5568"
+        strokeWidth={0.15}
+        opacity={x % 20 === 0 ? 0.4 : 0.25}
+        pointerEvents="none"
+      />
+    );
+  }
+
+  // Horizontal lines (Y axis)
+  for (let y = 0; y <= BOARD_SIZE; y += gridInterval) {
+    gridLines.push(
+      <line
+        key={`hline-${y}`}
+        x1={0} y1={y} x2={BOARD_SIZE} y2={y}
+        stroke="#4a5568"
+        strokeWidth={0.15}
+        opacity={y % 20 === 0 ? 0.4 : 0.25}
+        pointerEvents="none"
+      />
+    );
+  }
+
+  // X axis labels (bottom)
+  for (let x = 0; x <= BOARD_SIZE; x += 20) {
+    gridLines.push(
+      <text
+        key={`xlabel-${x}`}
+        x={x} y={BOARD_SIZE + 2}
+        textAnchor="middle"
+        fontSize={1.8}
+        fill="#c9a227"
+        fontWeight="bold"
+        opacity={0.6}
+        pointerEvents="none"
+        className="select-none"
+      >
+        {x}
+      </text>
+    );
+  }
+
+  // Y axis labels (left)
+  for (let y = 0; y <= BOARD_SIZE; y += 20) {
+    gridLines.push(
+      <text
+        key={`ylabel-${y}`}
+        x={-2} y={y + 0.6}
+        textAnchor="end"
+        fontSize={1.8}
+        fill="#c9a227"
+        fontWeight="bold"
+        opacity={0.6}
+        pointerEvents="none"
+        className="select-none"
+      >
+        {y}
+      </text>
+    );
+  }
+
+  // Axis lines
+  gridLines.push(
+    <line
+      key="x-axis"
+      x1={0} y1={BOARD_SIZE} x2={BOARD_SIZE} y2={BOARD_SIZE}
+      stroke="#8b6914"
+      strokeWidth={0.3}
+      opacity={0.6}
+      pointerEvents="none"
+    />
+  );
+  gridLines.push(
+    <line
+      key="y-axis"
+      x1={0} y1={0} x2={0} y2={BOARD_SIZE}
+      stroke="#8b6914"
+      strokeWidth={0.3}
+      opacity={0.6}
+      pointerEvents="none"
+    />
+  );
+
+  return <g>{gridLines}</g>;
+};
+
 const ProvinceToken = ({
   province,
   isSelected,
@@ -289,6 +387,7 @@ export const ProvinceMap = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [showCoordinateGrid, setShowCoordinateGrid] = useState(false);
 
   const defaultView = { x: 0, y: 0, width: BOARD_SIZE, height: BOARD_SIZE };
 
@@ -317,6 +416,18 @@ export const ProvinceMap = ({
       setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
   }, [isDragging, dragStart]);
+
+  // Convert SVG coordinates to board coordinates
+  const getboardCoordinates = useCallback((x: number, y: number): { x: number; y: number } | null => {
+    if (!containerRef.current) return null;
+    const rect = containerRef.current.getBoundingClientRect();
+    const svgX = ((x - rect.left) / rect.width) * viewBox.width + viewBox.x;
+    const svgY = ((y - rect.top) / rect.height) * viewBox.height + viewBox.y;
+    return {
+      x: Math.round(svgX * 10) / 10,
+      y: Math.round(svgY * 10) / 10,
+    };
+  }, [viewBox]);
 
   const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
@@ -382,7 +493,8 @@ export const ProvinceMap = ({
           preserveAspectRatio="xMidYMid slice"
         />
 
-        {/* Neighbor connections */}
+        {/* Coordinate Grid */}
+        <CoordinateGrid showGrid={showCoordinateGrid} />
         {neighborLines.map((l, i) => (
           <line
             key={`conn-${i}`}
@@ -567,16 +679,30 @@ export const ProvinceMap = ({
       {!isMinimap && (
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <Button variant="outline" size="icon" onClick={handleZoomIn}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Zoom in">
             <ZoomIn className="w-4 h-4" />
           </Button>
           <Button variant="outline" size="icon" onClick={handleZoomOut}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Zoom out">
             <ZoomOut className="w-4 h-4" />
           </Button>
           <Button variant="outline" size="icon" onClick={handleResetView}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Reset view">
             <Maximize2 className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setShowCoordinateGrid(!showCoordinateGrid)}
+            className={`bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800 ${showCoordinateGrid ? 'bg-amber-900/80 border-amber-600' : ''}`}
+            title="Toggle coordinate grid"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6-8a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6 6a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000-4z" />
+            </svg>
           </Button>
         </div>
       )}
@@ -602,6 +728,15 @@ export const ProvinceMap = ({
           <span className="font-bold">Vuosi 1206</span>
           <span className="mx-2">•</span>
           <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
+          {showCoordinateGrid && (() => {
+            const coords = getboardCoordinates(mousePosition.x, mousePosition.y);
+            return coords ? (
+              <>
+                <span className="mx-2">•</span>
+                <span className="text-amber-400 font-mono">X: {coords.x.toFixed(1)}, Y: {coords.y.toFixed(1)}</span>
+              </>
+            ) : null;
+          })()}
         </div>
       )}
     </div>
