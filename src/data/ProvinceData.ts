@@ -54,7 +54,7 @@ const northWestProvinces: Province[] = [
   }),
   p('chernigov', 'Tšernihiv', 'rus', 'farmland', 'rus', {
     baseTax: 5, baseManpower: 7,
-    center: { x: 34, y: 46 },
+    center: { x: 34, y: 40 },
   }),
   p('kiev', 'Kiova', 'rus', 'farmland', 'rus', {
     baseTax: 7, baseManpower: 10, fortLevel: 2, tradeGood: 'grain',
@@ -68,11 +68,11 @@ const northWestProvinces: Province[] = [
   // CENTRAL ASIA EDGES
   p('altai', 'Altai', 'mongolia', 'mountain', 'mongol', {
     baseTax: 1, baseManpower: 2, fortLevel: 1,
-    center: { x: 74, y: 30 },
+    center: { x: 78, y: 28 },
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', 'mongol', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 76, y: 32 },
+    center: { x: 70, y: 32 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', 'rus', {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
@@ -111,7 +111,7 @@ const northEastProvinces: Province[] = [
   }),
   p('baikal', 'Baikaljärvi', 'mongolia', 'taiga', 'mongol', {
     baseTax: 2, baseManpower: 3, tradeGood: 'fur',
-    center: { x: 72, y: 28 },
+    center: { x: 72, y: 22 },
   }),
   p('gobi_north', 'Pohjois-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 2,
@@ -119,10 +119,6 @@ const northEastProvinces: Province[] = [
   }),
   // MANCHURIA
   // CENTRAL ASIA EDGES
-  p('turfan', 'Turfan', 'central_asia', 'desert', 'song', {
-    baseTax: 2, baseManpower: 3, hasSilkRoad: true, tradeGood: 'spices',
-    center: { x: 46, y: 34 },
-  }),
 ];
 
 // ============= SOUTH WEST (Caucasus, Persia, Western Khwarezm) =============
@@ -131,16 +127,16 @@ const southWestProvinces: Province[] = [
   // CAUCASUS
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 4, baseManpower: 5, tradeGood: 'iron',
-    center: { x: 40, y: 75 },
+    center: { x: 48, y: 84 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 32, y: 85 },
+    center: { x: 32, y: 78 },
   }),
   // KHWAREZM
   p('khiva', 'Khiva', 'khwarezm', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 36, y: 71 },
+    center: { x: 38, y: 68 },
   }),
   p('urgench', 'Urgench', 'khwarezm', 'grassland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 2,
@@ -148,23 +144,23 @@ const southWestProvinces: Province[] = [
   }),
   p('bukhara', 'Bukhara', 'transoxiana', 'farmland', 'khwarezm', {
     baseTax: 8, baseManpower: 10, fortLevel: 2, hasSilkRoad: true, tradeGood: 'silk',
-    center: { x: 44, y: 75 },
+    center: { x: 52, y: 74 },
   }),
   p('merv', 'Merv', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, hasSilkRoad: true,
-    center: { x: 46, y: 90 },
+    center: { x: 52, y: 90 },
   }),
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 38, y: 90 },
+    center: { x: 36, y: 94 },
   }),
   p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 50, y: 82 },
+    center: { x: 54, y: 80 },
   }),
   p('herat', 'Herat', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
-    center: { x: 56, y: 90 },
+    center: { x: 58, y: 86 },
   }),
   p('samarkand', 'Samarkand', 'transoxiana', 'farmland', 'khwarezm', {
     isCapital: true, baseTax: 10, baseManpower: 12, fortLevel: 3, developmentLevel: 5,
@@ -174,27 +170,27 @@ const southWestProvinces: Province[] = [
   // PERSIA
   p('isfahan', 'Isfahan', 'persia', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, tradeGood: 'silk',
-    center: { x: 40, y: 88 },
+    center: { x: 34, y: 86 },
   }),
   p('shiraz', 'Shiraz', 'persia', 'farmland', 'khwarezm', {
     baseTax: 6, baseManpower: 7, tradeGood: 'spices',
-    center: { x: 40, y: 92 },
+    center: { x: 42, y: 96 },
   }),
   p('tabriz', 'Tabriz', 'persia', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
-    center: { x: 32, y: 68 },
+    center: { x: 30, y: 70 },
   }),
   p('ray', 'Ray (Tehran)', 'persia', 'hills', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 30, y: 60 },
+    center: { x: 26, y: 62 },
   }),
   p('kerman', 'Kerman', 'persia', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 48, y: 88 },
+    center: { x: 50, y: 95 },
   }),
   p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
     baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices',
-    center: { x: 44, y: 92 },
+    center: { x: 46, y: 100 },
   }),
 ];
 
@@ -204,7 +200,7 @@ const southEastProvinces: Province[] = [
   // CENTRAL ASIA
   p('kashgar', 'Kashgar', 'central_asia', 'desert', 'khwarezm', {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true, tradeGood: 'silk',
-    center: { x: 56, y: 70 },
+    center: { x: 60, y: 68 },
   }),
   // GOBI
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', 'mongol', {
@@ -253,6 +249,11 @@ const southEastProvinces: Province[] = [
     baseTax: 3, baseManpower: 5, tradeGood: 'gems',
     center: { x: 72, y: 99 },
   }),
+  // TURFAN - Central Asia, assigned to Song
+  p('turfan', 'Turfan', 'central_asia', 'desert', 'song', {
+    baseTax: 2, baseManpower: 3, hasSilkRoad: true, tradeGood: 'spices',
+    center: { x: 76, y: 105 },
+  }),
 ];
 
 // Combine all provinces organized by map quadrant (NW, NE, SW, SE)
@@ -285,7 +286,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   hunan: ['jiangxi', 'hubei', 'yunnan', 'sichuan'],
   hubei: ['nanjing', 'hunan', 'sichuan'],
   sichuan: ['hubei', 'hunan', 'yunnan'],
-  yunnan: ['hunan', 'guangdong', 'sichuan'],
+  yunnan: ['hunan', 'guangdong', 'sichuan', 'turfan'],
   // Khwarezm
   samarkand: ['bukhara', 'ferghana', 'balkh', 'kashgar'],
   bukhara: ['samarkand', 'urgench', 'merv', 'khiva'],
@@ -296,7 +297,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   balkh: ['samarkand', 'merv', 'herat', 'ferghana'],
   ferghana: ['samarkand', 'balkh', 'kashgar', 'semirechye'],
   khiva: ['bukhara', 'urgench'],
-  kashgar: ['samarkand', 'ferghana', 'turfan'],
+  kashgar: ['samarkand', 'ferghana'],
   // Persia
   isfahan: ['ray', 'shiraz', 'kerman', 'herat'],
   shiraz: ['isfahan', 'kerman', 'hormuz'],
@@ -313,9 +314,9 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   chernigov: ['smolensk', 'kiev'],
   pskov: ['novgorod'],
   tver: ['novgorod', 'vladimir', 'smolensk', 'ryazan'],
-  // Central Asia
-  turfan: ['kashgar', 'dzungaria'],
-  dzungaria: ['turfan', 'semirechye', 'altai', 'mongol_west'],
+  // Central Asia & Song
+  turfan: ['yunnan'],
+  dzungaria: ['semirechye', 'altai', 'mongol_west'],
   semirechye: ['dzungaria', 'ferghana', 'altai'],
   // Caucasus
   azerbaijan: ['shirvan', 'tabriz'],
