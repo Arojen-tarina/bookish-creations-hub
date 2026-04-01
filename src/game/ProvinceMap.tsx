@@ -10,8 +10,8 @@ import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
-const BOARD_SIZE = 100;
-const SCALE_FACTOR = 1.25; // 25% larger board
+const BOARD_SIZE = 130;
+const SCALE_FACTOR = 1.15; // 15% larger board
 
 export interface ProvinceMapProps {
   provinces: Province[];
@@ -354,7 +354,7 @@ const Minimap = ({
             key={p.id}
             cx={p.center.x}
             cy={p.center.y}
-            r={1.2 * SCALE_FACTOR}
+            r={1.2}
             fill={p.ownerId ? FACTION_DATA_1206[p.ownerId]?.color : '#666'}
             fillOpacity={0.9}
           />
@@ -362,7 +362,7 @@ const Minimap = ({
         <rect
           x={viewBox.x} y={viewBox.y}
           width={viewBox.width} height={viewBox.height}
-          fill="none" stroke="#fbbf24" strokeWidth={0.8 * SCALE_FACTOR}
+          fill="none" stroke="#fbbf24" strokeWidth={0.8}
         />
       </svg>
       <div className="absolute top-1 left-1 text-[8px] text-amber-200/60 font-bold">KARTTA</div>
