@@ -46,7 +46,7 @@ const northWestProvinces: Province[] = [
   }),
   p('smolensk', 'Smolensk', 'rus', 'forest', 'rus', {
     baseTax: 4, baseManpower: 6, fortLevel: 1,
-    center: { x: 34, y: 64 },
+    center: { x: 32, y: 48 },
   }),
   p('ryazan', 'Rjazan', 'rus', 'forest', 'rus', {
     baseTax: 4, baseManpower: 6,
@@ -68,11 +68,11 @@ const northWestProvinces: Province[] = [
   // CENTRAL ASIA EDGES
   p('altai', 'Altai', 'mongolia', 'mountain', 'mongol', {
     baseTax: 1, baseManpower: 2, fortLevel: 1,
-    center: { x: 44, y: 18 },
+    center: { x: 74, y: 30 },
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', 'mongol', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 38, y: 22 },
+    center: { x: 76, y: 32 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', 'rus', {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
@@ -111,7 +111,7 @@ const northEastProvinces: Province[] = [
   }),
   p('baikal', 'Baikaljärvi', 'mongolia', 'taiga', 'mongol', {
     baseTax: 2, baseManpower: 3, tradeGood: 'fur',
-    center: { x: 88, y: 23 },
+    center: { x: 72, y: 28 },
   }),
   p('gobi_north', 'Pohjois-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 2,
@@ -177,11 +177,11 @@ const southWestProvinces: Province[] = [
   }),
   p('merv', 'Merv', 'khorasan', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, hasSilkRoad: true,
-    center: { x: 40, y: 101 },
+    center: { x: 46, y: 90 },
   }),
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 22, y: 101 },
+    center: { x: 38, y: 90 },
   }),
   p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
@@ -199,27 +199,27 @@ const southWestProvinces: Province[] = [
   // PERSIA
   p('isfahan', 'Isfahan', 'persia', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, tradeGood: 'silk',
-    center: { x: 28, y: 95 },
+    center: { x: 40, y: 88 },
   }),
   p('shiraz', 'Shiraz', 'persia', 'farmland', 'khwarezm', {
     baseTax: 6, baseManpower: 7, tradeGood: 'spices',
-    center: { x: 22, y: 107 },
+    center: { x: 40, y: 92 },
   }),
-  p('tabriz', 'Tabriz', 'persia', 'hills', null, {
+  p('tabriz', 'Tabriz', 'persia', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
-    center: { x: 16, y: 81 },
+    center: { x: 32, y: 68 },
   }),
-  p('ray', 'Ray (Tehran)', 'persia', 'hills', null, {
+  p('ray', 'Ray (Tehran)', 'persia', 'hills', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 18, y: 59 },
+    center: { x: 30, y: 60 },
   }),
   p('kerman', 'Kerman', 'persia', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 44, y: 99 },
+    center: { x: 48, y: 88 },
   }),
-  p('hormuz', 'Hormuz', 'persia', 'desert', null, {
+  p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
     baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices',
-    center: { x: 34, y: 104 },
+    center: { x: 44, y: 92 },
   }),
 ];
 
