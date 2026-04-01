@@ -15,9 +15,9 @@ export const LegalDisclaimer = ({ onAccept, onShowPrivacy }: LegalDisclaimerProp
   const canAccept = confirmed && signature.trim().length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/95 p-4 backdrop-blur-sm">
       <div className="w-full max-w-4xl">
-        <Card className="bg-slate-900/95 border border-amber-700/40 shadow-2xl">
+        <Card className="max-h-[100dvh] bg-slate-900/95 border border-amber-700/40 shadow-2xl">
           <CardContent className="space-y-6 p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>

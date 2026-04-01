@@ -7,9 +7,9 @@ interface AIPrivacyNoticeProps {
 
 export const AIPrivacyNotice = ({ onClose }: AIPrivacyNoticeProps) => {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/95 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/95 p-4 backdrop-blur-sm">
       <div className="mx-auto max-w-3xl">
-        <Card className="border border-amber-700/40 bg-slate-900/95 shadow-2xl">
+        <Card className="max-h-[100dvh] border border-amber-700/40 bg-slate-900/95 shadow-2xl">
           <CardContent className="space-y-6 p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
