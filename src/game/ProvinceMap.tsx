@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 100;
-const SCALE_FACTOR = 1.15; // 15% larger board
+const SCALE_FACTOR = 1.25; // 25% larger board
 
 export interface ProvinceMapProps {
   provinces: Province[];
