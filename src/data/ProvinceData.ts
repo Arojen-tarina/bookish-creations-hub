@@ -117,26 +117,9 @@ const northEastProvinces: Province[] = [
     baseTax: 1, baseManpower: 2,
     center: { x: 90, y: 47 },
   }),
-  // EASTERN SIBERIA
-  p('siberia_central', 'Keski-Siperia', 'siberia', 'taiga', null, {
-    baseTax: 1, baseManpower: 2, tradeGood: 'fur',
-    center: { x: 44, y: 6 },
-  }),
-  p('siberia_east', 'Itä-Siperia', 'siberia', 'taiga', null, {
-    baseTax: 1, baseManpower: 1, tradeGood: 'fur',
-    center: { x: 54, y: 12 },
-  }),
-  p('yakutia', 'Jakutia', 'siberia', 'tundra', null, {
-    baseTax: 0, baseManpower: 1,
-    center: { x: 68, y: 10 },
-  }),
   // MANCHURIA
-  p('manchuria_north', 'Pohjois-Mantšuria', 'manchuria', 'taiga', null, {
-    baseTax: 1, baseManpower: 2, tradeGood: 'fur',
-    center: { x: 74, y: 18 },
-  }),
   // CENTRAL ASIA EDGES
-  p('turfan', 'Turfan', 'central_asia', 'desert', null, {
+  p('turfan', 'Turfan', 'central_asia', 'desert', 'song', {
     baseTax: 2, baseManpower: 3, hasSilkRoad: true, tradeGood: 'spices',
     center: { x: 46, y: 34 },
   }),
@@ -146,24 +129,16 @@ const northEastProvinces: Province[] = [
 // Coordinates: x < 45, y >= 40
 const southWestProvinces: Province[] = [
   // CAUCASUS
-  p('georgia', 'Georgia', 'caucasus', 'mountain', null, {
-    baseTax: 4, baseManpower: 5, fortLevel: 1, tradeGood: 'gold',
-    center: { x: 2, y: 42 },
-  }),
-  p('armenia', 'Armenia', 'caucasus', 'mountain', null, {
-    baseTax: 3, baseManpower: 4, fortLevel: 1,
-    center: { x: 10, y: 54 },
-  }),
-  p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', null, {
+  p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 4, baseManpower: 5, tradeGood: 'iron',
     center: { x: 40, y: 75 },
   }),
-  p('shirvan', 'Shirvan', 'caucasus', 'hills', null, {
+  p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
     center: { x: 32, y: 85 },
   }),
   // KHWAREZM
-  p('khiva', 'Khiva', 'khwarezm', 'desert', null, {
+  p('khiva', 'Khiva', 'khwarezm', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
     center: { x: 36, y: 71 },
   }),
@@ -227,20 +202,12 @@ const southWestProvinces: Province[] = [
 // Coordinates: x >= 45, y >= 40
 const southEastProvinces: Province[] = [
   // CENTRAL ASIA
-  p('kashgar', 'Kashgar', 'central_asia', 'desert', null, {
+  p('kashgar', 'Kashgar', 'central_asia', 'desert', 'khwarezm', {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true, tradeGood: 'silk',
     center: { x: 56, y: 70 },
   }),
-  p('khotan', 'Khotan', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 38, y: 50 },
-  }),
-  p('dunhuang', 'Dunhuang', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, hasSilkRoad: true,
-    center: { x: 52, y: 40 },
-  }),
   // GOBI
-  p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', null, {
+  p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 1,
     center: { x: 98, y: 43 },
   }),
@@ -286,28 +253,6 @@ const southEastProvinces: Province[] = [
     baseTax: 3, baseManpower: 5, tradeGood: 'gems',
     center: { x: 72, y: 99 },
   }),
-  // TIBET
-  p('lhasa', 'Lhasa', 'tibet', 'mountain', null, {
-    baseTax: 3, baseManpower: 4, fortLevel: 2, tradeGood: 'salt',
-    center: { x: 50, y: 62 },
-  }),
-  p('tibet_east', 'Itä-Tiibet', 'tibet', 'mountain', null, {
-    baseTax: 2, baseManpower: 3,
-    center: { x: 60, y: 58 },
-  }),
-  p('tibet_west', 'Länsi-Tiibet', 'tibet', 'mountain', null, {
-    baseTax: 1, baseManpower: 2,
-    center: { x: 36, y: 60 },
-  }),
-  // KOREA
-  p('goryeo', 'Goryeo', 'korea', 'hills', null, {
-    baseTax: 5, baseManpower: 6, fortLevel: 1, isCoastal: true,
-    center: { x: 94, y: 43 },
-  }),
-  p('korea_south', 'Etelä-Korea', 'korea', 'farmland', null, {
-    baseTax: 4, baseManpower: 5, isCoastal: true, tradeGood: 'grain',
-    center: { x: 88, y: 56 },
-  }),
 ];
 
 // Combine all provinces organized by map quadrant (NW, NE, SW, SE)
@@ -325,10 +270,9 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   mongol_east: ['karakorum', 'mongol_central', 'kerulen', 'onon', 'baikal'],
   mongol_central: ['karakorum', 'mongol_east', 'mongol_west', 'gobi_north'],
   mongol_west: ['karakorum', 'mongol_central', 'altai', 'dzungaria'],
-  gobi_north: ['karakorum', 'mongol_central', 'gobi_south'],
-  gobi_south: ['gobi_north'],
-  baikal: ['mongol_east', 'onon', 'siberia_east'],
-  kerulen: ['mongol_east', 'onon', 'manchuria_north'],
+  gobi_north: ['karakorum', 'mongol_central'],
+  baikal: ['mongol_east', 'onon'],
+  kerulen: ['mongol_east', 'onon'],
   onon: ['mongol_east', 'kerulen', 'baikal'],
   altai: ['mongol_west', 'dzungaria', 'semirechye'],
   // Song China
@@ -340,7 +284,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   jiangxi: ['hangzhou', 'fujian', 'guangdong', 'hunan'],
   hunan: ['jiangxi', 'hubei', 'yunnan', 'sichuan'],
   hubei: ['nanjing', 'hunan', 'sichuan'],
-  sichuan: ['hubei', 'hunan', 'yunnan', 'tibet_east'],
+  sichuan: ['hubei', 'hunan', 'yunnan'],
   yunnan: ['hunan', 'guangdong', 'sichuan'],
   // Khwarezm
   samarkand: ['bukhara', 'ferghana', 'balkh', 'kashgar'],
@@ -352,11 +296,11 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   balkh: ['samarkand', 'merv', 'herat', 'ferghana'],
   ferghana: ['samarkand', 'balkh', 'kashgar', 'semirechye'],
   khiva: ['bukhara', 'urgench'],
-  kashgar: ['samarkand', 'ferghana', 'khotan', 'turfan'],
+  kashgar: ['samarkand', 'ferghana', 'turfan'],
   // Persia
   isfahan: ['ray', 'shiraz', 'kerman', 'herat'],
   shiraz: ['isfahan', 'kerman', 'hormuz'],
-  tabriz: ['ray', 'georgia', 'armenia', 'azerbaijan'],
+  tabriz: ['ray', 'azerbaijan'],
   ray: ['tabriz', 'nishapur', 'isfahan', 'shirvan'],
   kerman: ['isfahan', 'shiraz', 'hormuz'],
   hormuz: ['shiraz', 'kerman'],
@@ -370,30 +314,12 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   pskov: ['novgorod'],
   tver: ['novgorod', 'vladimir', 'smolensk', 'ryazan'],
   // Central Asia
-  khotan: ['kashgar', 'tibet_west', 'dunhuang'],
-  dunhuang: ['khotan', 'turfan'],
-  turfan: ['dunhuang', 'kashgar', 'dzungaria'],
+  turfan: ['kashgar', 'dzungaria'],
   dzungaria: ['turfan', 'semirechye', 'altai', 'mongol_west'],
   semirechye: ['dzungaria', 'ferghana', 'altai'],
-  // Tibet
-  lhasa: ['tibet_east', 'tibet_west', 'khotan'],
-  tibet_east: ['lhasa', 'sichuan', 'yunnan'],
-  tibet_west: ['lhasa', 'khotan', 'kashgar'],
   // Caucasus
-  georgia: ['armenia', 'azerbaijan', 'tabriz'],
-  armenia: ['georgia', 'tabriz'],
-  azerbaijan: ['georgia', 'shirvan', 'tabriz'],
+  azerbaijan: ['shirvan', 'tabriz'],
   shirvan: ['azerbaijan', 'ray'],
-  // Siberia
-  siberia_west: ['siberia_central'],
-  siberia_central: ['siberia_west', 'siberia_east'],
-  siberia_east: ['siberia_central', 'baikal', 'yakutia'],
-  yakutia: ['siberia_east', 'manchuria_north'],
-  // Manchuria
-  manchuria_north: ['kerulen', 'baikal'],
-  // Korea
-  goryeo: ['korea_south'],
-  korea_south: ['goryeo'],
 };
 
 // Apply adjacency
