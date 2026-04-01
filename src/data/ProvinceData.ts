@@ -264,12 +264,12 @@ export const ALL_PROVINCES_1206: Province[] = [
   ...southEastProvinces,
 ];
 
-// Adjacency - Each province connected to its 3 nearest neighbors by distance
+// Adjacency - Each province connected to its 3 nearest neighbors by distance (ignoring ownership)
 export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   altai: ['mongol_central', 'baikal', 'dzungaria'],
   azerbaijan: ['urgench', 'merv', 'balkh'],
   baikal: ['altai', 'dzungaria', 'mongol_central'],
-  balkh: ['bukhara', 'herat', 'azerbaijan'],
+  balkh: ['bukhara', 'azerbaijan', 'herat'],
   bukhara: ['balkh', 'samarkand', 'kashgar'],
   chernigov: ['tver', 'pskov', 'smolensk'],
   dzungaria: ['mongol_central', 'altai', 'baikal'],
@@ -282,7 +282,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   hormuz: ['shiraz', 'kerman', 'merv'],
   hubei: ['nanjing', 'hunan', 'sichuan'],
   hunan: ['hubei', 'jiangxi', 'yunnan'],
-  isfahan: ['nishapur', 'shirvan', 'urgench'],
+  isfahan: ['shirvan', 'nishapur', 'urgench'],
   jiangxi: ['fujian', 'guangdong', 'hunan'],
   karakorum: ['mongol_central', 'mongol_east', 'altai'],
   kashgar: ['bukhara', 'balkh', 'samarkand'],
@@ -290,7 +290,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   kerulen: ['onon', 'mongol_east', 'gobi_south'],
   khiva: ['tabriz', 'samarkand', 'shirvan'],
   kiev: ['smolensk', 'ray', 'khiva'],
-  merv: ['kerman', 'herat', 'azerbaijan'],
+  merv: ['kerman', 'azerbaijan', 'herat'],
   mongol_central: ['altai', 'karakorum', 'dzungaria'],
   mongol_east: ['karakorum', 'kerulen', 'mongol_central'],
   mongol_west: ['dzungaria', 'ryazan', 'mongol_central'],
@@ -309,7 +309,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   sichuan: ['hubei', 'hunan', 'yunnan'],
   smolensk: ['kiev', 'chernigov', 'pskov'],
   suzhou: ['hangzhou', 'fujian', 'jiangxi'],
-  tabriz: ['khiva', 'shirvan', 'ray'],
+  tabriz: ['shirvan', 'khiva', 'ray'],
   turfan: ['yunnan', 'guangdong', 'hunan'],
   tver: ['chernigov', 'semirechye', 'vladimir'],
   urgench: ['azerbaijan', 'isfahan', 'samarkand'],
