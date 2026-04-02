@@ -51,50 +51,50 @@ const northWestProvinces: Province[] = [
   p('ryazan', 'Rjazan', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 56, y: 40 },
-  }),  p('ryazan1', 'Rjazan1', 'rus', 'forest', null, {
+  }),  p('georgia', 'Georgia', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 44, y: 51 },
-  }),  p('ryazan2', 'Rjazan2', 'rus', 'forest', null, {
+  }),  p('armenia', 'Armenia', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 66, y: 61 },
-  }),  p('ryazan3', 'Rjazan3', 'rus', 'forest', null, {
+  }),  p('khotan', 'Khotan', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 70, y: 76 },
   }),
 
-  p('ryazan4', 'Rjazan4', 'rus', 'forest', null, {
+  p('dunhuang', 'Dunhuang', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 100, y: 60 },
   }),
-p('ryazan5', 'Rjazan5', 'rus', 'forest', null, {
+p('tibet_east', 'Itä-Tiibet', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 93, y: 70 },
   }),
 
-p('ryazan6', 'Rjazan6', 'rus', 'forest', null, {
+p('tibet_west', 'Länsi-Tiibet', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 78, y: 68 },
   }),
 
-  p('ryazan7', 'Rjazan7', 'rus', 'forest', null, {
+  p('lhasa', 'Lhasa', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 60, y: 24 },
   }),
 
-    p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+    p('goryeo', 'Goryeo', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 58, y: 54 },
   }),
-    p('ryazan9', 'Rjazan9', 'rus', 'forest', null, {
+    p('korea_south', 'Etelä-Korea', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 75, y: 55 },
   }),
 
-    p('ryazan10', 'Rjazan10', 'rus', 'forest', null, {
+    p('manchuria_north', 'Pohjois-Mantšuria', 'rus', 'forest', null, {
         baseTax: 4, baseManpower: 6,
         center: { x: 86, y: 78 },
     }),
-   p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+   p('yakutia', 'Jakutia', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 48, y: 59 },
   }),
@@ -194,10 +194,12 @@ const southWestProvinces: Province[] = [
     baseTax: 7, baseManpower: 9, fortLevel: 2,
     center: { x: 52, y: 90 },
   }),
+
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
     center: { x: 28, y: 98 },
   }),
+  
   p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
     center: { x: 54, y: 80 },
