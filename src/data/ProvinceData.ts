@@ -1,3 +1,5 @@
+console.log("SilkRoad loaded");
+
 /**
  * ProvinceData.ts — Provinssidata vuoden 1206 aloitusta varten
  */
