@@ -251,6 +251,7 @@ const southWestProvinces: Province[] = [
     baseManpower: 5,
     tradeGood: "iron",
     center: { x: 43, y: 84 },
+    hasSilkRoad: true,
   }),
   p("shirvan", "Shirvan", "caucasus", "hills", "khwarezm", {
     baseTax: 3,
@@ -276,6 +277,7 @@ const southWestProvinces: Province[] = [
     baseManpower: 9,
     fortLevel: 2,
     center: { x: 52, y: 90 },
+    hasSilkRoad: true,
   }),
   p("nishapur", "Nishapur", "khorasan", "hills", "khwarezm", {
     baseTax: 6,
