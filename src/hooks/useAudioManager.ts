@@ -89,6 +89,64 @@ const createNoiseBuffer = (audioContext: AudioContext, duration: number): AudioB
   return buffer;
 };
 
+const createMusicBuffer = (audioContext: AudioContext, variant: number = 0): AudioBuffer => {
+  const sampleRate = audioContext.sampleRate;
+  const durationSeconds = 16;
+  const bufferSize = sampleRate * durationSeconds;
+  const buffer = audioContext.createBuffer(2, bufferSize, sampleRate);
+  const left = buffer.getChannelData(0);
+  const right = buffer.getChannelData(1);
+
+  const droneBase = variant === 0 ? 110 : 130;
+  const melodyPattern = variant === 0
+    ? [0, 3, 5, 7, 10, 7, 5, 3]
+    : [0, 2, 5, 7, 9, 7, 5, 2];
+  const pluckPattern = variant === 0
+    ? [0, 4, 7, 10, 7, 4, 0, 3]
+    : [0, 3, 7, 10, 8, 7, 5, 2];
+
+  const getFreq = (semitones: number, octave: number = 0) =>
+    droneBase * Math.pow(2, (semitones + 12 * octave) / 12);
+
+  const getPluckEnv = (t: number) => Math.exp(-5 * t);
+  const getBowEnv = (t: number) => Math.min(1, t / 0.2);
+
+  for (let i = 0; i < bufferSize; i++) {
+    const t = i / sampleRate;
+    const globalPhase = t % durationSeconds;
+
+    // Drone / morin khuur bass
+    const drone =
+      0.16 * Math.sin(2 * Math.PI * droneBase * t) +
+      0.05 * Math.sin(2 * Math.PI * droneBase * 1.01 * t);
+
+    // Bowed melody (jouhikko-like)
+    const melodyIndex = Math.floor(t / 2) % melodyPattern.length;
+    const melodyFreq = getFreq(melodyPattern[melodyIndex], 1);
+    const melodyTime = t % 2;
+    const bowEnv = melodyTime < 0.35 ? getBowEnv(melodyTime) : 0.95;
+    const bow =
+      0.08 * Math.sin(2 * Math.PI * melodyFreq * t) * bowEnv *
+      (0.5 + 0.5 * Math.sin(2 * Math.PI * 0.1 * t));
+
+    // Plucked kantele arpeggio
+    const pluckIndex = Math.floor(t / 0.75) % pluckPattern.length;
+    const pluckFreq = getFreq(pluckPattern[pluckIndex], 2);
+    const pluckTime = (t % 0.75) / 0.75;
+    const pluck =
+      0.06 * Math.sin(2 * Math.PI * pluckFreq * t) * getPluckEnv(pluckTime);
+
+    // Air / space
+    const air = 0.02 * Math.sin(2 * Math.PI * 0.32 * t);
+
+    const sample = (drone + bow + pluck + air) * 0.85;
+    left[i] = sample;
+    right[i] = sample;
+  }
+
+  return buffer;
+};
+
 const SETTINGS_KEY = 'mongol_empire_audio_settings';
 
 const defaultSettings: AudioSettings = {
@@ -101,6 +159,8 @@ const defaultSettings: AudioSettings = {
 export const useAudioManager = (): AudioManagerReturn => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const ambientSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const ambientTrackRef = useRef<number>(0);
+  const ambientTimeoutRef = useRef<number | null>(null);
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_KEY);
@@ -113,7 +173,11 @@ export const useAudioManager = (): AudioManagerReturn => {
   // Initialize audio context on first user interaction
   const getAudioContext = useCallback((): AudioContext => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) {
+        throw new Error('Web Audio API is not supported in this browser.');
+      }
+      audioContextRef.current = new AudioContextClass();
     }
     return audioContextRef.current;
   }, []);
@@ -275,60 +339,84 @@ export const useAudioManager = (): AudioManagerReturn => {
     );
   }, [getAudioContext, settings.muted]);
 
-  // Ambient: Steppe wind (simple brown noise)
+  const clearAmbientTimeout = useCallback(() => {
+    if (ambientTimeoutRef.current !== null) {
+      window.clearTimeout(ambientTimeoutRef.current);
+      ambientTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleAmbientSwitch = useCallback((ctx: AudioContext) => {
+    clearAmbientTimeout();
+    ambientTimeoutRef.current = window.setTimeout(() => {
+      ambientTrackRef.current = 1 - ambientTrackRef.current;
+      if (settings.muted) return;
+      const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
+      if (ambientSourceRef.current) {
+        ambientSourceRef.current.stop();
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = getEffectiveVolume('music') * 0.18;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      filter.Q.value = 1.2;
+
+      source.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      source.start();
+      ambientSourceRef.current = source;
+      scheduleAmbientSwitch(ctx);
+    }, 18000 + Math.random() * 12000);
+  }, [clearAmbientTimeout, getEffectiveVolume, settings.muted]);
+
+  // Ambient: Background string-music loop with morin khuur / jouhikko / kantele flavor
   const playAmbient = useCallback(() => {
     if (settings.muted) return;
-    
+
     const ctx = getAudioContext();
-    
-    // Stop existing ambient
+
     if (ambientSourceRef.current) {
       ambientSourceRef.current.stop();
     }
-    
-    // Create wind-like ambient
-    const bufferSize = ctx.sampleRate * 5; // 5 second loop
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    // Brown noise with modulation
-    let lastOut = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      lastOut = (lastOut + 0.02 * white) / 1.02;
-      data[i] = lastOut * 3; // Amplify
-      
-      // Add subtle wind gusts
-      const gustMod = Math.sin(i / ctx.sampleRate * 0.5) * 0.3 + 0.7;
-      data[i] *= gustMod;
-    }
-    
+    clearAmbientTimeout();
+
+    ambientTrackRef.current = Math.random() < 0.5 ? 0 : 1;
+    const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
-    
+
     const gainNode = ctx.createGain();
-    gainNode.gain.value = getEffectiveVolume('music') * 0.2;
-    
-    // Low-pass filter for wind effect
+    gainNode.gain.value = getEffectiveVolume('music') * 0.18;
+
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 400;
-    
+    filter.frequency.value = 1200;
+    filter.Q.value = 1.2;
+
     source.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     source.start();
     ambientSourceRef.current = source;
-  }, [getAudioContext, settings.muted, getEffectiveVolume]);
+
+    scheduleAmbientSwitch(ctx);
+  }, [getAudioContext, settings.muted, getEffectiveVolume, clearAmbientTimeout, scheduleAmbientSwitch]);
 
   const stopAmbient = useCallback(() => {
     if (ambientSourceRef.current) {
       ambientSourceRef.current.stop();
       ambientSourceRef.current = null;
     }
-  }, []);
+    clearAmbientTimeout();
+  }, [clearAmbientTimeout]);
 
   // Cleanup
   useEffect(() => {
@@ -336,11 +424,12 @@ export const useAudioManager = (): AudioManagerReturn => {
       if (ambientSourceRef.current) {
         ambientSourceRef.current.stop();
       }
+      clearAmbientTimeout();
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [clearAmbientTimeout]);
 
   return {
     settings,

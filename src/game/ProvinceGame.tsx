@@ -5,6 +5,7 @@
  * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
@@ -16,6 +17,9 @@ import { CardHand } from './CardHand.tsx';
 import { PhaseBar } from './PhaseBar.tsx';
 import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
+import { LegalDisclaimer } from './LegalDisclaimer.tsx';
+import { AIPrivacyNotice } from './AIPrivacyNotice.tsx';
+import { HumanVerification } from './HumanVerification.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -41,12 +45,17 @@ export const ProvinceGame = () => {
     getArmiesInProvince, getPlayerFaction, canMoveTo,
     collectResources,
   } = useProvinceGameState();
+
+  const { playAmbient, stopAmbient } = useAudioManager();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
+  const [legalAccepted, setLegalAccepted] = useState(false);
+  const [humanVerified, setHumanVerified] = useState(false);
+  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fullscreen
@@ -69,6 +78,15 @@ export const ProvinceGame = () => {
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
 
+  useEffect(() => {
+    if (gameStarted) {
+      playAmbient();
+    } else {
+      stopAmbient();
+    }
+    return () => stopAmbient();
+  }, [gameStarted, playAmbient, stopAmbient]);
+
   // Auto-collect resources when entering resource phase
   useEffect(() => {
     if (gameState?.phase === 'resource' && !gameState.resourcesCollected) {
@@ -81,7 +99,26 @@ export const ProvinceGame = () => {
     if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
       setShowAIOverlay(true);
     }
-  }, [gameState?.turn]);
+  }, [gameState?.turn, gameState?.aiActionLog]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const accepted = window.localStorage.getItem('bookish_game_legal_accepted');
+    setLegalAccepted(accepted === 'true');
+  }, []);
+
+  const handleAcceptLegal = useCallback((signature: string) => {
+    setLegalAccepted(true);
+    try {
+      window.localStorage.setItem('bookish_game_legal_accepted', 'true');
+      window.localStorage.setItem('bookish_game_legal_signature', signature);
+    } catch (error) {
+      console.warn('Unable to persist legal acceptance:', error);
+    }
+  }, []);
+
+  const handleShowPrivacyInfo = useCallback(() => setShowPrivacyInfo(true), []);
+  const handleClosePrivacyInfo = useCallback(() => setShowPrivacyInfo(false), []);
 
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
@@ -96,6 +133,21 @@ export const ProvinceGame = () => {
     }
     selectProvince(provinceId);
   }, [gameState, canMoveTo, moveArmy, selectProvince]);
+
+  // Require legal acceptance before the game can start
+  if (!legalAccepted) {
+    return (
+      <>
+        <LegalDisclaimer onAccept={handleAcceptLegal} onShowPrivacy={handleShowPrivacyInfo} />
+        {showPrivacyInfo && <AIPrivacyNotice onClose={handleClosePrivacyInfo} />}
+      </>
+    );
+  }
+
+  // Require human verification
+  if (!humanVerified) {
+    return <HumanVerification onVerified={() => setHumanVerified(true)} />;
+  }
 
   // Faction select
   if (!gameStarted || !playerFaction) {

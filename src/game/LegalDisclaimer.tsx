@@ -12,7 +12,7 @@ export const LegalDisclaimer = ({ onAccept, onShowPrivacy }: LegalDisclaimerProp
   const [signature, setSignature] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
-  const canAccept = confirmed && signature.trim().length > 0;
+  const canAccept = confirmed && signature.trim().toUpperCase() === 'HYVÄKSYN';
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/95 p-4 backdrop-blur-sm">
@@ -46,7 +46,7 @@ export const LegalDisclaimer = ({ onAccept, onShowPrivacy }: LegalDisclaimerProp
                 type="text"
                 value={signature}
                 onChange={(event) => setSignature(event.target.value)}
-                placeholder="Kirjoita koko nimesi tai HYVÄKSYN"
+                placeholder="Kirjoita HYVÄKSYN"
                 className="w-full rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
               />
               <label className="inline-flex items-center gap-3 text-sm text-slate-300">

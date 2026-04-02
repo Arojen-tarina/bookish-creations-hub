@@ -1,7 +1,9 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "arojen-tarinat",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Arojen Tarinat on selainstrategiapeli, jossa diplomatia, kaupankäynti ja tekoälyvastustajat yhdistyvät.",
+  "author": "Koalabear101",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -83,6 +85,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "lovable-tagger": "^1.1.13",
+    "playwright": "^1.58.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",

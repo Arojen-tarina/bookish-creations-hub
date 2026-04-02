@@ -35,6 +35,8 @@ export const VICTORY_TARGETS = {
   tech: 5,
 };
 
+const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
+
 // ============= BUILDING TYPES =============
 export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop';
 
@@ -141,6 +143,116 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
     });
   });
   return armies;
+};
+
+const calculateProvinceCenterDistance = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Faction[]): Province[] => {
+  const factionIds = factions.map(f => f.id);
+  const targetCount = Math.floor(provinces.length / factionIds.length);
+  const currentCounts = factionIds.reduce((acc, factionId) => ({ ...acc, [factionId]: 0 }), {} as Record<FactionId, number>);
+  const updatedProvinces = provinces.map(province => ({ ...province }));
+  const provinceById = new Map(updatedProvinces.map(p => [p.id, p]));
+
+  updatedProvinces.forEach(province => {
+    if (province.ownerId && currentCounts[province.ownerId] !== undefined) {
+      currentCounts[province.ownerId] += 1;
+    }
+  });
+
+  const getProvinceValue = (province: Province) => province.baseTax + province.baseManpower + province.developmentLevel;
+
+  const releaseSurplusProvinces = (factionId: FactionId, surplus: number) => {
+    const faction = factions.find(f => f.id === factionId);
+    const capital = faction ? provinceById.get(faction.capitalId) : undefined;
+    if (!capital) return;
+
+    const owned = updatedProvinces
+      .filter(p => p.ownerId === factionId && !p.isCapital)
+      .sort((a, b) => {
+        const aDist = calculateProvinceCenterDistance(a.center, capital.center);
+        const bDist = calculateProvinceCenterDistance(b.center, capital.center);
+        const aValue = getProvinceValue(a);
+        const bValue = getProvinceValue(b);
+        return aDist === bDist ? aValue - bValue : bDist - aDist;
+      });
+
+    for (let i = 0; i < surplus && i < owned.length; i += 1) {
+      owned[i].ownerId = null;
+      currentCounts[factionId] -= 1;
+    }
+  };
+
+  factionIds.forEach(factionId => {
+    const surplus = currentCounts[factionId] - targetCount;
+    if (surplus > 0) releaseSurplusProvinces(factionId, surplus);
+  });
+
+  const getNeutralNeighbors = (factionId: FactionId) => {
+    const ownedIds = new Set(updatedProvinces.filter(p => p.ownerId === factionId).map(p => p.id));
+    const neighbors: Province[] = [];
+
+    updatedProvinces.forEach(province => {
+      if (province.ownerId !== null) return;
+      if (province.neighbors.some(neighborId => ownedIds.has(neighborId))) {
+        neighbors.push(province);
+      }
+    });
+
+    return neighbors.sort((a, b) => {
+      const faction = factions.find(f => f.id === factionId);
+      const capital = faction ? provinceById.get(faction.capitalId) : undefined;
+      if (!capital) return 0;
+      const aDist = calculateProvinceCenterDistance(a.center, capital.center);
+      const bDist = calculateProvinceCenterDistance(b.center, capital.center);
+      return aDist - bDist;
+    });
+  };
+
+  const neutralPool = new Set(updatedProvinces.filter(p => p.ownerId === null).map(p => p.id));
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+
+    for (const factionId of factionIds) {
+      const need = targetCount - currentCounts[factionId];
+      if (need <= 0) continue;
+
+      const adjacentNeutrals = getNeutralNeighbors(factionId).filter(p => neutralPool.has(p.id));
+      if (adjacentNeutrals.length === 0) continue;
+
+      const chosen = adjacentNeutrals[0];
+      chosen.ownerId = factionId;
+      neutralPool.delete(chosen.id);
+      currentCounts[factionId] += 1;
+      changed = true;
+    }
+  }
+
+  const remainingNeutrals = Array.from(neutralPool).map(id => provinceById.get(id)).filter(Boolean) as Province[];
+  remainingNeutrals.forEach(province => {
+    const closestFaction = factions
+      .map(faction => ({
+        factionId: faction.id,
+        distance: calculateProvinceCenterDistance(province.center, provinceById.get(faction.capitalId)?.center ?? { x: 0, y: 0 }),
+      }))
+      .sort((a, b) => a.distance - b.distance)[0];
+
+    if (!closestFaction) return;
+    const factionId = closestFaction.factionId;
+    if (currentCounts[factionId] < targetCount) {
+      province.ownerId = factionId;
+      currentCounts[factionId] += 1;
+      neutralPool.delete(province.id);
+    }
+  });
+
+  return updatedProvinces;
 };
 
 // ============= COMBAT =============
@@ -261,8 +373,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
   // ============= START GAME =============
   const startGame = useCallback((selectedFaction: FactionId) => {
-    const provinces = getProvincesWithAdjacency();
     const factions = createFactions(selectedFaction);
+    const provinces = equalizeStartingProvinceOwnership(getProvincesWithAdjacency(), factions);
     const relations = createDiplomaticRelations(factions);
     const armies = createStartingArmies(factions, provinces);
     const deck = createPlayableDeck();
@@ -368,7 +480,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         : null;
       const defender = enemyArmies[0] || provinceGarrison;
       let newArmies = [...prev.armies];
-      let newProvinces = [...prev.provinces];
+      const newProvinces = [...prev.provinces];
       
       if (defender) {
         const result = resolveCombat(army, defender, targetProvince, prev.attackBonus, prev.defenseBonus);
@@ -452,7 +564,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
       
-      let newState = { ...prev, hand: newHand, discard: newDiscard };
+      const newState = { ...prev, hand: newHand, discard: newDiscard };
       const effect = card.parsedEffect;
       
       switch (effect.type) {
@@ -636,9 +748,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     });
   }, [playerFaction]);
 
-
-  const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
-  
   const nextPhase = useCallback(() => {
     setGameState(prev => {
       if (!prev) return null;
@@ -702,7 +811,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     setGameState(prev => {
       if (!prev || !playerFaction) return null;
       
-      let newState = { ...prev };
+      const newState = { ...prev };
       const aiLog: string[] = [];
       const aiActionLog: AIActionLog[] = [];
       
@@ -717,11 +826,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       });
       
       // 2. Food: skip player (already handled in collectResources), just track for state
-      let newFood = newState.food;
+      const newFood = newState.food;
       
       // 3. AI turns
       let newArmies = [...newState.armies];
-      let newProvinces = [...newState.provinces];
+      const newProvinces = [...newState.provinces];
       
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
@@ -998,7 +1107,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
   const buildFort = useCallback((provinceId: string) => {
     buildStructure(provinceId, 'fortress');
-  }, []);
+  }, [buildStructure]);
 
   const resolveEvent = useCallback((_choiceIndex?: number) => {}, []);
 
@@ -1032,7 +1141,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const endPhase = nextPhase;
 
   return {
-    gameStarted, playerFaction, gameState: gameState as any,
+    gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
     startGame, selectProvince, selectArmy, moveArmy,
     nextPhase, endTurn, resetGame,
