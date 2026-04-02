@@ -357,6 +357,7 @@ const southEastProvinces: Province[] = [
     baseTax: 1,
     baseManpower: 1,
     center: { x: 98, y: 43 },
+    hasSilkRoad: true,
   }),
   // SONG CHINA
   p("hangzhou", "Hangzhou", "song_china", "farmland", "song", {
