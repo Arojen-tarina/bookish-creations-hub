@@ -415,6 +415,7 @@ const southEastProvinces: Province[] = [
     fortLevel: 2,
     tradeGood: "salt",
     center: { x: 72, y: 87 },
+    hasSilkRoad: true,
   }),
   p("yunnan", "Yunnan", "song_china", "mountain", "song", {
     baseTax: 3,
