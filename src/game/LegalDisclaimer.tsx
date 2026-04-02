@@ -12,7 +12,7 @@ export const LegalDisclaimer = ({ onAccept, onShowPrivacy }: LegalDisclaimerProp
   const [signature, setSignature] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
-  const canAccept = confirmed && signature.trim().length > 0;
+  const canAccept = confirmed && signature.trim().toUpperCase() === 'HYVÄKSYN';
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/95 p-4 backdrop-blur-sm">
