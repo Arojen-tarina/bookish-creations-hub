@@ -346,6 +346,7 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   onon: ['gobi_south', 'kerulen', 'mongol_east'],
   pskov: ['chernigov', 'smolensk', 'novgorod'],
   ray: ['kiev', 'tabriz', 'khiva'],
+  ryazan: ['tver', 'vladimir', 'smolensk'],
   xingqing: ['mongol_west', 'ganzhou', 'dunhuang'],
   ganzhou: ['xingqing', 'dunhuang', 'khotan'],
   dunhuang: ['ganzhou', 'khotan', 'xingqing'],
