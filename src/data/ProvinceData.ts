@@ -48,6 +48,10 @@ const northWestProvinces: Province[] = [
     baseTax: 4, baseManpower: 6, fortLevel: 1,
     center: { x: 32, y: 48 },
   }),
+  p('ryazan', 'Rjazan', 'rus', 'forest', 'rus', {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 40, y: 35 },
+  }),
   // --- Restored historical neutral/minor provinces ---
   p('xingqing', 'Xingqing', 'xixia', 'grassland', 'xixia', {
     isCapital: true, baseTax: 5, baseManpower: 7, fortLevel: 2, developmentLevel: 3,
