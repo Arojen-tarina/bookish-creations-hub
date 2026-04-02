@@ -30,7 +30,7 @@ const northWestProvinces: Province[] = [
   p('novgorod', 'Novgorod', 'rus', 'forest', 'rus', {
     isCapital: true, baseTax: 6, baseManpower: 8, fortLevel: 2, developmentLevel: 3,
     tradeGood: 'fur',
-    center: { x: 28, y: 32 },
+    center: { x: 22, y: 26 },
   }),
   p('pskov', 'Pihkova', 'rus', 'forest', 'rus', {
     baseTax: 3, baseManpower: 4, tradeGood: 'fur',
@@ -38,20 +38,67 @@ const northWestProvinces: Province[] = [
   }),
   p('tver', 'Tver', 'rus', 'forest', 'rus', {
     baseTax: 3, baseManpower: 5,
-    center: { x: 40, y: 38 },
+    center: { x: 44, y: 38 },
   }),
   p('vladimir', 'Vladimir', 'rus', 'forest', 'rus', {
     baseTax: 5, baseManpower: 7, fortLevel: 1, tradeGood: 'fur',
-    center: { x: 44, y: 28 },
+    center: { x: 49, y: 28 },
   }),
   p('smolensk', 'Smolensk', 'rus', 'forest', 'rus', {
     baseTax: 4, baseManpower: 6, fortLevel: 1,
     center: { x: 32, y: 48 },
   }),
-  p('ryazan', 'Rjazan', 'rus', 'forest', 'rus', {
+  p('ryazan', 'Rjazan', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
     center: { x: 56, y: 40 },
+  }),  p('ryazan1', 'Rjazan1', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 44, y: 51 },
+  }),  p('ryazan2', 'Rjazan2', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 66, y: 61 },
+  }),  p('ryazan3', 'Rjazan3', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 70, y: 76 },
   }),
+
+  p('ryazan4', 'Rjazan4', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 100, y: 60 },
+  }),
+p('ryazan5', 'Rjazan5', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 93, y: 70 },
+  }),
+
+p('ryazan6', 'Rjazan6', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 78, y: 68 },
+  }),
+
+  p('ryazan7', 'Rjazan7', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 60, y: 24 },
+  }),
+
+    p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 58, y: 54 },
+  }),
+    p('ryazan9', 'Rjazan9', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 75, y: 55 },
+  }),
+
+    p('ryazan10', 'Rjazan10', 'rus', 'forest', null, {
+        baseTax: 4, baseManpower: 6,
+        center: { x: 86, y: 78 },
+    }),
+   p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
+    center: { x: 48, y: 59 },
+  }),
+
   p('chernigov', 'Tšernihiv', 'rus', 'farmland', 'rus', {
     baseTax: 5, baseManpower: 7,
     center: { x: 34, y: 40 },
@@ -63,16 +110,16 @@ const northWestProvinces: Province[] = [
   // WESTERN SIBERIA
   p('siberia_west', 'Länsi-Siperia', 'siberia', 'taiga', 'rus', {
     baseTax: 1, baseManpower: 2, tradeGood: 'fur',
-    center: { x: 34, y: 10 },
+    center: { x: 29, y: 21 },
   }),
   // CENTRAL ASIA EDGES
   p('altai', 'Altai', 'mongolia', 'mountain', 'mongol', {
     baseTax: 1, baseManpower: 2, fortLevel: 1,
-    center: { x: 78, y: 28 },
+    center: { x: 86, y: 24 },
   }),
   p('dzungaria', 'Dzungaria', 'central_asia', 'steppe', 'mongol', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 70, y: 32 },
+    center: { x: 65, y: 32 },
   }),
   p('semirechye', 'Seitsemän joki', 'central_asia', 'grassland', 'rus', {
     baseTax: 3, baseManpower: 5, tradeGood: 'horses',
@@ -87,11 +134,11 @@ const northEastProvinces: Province[] = [
   // MONGOLIA
   p('karakorum', 'Karakorum', 'mongolia', 'steppe', 'mongol', {
     isCapital: true, baseTax: 5, baseManpower: 8, fortLevel: 2, developmentLevel: 3,
-    center: { x: 83, y: 37 },
+    center: { x: 83, y: 40 },
   }),
   p('mongol_east', 'Itä-Mongolia', 'mongolia', 'steppe', 'mongol', {
     baseTax: 2, baseManpower: 5, tradeGood: 'horses',
-    center: { x: 90, y: 33 },
+    center: { x: 90, y: 50 },
   }),
   p('mongol_central', 'Keski-Mongolia', 'mongolia', 'steppe', 'mongol', {
     baseTax: 2, baseManpower: 6, tradeGood: 'livestock',
@@ -99,7 +146,7 @@ const northEastProvinces: Province[] = [
   }),
   p('mongol_west', 'Länsi-Mongolia', 'mongolia', 'steppe', 'mongol', {
     baseTax: 1, baseManpower: 4, tradeGood: 'horses',
-    center: { x: 68, y: 43 },
+    center: { x: 72, y: 46 },
   }),
   p('kerulen', 'Kerulenjoki', 'mongolia', 'grassland', 'mongol', {
     baseTax: 2, baseManpower: 4, tradeGood: 'horses',
@@ -115,7 +162,7 @@ const northEastProvinces: Province[] = [
   }),
   p('gobi_north', 'Pohjois-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 2,
-    center: { x: 90, y: 47 },
+    center: { x: 102, y: 20 },
   }),
   // MANCHURIA
   // CENTRAL ASIA EDGES
@@ -127,7 +174,7 @@ const southWestProvinces: Province[] = [
   // CAUCASUS
   p('azerbaijan', 'Azerbaijan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 4, baseManpower: 5, tradeGood: 'iron',
-    center: { x: 48, y: 84 },
+    center: { x: 43, y: 84 },
   }),
   p('shirvan', 'Shirvan', 'caucasus', 'hills', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
@@ -140,37 +187,34 @@ const southWestProvinces: Province[] = [
   }),
   p('urgench', 'Urgench', 'khwarezm', 'grassland', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 2,
-    center: { x: 42, y: 81 },
+    center: { x: 32, y: 90 },
   }),
-  p('bukhara', 'Bukhara', 'transoxiana', 'farmland', 'khwarezm', {
-    baseTax: 8, baseManpower: 10, fortLevel: 2, hasSilkRoad: true, tradeGood: 'silk',
-    center: { x: 52, y: 74 },
-  }),
+
   p('merv', 'Merv', 'khorasan', 'farmland', 'khwarezm', {
-    baseTax: 7, baseManpower: 9, fortLevel: 2, hasSilkRoad: true,
+    baseTax: 7, baseManpower: 9, fortLevel: 2,
     center: { x: 52, y: 90 },
   }),
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 36, y: 94 },
+    center: { x: 28, y: 98 },
   }),
   p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
     center: { x: 54, y: 80 },
   }),
-  p('herat', 'Herat', 'khorasan', 'farmland', 'khwarezm', {
+  p('herat', 'Herat', 'khorasan', 'farmland', null, {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
     center: { x: 58, y: 86 },
   }),
   p('samarkand', 'Samarkand', 'transoxiana', 'farmland', 'khwarezm', {
     isCapital: true, baseTax: 10, baseManpower: 12, fortLevel: 3, developmentLevel: 5,
     hasSilkRoad: true, tradeGood: 'silk',
-    center: { x: 46, y: 72 },
+    center: { x: 46, y: 76 },
   }),
   // PERSIA
   p('isfahan', 'Isfahan', 'persia', 'farmland', 'khwarezm', {
     baseTax: 7, baseManpower: 9, fortLevel: 2, tradeGood: 'silk',
-    center: { x: 34, y: 86 },
+    center: { x: 17, y: 100 },
   }),
   p('shiraz', 'Shiraz', 'persia', 'farmland', 'khwarezm', {
     baseTax: 6, baseManpower: 7, tradeGood: 'spices',
@@ -178,27 +222,24 @@ const southWestProvinces: Province[] = [
   }),
   p('tabriz', 'Tabriz', 'persia', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, fortLevel: 1, hasSilkRoad: true,
-    center: { x: 30, y: 70 },
+    center: { x: 21, y: 77 },
   }),
-  p('ray', 'Ray (Tehran)', 'persia', 'hills', 'khwarezm', {
+  p('ray', 'Ray (Tehran)', 'persia', 'hills', null, {
     baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 26, y: 62 },
+    center: { x: 26, y: 66 },
   }),
   p('kerman', 'Kerman', 'persia', 'desert', 'khwarezm', {
     baseTax: 3, baseManpower: 4,
-    center: { x: 50, y: 95 },
+    center: { x: 59, y: 102 },
   }),
-  p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
-    baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices',
-    center: { x: 46, y: 100 },
-  }),
+
 ];
 
 // ============= SOUTH EAST (Song China, Xia, Central Asia, Tibet, Korea) =============
 // Coordinates: x >= 45, y >= 40
 const southEastProvinces: Province[] = [
   // CENTRAL ASIA
-  p('kashgar', 'Kashgar', 'central_asia', 'desert', 'khwarezm', {
+  p('kashgar', 'Kashgar', 'central_asia', 'desert', null, {
     baseTax: 4, baseManpower: 5, hasSilkRoad: true, tradeGood: 'silk',
     center: { x: 60, y: 68 },
   }),
@@ -223,11 +264,11 @@ const southEastProvinces: Province[] = [
   }),
   p('fujian', 'Fujian', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, isCoastal: true, tradeGood: 'spices',
-    center: { x: 94, y: 99 },
+    center: { x: 100, y: 102 },
   }),
   p('guangdong', 'Guangdong', 'song_china', 'farmland', 'song', {
     baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'spices',
-    center: { x: 86, y: 105 },
+    center: { x: 86, y: 110 },
   }),
   p('jiangxi', 'Jiangxi', 'song_china', 'hills', 'song', {
     baseTax: 5, baseManpower: 7, tradeGood: 'grain',
@@ -251,7 +292,7 @@ const southEastProvinces: Province[] = [
   }),
   // TURFAN - Central Asia, assigned to Song
   p('turfan', 'Turfan', 'central_asia', 'desert', 'song', {
-    baseTax: 2, baseManpower: 3, hasSilkRoad: true, tradeGood: 'spices',
+    baseTax: 2, baseManpower: 3, tradeGood: 'spices',
     center: { x: 76, y: 105 },
   }),
 ];
