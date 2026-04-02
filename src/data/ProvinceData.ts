@@ -98,6 +98,7 @@ const northWestProvinces: Province[] = [
     baseTax: 4,
     baseManpower: 6,
     center: { x: 100, y: 60 },
+    hasSilkRoad: true,
   }),
   p("ryazan5", "Rjazan5", "rus", "forest", null, {
     baseTax: 4,
@@ -201,6 +202,7 @@ const northEastProvinces: Province[] = [
     baseManpower: 5,
     tradeGood: "horses",
     center: { x: 90, y: 50 },
+    hasSilkRoad: true,
   }),
   p("mongol_central", "Keski-Mongolia", "mongolia", "steppe", "mongol", {
     baseTax: 2,
