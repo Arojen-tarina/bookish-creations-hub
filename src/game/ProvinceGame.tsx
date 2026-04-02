@@ -19,6 +19,7 @@ import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { LegalDisclaimer } from './LegalDisclaimer.tsx';
 import { AIPrivacyNotice } from './AIPrivacyNotice.tsx';
+import { HumanVerification } from './HumanVerification.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -53,6 +54,7 @@ export const ProvinceGame = () => {
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
   const [legalAccepted, setLegalAccepted] = useState(false);
+  const [humanVerified, setHumanVerified] = useState(false);
   const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -140,6 +142,11 @@ export const ProvinceGame = () => {
         {showPrivacyInfo && <AIPrivacyNotice onClose={handleClosePrivacyInfo} />}
       </>
     );
+  }
+
+  // Require human verification
+  if (!humanVerified) {
+    return <HumanVerification onVerified={() => setHumanVerified(true)} />;
   }
 
   // Faction select
