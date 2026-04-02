@@ -249,6 +249,7 @@ const southWestProvinces: Province[] = [
     baseTax: 3,
     baseManpower: 4,
     center: { x: 32, y: 78 },
+    hasSilksRoad: true,
   }),
   // KHWAREZM
   p("khiva", "Khiva", "khwarezm", "desert", "khwarezm", {
