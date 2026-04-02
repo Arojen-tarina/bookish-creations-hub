@@ -475,7 +475,7 @@ export const useGameState = () => {
         showBuildMenu: hex.ownerId === currentPlayer?.factionId && gameState.currentPhase === 'building',
       } : null);
     }
-  }, [gameState, moveUnit]);
+  }, [gameState]);
 
   const calculateAvailableMoves = (unit: Unit, hexes: HexTile[], units: Unit[]): string[] => {
     const currentHex = hexes.find(h => h.id === unit.hexId);
