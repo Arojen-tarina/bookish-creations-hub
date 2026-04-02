@@ -20,7 +20,7 @@ import {
   FACTION_DATA_1206,
   PROVINCE_TERRAIN_INFO,
 } from '@/types/province';
-import { getProvincesWithAdjacency } from '@/data/provinces-1206';
+import { getProvincesWithAdjacency } from '@/data/ProvinceData.ts';
 import { BattleResult } from '@/game/BattleDisplay.tsx';
 import { PlayableCard, createPlayableDeck, drawCards, shuffleDeck } from '@/game/cards';
 import { calculateAIActions } from '@/game/ai';

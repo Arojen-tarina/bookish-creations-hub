@@ -10,7 +10,8 @@ import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
-const BOARD_SIZE = 100;
+const BOARD_SIZE = 130;
+const SCALE_FACTOR = 1.15; // 15% larger board
 
 export interface ProvinceMapProps {
   provinces: Province[];
@@ -25,12 +26,110 @@ export interface ProvinceMapProps {
   isMinimap?: boolean;
 }
 
-const TOKEN_RADIUS = 2.2;
+const TOKEN_RADIUS = 2.2 * SCALE_FACTOR;
 const HEX_SPREAD = 1.12;
 const projectPoint = (x: number, y: number) => ({
   x: 50 + (x - 50) * HEX_SPREAD,
   y: 50 + (y - 50) * HEX_SPREAD,
 });
+
+// Coordinate Grid Component
+const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
+  if (!showGrid) return null;
+
+  const gridInterval = 10;
+  const gridLines: JSX.Element[] = [];
+  
+  // Vertical lines (X axis)
+  for (let x = 0; x <= BOARD_SIZE; x += gridInterval) {
+    gridLines.push(
+      <line
+        key={`vline-${x}`}
+        x1={x} y1={0} x2={x} y2={BOARD_SIZE}
+        stroke="#4a5568"
+        strokeWidth={0.15 * SCALE_FACTOR}
+        opacity={x % 20 === 0 ? 0.4 : 0.25}
+        pointerEvents="none"
+      />
+    );
+  }
+
+  // Horizontal lines (Y axis)
+  for (let y = 0; y <= BOARD_SIZE; y += gridInterval) {
+    gridLines.push(
+      <line
+        key={`hline-${y}`}
+        x1={0} y1={y} x2={BOARD_SIZE} y2={y}
+        stroke="#4a5568"
+        strokeWidth={0.15 * SCALE_FACTOR}
+        opacity={y % 20 === 0 ? 0.4 : 0.25}
+        pointerEvents="none"
+      />
+    );
+  }
+
+  // X axis labels (bottom)
+  for (let x = 0; x <= BOARD_SIZE; x += 20) {
+    gridLines.push(
+      <text
+        key={`xlabel-${x}`}
+        x={x} y={BOARD_SIZE + 2}
+        textAnchor="middle"
+        fontSize={1.8 * SCALE_FACTOR}
+        fill="#c9a227"
+        fontWeight="bold"
+        opacity={0.6}
+        pointerEvents="none"
+        className="select-none"
+      >
+        {x}
+      </text>
+    );
+  }
+
+  // Y axis labels (left)
+  for (let y = 0; y <= BOARD_SIZE; y += 20) {
+    gridLines.push(
+      <text
+        key={`ylabel-${y}`}
+        x={-2} y={y + 0.6}
+        textAnchor="end"
+        fontSize={1.8 * SCALE_FACTOR}
+        fill="#c9a227"
+        fontWeight="bold"
+        opacity={0.6}
+        pointerEvents="none"
+        className="select-none"
+      >
+        {y}
+      </text>
+    );
+  }
+
+  // Axis lines
+  gridLines.push(
+    <line
+      key="x-axis"
+      x1={0} y1={BOARD_SIZE} x2={BOARD_SIZE} y2={BOARD_SIZE}
+      stroke="#8b6914"
+      strokeWidth={0.3 * SCALE_FACTOR}
+      opacity={0.6}
+      pointerEvents="none"
+    />
+  );
+  gridLines.push(
+    <line
+      key="y-axis"
+      x1={0} y1={0} x2={0} y2={BOARD_SIZE}
+      stroke="#8b6914"
+      strokeWidth={0.3 * SCALE_FACTOR}
+      opacity={0.6}
+      pointerEvents="none"
+    />
+  );
+
+  return <g>{gridLines}</g>;
+};
 
 const ProvinceToken = ({
   province,
@@ -48,7 +147,7 @@ const ProvinceToken = ({
   onHover: (p: Province | null) => void;
 }) => {
   const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : '#888';
-  const r = TOKEN_RADIUS + (province.isCapital ? 0.5 : 0);
+  const r = TOKEN_RADIUS + (province.isCapital ? 0.5 * SCALE_FACTOR : 0);
   const center = projectPoint(province.center.x, province.center.y);
 
   return (
@@ -60,8 +159,8 @@ const ProvinceToken = ({
     >
       {/* Shadow */}
       <circle
-        cx={center.x + 0.3}
-        cy={center.y + 0.3}
+        cx={center.x + 0.3 * SCALE_FACTOR}
+        cy={center.y + 0.3 * SCALE_FACTOR}
         r={r}
         fill="rgba(0,0,0,0.4)"
       />
@@ -73,7 +172,7 @@ const ProvinceToken = ({
         r={r}
         fill={ownerColor}
         stroke={isSelected ? '#fbbf24' : isHighlighted ? '#22c55e' : '#1a1a1a'}
-        strokeWidth={isSelected ? 0.6 : 0.3}
+        strokeWidth={isSelected ? 0.6 * SCALE_FACTOR : 0.3 * SCALE_FACTOR}
         opacity={0.9}
       />
 
@@ -84,7 +183,7 @@ const ProvinceToken = ({
         r={r * 0.6}
         fill="none"
         stroke="rgba(255,255,255,0.3)"
-        strokeWidth={0.15}
+        strokeWidth={0.15 * SCALE_FACTOR}
       />
 
       {/* Selection pulse */}
@@ -92,10 +191,10 @@ const ProvinceToken = ({
         <circle
           cx={center.x}
           cy={center.y}
-          r={r + 0.8}
+          r={r + 0.8 * SCALE_FACTOR}
           fill="none"
           stroke="#fbbf24"
-          strokeWidth={0.25}
+          strokeWidth={0.25 * SCALE_FACTOR}
           opacity={0.7}
           className="animate-pulse"
         />
@@ -107,7 +206,7 @@ const ProvinceToken = ({
           x={center.x}
           y={center.y + 0.5}
           textAnchor="middle"
-          fontSize={2}
+          fontSize={2 * SCALE_FACTOR}
           className="pointer-events-none select-none"
         >
           👑
@@ -120,7 +219,7 @@ const ProvinceToken = ({
           x={center.x}
           y={center.y + 0.6}
           textAnchor="middle"
-          fontSize={1.6}
+          fontSize={1.6 * SCALE_FACTOR}
           fill="#fff"
           fontWeight="bold"
           className="pointer-events-none select-none"
@@ -135,12 +234,12 @@ const ProvinceToken = ({
         <rect
           x={center.x + r * 0.5}
           y={center.y - r * 0.9}
-          width={1.2}
-          height={1.2}
-          rx={0.15}
+          width={1.2 * SCALE_FACTOR}
+          height={1.2 * SCALE_FACTOR}
+          rx={0.15 * SCALE_FACTOR}
           fill="#4a5568"
           stroke="#1a1a1a"
-          strokeWidth={0.1}
+          strokeWidth={0.1 * SCALE_FACTOR}
         />
       )}
 
@@ -149,10 +248,10 @@ const ProvinceToken = ({
         <circle
           cx={center.x + r * 0.6}
           cy={center.y + r * 0.6}
-          r={0.5}
+          r={0.5 * SCALE_FACTOR}
           fill="#f59e0b"
           stroke="#92400e"
-          strokeWidth={0.1}
+          strokeWidth={0.1 * SCALE_FACTOR}
         />
       )}
     </g>
@@ -289,6 +388,7 @@ export const ProvinceMap = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [showCoordinateGrid, setShowCoordinateGrid] = useState(false);
 
   const viewBox = useMemo(() => {
     const w = BOARD_SIZE / zoom;
@@ -315,6 +415,18 @@ export const ProvinceMap = ({
       setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
   }, [isDragging, dragStart]);
+
+  // Convert SVG coordinates to board coordinates
+  const getboardCoordinates = useCallback((x: number, y: number): { x: number; y: number } | null => {
+    if (!containerRef.current) return null;
+    const rect = containerRef.current.getBoundingClientRect();
+    const svgX = ((x - rect.left) / rect.width) * viewBox.width + viewBox.x;
+    const svgY = ((y - rect.top) / rect.height) * viewBox.height + viewBox.y;
+    return {
+      x: Math.round(svgX * 10) / 10,
+      y: Math.round(svgY * 10) / 10,
+    };
+  }, [viewBox]);
 
   const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
@@ -380,13 +492,14 @@ export const ProvinceMap = ({
           preserveAspectRatio="xMidYMid slice"
         />
 
-        {/* Neighbor connections */}
+        {/* Coordinate Grid */}
+        <CoordinateGrid showGrid={showCoordinateGrid} />
         {neighborLines.map((l, i) => (
           <line
             key={`conn-${i}`}
             x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
             stroke={l.isSilkRoad ? '#c9342b' : '#8b3a3a'}
-            strokeWidth={l.isSilkRoad ? 0.5 : 0.35}
+            strokeWidth={l.isSilkRoad ? 0.5 * SCALE_FACTOR : 0.35 * SCALE_FACTOR}
             strokeOpacity={l.isSilkRoad ? 0.7 : 0.5}
             strokeDasharray={l.isSilkRoad ? '1.2,0.6' : '0.8,0.5'}
           />
@@ -443,9 +556,9 @@ export const ProvinceMap = ({
 
               // Position badge at edge of token — pill shape for unit breakdown
               const rad = (offsetAngle * Math.PI) / 180;
-              const pillH = 1.6;
-              const pillW = totalCav > 0 && totalInf > 0 ? 5.5 : 3.8;
-              const dist = r + pillH + 0.1;
+              const pillH = 1.6 * SCALE_FACTOR;
+              const pillW = (totalCav > 0 && totalInf > 0 ? 5.5 : 3.8) * SCALE_FACTOR;
+              const dist = r + pillH + 0.1 * SCALE_FACTOR;
               const bx = center.x + Math.cos(rad) * dist;
               const by = center.y + Math.sin(rad) * dist;
 
@@ -465,10 +578,10 @@ export const ProvinceMap = ({
                   {/* Selection glow */}
                   {anySelected && (
                     <rect
-                      x={bx - pillW / 2 - 0.4} y={by - pillH / 2 - 0.4}
-                      width={pillW + 0.8} height={pillH + 0.8}
-                      rx={pillH / 2 + 0.4}
-                      fill="none" stroke="#fbbf24" strokeWidth={0.25} className="animate-pulse"
+                      x={bx - pillW / 2 - 0.4 * SCALE_FACTOR} y={by - pillH / 2 - 0.4 * SCALE_FACTOR}
+                      width={pillW + 0.8 * SCALE_FACTOR} height={pillH + 0.8 * SCALE_FACTOR}
+                      rx={pillH / 2 + 0.4 * SCALE_FACTOR}
+                      fill="none" stroke="#fbbf24" strokeWidth={0.25 * SCALE_FACTOR} className="animate-pulse"
                     />
                   )}
 
@@ -479,48 +592,48 @@ export const ProvinceMap = ({
                     rx={pillH / 2}
                     fill={ownerColor}
                     stroke={anySelected ? '#fbbf24' : '#1a1a1a'}
-                    strokeWidth={anySelected ? 0.3 : 0.15}
+                    strokeWidth={anySelected ? 0.3 * SCALE_FACTOR : 0.15 * SCALE_FACTOR}
                   />
 
                   {/* Unit breakdown: 🐴 N ⚔ N */}
                   {totalCav > 0 && totalInf > 0 ? (
                     <>
-                      <text x={bx - 1.6} y={by + 0.5} textAnchor="middle" fontSize={1.1} className="pointer-events-none select-none">🐴</text>
-                      <text x={bx - 0.4} y={by + 0.45} textAnchor="middle" fontSize={1.1} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
-                      <text x={bx + 0.9} y={by + 0.5} textAnchor="middle" fontSize={1.1} className="pointer-events-none select-none">⚔</text>
-                      <text x={bx + 2.0} y={by + 0.45} textAnchor="middle" fontSize={1.1} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
+                      <text x={bx - 1.6 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} className="pointer-events-none select-none">🐴</text>
+                      <text x={bx - 0.4 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
+                      <text x={bx + 0.9 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} className="pointer-events-none select-none">⚔</text>
+                      <text x={bx + 2.0 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
                     </>
                   ) : totalCav > 0 ? (
                     <>
-                      <text x={bx - 0.7} y={by + 0.5} textAnchor="middle" fontSize={1.2} className="pointer-events-none select-none">🐴</text>
-                      <text x={bx + 0.7} y={by + 0.45} textAnchor="middle" fontSize={1.2} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
+                      <text x={bx - 0.7 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} className="pointer-events-none select-none">🐴</text>
+                      <text x={bx + 0.7 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
                     </>
                   ) : (
                     <>
-                      <text x={bx - 0.7} y={by + 0.5} textAnchor="middle" fontSize={1.2} className="pointer-events-none select-none">⚔</text>
-                      <text x={bx + 0.7} y={by + 0.45} textAnchor="middle" fontSize={1.2} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
+                      <text x={bx - 0.7 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} className="pointer-events-none select-none">⚔</text>
+                      <text x={bx + 0.7 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
                     </>
                   )}
 
                   {/* Movement indicator for player */}
                   {isPlayer && (
                     <circle
-                      cx={bx + pillW / 2 - 0.3}
-                      cy={by - pillH / 2 + 0.3}
-                      r={0.35}
+                      cx={bx + pillW / 2 - 0.3 * SCALE_FACTOR}
+                      cy={by - pillH / 2 + 0.3 * SCALE_FACTOR}
+                      r={0.35 * SCALE_FACTOR}
                       fill={hasMovement ? '#22c55e' : '#ef4444'}
                       stroke="#1a1a1a"
-                      strokeWidth={0.1}
+                      strokeWidth={0.1 * SCALE_FACTOR}
                     />
                   )}
 
                   {/* Stack indicator */}
                   {armyGroup.length > 1 && (
                     <text
-                      x={bx - pillW / 2 + 0.5}
-                      y={by - pillH / 2 + 0.1}
+                      x={bx - pillW / 2 + 0.5 * SCALE_FACTOR}
+                      y={by - pillH / 2 + 0.1 * SCALE_FACTOR}
                       textAnchor="middle"
-                      fontSize={0.8}
+                      fontSize={0.8 * SCALE_FACTOR}
                       fill="#fbbf24"
                       fontWeight="bold"
                       className="pointer-events-none select-none"
@@ -547,9 +660,9 @@ export const ProvinceMap = ({
             <text
               key={`label-${province.id}`}
               x={center.x}
-              y={center.y + 4}
+              y={center.y + 4 * SCALE_FACTOR}
               textAnchor="middle"
-              fontSize={1.4}
+              fontSize={1.4 * SCALE_FACTOR}
               fill="#f5e6c8"
               fontWeight="bold"
               className="pointer-events-none select-none"
@@ -565,16 +678,30 @@ export const ProvinceMap = ({
       {!isMinimap && (
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <Button variant="outline" size="icon" onClick={handleZoomIn}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Zoom in">
             <ZoomIn className="w-4 h-4" />
           </Button>
           <Button variant="outline" size="icon" onClick={handleZoomOut}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Zoom out">
             <ZoomOut className="w-4 h-4" />
           </Button>
           <Button variant="outline" size="icon" onClick={handleResetView}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800">
+            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
+            title="Reset view">
             <Maximize2 className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setShowCoordinateGrid(!showCoordinateGrid)}
+            className={`bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800 ${showCoordinateGrid ? 'bg-amber-900/80 border-amber-600' : ''}`}
+            title="Toggle coordinate grid"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6-8a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6 6a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000-4z" />
+            </svg>
           </Button>
         </div>
       )}
@@ -600,6 +727,15 @@ export const ProvinceMap = ({
           <span className="font-bold">Vuosi 1206</span>
           <span className="mx-2">•</span>
           <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
+          {showCoordinateGrid && (() => {
+            const coords = getboardCoordinates(mousePosition.x, mousePosition.y);
+            return coords ? (
+              <>
+                <span className="mx-2">•</span>
+                <span className="text-amber-400 font-mono">X: {coords.x.toFixed(1)}, Y: {coords.y.toFixed(1)}</span>
+              </>
+            ) : null;
+          })()}
         </div>
       )}
     </div>
