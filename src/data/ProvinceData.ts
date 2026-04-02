@@ -109,6 +109,7 @@ const northWestProvinces: Province[] = [
     baseTax: 4,
     baseManpower: 6,
     center: { x: 78, y: 68 },
+    hasSilkRoad: true,
   }),
 
   p("ryazan7", "Rjazan7", "rus", "forest", null, {
@@ -132,6 +133,7 @@ const northWestProvinces: Province[] = [
     baseTax: 4,
     baseManpower: 6,
     center: { x: 86, y: 78 },
+    hasSilkRoad: true,
   }),
   p("ryazan8", "Rjazan8", "rus", "forest", null, {
     baseTax: 4,
