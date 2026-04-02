@@ -237,7 +237,14 @@ const southWestProvinces: Province[] = [
     baseTax: 3, baseManpower: 4,
     center: { x: 59, y: 102 },
   }),
-
+  p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
+    baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices', hasSilkRoad: true,
+    center: { x: 40, y: 105 },
+  }),
+  p('bukhara', 'Bukhara', 'transoxiana', 'farmland', 'khwarezm', {
+    baseTax: 8, baseManpower: 10, fortLevel: 2, hasSilkRoad: true, tradeGood: 'silk',
+    center: { x: 50, y: 70 },
+  }),
 ];
 
 // ============= SOUTH EAST (Song China, Xia, Central Asia, Tibet, Korea) =============
