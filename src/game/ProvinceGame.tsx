@@ -54,6 +54,7 @@ export const ProvinceGame = () => {
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
   const [legalAccepted, setLegalAccepted] = useState(false);
+  const [humanVerified, setHumanVerified] = useState(false);
   const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
