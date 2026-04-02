@@ -264,12 +264,14 @@ const southWestProvinces: Province[] = [
     baseTax: 3,
     baseManpower: 4,
     center: { x: 38, y: 68 },
+    hasSilkRoad: true,
   }),
   p("urgench", "Urgench", "khwarezm", "grassland", "khwarezm", {
     baseTax: 6,
     baseManpower: 8,
     fortLevel: 2,
     center: { x: 32, y: 90 },
+    hasSilkRoad: true,
   }),
 
   p("merv", "Merv", "khorasan", "farmland", "khwarezm", {
