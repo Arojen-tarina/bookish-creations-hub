@@ -144,6 +144,11 @@ export const ProvinceGame = () => {
     );
   }
 
+  // Require human verification
+  if (!humanVerified) {
+    return <HumanVerification onVerified={() => setHumanVerified(true)} />;
+  }
+
   // Faction select
   if (!gameStarted || !playerFaction) {
     return <ProvinceFactionSelect onSelect={(f) => f && startGame(f)} />;

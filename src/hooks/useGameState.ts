@@ -932,7 +932,7 @@ export const useGameState = () => {
     if (currentPlayer?.isAI && phases[nextIndex] === 'action') {
       await executeAITurn();
     }
-  }, [gameState, drawEventCard, executeAITurn, endTurnForPlayer]);
+  }, [gameState, drawEventCard, executeAITurn]);
 
   const endTurnForPlayer = useCallback((state: GameState): GameState => {
     const currentPlayerIndex = state.players.findIndex(p => p.id === state.currentPlayerId);
