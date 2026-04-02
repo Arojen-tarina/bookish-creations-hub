@@ -34,7 +34,7 @@ const northWestProvinces: Province[] = [
   }),
   p('pskov', 'Pihkova', 'rus', 'forest', 'rus', {
     baseTax: 3, baseManpower: 4, tradeGood: 'fur',
-    center: { x: 26, y: 42 },
+    center: { x: 23, y: 42 },
   }),
   p('tver', 'Tver', 'rus', 'forest', 'rus', {
     baseTax: 3, baseManpower: 5,
@@ -64,7 +64,7 @@ const northWestProvinces: Province[] = [
 
   p('dunhuang', 'Dunhuang', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
-    center: { x: 100, y: 60 },
+      center: { x: 75, y: 55 },
   }),
 p('tibet_east', 'Itä-Tiibet', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
@@ -87,7 +87,7 @@ p('tibet_west', 'Länsi-Tiibet', 'rus', 'forest', null, {
   }),
     p('korea_south', 'Etelä-Korea', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
-    center: { x: 75, y: 55 },
+    center: { x: 100, y: 60 },
   }),
 
     p('manchuria_north', 'Pohjois-Mantšuria', 'rus', 'forest', null, {
@@ -197,7 +197,7 @@ const southWestProvinces: Province[] = [
 
   p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
     baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 28, y: 98 },
+    center: { x: 28, y: 108 },
   }),
   
   p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
@@ -248,7 +248,7 @@ const southEastProvinces: Province[] = [
   // GOBI
   p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', 'mongol', {
     baseTax: 1, baseManpower: 1,
-    center: { x: 98, y: 43 },
+    center: { x: 102, y: 46 },
   }),
   // SONG CHINA
   p('hangzhou', 'Hangzhou', 'song_china', 'farmland', 'song', {
@@ -308,56 +308,69 @@ export const ALL_PROVINCES_1206: Province[] = [
 ];
 
 // Adjacency - Each province connected to its 3 nearest neighbors by distance (ignoring ownership)
+// u have to change these alphabetically
+// first alphabetically to last alphabetically
+// if Balkh has a route to Samarkand, write it as balkh: ["samarkand"]
 export const PROVINCE_ADJACENCY: Record<string, string[]> = {
-  altai: ['mongol_central', 'baikal', 'dzungaria'],
-  azerbaijan: ['urgench', 'merv', 'balkh'],
-  baikal: ['altai', 'dzungaria', 'mongol_central'],
-  balkh: ['bukhara', 'azerbaijan', 'herat'],
-  bukhara: ['balkh', 'samarkand', 'kashgar'],
-  chernigov: ['tver', 'pskov', 'smolensk'],
-  dzungaria: ['mongol_central', 'altai', 'baikal'],
-  fujian: ['jiangxi', 'hangzhou', 'suzhou'],
-  gobi_north: ['gobi_south', 'karakorum', 'mongol_east'],
-  gobi_south: ['onon', 'gobi_north', 'mongol_east'],
-  guangdong: ['jiangxi', 'fujian', 'turfan'],
-  hangzhou: ['nanjing', 'fujian', 'suzhou'],
-  herat: ['merv', 'balkh', 'azerbaijan'],
-  hormuz: ['shiraz', 'kerman', 'merv'],
-  hubei: ['nanjing', 'hunan', 'sichuan'],
-  hunan: ['hubei', 'jiangxi', 'yunnan'],
-  isfahan: ['shirvan', 'nishapur', 'urgench'],
-  jiangxi: ['fujian', 'guangdong', 'hunan'],
-  karakorum: ['mongol_central', 'mongol_east', 'altai'],
-  kashgar: ['bukhara', 'balkh', 'samarkand'],
-  kerman: ['merv', 'hormuz', 'shiraz'],
-  kerulen: ['onon', 'mongol_east', 'gobi_south'],
-  khiva: ['tabriz', 'samarkand', 'shirvan'],
-  kiev: ['smolensk', 'ray', 'khiva'],
-  merv: ['kerman', 'azerbaijan', 'herat'],
-  mongol_central: ['altai', 'karakorum', 'dzungaria'],
-  mongol_east: ['karakorum', 'kerulen', 'mongol_central'],
-  mongol_west: ['dzungaria', 'ryazan', 'mongol_central'],
-  nanjing: ['hangzhou', 'hubei', 'jiangxi'],
-  nishapur: ['shiraz', 'isfahan', 'hormuz'],
-  novgorod: ['semirechye', 'chernigov', 'pskov'],
-  onon: ['gobi_south', 'kerulen', 'mongol_east'],
-  pskov: ['chernigov', 'smolensk', 'novgorod'],
-  ray: ['kiev', 'tabriz', 'khiva'],
-  ryazan: ['mongol_west', 'tver', 'dzungaria'],
-  samarkand: ['bukhara', 'khiva', 'urgench'],
-  semirechye: ['novgorod', 'vladimir', 'tver'],
-  shiraz: ['hormuz', 'nishapur', 'kerman'],
-  shirvan: ['isfahan', 'tabriz', 'urgench'],
-  siberia_west: ['semirechye', 'vladimir', 'novgorod'],
-  sichuan: ['hubei', 'hunan', 'yunnan'],
-  smolensk: ['kiev', 'chernigov', 'pskov'],
-  suzhou: ['hangzhou', 'fujian', 'jiangxi'],
-  tabriz: ['shirvan', 'khiva', 'ray'],
-  turfan: ['yunnan', 'guangdong', 'hunan'],
-  tver: ['chernigov', 'semirechye', 'vladimir'],
-  urgench: ['azerbaijan', 'isfahan', 'samarkand'],
-  vladimir: ['semirechye', 'tver', 'chernigov'],
-  yunnan: ['turfan', 'hunan', 'sichuan'],
+    altai: ['mongol_central', 'baikal', "gobi_north", "kerulen"],
+    armenia: ["goryeo", "dunhuang", "kashgar"],
+    azerbaijan: ['urgench', 'merv', 'balkh', "samarkand", "shirvan"],
+    baikal: ['altai', 'dzungaria', 'mongol_central', "lhasa"],
+    balkh: ['bukhara', 'azerbaijan', 'herat', "samarkand"],
+    bukhara: ['balkh', 'samarkand', 'kashgar'],
+    chernigov: ['tver', 'pskov', 'smolensk'],
+    dunhuang: ["mongol_west", "mongol_east", "tibet_west"],
+    dzungaria: ['mongol_central', 'altai', 'baikal', "lhasa", "ryazan"],
+    fujian: ['jiangxi', 'hangzhou', 'suzhou'],
+    georgia: ["tver", "yakutia"],
+    gobi_north: ['kerulen'],
+    gobi_south: ['onon', 'gobi_north', 'mongol_east'],
+    goryeo: ["yakutia", "armenia", "ryazan"],
+    guangdong: ['jiangxi', 'fujian', 'turfan'],
+    hangzhou: ['nanjing', 'fujian', 'suzhou'],
+    herat: ['merv', 'balkh', 'azerbaijan'],
+    hormuz: ['shiraz', 'kerman', 'merv'],
+    hubei: ['nanjing', 'hunan', 'sichuan', "manchuria_north"],
+    hunan: ['hubei', 'jiangxi', 'yunnan'],
+    isfahan: [ 'nishapur', 'urgench'],
+    jiangxi: ['fujian', 'guangdong', 'hunan'],
+    karakorum: ['mongol_central', 'mongol_east', 'kerulen', "mongol_west"],
+    kashgar: ['bukhara', 'balkh', 'samarkand', "tibet_west", "khotan"],
+    kerman: ['merv', 'yunnan', 'shiraz'],
+    kerulen: ['onon', 'mongol_east', 'gobi_south'],
+    khiva: ['tabriz', 'samarkand', 'shirvan', "yakutia",],
+    khotan: ["tibet_west", "kashgar", "sichuan"],
+    kiev: ['smolensk', 'ray', "yakutia"],
+    lhasa: ["vladimir"],
+    korea_south: ["mongol_east", "tibet_east", "tibet_west"],
+    manchuria_north: ["nanjing", "tibet_east"],
+    merv: ['kerman', 'azerbaijan', 'herat', "shiraz"],
+    mongol_central: ['altai', 'karakorum', 'dzungaria', "mongol_west"],
+    mongol_east: ['karakorum', 'kerulen', 'mongol_central', "mongol_west", "dunghuang"],
+    mongol_west: ['dzungaria', 'ryazan', 'mongol_central'],
+    nanjing: ['hangzhou', 'hubei', 'jiangxi'],
+    nishapur: ['shiraz', 'isfahan', 'hormuz'],
+    novgorod: ['semirechye', 'chernigov', 'pskov'],
+    onon: ['gobi_south', 'kerulen', 'mongol_east'],
+    pskov: ['chernigov', 'smolensk', 'novgorod'],
+    ray: ['kiev', 'tabriz', 'khiva'],
+    ryazan: ['mongol_west', 'tver', 'dzungaria'],
+    samarkand: ["balkh", "azerbaijan", "khiva"],
+    semirechye: ['novgorod', 'vladimir', 'tver'],
+    shiraz: ['hormuz', 'nishapur', 'kerman'],
+    shirvan: ['isfahan', 'tabriz', 'urgench'],
+    siberia_west: ['semirechye', 'vladimir', 'novgorod'],
+    sichuan: ['hubei', 'hunan', 'yunnan'],
+    smolensk: ['kiev', 'chernigov', 'pskov'],
+    suzhou: ['hangzhou', 'fujian', 'jiangxi'],
+    tabriz: ['shirvan', 'khiva', 'ray'],
+    turfan: ['yunnan', 'guangdong', 'hunan'],
+    tver: ['chernigov', 'semirechye', 'vladimir'],
+    urgench: ['azerbaijan', 'isfahan', 'samarkand'],
+    vladimir: ['semirechye', 'tver', 'chernigov'],
+    yunnan: ['turfan', 'hunan', 'sichuan'],
+    yakutia: ["goryeo", "georgia", "khiva"],
+
 };
 
 // Apply adjacency
