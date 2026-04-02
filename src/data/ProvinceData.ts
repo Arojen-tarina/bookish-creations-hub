@@ -48,59 +48,54 @@ const northWestProvinces: Province[] = [
     baseTax: 4, baseManpower: 6, fortLevel: 1,
     center: { x: 32, y: 48 },
   }),
-  p('ryazan', 'Rjazan', 'rus', 'forest', 'rus', {
+  p('ryazan', 'Rjazan', 'rus', 'forest', null, {
     baseTax: 4, baseManpower: 6,
-    center: { x: 40, y: 35 },
-  }),
-  // --- Restored historical neutral/minor provinces ---
-  p('xingqing', 'Xingqing', 'xixia', 'grassland', 'xixia', {
-    isCapital: true, baseTax: 5, baseManpower: 7, fortLevel: 2, developmentLevel: 3,
-    hasSilkRoad: true,
     center: { x: 56, y: 40 },
-  }),
-  p('dunhuang', 'Dunhuang', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, hasSilkRoad: true,
+  }),  p('ryazan1', 'Rjazan1', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 44, y: 51 },
-  }),
-  p('zhongdu', 'Zhongdu (Beijing)', 'jin_china', 'farmland', 'jin', {
-    isCapital: true, baseTax: 10, baseManpower: 15, fortLevel: 3, developmentLevel: 5,
-    tradeGood: 'silk', hasSilkRoad: true,
+  }),  p('ryazan2', 'Rjazan2', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 66, y: 61 },
-  }),
-  p('kaifeng', 'Kaifeng', 'jin_china', 'farmland', 'jin', {
-    baseTax: 8, baseManpower: 12, fortLevel: 2, tradeGood: 'silk',
+  }),  p('ryazan3', 'Rjazan3', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 70, y: 76 },
   }),
-  p('goryeo', 'Goryeo', 'korea', 'hills', null, {
-    baseTax: 5, baseManpower: 6, fortLevel: 1, isCoastal: true,
+
+  p('ryazan4', 'Rjazan4', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 100, y: 60 },
   }),
-  p('korea_south', 'Etelä-Korea', 'korea', 'farmland', null, {
-    baseTax: 4, baseManpower: 5, isCoastal: true, tradeGood: 'grain',
+p('ryazan5', 'Rjazan5', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 93, y: 70 },
   }),
-  p('datong', 'Datong', 'jin_china', 'hills', 'jin', {
-    baseTax: 5, baseManpower: 8, fortLevel: 2, tradeGood: 'iron', hasSilkRoad: true,
+
+p('ryazan6', 'Rjazan6', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 78, y: 68 },
   }),
-  p('siberia_central', 'Keski-Siperia', 'siberia', 'taiga', null, {
-    baseTax: 1, baseManpower: 2, tradeGood: 'fur',
+
+  p('ryazan7', 'Rjazan7', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 60, y: 24 },
   }),
-  p('khotan', 'Khotan', 'central_asia', 'desert', null, {
-    baseTax: 3, baseManpower: 3, tradeGood: 'gems', hasSilkRoad: true,
+
+    p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 58, y: 54 },
   }),
-  p('lhasa', 'Lhasa', 'tibet', 'mountain', null, {
-    baseTax: 3, baseManpower: 4, fortLevel: 2, tradeGood: 'salt',
+    p('ryazan9', 'Rjazan9', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 75, y: 55 },
   }),
-  p('shandong', 'Shandong', 'jin_china', 'farmland', 'jin', {
-    baseTax: 6, baseManpower: 8, isCoastal: true, tradeGood: 'salt',
-    center: { x: 86, y: 78 },
-  }),
-  p('ganzhou', 'Ganzhou', 'xixia', 'desert', 'xixia', {
-    baseTax: 3, baseManpower: 4, hasSilkRoad: true, tradeGood: 'salt',
+
+    p('ryazan10', 'Rjazan10', 'rus', 'forest', null, {
+        baseTax: 4, baseManpower: 6,
+        center: { x: 86, y: 78 },
+    }),
+   p('ryazan8', 'Rjazan8', 'rus', 'forest', null, {
+    baseTax: 4, baseManpower: 6,
     center: { x: 48, y: 59 },
   }),
 
@@ -237,14 +232,7 @@ const southWestProvinces: Province[] = [
     baseTax: 3, baseManpower: 4,
     center: { x: 59, y: 102 },
   }),
-  p('hormuz', 'Hormuz', 'persia', 'desert', 'khwarezm', {
-    baseTax: 4, baseManpower: 3, isCoastal: true, tradeGood: 'spices', hasSilkRoad: true,
-    center: { x: 40, y: 105 },
-  }),
-  p('bukhara', 'Bukhara', 'transoxiana', 'farmland', 'khwarezm', {
-    baseTax: 8, baseManpower: 10, fortLevel: 2, hasSilkRoad: true, tradeGood: 'silk',
-    center: { x: 50, y: 70 },
-  }),
+
 ];
 
 // ============= SOUTH EAST (Song China, Xia, Central Asia, Tibet, Korea) =============
@@ -346,26 +334,14 @@ export const PROVINCE_ADJACENCY: Record<string, string[]> = {
   merv: ['kerman', 'azerbaijan', 'herat'],
   mongol_central: ['altai', 'karakorum', 'dzungaria'],
   mongol_east: ['karakorum', 'kerulen', 'mongol_central'],
-  mongol_west: ['dzungaria', 'xingqing', 'mongol_central'],
+  mongol_west: ['dzungaria', 'ryazan', 'mongol_central'],
   nanjing: ['hangzhou', 'hubei', 'jiangxi'],
   nishapur: ['shiraz', 'isfahan', 'hormuz'],
   novgorod: ['semirechye', 'chernigov', 'pskov'],
   onon: ['gobi_south', 'kerulen', 'mongol_east'],
   pskov: ['chernigov', 'smolensk', 'novgorod'],
   ray: ['kiev', 'tabriz', 'khiva'],
-  ryazan: ['tver', 'vladimir', 'smolensk'],
-  xingqing: ['mongol_west', 'ganzhou', 'dunhuang'],
-  ganzhou: ['xingqing', 'dunhuang', 'khotan'],
-  dunhuang: ['ganzhou', 'khotan', 'xingqing'],
-  zhongdu: ['datong', 'shandong', 'kaifeng'],
-  kaifeng: ['zhongdu', 'datong', 'shandong'],
-  datong: ['zhongdu', 'kaifeng', 'lhasa'],
-  shandong: ['zhongdu', 'kaifeng', 'goryeo'],
-  goryeo: ['shandong', 'korea_south', 'zhongdu'],
-  korea_south: ['goryeo', 'shandong', 'kaifeng'],
-  khotan: ['dunhuang', 'ganzhou', 'lhasa'],
-  lhasa: ['khotan', 'datong', 'sichuan'],
-  siberia_central: ['siberia_west', 'semirechye', 'altai'],
+  ryazan: ['mongol_west', 'tver', 'dzungaria'],
   samarkand: ['bukhara', 'khiva', 'urgench'],
   semirechye: ['novgorod', 'vladimir', 'tver'],
   shiraz: ['hormuz', 'nishapur', 'kerman'],
