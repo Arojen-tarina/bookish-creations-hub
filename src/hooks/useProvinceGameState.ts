@@ -315,7 +315,8 @@ const resolveCombat = (
   const attackRoll = Math.floor(Math.random() * 6) + 1;
   const defenseRoll = Math.floor(Math.random() * 6) + 1;
   const ratio = (attackerPower + attackRoll * 2) / Math.max(1, defenderPower + defenseRoll * 2);
-  const attackerWins = ratio > 0.95;
+  // Defender wins ties — hyökkääjän pitää oikeasti olla puolustajaa vahvempi
+  const attackerWins = ratio > 1.1;
 
   const attackerLossRatio = attackerWins ? 0.14 : 0.32;
   const defenderLossRatio = attackerWins ? 0.42 : 0.16;
