@@ -96,7 +96,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
         </div>
 
         <div className="mb-6 flex justify-center">
-          <GoogleAdSense slotId="cak_f5413f6615ebe1dbcbf79b770f838eedbec49dae" clientId="ca-pub-XXXXXXXXXXXXXXXX" className="w-full max-w-3xl rounded-2xl overflow-hidden" />
+          <GoogleAdSense slotId="cak_f5413f6615ebe1dbcbf79b770f838eedbec49dae" clientId="ca-pub-1848284154496261" className="w-full max-w-3xl rounded-2xl overflow-hidden" />
         </div>
         
         {/* Faction grid */}
