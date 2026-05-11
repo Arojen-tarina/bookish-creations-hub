@@ -636,6 +636,9 @@ export const ProvinceGame = () => {
         </div>
       </div>
 
+      {/* ============= ENGAGEMENT (juice) ============= */}
+      <EngagementLayer gameState={gameState} playerFaction={playerFaction} />
+
       {/* ============= OVERLAYS ============= */}
       <AITurnOverlay
         actions={gameState.aiActionLog || []}
