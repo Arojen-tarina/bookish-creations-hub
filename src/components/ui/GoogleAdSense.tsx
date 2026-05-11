@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 interface GoogleAdSenseProps {
   slotId: string;
-  clientId?: string;
+  clientId: string;
   className?: string;
 }
 
