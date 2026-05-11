@@ -269,6 +269,7 @@ export const ProvinceGame = () => {
               onArmyClick={selectArmy}
               playerFaction={playerFaction}
               highlightedProvinces={attackMode ? attackableProvinces : [...availableMoves, ...attackableProvinces]}
+              defenseBonus={gameState.defenseBonus}
             />
           </div>
           
@@ -453,20 +454,45 @@ export const ProvinceGame = () => {
                             <Sword className="w-3.5 h-3.5" /> Armeijat
                           </h4>
                           <div className="space-y-1.5">
-                            {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).map(army => (
-                              <Button
-                                key={army.id}
-                                variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
-                                className={`w-full justify-start text-xs ${
-                                  gameState.selectedArmyId === army.id ? 'bg-green-600' : 'border-green-600 text-green-200'
-                                }`}
-                                onClick={() => { selectArmy(army.id); setAttackMode(false); }}
-                                disabled={army.movementLeft <= 0}
-                              >
-                                🐴 {army.cavalry} ⚔️ {army.infantry} 🏗 {army.siege}
-                                <span className="ml-auto">{army.movementLeft > 0 ? `👟${army.movementLeft}` : '⏳'}</span>
-                              </Button>
-                            ))}
+                            {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).map(army => {
+                              // Calculate attack power breakdown
+                              const baseAttack = army.cavalry * 3 + army.infantry * 1.5 + army.siege;
+                              const leaderBonus = army.leaderBonus || 0;
+                              const moraleMultiplier = army.morale / 100;
+                              const cardBonus = gameState.attackBonus;
+                              
+                              const totalAttack = Math.round(
+                                baseAttack * (1 + leaderBonus) * moraleMultiplier + cardBonus
+                              );
+                              const baseDisplay = Math.round(baseAttack * (1 + leaderBonus) * moraleMultiplier);
+                              
+                              return (
+                                <Button
+                                  key={army.id}
+                                  variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
+                                  className={`w-full justify-start text-xs ${
+                                    gameState.selectedArmyId === army.id ? 'bg-green-600' : 'border-green-600 text-green-200'
+                                  }`}
+                                  onClick={() => { selectArmy(army.id); setAttackMode(false); }}
+                                  disabled={army.movementLeft <= 0}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <span>🐴 {army.cavalry} ⚔️ {army.infantry} 🏗 {army.siege}</span>
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-yellow-300 font-bold">
+                                        ⚔️ {totalAttack}
+                                        {cardBonus > 0 && (
+                                          <span className="text-stone-300 text-[10px] ml-1">
+                                            ({baseDisplay}+{cardBonus})
+                                          </span>
+                                        )}
+                                      </span>
+                                      <span>{army.movementLeft > 0 ? `👟${army.movementLeft}` : '⏳'}</span>
+                                    </div>
+                                  </div>
+                                </Button>
+                              );
+                            })}
                           </div>
                           
                           {gameState.selectedArmyId && (

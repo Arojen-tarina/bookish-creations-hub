@@ -24,6 +24,7 @@ export interface ProvinceMapProps {
   highlightedProvinces?: string[];
   showArmies?: boolean;
   isMinimap?: boolean;
+  defenseBonus?: number;
 }
 
 const TOKEN_RADIUS = 2.2 * SCALE_FACTOR;
@@ -262,13 +263,21 @@ const ProvinceToken = ({
 const ProvinceTooltip = ({
   province,
   position,
+  defenseBonus = 0,
 }: {
   province: Province;
   position: { x: number; y: number };
+  defenseBonus?: number;
 }) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
+  
+  // Calculate defense breakdown
+  const terrainDefense = Math.round(terrainInfo.defenseBonus * 0.2 * 100) / 100; // Convert to percentage for display
+  const fortDefense = Math.round(province.fortLevel * 0.35 * 100) / 100;
+  const cardDefense = defenseBonus;
+  const totalDefense = terrainDefense + fortDefense + cardDefense;
   
   return (
     <div
@@ -292,6 +301,19 @@ const ProvinceTooltip = ({
         <div className="flex justify-between">
           <span>Maasto:</span>
           <span>{terrainInfo.name}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Puolustus:</span>
+          <span className="text-green-400 font-bold">
+            🛡️ {totalDefense.toFixed(1)} 
+            {terrainDefense > 0 || fortDefense > 0 || cardDefense > 0 ? (
+              <span className="text-stone-400 text-[10px] ml-1">
+                ({terrainDefense > 0 ? `${terrainDefense.toFixed(1)}m` : ''}
+                {fortDefense > 0 ? `${terrainDefense > 0 ? '+' : ''}${fortDefense.toFixed(1)}l` : ''}
+                {cardDefense > 0 ? `${terrainDefense > 0 || fortDefense > 0 ? '+' : ''}${cardDefense.toFixed(1)}k` : ''})
+              </span>
+            ) : null}
+          </span>
         </div>
         <div className="flex justify-between">
           <span>Verot:</span>
@@ -380,6 +402,7 @@ export const ProvinceMap = ({
   playerFaction,
   highlightedProvinces = [],
   isMinimap = false,
+  defenseBonus = 0,
 }: ProvinceMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -718,7 +741,7 @@ export const ProvinceMap = ({
 
       {/* Tooltip */}
       {!isMinimap && hoveredProvince && (
-        <ProvinceTooltip province={hoveredProvince} position={mousePosition} />
+        <ProvinceTooltip province={hoveredProvince} position={mousePosition} defenseBonus={defenseBonus} />
       )}
 
       {/* Info bar */}

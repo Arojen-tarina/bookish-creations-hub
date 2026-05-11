@@ -97,7 +97,7 @@ p('tibet_east', 'Itä-Tiibet', 'rus', 'forest', null, {
   }),
 
 p('tibet_west', 'Länsi-Tiibet', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6, hasSilkRoad: true,
+    baseTax: 4, baseManpower: 6,
     center: { x: 78, y: 68 },
     hasSilkRoad: true,
   }),
