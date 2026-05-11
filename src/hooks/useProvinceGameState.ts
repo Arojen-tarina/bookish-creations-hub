@@ -887,11 +887,18 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
             if (!target) continue;
             
             const defenders = newArmies.filter(a => a.provinceId === action.targetProvinceId && a.ownerId !== faction.id);
-            // Check garrison if no field armies defend
-            const garrison = defenders.length === 0 && target.ownerId && target.ownerId !== faction.id
+            // Combine field defenders with garrison so that fortifications add their soldiers
+            const garrison = target.ownerId && target.ownerId !== faction.id
               ? createProvinceGarrison(target)
               : null;
-            const defender = defenders[0] || garrison;
+            let defender: Army | null = defenders[0] || garrison;
+            if (defenders[0] && garrison) {
+              defender = {
+                ...defenders[0],
+                infantry: defenders[0].infantry + garrison.infantry,
+                morale: Math.max(defenders[0].morale, garrison.morale),
+              };
+            }
             
             if (defender) {
               const result = resolveCombat(army, defender, target);
