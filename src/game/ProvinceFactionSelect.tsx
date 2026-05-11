@@ -5,10 +5,10 @@
  * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
  */
 import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
-import { Button } from '@/components/ui/button.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { Crown, Sword, Coins, Shield, Users, BookOpen } from 'lucide-react';
+import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
+import { Crown, Sword, Coins, Shield, BookOpen } from 'lucide-react';
 
 interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId) => void;
@@ -93,6 +93,10 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               Avaa ohjekirja uudessa välilehdessä
             </a>
           </div>
+        </div>
+
+        <div className="mb-6 flex justify-center">
+          <GoogleAdSense slotId="cak_f5413f6615ebe1dbcbf79b770f838eedbec49dae" className="w-full max-w-3xl rounded-2xl overflow-hidden" />
         </div>
         
         {/* Faction grid */}
