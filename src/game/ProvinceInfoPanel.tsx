@@ -30,6 +30,8 @@ interface ProvinceInfoPanelProps {
   canRecruit: boolean;
   onBuildFort?: () => void;
   canBuildFort?: boolean;
+  attackBonus?: number;
+  defenseBonus?: number;
 }
 
 export const ProvinceInfoPanel = ({
@@ -38,12 +40,18 @@ export const ProvinceInfoPanel = ({
   playerFaction,
   onRecruitArmy,
   canRecruit,
+  attackBonus = 0,
+  defenseBonus = 0,
 }: ProvinceInfoPanelProps) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
   const isPlayerOwned = province.ownerId === playerFaction;
-  const totalDefenseBonus = terrainInfo.defenseBonus + province.fortLevel * 3;
+  
+  // Defense breakdown: terrain + fort + cards
+  const terrainDefenseBonus = Math.round(terrainInfo.defenseBonus * 0.2 * 100) / 100;
+  const fortDefenseBonus = Math.round(province.fortLevel * 0.35 * 100) / 100;
+  const totalDefenseBonus = terrainDefenseBonus + fortDefenseBonus + defenseBonus;
   
   const playerArmies = armies.filter(a => a.ownerId === playerFaction);
   const enemyArmies = armies.filter(a => a.ownerId !== playerFaction);

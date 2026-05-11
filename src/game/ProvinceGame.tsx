@@ -322,6 +322,8 @@ export const ProvinceGame = () => {
                         const isCapital = selectedProvince.id === playerFactionData.capitalId;
                         return hasCamp || isCapital;
                       })()}
+                      attackBonus={gameState.attackBonus}
+                      defenseBonus={gameState.defenseBonus}
                     />
                     
                     {/* Buildings */}
