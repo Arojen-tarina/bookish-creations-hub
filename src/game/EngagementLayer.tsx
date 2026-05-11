@@ -11,11 +11,10 @@
  * ja näyttää palautetta. Se ei muuta pelin logiikkaa.
  */
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ProvinceGameState, FactionId } from '@/types/province';
 
 interface EngagementLayerProps {
-  gameState: ProvinceGameState | null;
-  playerFaction: FactionId | null;
+  gameState: any;
+  playerFaction: string | null;
 }
 
 interface FloatingReward {
