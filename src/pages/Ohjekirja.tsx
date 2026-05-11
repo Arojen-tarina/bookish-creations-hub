@@ -23,53 +23,88 @@ const Ohjekirja = () => {
           <CardContent className="space-y-6 p-6">
             <div className="flex items-center gap-3 text-amber-200">
               <BookOpen className="w-6 h-6" />
-              <h2 className="text-2xl font-semibold">Näin pelaat</h2>
+              <h2 className="text-2xl font-semibold">Ohjekirja</h2>
             </div>
 
             <div className="space-y-5 text-slate-300">
               <p>
-                Peli kulkee kuuden vaiheen kautta: resurssit, kortit, liike, taistelu, rakentaminen ja vuoron lopetus.
-                Jokaisessa vaiheessa tehtävät valinnat vaikuttavat armeijasi vahvuuteen, talouteen ja alueiden hallintaan.
+                Tämä ohjekirja kattaa sekä digitaalisen pelin että lautapelin. Käytä samaa perustasoa molemmissa, ja huomioi
+                pelitilan erikoispiirteet: verkkopeleissä käyttöliittymä pitää huolta laskuista, lautapelissä kaikki päätökset tehdään käsin.
               </p>
 
-              <div className="grid gap-3 md:grid-cols-2">
-                {[
-                  { title: 'Resurssit', desc: 'Kerää automaattisesti kulta ja miehitykseen tarvittavat resurssit hallitsemiltasi alueilta.' },
-                  { title: 'Kortit', desc: 'Nosta kortti pakasta ja pelaa kortteja kädestäsi saadaksesi etuja taisteluun, rakentamiseen tai liikuttamiseen.' },
-                  { title: 'Liikuta', desc: 'Valitse armeija ja siirrä se viereiseen provinsseihin. Vain kelvollisiin kohteisiin voi siirtyä.' },
-                  { title: 'Taistelu', desc: 'Hyökkäät vihollisen alueelle ja taistelu ratkaistaan noppien ja joukkojesi avulla.' },
-                  { title: 'Rakenna', desc: 'Rakennukset kuten leiri, markkina tai linnoitus antavat etuja omille provinsseille.' },
-                  { title: 'Lopeta vuoro', desc: 'Lopeta vuoro ja anna tekoälyn vastustajien pelata. Uusi vuoro alkaa seuraavalla kierroksella.' },
-                ].map((item) => (
-                  <div key={item.title} className="rounded-2xl border border-slate-700/50 bg-slate-950/80 p-4">
-                    <h3 className="font-semibold text-amber-100">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.desc}</p>
+              <div className="grid gap-4 xl:grid-cols-2">
+                <section id="digipeli" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                  <h3 className="text-xl font-semibold text-amber-100">Verkkopelin ohjeet</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                    Peli etenee kuuden vaiheen läpi. Seuraa käyttöliittymän neuvoja ja hyödynnä karttaa, kortteja sekä resurssien hallintaa.
+                  </p>
+
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { title: 'Resurssit', desc: 'Kerää kullat, väkiluvun ja hevosten tuotot hallitsemiltasi provinsseilta. Nämä näkyvät käyttöliittymässäsi.' },
+                      { title: 'Kortit', desc: 'Nosta kortti ja pelaa se oikeaan aikaan. Kortit antavat välittömiä bonuksia liikkeeseen, taisteluun tai rakentamiseen.' },
+                      { title: 'Liikuta', desc: 'Valitse omasta provinssistasi armeija ja siirrä se viereiseen ruutuun. Vihollisten alueelle hyökätessä käynnistyy taistelu.' },
+                      { title: 'Taistelu', desc: 'Pelin automatiikka käyttää noppia ja joukkojen vahvuuksia. Suunnittele etukäteen, koska hyökkäät ja mitä yksikköjä käytät.' },
+                      { title: 'Rakenna', desc: 'Rakennukset tuovat pysyviä etuja. Linnoitukset parantavat puolustusta, markkinat kasvattavat tuloja ja leirit nopeuttavat joukkojen siirtoa.' },
+                      { title: 'Lopeta vuoro', desc: 'Vahvista päätöksesi ja anna tekoälyn vastustajien toimia. Uusi kierros alkaa automaattisesti.' },
+                    ].map((item) => (
+                      <div key={item.title} className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
+                        <h4 className="font-semibold text-amber-100">{item.title}</h4>
+                        <p className="mt-1 text-sm leading-relaxed text-slate-300">{item.desc}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+
+                  <div className="mt-6 rounded-2xl border border-amber-700/20 bg-amber-950/10 p-4">
+                    <h4 className="text-base font-semibold text-amber-100">Tärkeitä muistettavia</h4>
+                    <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+                      <li>Seuraa talouttasi: yksiköt ja rakennukset kuluttavat resursseja jokaisella vuorolla.</li>
+                      <li>Käytä kortteja taktisesti: ne voivat kääntää taistelun tai antaa nopean edun rakentamisessa.</li>
+                      <li>Pidä huoli linnoituksista, jos odotat hyökkäystä.</li>
+                    </ul>
+                  </div>
+                </section>
+
+                <section id="lautapeli" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                  <h3 className="text-xl font-semibold text-amber-100">Lautapelin ohjeet</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                    Lautapelissä pelilaudalla oleva kartta, kortit ja noppatulen tulokset ohjaavat etenemistä. Tämä osio kertoo valmistelusta ja keskeisistä säännöistä.
+                  </p>
+
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { title: 'Valmistelu', desc: 'Aseta pelilauta pöydälle, jaettavat kortit, noppapakka ja resurssimerkit pelaajille. Jokainen valitsee valtakunnan ja ottaa aloitusresurssit.' },
+                      { title: 'Vuoron kulku', desc: 'Pelaajalla on kuusi vaihetta. Tee ne järjestyksessä: resurssit, kortit, liikkeet, taistelut, rakentaminen ja vuoron lopetus.' },
+                      { title: 'Resurssien kerääminen', desc: 'Laske kulta ja joukot omilta hallitsemiltasi provinsseilta. Käytä markkereita pitämään kirjaa taloudesta ja väestöstä.' },
+                      { title: 'Korttien käyttö', desc: 'Nosta kortti pakasta. Pelaa kortteja antamaan etuja liikkeeseen, puolustukseen tai rakentamiseen.' },
+                      { title: 'Liikkeet ja taistelut', desc: 'Liikuta joukkoja ääneen sovittuja siirtoja seuraamalla. Hyökkäystilanteissa ratkaise taistelu nopilla ja muista huomioida vahvuusetusi.' },
+                      { title: 'Rakentaminen', desc: 'Rakennukset antavat pysyviä etuja. Laadi rakentamissuunnitelma, jotta alueesi tuotot ja puolustus paranevat.' },
+                    ].map((item) => (
+                      <div key={item.title} className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
+                        <h4 className="font-semibold text-amber-100">{item.title}</h4>
+                        <p className="mt-1 text-sm leading-relaxed text-slate-300">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 rounded-2xl border border-amber-700/20 bg-blue-950/10 p-4">
+                    <h4 className="text-base font-semibold text-amber-100">Lautapelin erinomaista</h4>
+                    <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+                      <li>Sovi selkeästi siirroista ja taistelun tuloksista muiden pelaajien kanssa.</li>
+                      <li>Kirjaa ylös resurssien muutokset jokaisen vuoron jälkeen.</li>
+                      <li>Lautapelin taistelut vaativat sopivaa noppalukua ja vahvuusarviointia.</li>
+                    </ul>
+                  </div>
+                </section>
               </div>
 
               <div className="rounded-2xl border border-amber-700/20 bg-amber-950/10 p-5">
-                <h3 className="text-lg font-semibold text-amber-100">Pelistrategia</h3>
+                <h3 className="text-lg font-semibold text-amber-100">Yhteisiä perusperiaatteita</h3>
                 <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
-                  <li>Suosi vahvoja aloja ja varmista, että resurssit riittävät armeijoiden ylläpitoon.</li>
-                  <li>Rakennusten valinta vaikuttaa pitkän aikavälin kasvuun ja puolustukseen.</li>
-                  <li>Muista seurata vastustajien liikkeitä ja hyökätä oikeaan aikaan.</li>
+                  <li>Hallinta perustuu alueiden hallintaan, resurssien tuotantoon ja vahvojen joukkojen ylläpitoon.</li>
+                  <li>Rakennukset, kortit ja liikkeet luovat syvemmän strategian kuin suora taistelu.</li>
+                  <li>Hyvä palvelu parantaa pitkän aikavälin voiton mahdollisuuksia: suunnittele sekä puolustusta että laajentumista.</li>
                 </ul>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded-2xl border border-amber-700/20 bg-slate-950/80 p-4">
-                  <p className="text-sm text-amber-100">Provinsseja</p>
-                  <p className="mt-1 text-2xl font-semibold text-slate-100">30</p>
-                </div>
-                <div className="rounded-2xl border border-amber-700/20 bg-slate-950/80 p-4">
-                  <p className="text-sm text-amber-100">Peli alkaa</p>
-                  <p className="mt-1 text-2xl font-semibold text-slate-100">1206</p>
-                </div>
-                <div className="rounded-2xl border border-amber-700/20 bg-slate-950/80 p-4">
-                  <p className="text-sm text-amber-100">Tavoite</p>
-                  <p className="mt-1 text-2xl font-semibold text-slate-100">Hallinta ja resurssit</p>
-                </div>
               </div>
             </div>
           </CardContent>
