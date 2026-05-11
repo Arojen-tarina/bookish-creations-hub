@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
-import { BookOpen, ArrowLeft } from 'lucide-react';
+import { BookOpen, ArrowLeft, Play } from 'lucide-react';
 
 const Ohjekirja = () => {
   return (
@@ -10,13 +10,18 @@ const Ohjekirja = () => {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-4xl font-semibold text-amber-200">Ohjekirja</h1>
-            <p className="mt-2 text-slate-400">Tässä kerrotaan pelin kulusta, käyttöliittymästä ja pelivinkeistä.</p>
+            <p className="mt-2 text-slate-400">Tässä kerrotaan pelin kulusta, käyttöliittymästä ja pelivinkeistä. Tämä sivu on koko ohjekirjan verkkoversio.</p>
           </div>
-          <Link to="/" className="inline-flex items-center gap-2">
-            <Button variant="secondary" size="sm">
-              <ArrowLeft className="w-4 h-4" /> Palaa peliin
+          <div className="flex flex-col gap-2 sm:items-end">
+            <Link to="/" className="inline-flex items-center gap-2">
+              <Button variant="secondary" size="sm">
+                <ArrowLeft className="w-4 h-4" /> Palaa peliin
+              </Button>
+            </Link>
+            <Button variant="secondary" size="sm" onClick={() => window.print()}>
+              Tulosta koko ohjekirja
             </Button>
-          </Link>
+          </div>
         </div>
 
         <Card className="bg-slate-900/90 border border-amber-700/30 shadow-2xl">
@@ -27,6 +32,67 @@ const Ohjekirja = () => {
             </div>
 
             <div className="space-y-5 text-slate-300">
+              <section id="video" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-5">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-amber-100">Yhden vuoron videokatsaus</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                      Tiivis opas näyttää yhden vuoron kulun vaihe vaiheelta. Käytä tätä täydennyksenä ohjekirjalle, kun haluat nopeasti ymmärtää vuorojen rytmin.
+                    </p>
+                  </div>
+                  <Button variant="secondary" size="sm" onClick={() => window.print()}>
+                    Tulosta koko ohjekirja
+                  </Button>
+                </div>
+
+                <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                  <div className="rounded-3xl border border-slate-700/40 bg-slate-950/80 p-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/20 text-amber-300">
+                        <Play className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.12em] text-slate-400">Videokatsaus</p>
+                        <h4 className="text-lg font-semibold text-amber-100">Yhden vuoron kulku</h4>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-700/30 bg-slate-900/80 p-5 text-slate-300">
+                      <p className="text-sm leading-relaxed">
+                        Kuvittele nopea video, jossa vuoro tehdään näin:
+                      </p>
+                      <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm text-slate-300">
+                        <li><strong>Resurssit:</strong> kerätään kulta ja joukot aluista.</li>
+                        <li><strong>Kortit:</strong> nostetaan kortti ja pelataan vahvistus.</li>
+                        <li><strong>Liikkeet:</strong> siirretään joukot strategisesti kartalla.</li>
+                        <li><strong>Taistelu:</strong> hyökätään vahvimpiin kohteisiin.</li>
+                        <li><strong>Rakentaminen:</strong> parannetaan merkittäviä tukikohtia.</li>
+                        <li><strong>Vuoron lopetus:</strong> vahvistetaan asetelma ja katsotaan AI-vastustajan reaktio.
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl border border-slate-700/40 bg-slate-950/80 p-4">
+                    <div className="aspect-[16/9] overflow-hidden rounded-3xl bg-slate-900/90 shadow-inner">
+                      <div className="relative h-full w-full bg-[radial-gradient(circle_at_top_left,_rgba(248,211,113,0.15),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.12),_transparent_30%)]">
+                        <div className="absolute inset-0 flex flex-col justify-center items-center gap-4 p-4 text-slate-300">
+                          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20 text-amber-300">
+                            <Play className="w-6 h-6" />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-sm uppercase text-slate-500">Simuloitu video</p>
+                            <p className="mt-2 text-base font-semibold text-slate-100">1 vuoro pelissä</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-sm leading-relaxed text-slate-400">
+                      Tämä osio täydentää ohjekirjaa tiiviillä yhteenvedolla yhdestä vuorosta. Se auttaa hahmottamaan pelin rytmin nopeasti ilman tarvetta lukea kaikkea kerralla.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
               <p>
                 Tämä ohjekirja kattaa sekä digitaalisen pelin että lautapelin. Käytä samaa perustasoa molemmissa, ja huomioi
                 pelitilan erikoispiirteet: verkkopeleissä käyttöliittymä pitää huolta laskuista, lautapelissä kaikki päätökset tehdään käsin.
