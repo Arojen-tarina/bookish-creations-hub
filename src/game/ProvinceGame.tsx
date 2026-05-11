@@ -17,9 +17,7 @@ import { CardHand } from './CardHand.tsx';
 import { PhaseBar } from './PhaseBar.tsx';
 import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
-import { LegalDisclaimer } from './LegalDisclaimer.tsx';
-import { AIPrivacyNotice } from './AIPrivacyNotice.tsx';
-import { HumanVerification } from './HumanVerification.tsx';
+import { CreditsIntro } from './CreditsIntro.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -53,9 +51,7 @@ export const ProvinceGame = () => {
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
-  const [legalAccepted, setLegalAccepted] = useState(false);
-  const [humanVerified, setHumanVerified] = useState(false);
-  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fullscreen
@@ -101,25 +97,6 @@ export const ProvinceGame = () => {
     }
   }, [gameState?.turn, gameState?.aiActionLog]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const accepted = window.localStorage.getItem('bookish_game_legal_accepted');
-    setLegalAccepted(accepted === 'true');
-  }, []);
-
-  const handleAcceptLegal = useCallback((signature: string) => {
-    setLegalAccepted(true);
-    try {
-      window.localStorage.setItem('bookish_game_legal_accepted', 'true');
-      window.localStorage.setItem('bookish_game_legal_signature', signature);
-    } catch (error) {
-      console.warn('Unable to persist legal acceptance:', error);
-    }
-  }, []);
-
-  const handleShowPrivacyInfo = useCallback(() => setShowPrivacyInfo(true), []);
-  const handleClosePrivacyInfo = useCallback(() => setShowPrivacyInfo(false), []);
-
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
     if (!gameState) return;
@@ -134,19 +111,9 @@ export const ProvinceGame = () => {
     selectProvince(provinceId);
   }, [gameState, canMoveTo, moveArmy, selectProvince]);
 
-  // Require legal acceptance before the game can start
-  if (!legalAccepted) {
-    return (
-      <>
-        <LegalDisclaimer onAccept={handleAcceptLegal} onShowPrivacy={handleShowPrivacyInfo} />
-        {showPrivacyInfo && <AIPrivacyNotice onClose={handleClosePrivacyInfo} />}
-      </>
-    );
-  }
-
-  // Require human verification
-  if (!humanVerified) {
-    return <HumanVerification onVerified={() => setHumanVerified(true)} />;
+  // Show credits intro before everything else
+  if (!introDone) {
+    return <CreditsIntro onDone={() => setIntroDone(true)} />;
   }
 
   // Faction select
