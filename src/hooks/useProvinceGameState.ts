@@ -478,7 +478,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const provinceGarrison = targetProvince.ownerId && targetProvince.ownerId !== army.ownerId
         ? createProvinceGarrison(targetProvince)
         : null;
-      const defender = enemyArmies[0] || provinceGarrison;
+
+      // Combine defending army with the province garrison so that fortifications
+      // actually contribute their soldiers to the defending force.
+      let defender: Army | null = enemyArmies[0] || provinceGarrison;
+      if (enemyArmies[0] && provinceGarrison) {
+        defender = {
+          ...enemyArmies[0],
+          infantry: enemyArmies[0].infantry + provinceGarrison.infantry,
+          morale: Math.max(enemyArmies[0].morale, provinceGarrison.morale),
+        };
+      }
       let newArmies = [...prev.armies];
       const newProvinces = [...prev.provinces];
       
