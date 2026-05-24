@@ -10,7 +10,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
 import Shop from "./pages/Shop";
-import { AdManager } from "@/components/ui/AdManager.tsx";
+import { AdMobBanner } from "@/components/ui/AdMobBanner.tsx";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +20,7 @@ const App = () => (
       <Sonner />
       <div className="fixed bottom-0 left-0 right-0 z-40 p-3 pointer-events-auto flex justify-center">
         <div className="max-w-6xl w-full px-4">
-          <AdManager zone="global_bottom" variant="banner" className="w-full" />
+          <AdMobBanner className="w-full" />
         </div>
       </div>
       <BrowserRouter>

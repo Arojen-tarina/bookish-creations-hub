@@ -4,4 +4,5 @@
     <string name="title_activity_main">Arojen Tarinat</string>
     <string name="package_name">fi.koalabear101.arojen_tarinat</string>
     <string name="custom_url_scheme">fi.koalabear101.arojen_tarinat</string>
+    <string name="admob_app_id">ca-app-pub-0000000000000000~0000000000</string>
 </resources>
