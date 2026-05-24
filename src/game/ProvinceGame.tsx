@@ -19,7 +19,7 @@ import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { CreditsIntro } from './CreditsIntro.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
-import { HouseAd } from '@/components/ui/HouseAd.tsx';
+import { AdManager } from '@/components/ui/AdManager.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -613,7 +613,7 @@ export const ProvinceGame = () => {
             
             {/* Sisäinen mainospaikka sivupalkissa */}
             <div className="mt-3 mb-3">
-              <HouseAd slot="sidebar_in_game" variant="sidebar" />
+              <AdManager zone="sidebar_in_game" variant="sidebar" />
             </div>
 
             {/* Reset button at bottom */}
@@ -649,7 +649,7 @@ export const ProvinceGame = () => {
 
             {/* Sisäinen mainosbanneri */}
             <div className="w-[320px] flex-shrink-0 border-r border-slate-700/50 p-1.5 flex items-center justify-center bg-slate-800/30">
-              <HouseAd slot="bottom_banner_in_game" variant="banner" />
+              <AdManager zone="bottom_banner_in_game" variant="banner" style={{ minHeight: 90 }} />
             </div>
 
             {/* Cards */}
