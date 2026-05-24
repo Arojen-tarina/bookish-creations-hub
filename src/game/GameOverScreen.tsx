@@ -3,6 +3,7 @@
  */
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
 import { Trophy, Skull, RotateCcw } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -13,6 +14,8 @@ interface GameOverScreenProps {
   year: number;
   onRestart: () => void;
 }
+
+const AD_CLIENT = 'ca-pub-1848284154496261';
 
 export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, onRestart }: GameOverScreenProps) => {
   return (
@@ -49,6 +52,16 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
             Vuoro {turn} • Vuosi {year}
           </p>
         </DialogHeader>
+
+        {/* Ad in game over screen */}
+        <div className="my-4 flex justify-center">
+          <GoogleAdSense
+            slotId="game_over_screen"
+            clientId={AD_CLIENT}
+            className="w-full max-w-md rounded-xl overflow-hidden min-h-[90px]"
+          />
+        </div>
+
         <DialogFooter className="justify-center">
           <Button onClick={onRestart} size="lg" className={isVictory ? 'bg-amber-600 hover:bg-amber-500' : 'bg-red-600 hover:bg-red-500'}>
             <RotateCcw className="w-5 h-5 mr-2" />
