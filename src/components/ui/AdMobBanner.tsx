@@ -2,19 +2,15 @@ import { useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { AdMob, BannerAdPosition, BannerAdSize } from '@capacitor-community/admob';
-import { HouseAd } from './HouseAd.tsx';
-
-const testBannerId = 'ca-app-pub-3940256099942544/6300978111';
 const bannerId = import.meta.env.VITE_ADMOB_BANNER_ID ?? '';
 const canUseNativeAdMob = Capacitor.getPlatform() === 'android' && bannerId && bannerId !== 'ca-app-pub-0000000000000000/0000000000';
 
 interface AdMobBannerProps {
   className?: string;
   style?: CSSProperties;
-  zone?: string;
 }
 
-export function AdMobBanner({ className, style, zone = 'android_banner' }: AdMobBannerProps) {
+export function AdMobBanner({ className, style }: AdMobBannerProps) {
   useEffect(() => {
     if (!canUseNativeAdMob) {
       return;
@@ -46,7 +42,7 @@ export function AdMobBanner({ className, style, zone = 'android_banner' }: AdMob
   }, []);
 
   if (!canUseNativeAdMob) {
-    return <HouseAd slot={zone} variant="banner" className={className} />;
+    return null;
   }
 
   return <div className={className} style={{ width: '100%', minHeight: 90, ...style }} />;

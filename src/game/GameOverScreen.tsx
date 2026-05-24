@@ -3,7 +3,7 @@
  */
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { AdManager } from '@/components/ui/AdManager.tsx';
+// import { AdManager } from '@/components/ui/AdManager.tsx';
 import { Trophy, Skull, RotateCcw } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -53,10 +53,6 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
           </p>
         </DialogHeader>
 
-        {/* Sisäinen mainospaikka */}
-        <div className="my-4 flex justify-center">
-          <AdManager zone="game_over_screen" variant="banner" className="w-full max-w-md" />
-        </div>
 
         <DialogFooter className="justify-center">
           <Button onClick={onRestart} size="lg" className={isVictory ? 'bg-amber-600 hover:bg-amber-500' : 'bg-red-600 hover:bg-red-500'}>
