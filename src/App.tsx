@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
+import Shop from "./pages/Shop";
 import { HouseAd } from "@/components/ui/HouseAd.tsx";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Digipeli />} />
           <Route path="/ohjekirja" element={<Ohjekirja />} />
+          <Route path="/shop" element={<Shop />} />
           <Route path="/digipeli" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

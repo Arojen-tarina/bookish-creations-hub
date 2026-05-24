@@ -25,31 +25,31 @@ interface AdContent {
 
 const ADS: AdContent[] = [
   {
-    title: 'Arojen Tarinat',
-    body: 'Hallitse mongolien aikakauden valtakuntia. Vuoropohjainen strategia.',
-    cta: 'Pelaa nyt',
-    href: '#',
+    title: 'Osta strategiapeliopas',
+    body: 'Paranna peliäsi ja opi taktiikat Mongolien aikakaudelta.',
+    cta: 'Kauppaan',
+    href: '/shop?product=strategiapeliopas',
     bg: 'from-amber-700 to-amber-900',
   },
   {
-    title: 'Tue kehittäjiä',
-    body: 'Juuso & Vilho kehittävät peliä. Jaa peli kavereille!',
-    cta: 'Jaa peli',
-    href: '#',
+    title: 'Arojen fanituote',
+    body: 'Tilaa virallinen pelimuki ja posteri. Täydellinen lahja strategiapeleihin.',
+    cta: 'Katso tuotteet',
+    href: '/shop?product=fanituote',
     bg: 'from-emerald-700 to-emerald-900',
   },
   {
-    title: 'Historian aroilla',
-    body: 'Tšingis-kaani, Silkkitie ja 70 historiallista provinssia odottavat.',
-    cta: 'Lue lisää',
-    href: '#',
+    title: 'Historian merkintä',
+    body: 'Saatavilla nyt: karttakirja Silkkitie-reiteistä ja valtauskilpailuista.',
+    cta: 'Tutustu',
+    href: '/shop?product=karttakirja',
     bg: 'from-indigo-700 to-indigo-900',
   },
   {
-    title: 'Vinkki',
-    body: 'Linnoita pääkaupunkisi! Linnoitukset estävät valtauksen.',
-    cta: 'Sulje',
-    href: '#',
+    title: 'Pelin lisäpaketti',
+    body: 'Avaa erikoissisältöä ja bonusmateriaaleja ostamalla pelin premium-paketin.',
+    cta: 'Osta nyt',
+    href: '/shop?product=premium-paketti',
     bg: 'from-slate-700 to-slate-900',
   },
 ];
@@ -68,6 +68,8 @@ export function HouseAd({ slot, className, variant = 'banner' }: HouseAdProps) {
   return (
     <a
       href={ad.href}
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label={`Mainos: ${ad.title}`}
       className={`block w-full bg-gradient-to-br ${ad.bg} text-white rounded-xl overflow-hidden border border-white/10 shadow-inner hover:brightness-110 transition ${className ?? ''}`}
     >
