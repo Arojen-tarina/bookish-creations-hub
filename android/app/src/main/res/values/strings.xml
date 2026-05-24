@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Arojen Tarinat</string>
+    <string name="title_activity_main">Arojen Tarinat</string>
+    <string name="package_name">fi.koalabear101.arojen_tarinat</string>
+    <string name="custom_url_scheme">fi.koalabear101.arojen_tarinat</string>
+</resources>
