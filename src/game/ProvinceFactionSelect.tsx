@@ -7,7 +7,7 @@
 import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
+import { HouseAd } from '@/components/ui/HouseAd.tsx';
 import { Crown, Sword, Coins, Shield, BookOpen } from 'lucide-react';
 
 interface ProvinceFactionSelectProps {
@@ -114,7 +114,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
         </div>
 
         <div className="mb-6 flex justify-center">
-          <GoogleAdSense slotId="cak_f5413f6615ebe1dbcbf79b770f838eedbec49dae" clientId="ca-pub-1848284154496261" className="w-full max-w-3xl rounded-2xl overflow-hidden" />
+          <HouseAd slot="faction_select_banner" variant="banner" className="w-full max-w-3xl" />
         </div>
         
         {/* Faction grid */}

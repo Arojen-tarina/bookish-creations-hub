@@ -19,7 +19,7 @@ import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { CreditsIntro } from './CreditsIntro.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
-import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
+import { HouseAd } from '@/components/ui/HouseAd.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -34,7 +34,7 @@ import {
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-const AD_CLIENT = 'ca-pub-1848284154496261';
+
 
 export const ProvinceGame = () => {
   const {
@@ -611,13 +611,9 @@ export const ProvinceGame = () => {
               </TabsContent>
             </Tabs>
             
-            {/* Ad in sidebar */}
+            {/* Sisäinen mainospaikka sivupalkissa */}
             <div className="mt-3 mb-3">
-              <GoogleAdSense
-                slotId="sidebar_in_game"
-                clientId={AD_CLIENT}
-                className="w-full rounded-xl overflow-hidden min-h-[90px]"
-              />
+              <HouseAd slot="sidebar_in_game" variant="sidebar" />
             </div>
 
             {/* Reset button at bottom */}
@@ -651,13 +647,9 @@ export const ProvinceGame = () => {
               </div>
             </div>
 
-            {/* Bottom ad banner */}
+            {/* Sisäinen mainosbanneri */}
             <div className="w-[320px] flex-shrink-0 border-r border-slate-700/50 p-1.5 flex items-center justify-center bg-slate-800/30">
-              <GoogleAdSense
-                slotId="bottom_banner_in_game"
-                clientId={AD_CLIENT}
-                className="w-full rounded-xl overflow-hidden min-h-[90px]"
-              />
+              <HouseAd slot="bottom_banner_in_game" variant="banner" />
             </div>
 
             {/* Cards */}
