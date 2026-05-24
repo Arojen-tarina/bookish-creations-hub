@@ -611,6 +611,15 @@ export const ProvinceGame = () => {
               </TabsContent>
             </Tabs>
             
+            {/* Ad in sidebar */}
+            <div className="mt-3 mb-3">
+              <GoogleAdSense
+                slotId="sidebar_in_game"
+                clientId={AD_CLIENT}
+                className="w-full rounded-xl overflow-hidden min-h-[90px]"
+              />
+            </div>
+
             {/* Reset button at bottom */}
             <div className="mt-4 pt-3 border-t border-slate-700/30">
               <Button variant="destructive" size="sm" className="w-full text-xs" onClick={resetGame}>
