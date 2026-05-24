@@ -358,8 +358,54 @@ const Ohjekirja = () => {
             <p className="mt-4 text-sm text-amber-200">Vinkki: Älä riko sopimuksia kevyesti — luottamus palautuu hitaasti.</p>
           </section>
 
+          <section id="faq" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
+            <h2 className="text-2xl font-semibold text-amber-100">11. Usein kysytyt kysymykset</h2>
+            <div className="mt-4 space-y-4 text-sm text-slate-300">
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa antaa leiri?</h3>
+                <p className="mt-2">Leiri antaa +2 ruokaa per vuoro omassa provinssissaan. Se myös mahdollistaa armeijan rekrytoinnin kyseisestä provinssista, jos omistat sen.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Onko pelissä maatilarakennusta?</h3>
+                <p className="mt-2">Käytössä ei ole erillistä maatilarakennusta. Viljelymaaprovinsseilla on parempi tukituotanto ja leirit lisäävät ruokaa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa kuluu hevosesta tai sotilaasta?</h3>
+                <p className="mt-2">Rekrytointi kuluttaa heti 2 ruokaa. Jokainen armeija kuluttaa yhden ruoan per vuoro kaupungin ruokatuotannon vähentyessä sen mukaan, kuinka monta armeijaa omistat.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Mistä hevoset tulevat ja kuinka paljon ne tuottavat?</h3>
+                <p className="mt-2">Hevosia saa steppe- ja hevoskauppatavara-provinssien kautta sekä hevos­tallista. Hevoset eivät suoraan anna kultaa, mutta ne mahdollistavat ratsuväen rekrytoinnin.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Miten yksiköt toimivat — onko yksi sotilas yksi armeija?</h3>
+                <p className="mt-2">Pelissä armeija on joukko, joka voi sisältää useita ratsuväen ja jalkaväen yksiköitä. Yksittäistä sotilasta ei pelata erillisenä kappaleena, vaan armeijoiden vahvuus lasketaan näiden joukkojen summana.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Monta korttia voi käyttää ja milloin?</h3>
+                <p className="mt-2">Aloitat viidellä kortilla ja saat kortin lisäyksen korttivaiheessa. Kortteja voi pelata silloin kun ne ovat kädessäsi, eli käytännössä useita per vuoro, kunnes kätesi loppuu. Kortteja ei voi pelata vuoron lopetusvaiheessa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Vaikuttaako maasto, kun tulen tai lähden kaupungista?</h3>
+                <p className="mt-2">Kyllä, maasto vaikuttaa sekä liikkeeseen että puolustukseen. Liikkuminen kohdeprovinssiin käyttää sen liikkumiskustannuksen, ja puolustus bonukset lasketaan, kun omaisuus puolustaa kyseisessä maastossa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Voiko paimentolais- tai neutraalissa kaupungissa olla rakennuksia?</h3>
+                <p className="mt-2">Rakennuksia voi rakentaa vain omissa provinssissasi. Neutraalit tai nomadit-provinssit eivät rakenna automaattisesti, eikä niissä voi lisätä omia rakennuksia ennen niiden valtaamista.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Mitä maasto tekee pelissä?</h3>
+                <p className="mt-2">Maasto määrittää liikkumiskustannuksen ja puolustusbonuksen. Esimerkiksi metsä ja kukkulat antavat puolustusbonusta ja nostavat liikkumiskustannusta. Vuoristo on hitainta liikkumista ja antaa parhaan puolustusbonuksen. Joen yli hyökkääminen ei ole erikseen simuloitu tässä versiossa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Monta kultaa saa per vuoro?</h3>
+                <p className="mt-2">Kultaa kertyy verotuloista, markkinoista ja kauppatavaroista. Markkina antaa +3 kultaa per vuoro, Silkkitie kaksinkertaistaa verotulot niissä provinsseissa ja kauppatavaroilla voi olla lisätuotot.</p>
+              </div>
+            </div>
+          </section>
+
           <section id="kartta" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">11. Kartta ja maastot</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">12. Kartta ja maastot</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               Kartta koostuu noin 70 provinssista. Liikkuminen tapahtuu naapuriprovinsseihin, ja maasto vaikuttaa sekä liikkeeseen että puolustukseen.
             </p>
@@ -379,7 +425,7 @@ const Ohjekirja = () => {
           </section>
 
           <section id="kauppatavarat" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">12. Kauppatavarat</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">13. Kauppatavarat</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               Monet provinsseista tuottavat erityisiä kauppatavaroita, jotka tarjoavat lisäetuja talouteen ja diplomatiaan.
             </p>
@@ -406,7 +452,7 @@ const Ohjekirja = () => {
           </section>
 
           <section id="tekoaly" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">13. Tekoäly (AI)</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">14. Tekoäly (AI)</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               AI-vastustajat toimivat vuoron lopussa automaattisesti. Ne keräävät resursseja, arvioivat uhkia ja tekevät siirtoja oman strategiansa mukaisesti.
             </p>
