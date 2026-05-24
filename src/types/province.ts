@@ -148,7 +148,9 @@ export type TreatyType =
   | 'alliance'
   | 'truce'
   | 'tributary'
-  | 'peace';
+  | 'peace'
+  | 'war_surprise'
+  | 'war_formal';
 
 export interface Treaty {
   type: TreatyType;

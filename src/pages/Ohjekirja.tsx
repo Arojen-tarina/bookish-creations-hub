@@ -300,6 +300,7 @@ const Ohjekirja = () => {
                 { title: 'Markkina', cost: '25 kultaa', labor: '1 käsityöläinen', effect: '+3 kultaa/vuoro' },
                 { title: 'Linnoitus', cost: '50 kultaa', labor: '2 käsityöläistä', effect: '+3 puolustus, garnisooni, linnoitustaso +1 (max 3)' },
                 { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro' },
+                { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro' },
               ].map((building) => (
                 <div key={building.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{building.title}</h3>
@@ -320,7 +321,7 @@ const Ohjekirja = () => {
               {[
                 { title: 'Strategia', desc: 'Taistelubonuksia: hyökkäys, puolustus, liikkuminen. Hetkellinen vaikutus.' },
                 { title: 'Diplomatia', desc: 'Kultaa, puolustusta ja diplomaattisia etuja. Voivat kestää 1–3 vuoroa.' },
-                { title: 'Teknologia', desc: 'Pysyviä bonuksia hyökkäykseen, puolustukseen tai liikkeeseen. Lasketaan voittoehtoon.' },
+                { title: 'Teknologia', desc: 'Pysyviä bonuksia hyökkäykseen, puolustukseen tai liikkeeseen.' },
                 { title: 'Resurssit', desc: 'Välittömiä resursseja kuten hevosia, kultaa, ruokaa tai käsityöläisiä.' },
               ].map((card) => (
                 <div key={card.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
@@ -345,6 +346,8 @@ const Ohjekirja = () => {
                 { title: 'Aselepo', desc: 'Väliaikainen rauhan tila.' },
                 { title: 'Vasallisuus', desc: 'Heikompi fraktio maksaa veroja vahvemmalle.' },
                 { title: 'Rauha', desc: 'Muodollinen rauhansopimus.' },
+                { title: 'Yllättävä sota', desc: 'Sota alkaa heti ja kaikki muut fraktiot julistavat sinulle sodan.' },
+                { title: 'Formaalinen sota', desc: 'Sota ilmoitetaan, mutta alkaa vasta seuraavan vuoron lopussa.' },
               ].map((item) => (
                 <div key={item.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{item.title}</h3>

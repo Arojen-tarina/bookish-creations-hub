@@ -6,6 +6,7 @@
  * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
  */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
+import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -26,7 +27,7 @@ interface ProvinceInfoPanelProps {
   province: Province;
   armies: Army[];
   playerFaction: FactionId;
-  onRecruitArmy: () => void;
+  onRecruitArmy: (type?: RecruitType) => void;
   canRecruit: boolean;
   onBuildFort?: () => void;
   canBuildFort?: boolean;
@@ -143,7 +144,7 @@ export const ProvinceInfoPanel = ({
             <TrendingUp className="w-5 h-5 text-amber-400" />
             <div>
               <span className="text-amber-200">Silkkitien varrella</span>
-              <span className="text-xs text-amber-300/70 ml-2">+2 💰/vuoro</span>
+              <span className="text-xs text-amber-300/70 ml-2">Verotulot x2</span>
             </div>
           </div>
         )}
@@ -215,20 +216,29 @@ export const ProvinceInfoPanel = ({
         {/* Actions (only for player provinces) */}
         {isPlayerOwned && (
           <div className="pt-2 border-t border-stone-700 space-y-2">
-            <Button
-              onClick={onRecruitArmy}
-              disabled={!canRecruit}
-              variant="outline"
-              className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
-            >
-              <Sword className="w-4 h-4 mr-2" />
-              Rekrytoi armeija (20 💰, 5 👥)
-            </Button>
-            {!canRecruit && isPlayerOwned && (
-              <p className="text-xs text-amber-300/60 text-center">
-                ⚠️ Rekrytointi vaatii pääkaupungin tai leirin (⛺)
-              </p>
-            )}
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                onClick={() => onRecruitArmy('infantry')}
+                disabled={!canRecruit}
+                variant="outline"
+                className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
+              >
+                <Sword className="w-4 h-4 mr-2" />
+                Rekrytoi jalkaväki
+              </Button>
+              <Button
+                onClick={() => onRecruitArmy('cavalry')}
+                disabled={!canRecruit}
+                variant="outline"
+                className="w-full border-blue-600 text-blue-200 hover:bg-blue-900/30"
+              >
+                <Wrench className="w-4 h-4 mr-2" />
+                Rekrytoi ratsuväki
+              </Button>
+            </div>
+            <p className="text-xs text-amber-300/60 text-center">
+              ⚠️ Tarvitset leirin tai pääkaupungin, lisäksi ratsuväen rekrytointi kuluttaa hevosia.
+            </p>
           </div>
         )}
       </CardContent>

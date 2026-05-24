@@ -64,6 +64,16 @@ const TREATY_INFO: Record<TreatyType, { name: string; icon: React.ReactNode; des
     icon: <Check className="w-4 h-4" />,
     description: 'Virallinen rauha',
   },
+  war_surprise: {
+    name: 'Yllättävä sota',
+    icon: <Sword className="w-4 h-4" />,
+    description: 'Sota alkaa heti, kaikki muut julistavat sodan sinua vastaan',
+  },
+  war_formal: {
+    name: 'Formaalinen sota',
+    icon: <AlertTriangle className="w-4 h-4" />,
+    description: 'Sota alkaa seuraavan vuoron lopussa',
+  },
 };
 
 const RelationBar = ({ value }: { value: number }) => {
@@ -111,8 +121,8 @@ const FactionRelationCard = ({
           ? 'Vihamielinen'
           : 'Vihollinen';
   
-  // Available treaties (not already signed)
-  const availableTreaties: TreatyType[] = ['non_aggression', 'trade_agreement', 'alliance'];
+  // Available treaties and declarations (not already signed)
+  const availableTreaties: TreatyType[] = ['non_aggression', 'trade_agreement', 'alliance', 'peace', 'war_surprise', 'war_formal'];
   const currentTreaties = relation.treaties.map(t => t.type);
   const offerableTreaties = availableTreaties.filter(t => !currentTreaties.includes(t));
   

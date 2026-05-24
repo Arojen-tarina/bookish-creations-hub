@@ -6,7 +6,8 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
-import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
+import { useProvinceGameState, BUILDING_INFO, MVPBuildingType } from '@/hooks/useProvinceGameState.ts';
+import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
@@ -316,7 +317,7 @@ export const ProvinceGame = () => {
                       armies={selectedProvinceArmies}
                       playerFaction={playerFaction}
                       onBuildFort={() => buildStructure(selectedProvince.id, 'fortress')}
-                      onRecruitArmy={() => recruitArmy(selectedProvince.id)}
+                      onRecruitArmy={(type?: RecruitType) => recruitArmy(selectedProvince.id, type)}
                       canBuildFort={!!playerFactionData && gameState.phase === 'build' && playerFactionData.treasury >= 50 && gameState.artisans >= 2}
                       canRecruit={(() => {
                         if (!playerFactionData || !selectedProvince || selectedProvince.ownerId !== playerFaction) return false;
@@ -530,12 +531,7 @@ export const ProvinceGame = () => {
                   <CardContent className="p-3">
                     <VictoryGoals
                       provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
-                      totalProvinces={gameState.provinces.length}
-                      treasury={playerFactionData?.treasury || 0}
-                      techCount={gameState.playedTechCards?.length || 0}
-                      targetProvinces={VICTORY_TARGETS.provinces}
-                      targetGold={VICTORY_TARGETS.gold}
-                      targetTech={VICTORY_TARGETS.tech}
+                      targetProvinces={gameState.provinces.length}
                     />
                   </CardContent>
                 </Card>
@@ -556,7 +552,7 @@ export const ProvinceGame = () => {
                 {(gameState.playedTechCards?.length || 0) > 0 && (
                   <Card className="bg-green-900/30 border-green-700/30">
                     <CardContent className="p-3">
-                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length}/{VICTORY_TARGETS.tech})</h4>
+                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length})</h4>
                       {gameState.playedTechCards.map(c => (
                         <p key={c.id} className="text-xs text-green-300">• {c.name}: {c.parsedEffect.description}</p>
                       ))}

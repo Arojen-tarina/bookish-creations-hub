@@ -38,7 +38,7 @@ export const VICTORY_TARGETS = {
 const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
 
 // ============= BUILDING TYPES =============
-export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop';
+export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable';
 
 export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
@@ -48,6 +48,7 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
   market: { name: 'Markkina', emoji: '🏪', cost: { gold: 25, artisans: 1 }, effect: '+3 kultaa/vuoro' },
   fortress: { name: 'Linnoitus', emoji: '🏯', cost: { gold: 50, artisans: 2 }, effect: '+3 puolustus' },
   workshop: { name: 'Paja', emoji: '🔨', cost: { gold: 30, artisans: 1 }, effect: '+1 käsityöläinen/vuoro' },
+  stable: { name: 'Hevostalli', emoji: '🐎', cost: { gold: 40, artisans: 1 }, effect: '+1 hevonen/vuoro' },
 };
 
 // ============= EXTENDED STATE =============
@@ -280,6 +281,27 @@ const createProvinceGarrison = (province: Province): Army | null => {
   };
 };
 
+const isWarTreaty = (t: Treaty) => t.type === 'war_surprise' || t.type === 'war_formal';
+const isWarActive = (t: Treaty, currentTurn: number) =>
+  t.type === 'war_surprise' || (t.type === 'war_formal' && t.startTurn <= currentTurn);
+const isPeacefulTreaty = (t: Treaty) =>
+  ['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type);
+
+const activatePendingWars = (state: MVPGameState): MVPGameState => {
+  const updatedRelations = state.relations.map(rel => {
+    if (!rel.treaties.some(t => t.type === 'war_formal' && t.startTurn <= state.turn)) {
+      return rel;
+    }
+    return {
+      ...rel,
+      relation: -90,
+      trust: 0,
+      threat: Math.min(100, rel.threat + 30),
+    };
+  });
+  return { ...state, relations: updatedRelations };
+};
+
 const resolveCombat = (
   attacker: Army,
   defender: Army,
@@ -353,7 +375,7 @@ export interface UseProvinceGameStateReturn {
   resetGame: () => void;
   playCard: (card: PlayableCard) => void;
   buildStructure: (provinceId: string, type: MVPBuildingType) => void;
-  recruitArmy: (provinceId: string) => void;
+  recruitArmy: (provinceId: string, type?: RecruitType) => void;
   proposeTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
   breakTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
   buildFort: (provinceId: string) => void;
@@ -453,6 +475,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     const targetProvince = gameState.provinces.find(p => p.id === targetProvinceId);
     if (!currentProvince || !targetProvince) return false;
     if (!currentProvince.neighbors.includes(targetProvinceId)) return false;
+    if (targetProvince.ownerId && targetProvince.ownerId !== army.ownerId) {
+      const relation = gameState.relations.find(r =>
+        (r.factionA === army.ownerId && r.factionB === targetProvince.ownerId) ||
+        (r.factionB === army.ownerId && r.factionA === targetProvince.ownerId)
+      );
+      if (relation) {
+        const warActive = relation.treaties.some(t => isWarActive(t, gameState.turn));
+        const peaceTreaty = relation.treaties.some(isPeacefulTreaty);
+        if (peaceTreaty && !warActive) return false;
+      }
+    }
     const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
     const moveCost = Math.max(1, terrainInfo.movementCost - (gameState.movementBonus > 0 ? 1 : 0));
     if (army.movementLeft < moveCost) return false;
@@ -657,7 +690,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   }, [playerFaction]);
 
   // ============= RECRUIT ARMY =============
-  const recruitArmy = useCallback((provinceId: string) => {
+  const recruitArmy = useCallback((provinceId: string, type: RecruitType = 'infantry') => {
     setGameState(prev => {
       if (!prev || !playerFaction) return prev;
       const province = prev.provinces.find(p => p.id === provinceId);
@@ -671,12 +704,16 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const isCapital = province.id === faction.capitalId;
       if (!hasCamp && !isCapital) return prev;
       
+      const stableCount = (prev.buildings[provinceId] || []).includes('stable') ? 1 : 0;
+      const cavalryCount = type === 'cavalry' ? Math.min(4 + stableCount, Math.floor(faction.horses / 2)) : Math.min(2, Math.floor(faction.horses / 2));
+      const infantryCount = type === 'cavalry' ? Math.max(2, 6 - cavalryCount) : 5;
+      
       const newArmy: Army = {
         id: generateId(),
         ownerId: playerFaction,
         provinceId,
-        cavalry: Math.min(3, Math.floor(faction.horses / 2)),
-        infantry: 5,
+        cavalry: cavalryCount,
+        infantry: infantryCount,
         siege: 0,
         morale: 70,
         supply: 20,
@@ -684,9 +721,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         leaderBonus: 0,
       };
       
-      const horsesUsed = newArmy.cavalry * 2;
+      const horsesUsed = cavalryCount * 2;
       const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury - 20, manpower: f.manpower - 5, horses: f.horses - horsesUsed } : f
+        f.id === playerFaction ? { ...f, treasury: f.treasury - 20, manpower: f.manpower - 5, horses: Math.max(0, f.horses - horsesUsed) } : f
       );
       const newFood = prev.food - 2;
       
@@ -706,9 +743,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
       const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
       
-      // Silk Road bonus: +2 gold per Silk Road province
-      const silkRoadCount = ownedProvinces.filter(p => p.hasSilkRoad).length;
-      const silkRoadBonus = silkRoadCount * 2;
+      // Silk Road bonus: double base tax for Silk Road provinces
+      const silkRoadBonus = ownedProvinces.filter(p => p.hasSilkRoad).reduce((sum, p) => sum + p.baseTax, 0);
       taxIncome += silkRoadBonus;
       
       const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
@@ -730,7 +766,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       // Horses: steppe/grassland provinces produce horses, horse trade goods give extra
       const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
-      const horsesGain = horseProvinces.length; // +1 hevonen per steppi/hevosprovinssi
+      const stableCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
+        const p = prev.provinces.find(pr => pr.id === pid);
+        return p?.ownerId === playerFaction && buildings.includes('stable');
+      }).length;
+      const horsesGain = horseProvinces.length + stableCount; // +1 hevonen per steppi/hevosprovinssi + hevostallista
       
       // Artisans: farmland/hills provinces and workshops produce artisans
       const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
@@ -771,6 +811,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           const ownedProvinces = state.provinces.filter(p => p.ownerId === playerFaction);
           let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
           const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+          const silkRoadBonus = ownedProvinces.filter(p => p.hasSilkRoad).reduce((sum, p) => sum + p.baseTax, 0);
+          taxIncome += silkRoadBonus;
           const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
             const p = state.provinces.find(pr => pr.id === pid);
             return p?.ownerId === playerFaction && buildings.includes('market');
@@ -778,16 +820,21 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           taxIncome += marketCount * 3;
           const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
           const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-          const aiCampCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+          const campCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
             const p = state.provinces.find(pr => pr.id === pid);
             return p?.ownerId === playerFaction && buildings.includes('camp');
           }).length;
-          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5) + aiCampCount * 2;
-          
+          const stableCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+            const p = state.provinces.find(pr => pr.id === pid);
+            return p?.ownerId === playerFaction && buildings.includes('stable');
+          }).length;
+          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5) + campCount * 2;
+          const horsesGain = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'steppe' || p.tradeGood === 'horses')).length + stableCount;
+
           state = {
             ...state,
             factions: state.factions.map(f =>
-              f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+              f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
             ),
             food: Math.max(0, state.food + foodChange),
             resourcesCollected: true,
@@ -1042,13 +1089,10 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       let winnerId: FactionId | null = null;
       let winCondition: string | null = null;
       
-      // Victory
-      if (playerProvinces >= VICTORY_TARGETS.provinces) {
+      // Victory: conquer all enemy provinces
+      const totalEnemyProvinces = newProvinces.filter(p => p.ownerId && p.ownerId !== playerFaction).length;
+      if (totalEnemyProvinces === 0 && playerProvinces > 0) {
         gameOver = true; winnerId = playerFaction; winCondition = 'military';
-      } else if (playerFactionData.treasury >= VICTORY_TARGETS.gold) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'economic';
-      } else if (newState.playedTechCards.length >= VICTORY_TARGETS.tech) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'technology';
       }
       
       // Defeat
@@ -1060,12 +1104,13 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
         const aiProvinces = newProvinces.filter(p => p.ownerId === faction.id).length;
-        if (aiProvinces >= VICTORY_TARGETS.provinces) {
+        const otherOwned = newProvinces.filter(p => p.ownerId && p.ownerId !== faction.id).length;
+        if (otherOwned === 0 && aiProvinces > 0) {
           gameOver = true; winnerId = faction.id; winCondition = 'military';
         }
       }
       
-      return {
+      return activatePendingWars({
         ...newState,
         turn: newState.turn + 1,
         year: newState.year + 1,
@@ -1086,7 +1131,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         movementBonus: 0,
         selectedArmyId: null,
         selectedProvinceId: null,
-      };
+      });
     });
   }, [playerFaction]);
 
@@ -1100,10 +1145,47 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       );
       if (relIdx === -1) return prev;
       const rel = prev.relations[relIdx];
-      const accepts = Math.random() < (rel.relation + 100) / 200 * (rel.trust / 100) + 0.2;
+      const isWar = treatyType === 'war_surprise' || treatyType === 'war_formal';
+      const accepts = isWar ? true : Math.random() < ((rel.relation + 100) / 200) * (rel.trust / 100) + 0.2;
       if (!accepts) return prev;
-      const newRels = [...prev.relations];
-      newRels[relIdx] = { ...rel, treaties: [...rel.treaties, { type: treatyType, startTurn: prev.turn, duration: -1 }], relation: rel.relation + 10, trust: rel.trust + 5 };
+
+      const newRels = prev.relations.map(r => {
+        const involvesPlayer = r.factionA === playerFaction || r.factionB === playerFaction;
+        const involvesTarget = r.factionA === targetFaction || r.factionB === targetFaction;
+        if (treatyType === 'war_surprise' && involvesPlayer) {
+          const filteredTreaties = r.treaties.filter(t => !['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type));
+          const newTreaty = {
+            type: treatyType,
+            startTurn: prev.turn,
+            duration: -1,
+          } as Treaty;
+          return {
+            ...r,
+            treaties: [...filteredTreaties, newTreaty],
+            relation: -100,
+            trust: 0,
+            threat: Math.min(100, r.threat + 30),
+          };
+        }
+
+        if (involvesTarget && involvesPlayer) {
+          const newTreaty = {
+            type: treatyType,
+            startTurn: treatyType === 'war_formal' ? prev.turn + 1 : prev.turn,
+            duration: -1,
+          } as Treaty;
+          return {
+            ...r,
+            treaties: [...r.treaties, newTreaty],
+            relation: isWar ? (treatyType === 'war_surprise' ? -100 : Math.max(-100, r.relation - 40)) : Math.min(100, r.relation + 10),
+            trust: isWar ? 0 : Math.min(100, r.trust + 5),
+            threat: isWar ? Math.min(100, r.threat + 30) : r.threat,
+          };
+        }
+
+        return r;
+      });
+
       return { ...prev, relations: newRels };
     });
   }, [playerFaction]);
