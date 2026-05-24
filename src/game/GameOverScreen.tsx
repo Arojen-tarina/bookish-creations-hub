@@ -3,7 +3,7 @@
  */
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
+import { HouseAd } from '@/components/ui/HouseAd.tsx';
 import { Trophy, Skull, RotateCcw } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -15,7 +15,7 @@ interface GameOverScreenProps {
   onRestart: () => void;
 }
 
-const AD_CLIENT = 'ca-pub-1848284154496261';
+
 
 export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, onRestart }: GameOverScreenProps) => {
   return (
@@ -53,13 +53,9 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
           </p>
         </DialogHeader>
 
-        {/* Ad in game over screen */}
+        {/* Sisäinen mainospaikka */}
         <div className="my-4 flex justify-center">
-          <GoogleAdSense
-            slotId="game_over_screen"
-            clientId={AD_CLIENT}
-            className="w-full max-w-md rounded-xl overflow-hidden min-h-[90px]"
-          />
+          <HouseAd slot="game_over_screen" variant="banner" className="w-full max-w-md" />
         </div>
 
         <DialogFooter className="justify-center">
