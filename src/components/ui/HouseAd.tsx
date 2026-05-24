@@ -3,6 +3,8 @@
  *
  * Korvaa Google AdSensen kevyellä, projektin omalla mainospaikalla.
  * Näyttää satunnaisen "talon mainoksen" eri muodoissa: banneri, neliö, sivupalkki.
+ * Huomaa: jos haluat oikeaa automatisoitua AdSense-/AdMob-tuloa,
+ * käytä talletettua GoogleAdSense-komponenttia ja oikeaa Google-tiliä.
  */
 import { useMemo } from 'react';
 

@@ -11,6 +11,7 @@ import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
 import Shop from "./pages/Shop";
 import { HouseAd } from "@/components/ui/HouseAd.tsx";
+import { GoogleAdSense } from "@/components/ui/AdSense.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +20,13 @@ const App = () => (
       <Toaster />
       <Sonner />
       <div className="fixed bottom-0 left-0 right-0 z-40 p-3 pointer-events-auto flex justify-center">
-        <div className="max-w-6xl w-full px-4">
+        <div className="max-w-6xl w-full px-4 space-y-3">
+          <GoogleAdSense
+            clientId="ca-pub-0000000000000000"
+            slotId="1234567890"
+            className="mx-auto block"
+            style={{ minHeight: 90 }}
+          />
           <HouseAd slot="global_bottom" variant="banner" className="w-full" />
         </div>
       </div>
