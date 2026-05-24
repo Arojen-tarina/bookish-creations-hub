@@ -19,6 +19,7 @@ import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { CreditsIntro } from './CreditsIntro.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
+import { GoogleAdSense } from '@/components/ui/GoogleAdSense.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -32,6 +33,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+
+const AD_CLIENT = 'ca-pub-1848284154496261';
 
 export const ProvinceGame = () => {
   const {
