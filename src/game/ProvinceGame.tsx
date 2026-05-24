@@ -651,6 +651,15 @@ export const ProvinceGame = () => {
               </div>
             </div>
 
+            {/* Bottom ad banner */}
+            <div className="w-[320px] flex-shrink-0 border-r border-slate-700/50 p-1.5 flex items-center justify-center bg-slate-800/30">
+              <GoogleAdSense
+                slotId="bottom_banner_in_game"
+                clientId={AD_CLIENT}
+                className="w-full rounded-xl overflow-hidden min-h-[90px]"
+              />
+            </div>
+
             {/* Cards */}
             <div className="flex-1 p-3 overflow-hidden">
               {gameState.hand && gameState.hand.length > 0 ? (
