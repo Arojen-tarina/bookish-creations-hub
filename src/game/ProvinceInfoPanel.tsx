@@ -21,6 +21,7 @@ import {
   Castle,
   TrendingUp,
   AlertTriangle,
+  Wrench,
 } from 'lucide-react';
 
 interface ProvinceInfoPanelProps {
@@ -46,6 +47,7 @@ export const ProvinceInfoPanel = ({
   canRecruit,
   attackBonus = 0,
   defenseBonus = 0,
+  onBuildFort, canBuildFort, onRepairFort, canRepairGold, canRepairArtisan,
 }: ProvinceInfoPanelProps) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
