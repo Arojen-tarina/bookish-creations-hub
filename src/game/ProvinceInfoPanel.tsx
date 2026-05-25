@@ -149,7 +149,7 @@ export const ProvinceInfoPanel = ({
             <TrendingUp className="w-5 h-5 text-amber-400" />
             <div>
               <span className="text-amber-200">Silkkitien varrella</span>
-              <span className="text-xs text-amber-300/70 ml-2">Verotulot x2</span>
+              <span className="text-xs text-amber-300/70 ml-2">Lisätuloja ja ketjun hallintabonuksia</span>
             </div>
           </div>
         )}

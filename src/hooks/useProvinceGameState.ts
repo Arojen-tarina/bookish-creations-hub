@@ -60,6 +60,8 @@ export interface ResourceCollectionResult {
   marketBonus: number;
   silkRoadBonus: number;
   foodChange: number;
+  artisansGain: number;
+  horsesGain: number;
 }
 
 export interface AIActionLog {
@@ -256,6 +258,86 @@ const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Fact
   });
 
   return updatedProvinces;
+};
+
+const calculateSilkRoadBonus = (ownedProvinces: Province[]): number => {
+  const silkRoadProvinces = ownedProvinces.filter(p => p.hasSilkRoad);
+  if (silkRoadProvinces.length === 0) return 0;
+
+  const baseSilkIncome = silkRoadProvinces.reduce((sum, province) => sum + province.baseTax, 0);
+  const silkTradeBonus = silkRoadProvinces.filter(p => p.tradeGood === 'silk').length * 2;
+
+  const provinceMap = new Map(silkRoadProvinces.map((province) => [province.id, province]));
+  const visited = new Set<string>();
+  let chainBonus = 0;
+
+  silkRoadProvinces.forEach((province) => {
+    if (visited.has(province.id)) return;
+    const queue = [province.id];
+    visited.add(province.id);
+    let clusterSize = 0;
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      clusterSize += 1;
+      const currentProvince = provinceMap.get(currentId);
+      if (!currentProvince) continue;
+
+      currentProvince.neighbors.forEach((neighborId) => {
+        if (visited.has(neighborId) || !provinceMap.has(neighborId)) return;
+        visited.add(neighborId);
+        queue.push(neighborId);
+      });
+    }
+
+    if (clusterSize > 1) {
+      chainBonus += (clusterSize - 1) * 2;
+    }
+  });
+
+  return baseSilkIncome + silkTradeBonus + chainBonus;
+};
+
+const calculateResourceCollection = (state: MVPGameState, factionId: FactionId): ResourceCollectionResult => {
+  const ownedProvinces = state.provinces.filter(p => p.ownerId === factionId);
+  const baseTaxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+  const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+  const silkRoadBonus = calculateSilkRoadBonus(ownedProvinces);
+
+  const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('market');
+  }).length;
+  const marketBonus = marketCount * 3;
+  const taxIncome = baseTaxIncome + silkRoadBonus + marketBonus;
+
+  const playerArmyCount = state.armies.filter(a => a.ownerId === factionId).length;
+  const foodUpkeep = -playerArmyCount;
+  const farmland = state.provinces.filter(p => p.ownerId === factionId && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+  const campCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('camp');
+  }).length;
+  const foodChange = foodUpkeep + Math.floor(farmland * 0.5) + campCount * 2;
+
+  const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
+  const stableCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('stable');
+  }).length;
+  const horsesGain = horseProvinces.length + stableCount;
+
+  const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
+  const workshopCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('workshop');
+  }).length;
+  let artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
+  if (ownedProvinces.length >= 3) {
+    artisansGain = Math.max(1, artisansGain);
+  }
+
+  return { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange, artisansGain, horsesGain };
 };
 
 // ============= COMBAT =============
@@ -835,61 +917,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
-      
-      const ownedProvinces = prev.provinces.filter(p => p.ownerId === playerFaction);
-      let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-      const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-      
-      // Silk Road bonus: double base tax for Silk Road provinces
-      const silkRoadBonus = ownedProvinces.filter(p => p.hasSilkRoad).reduce((sum, p) => sum + p.baseTax, 0);
-      taxIncome += silkRoadBonus;
-      
-      const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('market');
-      }).length;
-      const marketBonus = marketCount * 3;
-      taxIncome += marketBonus;
-      
-      const playerArmyCount = prev.armies.filter(a => a.ownerId === playerFaction).length;
-      const foodUpkeep = -playerArmyCount;
-      const farmland = prev.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-      const campCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('camp');
-      }).length;
-      const foodGain = Math.floor(farmland * 0.5) + campCount * 2;
-      const foodChange = foodUpkeep + foodGain;
-      
-      // Horses: steppe/grassland provinces produce horses, horse trade goods give extra
-      const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
-      const stableCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('stable');
-      }).length;
-      const horsesGain = horseProvinces.length + stableCount; // +1 hevonen per steppi/hevosprovinssi + hevostallista
-      
-      // Artisans: farmland/hills provinces and workshops produce artisans
-      const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
-      const workshopCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('workshop');
-      }).length;
-      const artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
-      // Minimum 1 artisan per turn if you own 3+ provinces
-      const finalArtisansGain = ownedProvinces.length >= 3 ? Math.max(1, artisansGain) : artisansGain;
-      
+
+      const collection = calculateResourceCollection(prev, playerFaction);
       const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
+        f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
       );
-      
-      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange };
       
       return {
         ...prev,
         factions: newFactions,
-        food: Math.max(0, prev.food + foodChange),
-        artisans: prev.artisans + finalArtisansGain,
+        food: Math.max(0, prev.food + collection.foodChange),
+        artisans: prev.artisans + collection.artisansGain,
         resourcesCollected: true,
         lastCollection: collection,
       };
@@ -905,40 +943,20 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (state.phase === 'resource' && !state.resourcesCollected && playerFaction) {
         const faction = state.factions.find(f => f.id === playerFaction);
         if (faction) {
-          const ownedProvinces = state.provinces.filter(p => p.ownerId === playerFaction);
-          let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-          const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-          const silkRoadBonus = ownedProvinces.filter(p => p.hasSilkRoad).reduce((sum, p) => sum + p.baseTax, 0);
-          taxIncome += silkRoadBonus;
-          const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
-            const p = state.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('market');
-          }).length;
-          taxIncome += marketCount * 3;
-          const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
-          const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-          const campCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
-            const p = state.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('camp');
-          }).length;
-          const stableCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
-            const p = state.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('stable');
-          }).length;
-          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5) + campCount * 2;
-          const horsesGain = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'steppe' || p.tradeGood === 'horses')).length + stableCount;
-
+          const collection = calculateResourceCollection(state, playerFaction);
           state = {
             ...state,
             factions: state.factions.map(f =>
-              f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
+              f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
             ),
-            food: Math.max(0, state.food + foodChange),
+            food: Math.max(0, state.food + collection.foodChange),
+            artisans: state.artisans + collection.artisansGain,
             resourcesCollected: true,
+            lastCollection: collection,
           };
         }
       }
-      
+
       const currentIndex = PHASE_ORDER.indexOf(state.phase);
       if (currentIndex < PHASE_ORDER.length - 1) {
         const next = PHASE_ORDER[currentIndex + 1];
@@ -973,11 +991,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       // 1. Collect resources for AI factions only (player collects in resource phase)
       let newFactions = newState.factions.map(faction => {
         if (faction.id === playerFaction) return faction; // Player already collected
-        const ownedProvinces = newState.provinces.filter(p => p.ownerId === faction.id);
-        const taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-        const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-        
-        return { ...faction, treasury: faction.treasury + taxIncome, manpower: faction.manpower + manpowerGain };
+        const collection = calculateResourceCollection(newState, faction.id);
+        return { ...faction, treasury: faction.treasury + collection.taxIncome, manpower: faction.manpower + collection.manpowerGain };
       });
       
       // 2. Food: skip player (already handled in collectResources), just track for state

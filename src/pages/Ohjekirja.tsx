@@ -415,7 +415,7 @@ const Ohjekirja = () => {
               </div>
               <div>
                 <h3 className="text-base font-semibold text-amber-100">Monta kultaa saa per vuoro?</h3>
-                <p className="mt-2">Kultaa kertyy verotuloista, markkinoista ja kauppatavaroista. Markkina antaa +3 kultaa per vuoro, Silkkitie kaksinkertaistaa verotulot niissä provinsseissa ja kauppatavaroilla voi olla lisätuotot.</p>
+                <p className="mt-2">Kultaa kertyy verotuloista, markkinoista ja kauppatavaroista. Markkina antaa +3 kultaa per vuoro. Silkkitien provinsseille saat verotulojen tuplauksen ja lisäbonuksia ketjun hallinnasta, erityisesti jos kontrolloit yhtenäisiä silkkitien osuuksia ja silkkiä tuottavia keskuksia.</p>
               </div>
             </div>
           </section>
@@ -437,7 +437,7 @@ const Ohjekirja = () => {
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-sm text-slate-200">Silkkitie kulkee kartan läpi ja tarjoaa erityisiä kauppatuloja niille provinsseille, joissa se kulkee.</p>
+            <p className="mt-4 text-sm text-slate-200">Silkkitie kulkee kartan läpi ja tarjoaa erityisiä kauppatuloja niille provinsseille, joissa se kulkee. Yhtenäisen reitin hallinta kasvattaa bonus-tuloja ja tekee kaupungin suojelusta strategisen prioriteetin.</p>
           </section>
 
           <section id="kauppatavarat" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
