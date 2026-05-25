@@ -33,6 +33,9 @@ interface ProvinceInfoPanelProps {
   canBuildFort?: boolean;
   attackBonus?: number;
   defenseBonus?: number;
+  onRepairFort?: (useArtisan: boolean) => void;
+  canRepairGold?: boolean;
+  canRepairArtisan?: boolean;
 }
 
 export const ProvinceInfoPanel = ({
@@ -239,6 +242,30 @@ export const ProvinceInfoPanel = ({
             <p className="text-xs text-amber-300/60 text-center">
               ⚠️ Tarvitset leirin tai pääkaupungin, lisäksi ratsuväen rekrytointi kuluttaa hevosia.
             </p>
+
+            {/* Repair fort actions */}
+            {province.fortLevel > 0 && onRepairFort && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  onClick={() => onRepairFort(false)}
+                  disabled={!canRepairGold}
+                >
+                  Korjaa (kulta 10)
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  onClick={() => onRepairFort(true)}
+                  disabled={!canRepairArtisan}
+                >
+                  Korjaa (1 käsityöläinen)
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

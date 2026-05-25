@@ -138,11 +138,11 @@ if (violations.length === 0) {
   console.log(`✓ VALIDATION PASSED - All provinces properly spaced`);
 } else {
   console.log(`✗ VALIDATION FAILED - Found ${violations.length} violations (distance < 6.1):\n`);
-  console.log(`${'Province 1':<20} ${'Province 2':<20} ${'Distance':>10}`);
+  console.log('Province 1'.padEnd(20) + ' ' + 'Province 2'.padEnd(20) + ' ' + 'Distance'.padStart(10));
   console.log('-'.repeat(52));
-  
+
   violations.forEach(({ id1, id2, dist }) => {
-    console.log(`${id1:<20} ${id2:<20} ${dist.toFixed(4).padStart(10)}`);
+    console.log(id1.toString().padEnd(20) + ' ' + id2.toString().padEnd(20) + ' ' + dist.toFixed(4).padStart(10));
   });
 }
 

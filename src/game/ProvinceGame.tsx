@@ -45,6 +45,7 @@ export const ProvinceGame = () => {
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
+    declareWar, repairFort,
     getArmiesInProvince, getPlayerFaction, canMoveTo,
     collectResources,
   } = useProvinceGameState();
@@ -318,6 +319,9 @@ export const ProvinceGame = () => {
                       playerFaction={playerFaction}
                       onBuildFort={() => buildStructure(selectedProvince.id, 'fortress')}
                       onRecruitArmy={(type?: RecruitType) => recruitArmy(selectedProvince.id, type)}
+                      onRepairFort={(useArtisan?: boolean) => repairFort(selectedProvince.id, !!useArtisan)}
+                      canRepairGold={!!playerFactionData && playerFactionData.treasury >= 10}
+                      canRepairArtisan={gameState.artisans >= 1}
                       canBuildFort={!!playerFactionData && gameState.phase === 'build' && playerFactionData.treasury >= 50 && gameState.artisans >= 2}
                       canRecruit={(() => {
                         if (!playerFactionData || !selectedProvince || selectedProvince.ownerId !== playerFaction) return false;
