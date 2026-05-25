@@ -107,6 +107,8 @@ const canProposeTreaty = (
     tributary: -50, // Can force this
     truce: -100, // Always possible
     peace: -100,
+    war_formal: -100,
+    war_surprise: -100,
   };
   
   if (relation.relation < minRelation[treatyType]) {
