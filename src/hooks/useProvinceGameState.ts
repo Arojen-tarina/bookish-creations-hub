@@ -650,11 +650,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   }, [canMoveTo]);
 
   // ============= WAR DECLARATIONS =============
-  const declareWar = useCallback((targetFaction: FactionId, surprise: boolean = false) => {
-    // Wraps proposeTreaty to expose simpler API for UI
-    const treatyType = surprise ? 'war_surprise' : 'war_formal';
-    proposeTreaty(targetFaction, treatyType);
-  }, [proposeTreaty]);
+  // (declareWar moved below after `proposeTreaty` definition to avoid TDZ)
 
   // ============= REPAIR FORT =============
   const repairFort = useCallback((provinceId: string, useArtisan: boolean) => {
@@ -1329,6 +1325,12 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       return { ...prev, relations: newRels };
     });
   }, [playerFaction]);
+
+  // ============= WAR DECLARATIONS =============
+  const declareWar = useCallback((targetFaction: FactionId, surprise: boolean = false) => {
+    const treatyType = surprise ? 'war_surprise' : 'war_formal';
+    proposeTreaty(targetFaction, treatyType);
+  }, [proposeTreaty]);
 
   const breakTreaty = useCallback((targetFaction: FactionId, treatyType: TreatyType) => {
     setGameState(prev => {
