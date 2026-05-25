@@ -289,6 +289,12 @@ const isWarActive = (t: Treaty, currentTurn: number) =>
 const isPeacefulTreaty = (t: Treaty) =>
   ['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type);
 
+const getArmyTerrainMoveCost = (terrainInfo: typeof PROVINCE_TERRAIN_INFO[ProvinceTerrain], army: Army) => {
+  if (army.siege > 0) return terrainInfo.movementCostSiege;
+  if (army.cavalry >= army.infantry) return terrainInfo.movementCostCavalry;
+  return terrainInfo.movementCostInfantry;
+};
+
 const activatePendingWars = (state: MVPGameState): MVPGameState => {
   const updatedRelations = state.relations.map(rel => {
     if (!rel.treaties.some(t => t.type === 'war_formal' && t.startTurn <= state.turn)) {
@@ -498,7 +504,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       }
     }
     const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
-    const moveCost = Math.max(1, terrainInfo.movementCost - (gameState.movementBonus > 0 ? 1 : 0));
+    const moveCost = Math.max(1, getArmyTerrainMoveCost(terrainInfo, army) - (gameState.movementBonus > 0 ? 1 : 0));
     if (army.movementLeft < moveCost) return false;
     return true;
   }, [gameState]);
@@ -517,7 +523,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (!targetProvince) return prev;
       
       const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
-      const moveCost = Math.max(1, terrainInfo.movementCost - (prev.movementBonus > 0 ? 1 : 0));
+      const moveCost = Math.max(1, getArmyTerrainMoveCost(terrainInfo, army) - (prev.movementBonus > 0 ? 1 : 0));
       
       // Check for combat (enemy army OR fortified/garrisoned enemy province)
       const enemyArmies = prev.armies.filter(a => a.provinceId === targetProvinceId && a.ownerId !== army.ownerId);

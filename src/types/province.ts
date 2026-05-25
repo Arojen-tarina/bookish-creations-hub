@@ -296,49 +296,52 @@ export const PROVINCE_TERRAIN_INFO: Record<ProvinceTerrain, {
   emoji: string;
   color: string;
   movementCost: number;
+  movementCostInfantry: number;
+  movementCostCavalry: number;
+  movementCostSiege: number;
   defenseBonus: number;
   supplyLimit: number;
   taxModifier: number;
 }> = {
   steppe: { 
     name: 'Steppi', emoji: '🌾', color: '#a8b077',
-    movementCost: 1, defenseBonus: 0, supplyLimit: 3, taxModifier: 0.8 
+    movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 3, taxModifier: 0.8 
   },
   grassland: { 
     name: 'Ruohomaa', emoji: '🌿', color: '#7cb342',
-    movementCost: 1, defenseBonus: 0, supplyLimit: 5, taxModifier: 1.0 
+    movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 5, taxModifier: 1.0 
   },
   forest: { 
     name: 'Metsä', emoji: '🌲', color: '#2d5a27',
-    movementCost: 2, defenseBonus: 1, supplyLimit: 4, taxModifier: 0.9 
+    movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 1, movementCostSiege: 3, defenseBonus: 1, supplyLimit: 4, taxModifier: 0.9 
   },
   mountain: { 
     name: 'Vuoristo', emoji: '⛰️', color: '#6b7280',
-    movementCost: 3, defenseBonus: 3, supplyLimit: 2, taxModifier: 0.5 
+    movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 3, supplyLimit: 2, taxModifier: 0.5 
   },
   desert: { 
     name: 'Aavikko', emoji: '🏜️', color: '#d4a574',
-    movementCost: 2, defenseBonus: 0, supplyLimit: 1, taxModifier: 0.3 
+    movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, supplyLimit: 1, taxModifier: 0.3 
   },
   taiga: { 
     name: 'Taiga', emoji: '🌲', color: '#1e3a1a',
-    movementCost: 2, defenseBonus: 1, supplyLimit: 2, taxModifier: 0.6 
+    movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 1, supplyLimit: 2, taxModifier: 0.6 
   },
   tundra: { 
     name: 'Tundra', emoji: '❄️', color: '#b8c4cc',
-    movementCost: 2, defenseBonus: 0, supplyLimit: 1, taxModifier: 0.2 
+    movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, supplyLimit: 1, taxModifier: 0.2 
   },
   farmland: { 
     name: 'Viljelymaa', emoji: '🌾', color: '#8bc34a',
-    movementCost: 1, defenseBonus: 0, supplyLimit: 8, taxModifier: 1.5 
+    movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 8, taxModifier: 1.5 
   },
   hills: { 
     name: 'Kukkulat', emoji: '⛰️', color: '#9e9e6e',
-    movementCost: 2, defenseBonus: 2, supplyLimit: 4, taxModifier: 0.8 
+    movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 2, supplyLimit: 4, taxModifier: 0.8 
   },
   marsh: { 
     name: 'Suo', emoji: '🌿', color: '#5d8a66',
-    movementCost: 3, defenseBonus: 1, supplyLimit: 2, taxModifier: 0.4 
+    movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 1, supplyLimit: 2, taxModifier: 0.4 
   },
 };
 

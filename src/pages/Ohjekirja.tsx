@@ -406,8 +406,12 @@ const Ohjekirja = () => {
                 <p className="mt-2">Rakennuksia voi rakentaa vain omissa provinssissasi. Neutraalit tai nomadit-provinssit eivät rakenna automaattisesti, eikä niissä voi lisätä omia rakennuksia ennen niiden valtaamista.</p>
               </div>
               <div>
+                <h3 className="text-base font-semibold text-amber-100">Saavatko paimentolaiset lisää rakennuksia?</h3>
+                <p className="mt-2">Nomadiprovinsseilla ei ole automaattista rakennustuotantoa. Rakenna omistamissasi provinssissa, jotta saat markkinat, tallit ja linnoitukset käyttöön.</p>
+              </div>
+              <div>
                 <h3 className="text-base font-semibold text-amber-100">Mitä maasto tekee pelissä?</h3>
-                <p className="mt-2">Maasto määrittää liikkumiskustannuksen ja puolustusbonuksen. Esimerkiksi metsä ja kukkulat antavat puolustusbonusta ja nostavat liikkumiskustannusta. Vuoristo on hitainta liikkumista ja antaa parhaan puolustusbonuksen. Joen yli hyökkääminen ei ole erikseen simuloitu tässä versiossa.</p>
+                <p className="mt-2">Maasto määrää liikkeen hinnan ja puolustusbonuksen. Jalkaväen liike metsässä on hitaampaa (kustannus 2) kuin ratsuväen (kustannus 1), ja vuoristo vie enemmän aikaa kaikilta joukoilta. Metsä ja kukkulat antavat hyvät puolustusbonukset. Joen ylitys ei ole tässä versiota vielä erikseen laskettu.</p>
               </div>
               <div>
                 <h3 className="text-base font-semibold text-amber-100">Monta kultaa saa per vuoro?</h3>
