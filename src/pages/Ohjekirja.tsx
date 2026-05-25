@@ -107,6 +107,18 @@ const Ohjekirja = () => {
               </div>
             </div>
 
+            <div className="mt-6 overflow-hidden rounded-2xl border border-amber-700/30 bg-black">
+              <video
+                src="/mongolien-valtakunta.mp4"
+                controls
+                preload="metadata"
+                className="w-full h-auto"
+              >
+                Selaimesi ei tue video-elementtiä.
+              </video>
+            </div>
+
+
             <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
               <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
                 <ol className="space-y-4 text-sm text-slate-300">
