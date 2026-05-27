@@ -94,6 +94,59 @@ const Ohjekirja = () => {
         </Card>
 
         <div className="mt-8 space-y-6">
+          <section id="digipeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-amber-100">Verkkopelin ohjeet</h2>
+                <p className="mt-2 text-sm text-slate-300">
+                  Tässä osiossa kerrotaan pelin käyttöliittymästä, vuororakenteesta ja pelin perustoiminnoista. Löydät täältä myös ohjeet siitä, mitä eri napit tekevät pelikentällä.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Tärkeimmät toiminnot</h3>
+                <ul className="mt-4 space-y-3 text-sm text-slate-300">
+                  <li>• Palaa peliin - vie takaisin pelin aloitusnäkymään.</li>
+                  <li>• Tulosta ohjekirja - avaa selaimen tulostusikkunan.</li>
+                  <li>• Vuoropalkin napit - siirtyvät resurssi-, kortti-, liike-, taistelu- ja rakentamisvaiheisiin.</li>
+                  <li>• Kartan provinsseja klikatessa valitset kohdealueen tai armeijan.</li>
+                </ul>
+              </div>
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Ohjeet etenemiseen</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Verkkopelissä painikkeet toimivat interaktiivisesti: esimerkiksi <strong>Yhden vuoron video</strong> vie suoraan videokatsaukseen ja <strong>Palaa peliin</strong> vie takaisin pelin käynnistysnäkymään.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="lautapeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-amber-100">Lautapelin ohjeet</h2>
+                <p className="mt-2 text-sm text-slate-300">
+                  Tämä osuus kuvaa pelin perinteistä lautapeliä. Vaikka peli toimii selaimessa, lautapelin säännöt ovat samat ja ohjeiden painikkeet avustavat siirtymässä eri aiheisiin.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Lautapelin periaatteet</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Lautapelinä ajatus on sama: etene provinsseittain, kerää resursseja ja hanki voittoehdot täyttämällä alue- tai kultatavoitteen sekä kehittämällä teknologiaa.
+                </p>
+              </div>
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Navigointi</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Käytä ohjekirjan yläreunan linkkejä siirtyäksesi eri osioihin: <strong>Verkkopelin ohjeet</strong> vie verkkopeliosioon, <strong>Lautapelin ohjeet</strong> lautapeliin ja <strong>Yhden vuoron video</strong> suoraan videonäkymään.
+                </p>
+              </div>
+            </div>
+          </section>
+
           <section id="video" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
