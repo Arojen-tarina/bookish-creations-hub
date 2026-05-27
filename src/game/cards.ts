@@ -1,8 +1,6 @@
 /**
- * cards.ts — Korttijärjestelmän logiikka
- * 
- * Hallinnoi korttikättä, nostamista, pelaamista ja vaikutusten soveltamista.
- * Käyttää kaikkia 180 korttia pakassa.
+* If adding or removing cards, update this along with the data in src/data/gameCards.ts and maybe the card images in public/cards/
+* This file ISNT a data file containing the cards, but it contains the logic for parsing card effects and applying them in the game
  */
 import { GameCard, strategyCards, diplomacyCards, technologyCards, resourceCards } from '@/data/gameCards';
 

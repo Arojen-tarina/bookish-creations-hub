@@ -219,7 +219,7 @@ export const ProvinceInfoPanel = ({
               onClick={onRecruitArmy}
               disabled={!canRecruit}
               variant="outline"
-              className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
+              className="w-full bg-slate-700 text-slate-100 border-slate-600 hover:bg-slate-600"
             >
               <Sword className="w-4 h-4 mr-2" />
               Rekrytoi armeija (20 💰, 5 👥)

@@ -59,11 +59,27 @@ export interface ResourceCollectionResult {
   foodChange: number;
 }
 
+export interface ResourceIncome {
+  goldPerTurn: number;
+  foodPerTurn: number;
+  horsesPerTurn: number;
+  artisansPerTurn: number;
+  manpowerPerTurn: number;
+}
+
 export interface AIActionLog {
   factionName: string;
   factionColor: string;
   description: string;
   targetProvinceId?: string;
+}
+
+interface ActiveCardEffect {
+  cardId: string;
+  type: PlayableCard['parsedEffect']['type'];
+  value: number;
+  remainingTurns: number; // -1 = permanent
+  description: string;
 }
 
 export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
@@ -74,6 +90,7 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   hand: PlayableCard[];
   discard: PlayableCard[];
   playedTechCards: PlayableCard[]; // permanent techs
+  activeEffects: ActiveCardEffect[];
   
   // Active bonuses from cards
   attackBonus: number;
@@ -94,6 +111,7 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   // Resource collection
   resourcesCollected: boolean;
   lastCollection: ResourceCollectionResult | null;
+  currentIncome: ResourceIncome; // calculated per-turn income
   
   // Win condition
   winCondition: string | null;
@@ -144,6 +162,16 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
   });
   return armies;
 };
+
+const getBonusesFromEffects = (effects: ActiveCardEffect[]) => effects.reduce(
+  (totals, effect) => {
+    if (effect.type === 'attack_bonus') totals.attackBonus += effect.value;
+    if (effect.type === 'defense_bonus') totals.defenseBonus += effect.value;
+    if (effect.type === 'movement_bonus') totals.movementBonus += effect.value;
+    return totals;
+  },
+  { attackBonus: 0, defenseBonus: 0, movementBonus: 0 },
+);
 
 const calculateProvinceCenterDistance = (a: { x: number; y: number }, b: { x: number; y: number }) => {
   const dx = a.x - b.x;
@@ -297,41 +325,38 @@ const resolveCombat = (
   defenseRoll: number;
 } => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[terrain.terrain];
-  const calculateLoss = (units: number, ratio: number) =>
-    units <= 0 ? 0 : Math.max(1, Math.round(units * ratio * (0.6 + Math.random() * 0.4)));
 
-  const attackerPower = (
-    attacker.cavalry * 3 +
-    attacker.infantry * 1.5 +
-    attacker.siege
-  ) * (1 + attacker.leaderBonus) * (attacker.morale / 100) + attackBonus;
+  const calculateLossesFromDamage = (army: Army, damage: number) => {
+    let remaining = damage;
+    const infantryLoss = Math.min(army.infantry, remaining);
+    remaining -= infantryLoss;
+    const cavalryLoss = Math.min(army.cavalry, Math.floor(remaining / 2));
+    return { cavalryLoss, infantryLoss };
+  };
 
-  const defenderPower = (
-    defender.cavalry * 2 +
-    defender.infantry * 2 +
-    defender.siege
-  ) * (1 + terrainInfo.defenseBonus * 0.2) * (1 + terrain.fortLevel * 0.35) * (defender.morale / 100) + defenseBonus;
+  const attackerPower = attacker.cavalry * 2 + attacker.infantry + attackBonus;
+  const defenderPower = defender.cavalry * 2 + defender.infantry;
 
   const attackRoll = Math.floor(Math.random() * 6) + 1;
   const defenseRoll = Math.floor(Math.random() * 6) + 1;
-  const ratio = (attackerPower + attackRoll * 2) / Math.max(1, defenderPower + defenseRoll * 2);
-  // Defender wins ties — hyökkääjän pitää oikeasti olla puolustajaa vahvempi
-  const attackerWins = ratio > 1.1;
 
-  const attackerLossRatio = attackerWins ? 0.14 : 0.32;
-  const defenderLossRatio = attackerWins ? 0.42 : 0.16;
-  const defenderRemaining =
-    defender.cavalry + defender.infantry -
-    calculateLoss(defender.cavalry, defenderLossRatio) -
-    calculateLoss(defender.infantry, defenderLossRatio);
+  const attackerScore = attackerPower + attackRoll;
+  const defenderScore = defenderPower + defenseRoll + terrainInfo.defenseBonus * 2 + terrain.fortLevel * 3;
+  const attackerWins = attackerScore > defenderScore;
+
+  const defenderDamage = attackerWins ? Math.max(0, attackerPower - defenseBonus) : 0;
+  const attackerDamage = !attackerWins ? defenderPower : 0;
+
+  const defenderLosses = calculateLossesFromDamage(defender, defenderDamage);
+  const attackerLosses = calculateLossesFromDamage(attacker, attackerDamage);
 
   return {
     attackerWins,
-    defenderDestroyed: attackerWins && defenderRemaining <= 0,
-    attackerCavalryLoss: calculateLoss(attacker.cavalry, attackerLossRatio),
-    attackerInfantryLoss: calculateLoss(attacker.infantry, attackerLossRatio),
-    defenderCavalryLoss: calculateLoss(defender.cavalry, defenderLossRatio),
-    defenderInfantryLoss: calculateLoss(defender.infantry, defenderLossRatio),
+    defenderDestroyed: attackerWins && defenderLosses.cavalryLoss >= defender.cavalry && defenderLosses.infantryLoss >= defender.infantry,
+    attackerCavalryLoss: attackerLosses.cavalryLoss,
+    attackerInfantryLoss: attackerLosses.infantryLoss,
+    defenderCavalryLoss: defenderLosses.cavalryLoss,
+    defenderInfantryLoss: defenderLosses.infantryLoss,
     attackRoll,
     defenseRoll,
   };
@@ -404,6 +429,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       hand: drawn,
       discard: [],
       playedTechCards: [],
+      activeEffects: [],
       attackBonus: 0,
       defenseBonus: 0,
       movementBonus: 0,
@@ -577,7 +603,10 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       const newState = { ...prev, hand: newHand, discard: newDiscard };
       const effect = card.parsedEffect;
-      
+      const duration = ((effect.type === 'attack_bonus' || effect.type === 'defense_bonus') && effect.duration === 0)
+        ? 1
+        : effect.duration;
+
       switch (effect.type) {
         case 'gold':
           newState.factions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury + effect.value } : f);
@@ -592,16 +621,26 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           newState.artisans = prev.artisans + effect.value;
           break;
         case 'attack_bonus':
-          newState.attackBonus = prev.attackBonus + effect.value;
-          break;
         case 'defense_bonus':
-          newState.defenseBonus = prev.defenseBonus + effect.value;
+        case 'movement_bonus': {
+          const activeEffect: ActiveCardEffect = {
+            cardId: card.id,
+            type: effect.type,
+            value: effect.value,
+            remainingTurns: duration === 0 ? 1 : duration,
+            description: effect.description,
+          };
+          newState.activeEffects = [...prev.activeEffects, activeEffect];
+          const totals = getBonusesFromEffects(newState.activeEffects);
+          newState.attackBonus = totals.attackBonus;
+          newState.defenseBonus = totals.defenseBonus;
+          newState.movementBonus = totals.movementBonus;
+
+          if (effect.type === 'movement_bonus') {
+            newState.armies = prev.armies.map(a => a.ownerId === playerFaction ? { ...a, movementLeft: a.movementLeft + effect.value } : a);
+          }
           break;
-        case 'movement_bonus':
-          newState.movementBonus = prev.movementBonus + effect.value;
-          // Apply to all player armies
-          newState.armies = prev.armies.map(a => a.ownerId === playerFaction ? { ...a, movementLeft: a.movementLeft + effect.value } : a);
-          break;
+        }
         case 'permanent_attack':
         case 'permanent_defense':
           newState.playedTechCards = [...prev.playedTechCards, card];
@@ -690,8 +729,56 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       );
       const newFood = prev.food - 2;
       
-      return { ...prev, armies: [...prev.armies, newArmy], factions: newFactions, food: Math.max(0, newFood) };
-    });
+  // ============= RESOURCE INCOME CALCULATION =============
+  const calculateResourceIncome = useCallback((state: MVPGameState): ResourceIncome => {
+    if (!playerFaction) return { goldPerTurn: 0, foodPerTurn: 0, horsesPerTurn: 0, artisansPerTurn: 0, manpowerPerTurn: 0 };
+    
+    const ownedProvinces = state.provinces.filter(p => p.ownerId === playerFaction);
+    let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+    const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+    
+    // Silk Road bonus: +2 gold per Silk Road province
+    const silkRoadCount = ownedProvinces.filter(p => p.hasSilkRoad).length;
+    const silkRoadBonus = silkRoadCount * 2;
+    taxIncome += silkRoadBonus;
+    
+    const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+      const p = state.provinces.find(pr => pr.id === pid);
+      return p?.ownerId === playerFaction && buildings.includes('market');
+    }).length;
+    const marketBonus = marketCount * 3;
+    taxIncome += marketBonus;
+    
+    const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
+    const foodUpkeep = -playerArmyCount;
+    const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+    const campCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+      const p = state.provinces.find(pr => pr.id === pid);
+      return p?.ownerId === playerFaction && buildings.includes('camp');
+    }).length;
+    const foodGain = Math.floor(farmland * 0.5) + campCount * 2;
+    const foodChange = foodUpkeep + foodGain;
+    
+    // Horses: steppe/grassland provinces produce horses, horse trade goods give extra
+    const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
+    const horsesGain = horseProvinces.length;
+    
+    // Artisans: farmland/hills provinces and workshops produce artisans
+    const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
+    const workshopCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+      const p = state.provinces.find(pr => pr.id === pid);
+      return p?.ownerId === playerFaction && buildings.includes('workshop');
+    }).length;
+    const artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
+    const finalArtisansGain = ownedProvinces.length >= 3 ? Math.max(1, artisansGain) : artisansGain;
+    
+    return {
+      goldPerTurn: taxIncome,
+      foodPerTurn: foodChange,
+      horsesPerTurn: horsesGain,
+      artisansPerTurn: finalArtisansGain,
+      manpowerPerTurn: manpowerGain,
+    };
   }, [playerFaction]);
 
   // ============= COLLECT RESOURCES =============
@@ -822,7 +909,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     setGameState(prev => {
       if (!prev || !playerFaction) return null;
       
-      const newState = { ...prev };
+      const expiringEffects = prev.activeEffects
+        .map(effect => effect.remainingTurns === -1 ? effect : { ...effect, remainingTurns: effect.remainingTurns - 1 })
+        .filter(effect => effect.remainingTurns === -1 || effect.remainingTurns > 0);
+      const bonusTotals = getBonusesFromEffects(expiringEffects);
+      const newState = { ...prev, activeEffects: expiringEffects, attackBonus: bonusTotals.attackBonus, defenseBonus: bonusTotals.defenseBonus, movementBonus: bonusTotals.movementBonus };
       const aiLog: string[] = [];
       const aiActionLog: AIActionLog[] = [];
       

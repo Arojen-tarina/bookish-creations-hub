@@ -473,7 +473,9 @@ export const ProvinceGame = () => {
                                   key={army.id}
                                   variant={gameState.selectedArmyId === army.id ? 'default' : 'outline'}
                                   className={`w-full justify-start text-xs ${
-                                    gameState.selectedArmyId === army.id ? 'bg-green-600' : 'border-green-600 text-green-200'
+                                    gameState.selectedArmyId === army.id
+                                      ? 'bg-green-600 hover:bg-green-500 text-white border-green-600'
+                                      : 'bg-slate-700 text-slate-100 border-slate-600 hover:bg-slate-600'
                                   }`}
                                   onClick={() => { selectArmy(army.id); setAttackMode(false); }}
                                   disabled={army.movementLeft <= 0}
