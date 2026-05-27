@@ -1,4 +1,4 @@
-/**
+ii/**
  * useProvinceGameState.ts — Pelattavan MVP:n tilan hallinta
  *
  * Kokonainen vuoropohjainen pelilooppi:
@@ -1241,29 +1241,61 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const playerProvinces = newProvinces.filter(p => p.ownerId === playerFaction).length;
       const playerArmies = newArmies.filter(a => a.ownerId === playerFaction);
       const playerFactionData = newFactions.find(f => f.id === playerFaction)!;
+      const playerGold = playerFactionData.treasury;
+      const playerTechCount = newState.playedTechCards.length;
       
       let gameOver = false;
       let winnerId: FactionId | null = null;
       let winCondition: string | null = null;
       
-      // Victory: conquer all enemy provinces
-      const totalEnemyProvinces = newProvinces.filter(p => p.ownerId && p.ownerId !== playerFaction).length;
-      if (totalEnemyProvinces === 0 && playerProvinces > 0) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'military';
+      // Military victory: control enough provinces
+      if (playerProvinces >= VICTORY_TARGETS.provinces) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'military';
       }
       
-      // Defeat
-      if (playerArmies.length === 0 && playerProvinces === 0) {
-        gameOver = true; winnerId = null; winCondition = null;
+      // Economic victory: amass enough gold
+      if (!gameOver && playerGold >= VICTORY_TARGETS.gold) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'economic';
+      }
+      
+      // Technology victory: play enough tech cards
+      if (!gameOver && playerTechCount >= VICTORY_TARGETS.tech) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'technology';
+      }
+      
+      // Defeat if player has lost all provinces and armies
+      if (!gameOver && playerArmies.length === 0 && playerProvinces === 0) {
+        gameOver = true;
+        winnerId = null;
+        winCondition = null;
       }
       
       // Check AI victory too
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
         const aiProvinces = newProvinces.filter(p => p.ownerId === faction.id).length;
-        const otherOwned = newProvinces.filter(p => p.ownerId && p.ownerId !== faction.id).length;
-        if (otherOwned === 0 && aiProvinces > 0) {
-          gameOver = true; winnerId = faction.id; winCondition = 'military';
+        const aiGold = faction.treasury;
+        const aiTechCount = 0; // AI tech victory not implemented yet
+        const enemyOwned = newProvinces.filter(p => p.ownerId && p.ownerId !== faction.id).length;
+        
+        if (enemyOwned === 0 && aiProvinces > 0) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'military';
+        } else if (!gameOver && aiGold >= VICTORY_TARGETS.gold) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'economic';
+        } else if (!gameOver && aiTechCount >= VICTORY_TARGETS.tech) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'technology';
         }
       }
       

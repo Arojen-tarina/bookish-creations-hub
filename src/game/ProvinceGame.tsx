@@ -6,7 +6,7 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
-import { useProvinceGameState, BUILDING_INFO, MVPBuildingType } from '@/hooks/useProvinceGameState.ts';
+import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
@@ -535,7 +535,11 @@ export const ProvinceGame = () => {
                   <CardContent className="p-3">
                     <VictoryGoals
                       provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
-                      targetProvinces={gameState.provinces.length}
+                      targetProvinces={VICTORY_TARGETS.provinces}
+                      gold={getPlayerFaction()?.treasury || 0}
+                      targetGold={VICTORY_TARGETS.gold}
+                      techCount={gameState.playedTechCards.length}
+                      targetTech={VICTORY_TARGETS.tech}
                     />
                   </CardContent>
                 </Card>
