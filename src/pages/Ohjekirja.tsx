@@ -217,11 +217,7 @@ const Ohjekirja = () => {
                 </ol>
               </div>
               <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <button
-                  type="button"
-                  onClick={playVideo}
-                  className="aspect-[16/9] w-full overflow-hidden rounded-3xl bg-slate-900/90 shadow-inner"
-                >
+                <div className="aspect-[16/9] overflow-hidden rounded-3xl bg-slate-900/90 shadow-inner">
                   <div className="relative h-full w-full bg-[radial-gradient(circle_at_top_left,_rgba(248,211,113,0.15),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.12),_transparent_30%)]">
                     <div className="absolute inset-0 flex flex-col justify-center items-center gap-3 p-4 text-slate-300">
                       <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20 text-amber-300">
@@ -232,7 +228,7 @@ const Ohjekirja = () => {
                       </p>
                     </div>
                   </div>
-                </button>
+                </div>
                 </div>
               </div>
             </div>
