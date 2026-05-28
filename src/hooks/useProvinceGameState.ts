@@ -1,4 +1,4 @@
-ii/**
+/**
  * useProvinceGameState.ts — Pelattavan MVP:n tilan hallinta
  *
  * Kokonainen vuoropohjainen pelilooppi:
