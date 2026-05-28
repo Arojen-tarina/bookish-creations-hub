@@ -7,6 +7,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
+import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
@@ -19,6 +20,7 @@ import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { CreditsIntro } from './CreditsIntro.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
+// import { AdManager } from '@/components/ui/AdManager.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -33,6 +35,8 @@ import {
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
+
+
 export const ProvinceGame = () => {
   const {
     gameStarted, playerFaction, gameState,
@@ -41,6 +45,7 @@ export const ProvinceGame = () => {
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
+    declareWar, repairFort,
     getArmiesInProvince, getPlayerFaction, canMoveTo,
     collectResources,
   } = useProvinceGameState();
@@ -313,7 +318,10 @@ export const ProvinceGame = () => {
                       armies={selectedProvinceArmies}
                       playerFaction={playerFaction}
                       onBuildFort={() => buildStructure(selectedProvince.id, 'fortress')}
-                      onRecruitArmy={() => recruitArmy(selectedProvince.id)}
+                      onRecruitArmy={(type?: RecruitType) => recruitArmy(selectedProvince.id, type)}
+                      onRepairFort={(useArtisan?: boolean) => repairFort(selectedProvince.id, !!useArtisan)}
+                      canRepairGold={!!playerFactionData && playerFactionData.treasury >= 10}
+                      canRepairArtisan={gameState.artisans >= 1}
                       canBuildFort={!!playerFactionData && gameState.phase === 'build' && playerFactionData.treasury >= 50 && gameState.artisans >= 2}
                       canRecruit={(() => {
                         if (!playerFactionData || !selectedProvince || selectedProvince.ownerId !== playerFaction) return false;
@@ -529,11 +537,10 @@ export const ProvinceGame = () => {
                   <CardContent className="p-3">
                     <VictoryGoals
                       provincesOwned={gameState.provinces.filter(p => p.ownerId === playerFaction).length}
-                      totalProvinces={gameState.provinces.length}
-                      treasury={playerFactionData?.treasury || 0}
-                      techCount={gameState.playedTechCards?.length || 0}
                       targetProvinces={VICTORY_TARGETS.provinces}
+                      gold={getPlayerFaction()?.treasury || 0}
                       targetGold={VICTORY_TARGETS.gold}
+                      techCount={gameState.playedTechCards.length}
                       targetTech={VICTORY_TARGETS.tech}
                     />
                   </CardContent>
@@ -555,7 +562,7 @@ export const ProvinceGame = () => {
                 {(gameState.playedTechCards?.length || 0) > 0 && (
                   <Card className="bg-green-900/30 border-green-700/30">
                     <CardContent className="p-3">
-                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length}/{VICTORY_TARGETS.tech})</h4>
+                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length})</h4>
                       {gameState.playedTechCards.map(c => (
                         <p key={c.id} className="text-xs text-green-300">• {c.name}: {c.parsedEffect.description}</p>
                       ))}
@@ -610,6 +617,7 @@ export const ProvinceGame = () => {
               </TabsContent>
             </Tabs>
             
+
             {/* Reset button at bottom */}
             <div className="mt-4 pt-3 border-t border-slate-700/30">
               <Button variant="destructive" size="sm" className="w-full text-xs" onClick={resetGame}>
@@ -640,6 +648,7 @@ export const ProvinceGame = () => {
                 />
               </div>
             </div>
+
 
             {/* Cards */}
             <div className="flex-1 p-3 overflow-hidden">

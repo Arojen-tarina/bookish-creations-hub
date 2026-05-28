@@ -1,4 +1,4 @@
-/**
+ii/**
  * useProvinceGameState.ts — Pelattavan MVP:n tilan hallinta
  *
  * Kokonainen vuoropohjainen pelilooppi:
@@ -28,6 +28,8 @@ import { MVPPhase } from '@/game/PhaseBar.tsx';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
+export type RecruitType = 'infantry' | 'cavalry';
+
 // ============= VICTORY TARGETS =============
 export const VICTORY_TARGETS = {
   provinces: 30, // ~40% of map
@@ -38,7 +40,7 @@ export const VICTORY_TARGETS = {
 const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
 
 // ============= BUILDING TYPES =============
-export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop';
+export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable';
 
 export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
@@ -48,6 +50,7 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
   market: { name: 'Markkina', emoji: '🏪', cost: { gold: 25, artisans: 1 }, effect: '+3 kultaa/vuoro' },
   fortress: { name: 'Linnoitus', emoji: '🏯', cost: { gold: 50, artisans: 2 }, effect: '+3 puolustus' },
   workshop: { name: 'Paja', emoji: '🔨', cost: { gold: 30, artisans: 1 }, effect: '+1 käsityöläinen/vuoro' },
+  stable: { name: 'Hevostalli', emoji: '🐎', cost: { gold: 40, artisans: 1 }, effect: '+1 hevonen/vuoro' },
 };
 
 // ============= EXTENDED STATE =============
@@ -57,6 +60,8 @@ export interface ResourceCollectionResult {
   marketBonus: number;
   silkRoadBonus: number;
   foodChange: number;
+  artisansGain: number;
+  horsesGain: number;
 }
 
 export interface ResourceIncome {
@@ -283,6 +288,86 @@ const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Fact
   return updatedProvinces;
 };
 
+const calculateSilkRoadBonus = (ownedProvinces: Province[]): number => {
+  const silkRoadProvinces = ownedProvinces.filter(p => p.hasSilkRoad);
+  if (silkRoadProvinces.length === 0) return 0;
+
+  const baseSilkIncome = silkRoadProvinces.reduce((sum, province) => sum + province.baseTax, 0);
+  const silkTradeBonus = silkRoadProvinces.filter(p => p.tradeGood === 'silk').length * 2;
+
+  const provinceMap = new Map(silkRoadProvinces.map((province) => [province.id, province]));
+  const visited = new Set<string>();
+  let chainBonus = 0;
+
+  silkRoadProvinces.forEach((province) => {
+    if (visited.has(province.id)) return;
+    const queue = [province.id];
+    visited.add(province.id);
+    let clusterSize = 0;
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      clusterSize += 1;
+      const currentProvince = provinceMap.get(currentId);
+      if (!currentProvince) continue;
+
+      currentProvince.neighbors.forEach((neighborId) => {
+        if (visited.has(neighborId) || !provinceMap.has(neighborId)) return;
+        visited.add(neighborId);
+        queue.push(neighborId);
+      });
+    }
+
+    if (clusterSize > 1) {
+      chainBonus += (clusterSize - 1) * 2;
+    }
+  });
+
+  return baseSilkIncome + silkTradeBonus + chainBonus;
+};
+
+const calculateResourceCollection = (state: MVPGameState, factionId: FactionId): ResourceCollectionResult => {
+  const ownedProvinces = state.provinces.filter(p => p.ownerId === factionId);
+  const baseTaxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
+  const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
+  const silkRoadBonus = calculateSilkRoadBonus(ownedProvinces);
+
+  const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('market');
+  }).length;
+  const marketBonus = marketCount * 3;
+  const taxIncome = baseTaxIncome + silkRoadBonus + marketBonus;
+
+  const playerArmyCount = state.armies.filter(a => a.ownerId === factionId).length;
+  const foodUpkeep = -playerArmyCount;
+  const farmland = state.provinces.filter(p => p.ownerId === factionId && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
+  const campCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('camp');
+  }).length;
+  const foodChange = foodUpkeep + Math.floor(farmland * 0.5) + campCount * 2;
+
+  const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
+  const stableCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('stable');
+  }).length;
+  const horsesGain = horseProvinces.length + stableCount;
+
+  const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
+  const workshopCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const p = state.provinces.find(pr => pr.id === pid);
+    return p?.ownerId === factionId && buildings.includes('workshop');
+  }).length;
+  let artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
+  if (ownedProvinces.length >= 3) {
+    artisansGain = Math.max(1, artisansGain);
+  }
+
+  return { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange, artisansGain, horsesGain };
+};
+
 // ============= COMBAT =============
 const createProvinceGarrison = (province: Province): Army | null => {
   if (!province.ownerId) return null;
@@ -306,6 +391,33 @@ const createProvinceGarrison = (province: Province): Army | null => {
     movementLeft: 0,
     leaderBonus: 0,
   };
+};
+
+const isWarTreaty = (t: Treaty) => t.type === 'war_surprise' || t.type === 'war_formal';
+const isWarActive = (t: Treaty, currentTurn: number) =>
+  t.type === 'war_surprise' || (t.type === 'war_formal' && t.startTurn <= currentTurn);
+const isPeacefulTreaty = (t: Treaty) =>
+  ['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type);
+
+const getArmyTerrainMoveCost = (terrainInfo: typeof PROVINCE_TERRAIN_INFO[ProvinceTerrain], army: Army) => {
+  if (army.siege > 0) return terrainInfo.movementCostSiege;
+  if (army.cavalry >= army.infantry) return terrainInfo.movementCostCavalry;
+  return terrainInfo.movementCostInfantry;
+};
+
+const activatePendingWars = (state: MVPGameState): MVPGameState => {
+  const updatedRelations = state.relations.map(rel => {
+    if (!rel.treaties.some(t => t.type === 'war_formal' && t.startTurn <= state.turn)) {
+      return rel;
+    }
+    return {
+      ...rel,
+      relation: -90,
+      trust: 0,
+      threat: Math.min(100, rel.threat + 30),
+    };
+  });
+  return { ...state, relations: updatedRelations };
 };
 
 const resolveCombat = (
@@ -378,11 +490,13 @@ export interface UseProvinceGameStateReturn {
   resetGame: () => void;
   playCard: (card: PlayableCard) => void;
   buildStructure: (provinceId: string, type: MVPBuildingType) => void;
-  recruitArmy: (provinceId: string) => void;
+  recruitArmy: (provinceId: string, type?: RecruitType) => void;
   proposeTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
   breakTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
   buildFort: (provinceId: string) => void;
   resolveEvent: (choiceIndex?: number) => void;
+  declareWar: (targetFaction: FactionId, surprise?: boolean) => void;
+  repairFort: (provinceId: string, useArtisan: boolean) => void;
   getRelation: (factionA: FactionId, factionB: FactionId) => DiplomaticRelation | null;
   getPlayerFaction: () => Faction | null;
   getArmiesInProvince: (provinceId: string) => Army[];
@@ -399,10 +513,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
   // ============= START GAME =============
   const startGame = useCallback((selectedFaction: FactionId) => {
-    const factions = createFactions(selectedFaction);
-    const provinces = equalizeStartingProvinceOwnership(getProvincesWithAdjacency(), factions);
-    const relations = createDiplomaticRelations(factions);
-    const armies = createStartingArmies(factions, provinces);
+    const initialFactions = createFactions(selectedFaction);
+    const rawProvinces = getProvincesWithAdjacency();
+    const provinces = equalizeStartingProvinceOwnership(rawProvinces, initialFactions);
+
+    // Filter factions to those that actually have presence on the map (or are the selected player)
+    const visibleFactions = initialFactions.filter(f =>
+      f.id === selectedFaction || provinces.some(p => p.ownerId === f.id)
+    );
+
+    const relations = createDiplomaticRelations(visibleFactions);
+    const armies = createStartingArmies(visibleFactions, provinces);
     const deck = createPlayableDeck();
     const { drawn, remaining } = drawCards(deck, 5); // Starting hand
     
@@ -412,7 +533,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       currentPlayerId: selectedFaction,
       phase: 'resource',
       provinces,
-      factions,
+      factions: visibleFactions,
       relations,
       armies,
       activeEvents: [],
@@ -479,8 +600,19 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     const targetProvince = gameState.provinces.find(p => p.id === targetProvinceId);
     if (!currentProvince || !targetProvince) return false;
     if (!currentProvince.neighbors.includes(targetProvinceId)) return false;
+    if (targetProvince.ownerId && targetProvince.ownerId !== army.ownerId) {
+      const relation = gameState.relations.find(r =>
+        (r.factionA === army.ownerId && r.factionB === targetProvince.ownerId) ||
+        (r.factionB === army.ownerId && r.factionA === targetProvince.ownerId)
+      );
+      if (relation) {
+        const warActive = relation.treaties.some(t => isWarActive(t, gameState.turn));
+        const peaceTreaty = relation.treaties.some(isPeacefulTreaty);
+        if (peaceTreaty && !warActive) return false;
+      }
+    }
     const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
-    const moveCost = Math.max(1, terrainInfo.movementCost - (gameState.movementBonus > 0 ? 1 : 0));
+    const moveCost = Math.max(1, getArmyTerrainMoveCost(terrainInfo, army) - (gameState.movementBonus > 0 ? 1 : 0));
     if (army.movementLeft < moveCost) return false;
     return true;
   }, [gameState]);
@@ -490,15 +622,16 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     if (!canMoveTo(armyId, targetProvinceId)) return;
     
     setGameState(prev => {
-      if (!prev) return null;
-      const armyIndex = prev.armies.findIndex(a => a.id === armyId);
+      try {
+        if (!prev) return null;
+        const armyIndex = prev.armies.findIndex(a => a.id === armyId);
       if (armyIndex === -1) return prev;
       const army = prev.armies[armyIndex];
       const targetProvince = prev.provinces.find(p => p.id === targetProvinceId);
       if (!targetProvince) return prev;
       
       const terrainInfo = PROVINCE_TERRAIN_INFO[targetProvince.terrain];
-      const moveCost = Math.max(1, terrainInfo.movementCost - (prev.movementBonus > 0 ? 1 : 0));
+      const moveCost = Math.max(1, getArmyTerrainMoveCost(terrainInfo, army) - (prev.movementBonus > 0 ? 1 : 0));
       
       // Check for combat (enemy army OR fortified/garrisoned enemy province)
       const enemyArmies = prev.armies.filter(a => a.provinceId === targetProvinceId && a.ownerId !== army.ownerId);
@@ -537,8 +670,39 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           defenseRoll: result.defenseRoll,
         };
         setTimeout(() => setPendingBattle(battleResult), 50);
-        
         if (result.attackerWins) {
+        
+        // If the province has fortifications, damage them first.
+        const pIdx = newProvinces.findIndex(p => p.id === targetProvinceId);
+        const targetFortLevel = pIdx !== -1 ? newProvinces[pIdx].fortLevel : 0;
+        if (targetFortLevel > 0) {
+          // Successful attacker reduces fort level instead of immediately capturing
+          const newFortLevel = Math.max(0, targetFortLevel - 1);
+          if (pIdx !== -1) {
+            newProvinces[pIdx] = { ...newProvinces[pIdx], fortLevel: newFortLevel };
+          }
+          // Attacker still loses some units from the assault
+          newArmies[armyIndex] = {
+            ...army, movementLeft: 0,
+            cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
+            infantry: Math.max(0, army.infantry - result.attackerInfantryLoss),
+            morale: Math.max(20, army.morale - 10),
+          };
+          // If defending field army exists, reduce its units
+          if (enemyArmies[0]) {
+            const defIdx = newArmies.findIndex(a => a.id === enemyArmies[0].id);
+            if (defIdx !== -1) {
+              newArmies[defIdx] = {
+                ...enemyArmies[0],
+                cavalry: Math.max(0, enemyArmies[0].cavalry - result.defenderCavalryLoss),
+                infantry: Math.max(0, enemyArmies[0].infantry - result.defenderInfantryLoss),
+                morale: Math.max(20, enemyArmies[0].morale - 20),
+              };
+            }
+          }
+          // Province not captured until fortLevel == 0
+        } else {
+          // No fortifications: normal capture behaviour
           newArmies[armyIndex] = {
             ...army, provinceId: targetProvinceId, movementLeft: 0,
             cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
@@ -560,7 +724,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
             }
           }
 
-          const pIdx = newProvinces.findIndex(p => p.id === targetProvinceId);
           if (pIdx !== -1) {
             newProvinces[pIdx] = {
               ...newProvinces[pIdx],
@@ -569,7 +732,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
               garrison: provinceGarrison ? Math.max(0, defender.infantry - result.defenderInfantryLoss) : newProvinces[pIdx].garrison,
             };
           }
-        } else {
+        }
+        }
+        else {
           newArmies[armyIndex] = {
             ...army, movementLeft: 0,
             cavalry: Math.max(0, army.cavalry - result.attackerCavalryLoss),
@@ -588,9 +753,42 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       newArmies = newArmies.filter(a => a.cavalry + a.infantry > 0);
       
-      return { ...prev, armies: newArmies, provinces: newProvinces, selectedArmyId: null, attackBonus: 0 };
+        return { ...prev, armies: newArmies, provinces: newProvinces, selectedArmyId: null, attackBonus: 0 };
+      } catch (err) {
+        // Defensive: log and skip state mutation to avoid runtime crash
+        // eslint-disable-next-line no-console
+        console.error('moveArmy error:', err);
+        return prev;
+      }
     });
   }, [canMoveTo]);
+
+  // ============= WAR DECLARATIONS =============
+  // (declareWar moved below after `proposeTreaty` definition to avoid TDZ)
+
+  // ============= REPAIR FORT =============
+  const repairFort = useCallback((provinceId: string, useArtisan: boolean) => {
+    setGameState(prev => {
+      if (!prev || !playerFaction) return prev;
+      const province = prev.provinces.find(p => p.id === provinceId);
+      if (!province || province.ownerId !== playerFaction) return prev;
+      if (province.fortLevel <= 0) return prev;
+
+      const faction = prev.factions.find(f => f.id === playerFaction);
+      if (!faction) return prev;
+
+      const goldCost = 10;
+      const artisanCost = 1;
+      if (faction.treasury < goldCost) return prev;
+      if (useArtisan && prev.artisans < artisanCost) return prev;
+
+      const newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - goldCost } : f);
+      const newArtisans = useArtisan ? prev.artisans - artisanCost : prev.artisans;
+      const newProvinces = prev.provinces.map(p => p.id === provinceId ? { ...p, fortLevel: Math.min(3, p.fortLevel + 1) } : p);
+
+      return { ...prev, factions: newFactions, artisans: newArtisans, provinces: newProvinces };
+    });
+  }, [playerFaction]);
 
   // ============= PLAY CARD =============
   const playCard = useCallback((card: PlayableCard) => {
@@ -696,26 +894,38 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   }, [playerFaction]);
 
   // ============= RECRUIT ARMY =============
-  const recruitArmy = useCallback((provinceId: string) => {
+  const recruitArmy = useCallback((provinceId: string, type: RecruitType = 'infantry') => {
     setGameState(prev => {
       if (!prev || !playerFaction) return prev;
       const province = prev.provinces.find(p => p.id === provinceId);
       if (!province || province.ownerId !== playerFaction) return prev;
       
       const faction = prev.factions.find(f => f.id === playerFaction);
-      if (!faction || faction.treasury < 20 || faction.manpower < 5) return prev;
+      if (!faction) return prev;
+      // Recruitment costs per new rules
+      // Infantry: 10 gold, 5 food
+      // Cavalry: 20 gold, 5 horses, 10 food
+      if (type === 'infantry') {
+        if (faction.treasury < 10 || prev.food < 5) return prev;
+      } else if (type === 'cavalry') {
+        if (faction.treasury < 20 || faction.horses < 5 || prev.food < 10) return prev;
+      }
       
       // Check if province has a camp or is capital
       const hasCamp = (prev.buildings[provinceId] || []).includes('camp');
       const isCapital = province.id === faction.capitalId;
       if (!hasCamp && !isCapital) return prev;
       
+      const stableCount = (prev.buildings[provinceId] || []).includes('stable') ? 1 : 0;
+      const cavalryCount = type === 'cavalry' ? Math.min(4 + stableCount, Math.floor(faction.horses / 2)) : Math.min(2, Math.floor(faction.horses / 2));
+      const infantryCount = type === 'cavalry' ? Math.max(2, 6 - cavalryCount) : 5;
+      
       const newArmy: Army = {
         id: generateId(),
         ownerId: playerFaction,
         provinceId,
-        cavalry: Math.min(3, Math.floor(faction.horses / 2)),
-        infantry: 5,
+        cavalry: cavalryCount,
+        infantry: infantryCount,
         siege: 0,
         morale: 70,
         supply: 20,
@@ -723,11 +933,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         leaderBonus: 0,
       };
       
-      const horsesUsed = newArmy.cavalry * 2;
-      const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury - 20, manpower: f.manpower - 5, horses: f.horses - horsesUsed } : f
-      );
-      const newFood = prev.food - 2;
+      // Deduct recruitment costs according to type
+      let newFactions = prev.factions;
+      let newFood = prev.food;
+      if (type === 'infantry') {
+        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - 10, manpower: Math.max(0, f.manpower - 0) } : f);
+        newFood = Math.max(0, prev.food - 5);
+      } else {
+        const horsesUsed = 5; // fixed per new rule
+        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - 20, manpower: Math.max(0, f.manpower - 0), horses: Math.max(0, f.horses - horsesUsed) } : f);
+        newFood = Math.max(0, prev.food - 10);
+      }
       
   // ============= RESOURCE INCOME CALCULATION =============
   const calculateResourceIncome = useCallback((state: MVPGameState): ResourceIncome => {
@@ -788,58 +1004,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
-      
-      const ownedProvinces = prev.provinces.filter(p => p.ownerId === playerFaction);
-      let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-      const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-      
-      // Silk Road bonus: +2 gold per Silk Road province
-      const silkRoadCount = ownedProvinces.filter(p => p.hasSilkRoad).length;
-      const silkRoadBonus = silkRoadCount * 2;
-      taxIncome += silkRoadBonus;
-      
-      const marketCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('market');
-      }).length;
-      const marketBonus = marketCount * 3;
-      taxIncome += marketBonus;
-      
-      const playerArmyCount = prev.armies.filter(a => a.ownerId === playerFaction).length;
-      const foodUpkeep = -playerArmyCount;
-      const farmland = prev.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-      const campCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('camp');
-      }).length;
-      const foodGain = Math.floor(farmland * 0.5) + campCount * 2;
-      const foodChange = foodUpkeep + foodGain;
-      
-      // Horses: steppe/grassland provinces produce horses, horse trade goods give extra
-      const horseProvinces = ownedProvinces.filter(p => p.terrain === 'steppe' || p.tradeGood === 'horses');
-      const horsesGain = horseProvinces.length; // +1 hevonen per steppi/hevosprovinssi
-      
-      // Artisans: farmland/hills provinces and workshops produce artisans
-      const artisanProvinces = ownedProvinces.filter(p => p.terrain === 'farmland' || p.terrain === 'hills');
-      const workshopCount = Object.entries(prev.buildings).filter(([pid, buildings]) => {
-        const p = prev.provinces.find(pr => pr.id === pid);
-        return p?.ownerId === playerFaction && buildings.includes('workshop');
-      }).length;
-      const artisansGain = Math.floor(artisanProvinces.length * 0.5) + workshopCount;
-      // Minimum 1 artisan per turn if you own 3+ provinces
-      const finalArtisansGain = ownedProvinces.length >= 3 ? Math.max(1, artisansGain) : artisansGain;
-      
+
+      const collection = calculateResourceCollection(prev, playerFaction);
       const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain, horses: f.horses + horsesGain } : f
+        f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
       );
-      
-      const collection: ResourceCollectionResult = { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange };
       
       return {
         ...prev,
         factions: newFactions,
-        food: Math.max(0, prev.food + foodChange),
-        artisans: prev.artisans + finalArtisansGain,
+        food: Math.max(0, prev.food + collection.foodChange),
+        artisans: prev.artisans + collection.artisansGain,
         resourcesCollected: true,
         lastCollection: collection,
       };
@@ -855,33 +1030,20 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (state.phase === 'resource' && !state.resourcesCollected && playerFaction) {
         const faction = state.factions.find(f => f.id === playerFaction);
         if (faction) {
-          const ownedProvinces = state.provinces.filter(p => p.ownerId === playerFaction);
-          let taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-          const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-          const marketCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
-            const p = state.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('market');
-          }).length;
-          taxIncome += marketCount * 3;
-          const playerArmyCount = state.armies.filter(a => a.ownerId === playerFaction).length;
-          const farmland = state.provinces.filter(p => p.ownerId === playerFaction && (p.terrain === 'farmland' || p.terrain === 'grassland')).length;
-          const aiCampCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
-            const p = state.provinces.find(pr => pr.id === pid);
-            return p?.ownerId === playerFaction && buildings.includes('camp');
-          }).length;
-          const foodChange = -playerArmyCount + Math.floor(farmland * 0.5) + aiCampCount * 2;
-          
+          const collection = calculateResourceCollection(state, playerFaction);
           state = {
             ...state,
             factions: state.factions.map(f =>
-              f.id === playerFaction ? { ...f, treasury: f.treasury + taxIncome, manpower: f.manpower + manpowerGain } : f
+              f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
             ),
-            food: Math.max(0, state.food + foodChange),
+            food: Math.max(0, state.food + collection.foodChange),
+            artisans: state.artisans + collection.artisansGain,
             resourcesCollected: true,
+            lastCollection: collection,
           };
         }
       }
-      
+
       const currentIndex = PHASE_ORDER.indexOf(state.phase);
       if (currentIndex < PHASE_ORDER.length - 1) {
         const next = PHASE_ORDER[currentIndex + 1];
@@ -918,13 +1080,10 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const aiActionLog: AIActionLog[] = [];
       
       // 1. Collect resources for AI factions only (player collects in resource phase)
-      const newFactions = newState.factions.map(faction => {
+      let newFactions = newState.factions.map(faction => {
         if (faction.id === playerFaction) return faction; // Player already collected
-        const ownedProvinces = newState.provinces.filter(p => p.ownerId === faction.id);
-        const taxIncome = ownedProvinces.reduce((sum, p) => sum + p.baseTax, 0);
-        const manpowerGain = Math.floor(ownedProvinces.reduce((sum, p) => sum + p.baseManpower, 0) * 0.3);
-        
-        return { ...faction, treasury: faction.treasury + taxIncome, manpower: faction.manpower + manpowerGain };
+        const collection = calculateResourceCollection(newState, faction.id);
+        return { ...faction, treasury: faction.treasury + collection.taxIncome, manpower: faction.manpower + collection.manpowerGain };
       });
       
       // 2. Food: skip player (already handled in collectResources), just track for state
@@ -1123,40 +1282,115 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       // Reset movement for next turn
       newArmies = newArmies.map(a => ({ ...a, movementLeft: 3 }));
+
+      // ============= SIEGE / FRONTLINE PROCESSING =============
+      // For each province, check if it is fully surrounded by enemy-controlled neighbors.
+      // If so, increase siegeProgress and apply modest attrition to the owning faction's treasury
+      // (represents supply loss). If fortress exists, it will be drained by assaults elsewhere,
+      // but here we reduce fortLevel slowly if siegeProgress grows.
+      const siegeProvinces = newProvinces.map(p => ({ ...p }));
+      const factionMap = new Map<string, number>();
+      for (let i = 0; i < siegeProvinces.length; i++) {
+        const p = siegeProvinces[i];
+        if (!p.ownerId) continue;
+        // If province has no neighbors, skip
+        if (!p.neighbors || p.neighbors.length === 0) continue;
+        const allNeighborsEnemy = p.neighbors.every(nid => {
+          const nb = siegeProvinces.find(x => x.id === nid);
+          return nb && nb.ownerId && nb.ownerId !== p.ownerId;
+        });
+        if (allNeighborsEnemy) {
+          // increase siege progress
+          const cur = typeof p.siegeProgress === 'number' ? p.siegeProgress : 0;
+          siegeProvinces[i].siegeProgress = cur + 1;
+          // If fort exists, reduce fortLevel first
+          if (siegeProvinces[i].fortLevel && siegeProvinces[i].fortLevel > 0) {
+            siegeProvinces[i].fortLevel = Math.max(0, siegeProvinces[i].fortLevel - 1);
+          } else {
+            // Penalize owner's treasury slightly per turn under siege
+            factionMap.set(p.ownerId, (factionMap.get(p.ownerId) || 0) + 5);
+          }
+        } else {
+          siegeProvinces[i].siegeProgress = 0;
+        }
+      }
+      // Apply treasury penalties
+      if (factionMap.size > 0) {
+        newFactions = newFactions.map(f => {
+          const penalty = factionMap.get(f.id) || 0;
+          if (penalty > 0) return { ...f, treasury: Math.max(0, f.treasury - penalty) };
+          return f;
+        });
+      }
+      // Replace provinces with siege-processed array
+      for (let i = 0; i < newProvinces.length; i++) {
+        const updated = siegeProvinces.find(sp => sp.id === newProvinces[i].id);
+        if (updated) newProvinces[i] = updated;
+      }
       
       // 4. Check victory/defeat
       const playerProvinces = newProvinces.filter(p => p.ownerId === playerFaction).length;
       const playerArmies = newArmies.filter(a => a.ownerId === playerFaction);
       const playerFactionData = newFactions.find(f => f.id === playerFaction)!;
+      const playerGold = playerFactionData.treasury;
+      const playerTechCount = newState.playedTechCards.length;
       
       let gameOver = false;
       let winnerId: FactionId | null = null;
       let winCondition: string | null = null;
       
-      // Victory
+      // Military victory: control enough provinces
       if (playerProvinces >= VICTORY_TARGETS.provinces) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'military';
-      } else if (playerFactionData.treasury >= VICTORY_TARGETS.gold) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'economic';
-      } else if (newState.playedTechCards.length >= VICTORY_TARGETS.tech) {
-        gameOver = true; winnerId = playerFaction; winCondition = 'technology';
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'military';
       }
       
-      // Defeat
-      if (playerArmies.length === 0 && playerProvinces === 0) {
-        gameOver = true; winnerId = null; winCondition = null;
+      // Economic victory: amass enough gold
+      if (!gameOver && playerGold >= VICTORY_TARGETS.gold) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'economic';
+      }
+      
+      // Technology victory: play enough tech cards
+      if (!gameOver && playerTechCount >= VICTORY_TARGETS.tech) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'technology';
+      }
+      
+      // Defeat if player has lost all provinces and armies
+      if (!gameOver && playerArmies.length === 0 && playerProvinces === 0) {
+        gameOver = true;
+        winnerId = null;
+        winCondition = null;
       }
       
       // Check AI victory too
       for (const faction of newFactions) {
         if (faction.id === playerFaction) continue;
         const aiProvinces = newProvinces.filter(p => p.ownerId === faction.id).length;
-        if (aiProvinces >= VICTORY_TARGETS.provinces) {
-          gameOver = true; winnerId = faction.id; winCondition = 'military';
+        const aiGold = faction.treasury;
+        const aiTechCount = 0; // AI tech victory not implemented yet
+        const enemyOwned = newProvinces.filter(p => p.ownerId && p.ownerId !== faction.id).length;
+        
+        if (enemyOwned === 0 && aiProvinces > 0) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'military';
+        } else if (!gameOver && aiGold >= VICTORY_TARGETS.gold) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'economic';
+        } else if (!gameOver && aiTechCount >= VICTORY_TARGETS.tech) {
+          gameOver = true;
+          winnerId = faction.id;
+          winCondition = 'technology';
         }
       }
       
-      return {
+      return activatePendingWars({
         ...newState,
         turn: newState.turn + 1,
         year: newState.year + 1,
@@ -1177,7 +1411,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         movementBonus: 0,
         selectedArmyId: null,
         selectedProvinceId: null,
-      };
+      });
     });
   }, [playerFaction]);
 
@@ -1191,13 +1425,56 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       );
       if (relIdx === -1) return prev;
       const rel = prev.relations[relIdx];
-      const accepts = Math.random() < (rel.relation + 100) / 200 * (rel.trust / 100) + 0.2;
+      const isWar = treatyType === 'war_surprise' || treatyType === 'war_formal';
+      const accepts = isWar ? true : Math.random() < ((rel.relation + 100) / 200) * (rel.trust / 100) + 0.2;
       if (!accepts) return prev;
-      const newRels = [...prev.relations];
-      newRels[relIdx] = { ...rel, treaties: [...rel.treaties, { type: treatyType, startTurn: prev.turn, duration: -1 }], relation: rel.relation + 10, trust: rel.trust + 5 };
+
+      const newRels = prev.relations.map(r => {
+        const involvesPlayer = r.factionA === playerFaction || r.factionB === playerFaction;
+        const involvesTarget = r.factionA === targetFaction || r.factionB === targetFaction;
+        if (treatyType === 'war_surprise' && involvesPlayer) {
+          const filteredTreaties = r.treaties.filter(t => !['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type));
+          const newTreaty = {
+            type: treatyType,
+            startTurn: prev.turn,
+            duration: -1,
+          } as Treaty;
+          return {
+            ...r,
+            treaties: [...filteredTreaties, newTreaty],
+            relation: -100,
+            trust: 0,
+            threat: Math.min(100, r.threat + 30),
+          };
+        }
+
+        if (involvesTarget && involvesPlayer) {
+          const newTreaty = {
+            type: treatyType,
+            startTurn: treatyType === 'war_formal' ? prev.turn + 1 : prev.turn,
+            duration: -1,
+          } as Treaty;
+          return {
+            ...r,
+            treaties: [...r.treaties, newTreaty],
+            relation: isWar ? (treatyType === 'war_surprise' ? -100 : Math.max(-100, r.relation - 40)) : Math.min(100, r.relation + 10),
+            trust: isWar ? 0 : Math.min(100, r.trust + 5),
+            threat: isWar ? Math.min(100, r.threat + 30) : r.threat,
+          };
+        }
+
+        return r;
+      });
+
       return { ...prev, relations: newRels };
     });
   }, [playerFaction]);
+
+  // ============= WAR DECLARATIONS =============
+  const declareWar = useCallback((targetFaction: FactionId, surprise: boolean = false) => {
+    const treatyType = surprise ? 'war_surprise' : 'war_formal';
+    proposeTreaty(targetFaction, treatyType);
+  }, [proposeTreaty]);
 
   const breakTreaty = useCallback((targetFaction: FactionId, treatyType: TreatyType) => {
     setGameState(prev => {
@@ -1256,6 +1533,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,
+    declareWar, repairFort,
     getRelation, getPlayerFaction, getArmiesInProvince, canMoveTo,
     endPhase, collectResources,
   };

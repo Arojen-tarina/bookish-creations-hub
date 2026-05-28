@@ -21,6 +21,22 @@ const sections = [
 ];
 
 const Ohjekirja = () => {
+  const scrollToVideo = () => {
+    const section = document.getElementById('video');
+    if (!section) return;
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const playVideo = () => {
+    scrollToVideo();
+    const video = document.getElementById('helpVideo') as HTMLVideoElement | null;
+    if (video) {
+      video.play().catch(() => {
+        // Browsers may block autoplay until the user interacts with the page.
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 px-4 py-8">
       <div className="mx-auto max-w-6xl">
@@ -94,6 +110,59 @@ const Ohjekirja = () => {
         </Card>
 
         <div className="mt-8 space-y-6">
+          <section id="digipeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-amber-100">Verkkopelin ohjeet</h2>
+                <p className="mt-2 text-sm text-slate-300">
+                  Tässä osiossa kerrotaan pelin käyttöliittymästä, vuororakenteesta ja pelin perustoiminnoista. Löydät täältä myös ohjeet siitä, mitä eri napit tekevät pelikentällä.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Tärkeimmät toiminnot</h3>
+                <ul className="mt-4 space-y-3 text-sm text-slate-300">
+                  <li>• Palaa peliin - vie takaisin pelin aloitusnäkymään.</li>
+                  <li>• Tulosta ohjekirja - avaa selaimen tulostusikkunan.</li>
+                  <li>• Vuoropalkin napit - siirtyvät resurssi-, kortti-, liike-, taistelu- ja rakentamisvaiheisiin.</li>
+                  <li>• Kartan provinsseja klikatessa valitset kohdealueen tai armeijan.</li>
+                </ul>
+              </div>
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Ohjeet etenemiseen</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Verkkopelissä painikkeet toimivat interaktiivisesti: esimerkiksi <strong>Yhden vuoron video</strong> vie suoraan videokatsaukseen ja <strong>Palaa peliin</strong> vie takaisin pelin käynnistysnäkymään.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="lautapeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-amber-100">Lautapelin ohjeet</h2>
+                <p className="mt-2 text-sm text-slate-300">
+                  Tämä osuus kuvaa pelin perinteistä lautapeliä. Vaikka peli toimii selaimessa, lautapelin säännöt ovat samat ja ohjeiden painikkeet avustavat siirtymässä eri aiheisiin.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Lautapelin periaatteet</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Lautapelinä ajatus on sama: etene provinsseittain, kerää resursseja ja hanki voittoehdot täyttämällä alue- tai kultatavoitteen sekä kehittämällä teknologiaa.
+                </p>
+              </div>
+              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
+                <h3 className="text-lg font-semibold text-amber-100">Navigointi</h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Käytä ohjekirjan yläreunan linkkejä siirtyäksesi eri osioihin: <strong>Verkkopelin ohjeet</strong> vie verkkopeliosioon, <strong>Lautapelin ohjeet</strong> lautapeliin ja <strong>Yhden vuoron video</strong> suoraan videonäkymään.
+                </p>
+              </div>
+            </div>
+          </section>
+
           <section id="video" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -102,10 +171,27 @@ const Ohjekirja = () => {
                   Tiivis lisäosio näyttää yhden vuoron kulun selkeästi, vaiheittain. Tämä ei ole oikea video, mutta tarjoaa visualisoidun katsauksen vuoron etenemiseen.
                 </p>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-950/80 px-4 py-3 text-sm text-amber-200">
+              <button
+                type="button"
+                onClick={playVideo}
+                className="inline-flex items-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-950/80 px-4 py-3 text-sm text-amber-200 hover:bg-slate-800 transition-colors"
+              >
                 <Play className="w-4 h-4" /> Yhden vuoron läpikäynti
-              </div>
+              </button>
             </div>
+
+            <div className="mt-6 overflow-hidden rounded-2xl border border-amber-700/30 bg-black">
+              <video
+                id="helpVideo"
+                src="/mongolien-valtakunta.mp4"
+                controls
+                preload="metadata"
+                className="w-full h-auto"
+              >
+                Selaimesi ei tue video-elementtiä.
+              </video>
+            </div>
+
 
             <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
               <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
@@ -142,6 +228,7 @@ const Ohjekirja = () => {
                       </p>
                     </div>
                   </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -300,6 +387,7 @@ const Ohjekirja = () => {
                 { title: 'Markkina', cost: '25 kultaa', labor: '1 käsityöläinen', effect: '+3 kultaa/vuoro' },
                 { title: 'Linnoitus', cost: '50 kultaa', labor: '2 käsityöläistä', effect: '+3 puolustus, garnisooni, linnoitustaso +1 (max 3)' },
                 { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro' },
+                { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro' },
               ].map((building) => (
                 <div key={building.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{building.title}</h3>
@@ -320,7 +408,7 @@ const Ohjekirja = () => {
               {[
                 { title: 'Strategia', desc: 'Taistelubonuksia: hyökkäys, puolustus, liikkuminen. Hetkellinen vaikutus.' },
                 { title: 'Diplomatia', desc: 'Kultaa, puolustusta ja diplomaattisia etuja. Voivat kestää 1–3 vuoroa.' },
-                { title: 'Teknologia', desc: 'Pysyviä bonuksia hyökkäykseen, puolustukseen tai liikkeeseen. Lasketaan voittoehtoon.' },
+                { title: 'Teknologia', desc: 'Pysyviä bonuksia hyökkäykseen, puolustukseen tai liikkeeseen.' },
                 { title: 'Resurssit', desc: 'Välittömiä resursseja kuten hevosia, kultaa, ruokaa tai käsityöläisiä.' },
               ].map((card) => (
                 <div key={card.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
@@ -345,6 +433,8 @@ const Ohjekirja = () => {
                 { title: 'Aselepo', desc: 'Väliaikainen rauhan tila.' },
                 { title: 'Vasallisuus', desc: 'Heikompi fraktio maksaa veroja vahvemmalle.' },
                 { title: 'Rauha', desc: 'Muodollinen rauhansopimus.' },
+                { title: 'Yllättävä sota', desc: 'Sota alkaa heti ja kaikki muut fraktiot julistavat sinulle sodan.' },
+                { title: 'Formaalinen sota', desc: 'Sota ilmoitetaan, mutta alkaa vasta seuraavan vuoron lopussa.' },
               ].map((item) => (
                 <div key={item.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{item.title}</h3>
@@ -355,8 +445,58 @@ const Ohjekirja = () => {
             <p className="mt-4 text-sm text-amber-200">Vinkki: Älä riko sopimuksia kevyesti — luottamus palautuu hitaasti.</p>
           </section>
 
+          <section id="faq" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
+            <h2 className="text-2xl font-semibold text-amber-100">11. Usein kysytyt kysymykset</h2>
+            <div className="mt-4 space-y-4 text-sm text-slate-300">
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa antaa leiri?</h3>
+                <p className="mt-2">Leiri antaa +2 ruokaa per vuoro omassa provinssissaan. Se myös mahdollistaa armeijan rekrytoinnin kyseisestä provinssista, jos omistat sen.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Onko pelissä maatilarakennusta?</h3>
+                <p className="mt-2">Käytössä ei ole erillistä maatilarakennusta. Viljelymaaprovinsseilla on parempi tukituotanto ja leirit lisäävät ruokaa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa kuluu hevosesta tai sotilaasta?</h3>
+                <p className="mt-2">Rekrytointi kuluttaa heti 2 ruokaa. Jokainen armeija kuluttaa yhden ruoan per vuoro kaupungin ruokatuotannon vähentyessä sen mukaan, kuinka monta armeijaa omistat.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Mistä hevoset tulevat ja kuinka paljon ne tuottavat?</h3>
+                <p className="mt-2">Hevosia saa steppe- ja hevoskauppatavara-provinssien kautta sekä hevos­tallista. Hevoset eivät suoraan anna kultaa, mutta ne mahdollistavat ratsuväen rekrytoinnin.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Miten yksiköt toimivat — onko yksi sotilas yksi armeija?</h3>
+                <p className="mt-2">Pelissä armeija on joukko, joka voi sisältää useita ratsuväen ja jalkaväen yksiköitä. Yksittäistä sotilasta ei pelata erillisenä kappaleena, vaan armeijoiden vahvuus lasketaan näiden joukkojen summana.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Monta korttia voi käyttää ja milloin?</h3>
+                <p className="mt-2">Aloitat viidellä kortilla ja saat kortin lisäyksen korttivaiheessa. Kortteja voi pelata silloin kun ne ovat kädessäsi, eli käytännössä useita per vuoro, kunnes kätesi loppuu. Kortteja ei voi pelata vuoron lopetusvaiheessa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Vaikuttaako maasto, kun tulen tai lähden kaupungista?</h3>
+                <p className="mt-2">Kyllä, maasto vaikuttaa sekä liikkeeseen että puolustukseen. Liikkuminen kohdeprovinssiin käyttää sen liikkumiskustannuksen, ja puolustus bonukset lasketaan, kun omaisuus puolustaa kyseisessä maastossa.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Voiko paimentolais- tai neutraalissa kaupungissa olla rakennuksia?</h3>
+                <p className="mt-2">Rakennuksia voi rakentaa vain omissa provinssissasi. Neutraalit tai nomadit-provinssit eivät rakenna automaattisesti, eikä niissä voi lisätä omia rakennuksia ennen niiden valtaamista.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Saavatko paimentolaiset lisää rakennuksia?</h3>
+                <p className="mt-2">Nomadiprovinsseilla ei ole automaattista rakennustuotantoa. Rakenna omistamissasi provinssissa, jotta saat markkinat, tallit ja linnoitukset käyttöön.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Mitä maasto tekee pelissä?</h3>
+                <p className="mt-2">Maasto määrää liikkeen hinnan ja puolustusbonuksen. Jalkaväen liike metsässä on hitaampaa (kustannus 2) kuin ratsuväen (kustannus 1), ja vuoristo vie enemmän aikaa kaikilta joukoilta. Metsä ja kukkulat antavat hyvät puolustusbonukset. Joen ylitys ei ole tässä versiota vielä erikseen laskettu.</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-amber-100">Monta kultaa saa per vuoro?</h3>
+                <p className="mt-2">Kultaa kertyy verotuloista, markkinoista ja kauppatavaroista. Markkina antaa +3 kultaa per vuoro. Silkkitien provinsseille saat verotulojen tuplauksen ja lisäbonuksia ketjun hallinnasta, erityisesti jos kontrolloit yhtenäisiä silkkitien osuuksia ja silkkiä tuottavia keskuksia.</p>
+              </div>
+            </div>
+          </section>
+
           <section id="kartta" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">11. Kartta ja maastot</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">12. Kartta ja maastot</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               Kartta koostuu noin 70 provinssista. Liikkuminen tapahtuu naapuriprovinsseihin, ja maasto vaikuttaa sekä liikkeeseen että puolustukseen.
             </p>
@@ -372,11 +512,11 @@ const Ohjekirja = () => {
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-sm text-slate-200">Silkkitie kulkee kartan läpi ja tarjoaa erityisiä kauppatuloja niille provinsseille, joissa se kulkee.</p>
+            <p className="mt-4 text-sm text-slate-200">Silkkitie kulkee kartan läpi ja tarjoaa erityisiä kauppatuloja niille provinsseille, joissa se kulkee. Yhtenäisen reitin hallinta kasvattaa bonus-tuloja ja tekee kaupungin suojelusta strategisen prioriteetin.</p>
           </section>
 
           <section id="kauppatavarat" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">12. Kauppatavarat</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">13. Kauppatavarat</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               Monet provinsseista tuottavat erityisiä kauppatavaroita, jotka tarjoavat lisäetuja talouteen ja diplomatiaan.
             </p>
@@ -403,7 +543,7 @@ const Ohjekirja = () => {
           </section>
 
           <section id="tekoaly" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">13. Tekoäly (AI)</h2>
+            <h2 className="text-2xl font-semibold text-amber-100">14. Tekoäly (AI)</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
               AI-vastustajat toimivat vuoron lopussa automaattisesti. Ne keräävät resursseja, arvioivat uhkia ja tekevät siirtoja oman strategiansa mukaisesti.
             </p>

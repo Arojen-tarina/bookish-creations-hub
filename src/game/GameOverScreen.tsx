@@ -3,6 +3,7 @@
  */
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
+// import { AdManager } from '@/components/ui/AdManager.tsx';
 import { Trophy, Skull, RotateCcw } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -13,6 +14,8 @@ interface GameOverScreenProps {
   year: number;
   onRestart: () => void;
 }
+
+
 
 export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, onRestart }: GameOverScreenProps) => {
   return (
@@ -49,6 +52,8 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
             Vuoro {turn} • Vuosi {year}
           </p>
         </DialogHeader>
+
+
         <DialogFooter className="justify-center">
           <Button onClick={onRestart} size="lg" className={isVictory ? 'bg-amber-600 hover:bg-amber-500' : 'bg-red-600 hover:bg-red-500'}>
             <RotateCcw className="w-5 h-5 mr-2" />

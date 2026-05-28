@@ -100,13 +100,13 @@ if (violations.length === 0) {
     console.log(`⚠ VIOLATIONS FOUND: ${violations.length} pairs < ${threshold} units\n`);
     
     console.log('All violations (sorted by distance, closest first):\n');
-    console.log(`${'#':<4} ${'Province 1':<20} ${'Coords':<18} ${'Province 2':<20} ${'Coords':<18} ${'Distance':<10}`);
+    console.log('#'.padEnd(4) + ' ' + 'Province 1'.padEnd(20) + ' ' + 'Coords'.padEnd(18) + ' ' + 'Province 2'.padEnd(20) + ' ' + 'Coords'.padEnd(18) + ' ' + 'Distance'.padStart(10));
     console.log('-'.repeat(100));
 
     violations.forEach((v, idx) => {
         const coords1 = `(${v.x1.toFixed(1)}, ${v.y1.toFixed(1)})`;
         const coords2 = `(${v.x2.toFixed(1)}, ${v.y2.toFixed(1)})`;
-        console.log(`${(idx + 1):<4} ${v.id1:<20} ${coords1:<18} ${v.id2:<20} ${coords2:<18} ${v.distance.toFixed(4):<10}`);
+        console.log(String(idx + 1).padEnd(4) + ' ' + v.id1.toString().padEnd(20) + ' ' + coords1.padEnd(18) + ' ' + v.id2.toString().padEnd(20) + ' ' + coords2.padEnd(18) + ' ' + v.distance.toFixed(4).padStart(10));
     });
     
     console.log();

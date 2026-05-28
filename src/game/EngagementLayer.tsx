@@ -12,8 +12,12 @@
  */
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+interface MinimalFaction { id: string; name?: string; treasury: number; manpower: number }
+interface MinimalProvince { ownerId: string | null }
+interface MinimalGameState { factions: MinimalFaction[]; provinces: MinimalProvince[]; turn: number }
+
 interface EngagementLayerProps {
-  gameState: any;
+  gameState: MinimalGameState | null;
   playerFaction: string | null;
 }
 

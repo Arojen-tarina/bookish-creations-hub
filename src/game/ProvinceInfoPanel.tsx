@@ -6,6 +6,7 @@
  * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
  */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
+import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -20,18 +21,22 @@ import {
   Castle,
   TrendingUp,
   AlertTriangle,
+  Wrench,
 } from 'lucide-react';
 
 interface ProvinceInfoPanelProps {
   province: Province;
   armies: Army[];
   playerFaction: FactionId;
-  onRecruitArmy: () => void;
+  onRecruitArmy: (type?: RecruitType) => void;
   canRecruit: boolean;
   onBuildFort?: () => void;
   canBuildFort?: boolean;
   attackBonus?: number;
   defenseBonus?: number;
+  onRepairFort?: (useArtisan: boolean) => void;
+  canRepairGold?: boolean;
+  canRepairArtisan?: boolean;
 }
 
 export const ProvinceInfoPanel = ({
@@ -42,6 +47,7 @@ export const ProvinceInfoPanel = ({
   canRecruit,
   attackBonus = 0,
   defenseBonus = 0,
+  onBuildFort, canBuildFort, onRepairFort, canRepairGold, canRepairArtisan,
 }: ProvinceInfoPanelProps) => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
@@ -143,7 +149,7 @@ export const ProvinceInfoPanel = ({
             <TrendingUp className="w-5 h-5 text-amber-400" />
             <div>
               <span className="text-amber-200">Silkkitien varrella</span>
-              <span className="text-xs text-amber-300/70 ml-2">+2 💰/vuoro</span>
+              <span className="text-xs text-amber-300/70 ml-2">Lisätuloja ja ketjun hallintabonuksia</span>
             </div>
           </div>
         )}
@@ -215,19 +221,52 @@ export const ProvinceInfoPanel = ({
         {/* Actions (only for player provinces) */}
         {isPlayerOwned && (
           <div className="pt-2 border-t border-stone-700 space-y-2">
-            <Button
-              onClick={onRecruitArmy}
-              disabled={!canRecruit}
-              variant="outline"
-              className="w-full bg-slate-700 text-slate-100 border-slate-600 hover:bg-slate-600"
-            >
-              <Sword className="w-4 h-4 mr-2" />
-              Rekrytoi armeija (20 💰, 5 👥)
-            </Button>
-            {!canRecruit && isPlayerOwned && (
-              <p className="text-xs text-amber-300/60 text-center">
-                ⚠️ Rekrytointi vaatii pääkaupungin tai leirin (⛺)
-              </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                onClick={() => onRecruitArmy('infantry')}
+                disabled={!canRecruit}
+                variant="outline"
+                className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
+              >
+                <Sword className="w-4 h-4 mr-2" />
+                Rekrytoi jalkaväki
+              </Button>
+              <Button
+                onClick={() => onRecruitArmy('cavalry')}
+                disabled={!canRecruit}
+                variant="outline"
+                className="w-full border-blue-600 text-blue-200 hover:bg-blue-900/30"
+              >
+                <Wrench className="w-4 h-4 mr-2" />
+                Rekrytoi ratsuväki
+              </Button>
+            </div>
+            <p className="text-xs text-amber-300/60 text-center">
+              ⚠️ Tarvitset leirin tai pääkaupungin, lisäksi ratsuväen rekrytointi kuluttaa hevosia.
+            </p>
+
+            {/* Repair fort actions */}
+            {province.fortLevel > 0 && onRepairFort && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  onClick={() => onRepairFort(false)}
+                  disabled={!canRepairGold}
+                >
+                  Korjaa (kulta 10)
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  onClick={() => onRepairFort(true)}
+                  disabled={!canRepairArtisan}
+                >
+                  Korjaa (1 käsityöläinen)
+                </Button>
+              </div>
             )}
           </div>
         )}
