@@ -399,7 +399,7 @@ const isWarActive = (t: Treaty, currentTurn: number) =>
 const isPeacefulTreaty = (t: Treaty) =>
   ['non_aggression', 'peace', 'truce', 'alliance'].includes(t.type);
 
-const getArmyTerrainMoveCost = (terrainInfo: typeof PROVINCE_TERRAIN_INFO[ProvinceTerrain], army: Army) => {
+const getArmyTerrainMoveCost = (terrainInfo: any, army: Army): number => {
   if (army.siege > 0) return terrainInfo.movementCostSiege;
   if (army.cavalry >= army.infantry) return terrainInfo.movementCostCavalry;
   return terrainInfo.movementCostInfantry;
@@ -568,6 +568,13 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       resourcesCollected: false,
       lastCollection: null,
       winCondition: null,
+      currentIncome: {
+        goldPerTurn: 0,
+        foodPerTurn: 0,
+        horsesPerTurn: 0,
+        artisansPerTurn: 0,
+        manpowerPerTurn: 0,
+      },
     };
     
     setPlayerFaction(selectedFaction);
@@ -945,6 +952,15 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         newFood = Math.max(0, prev.food - 10);
       }
       
+      return {
+        ...prev,
+        factions: newFactions,
+        food: newFood,
+        armies: [...prev.armies, newArmy],
+      };
+    });
+  }, [playerFaction]);
+
   // ============= RESOURCE INCOME CALCULATION =============
   const calculateResourceIncome = useCallback((state: MVPGameState): ResourceIncome => {
     if (!playerFaction) return { goldPerTurn: 0, foodPerTurn: 0, horsesPerTurn: 0, artisansPerTurn: 0, manpowerPerTurn: 0 };
