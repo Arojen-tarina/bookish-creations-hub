@@ -19,6 +19,28 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Koalabear101" />
 
+    <script>
+      // GitHub Pages SPA fallback (pair of public/404.html): restore the
+      // original route that 404.html encoded into the ?p= query parameter.
+      (function () {
+        var l = window.location;
+        if (l.search.slice(1).indexOf('p=') === 0) {
+          var params = {};
+          l.search.slice(1).split('&').forEach(function (pair) {
+            var i = pair.indexOf('=');
+            params[pair.slice(0, i)] = pair.slice(i + 1).replace(/~and~/g, '&');
+          });
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.replace(/\/$/, '') + (params.p || '') +
+              (params.q ? '?' + params.q : '') +
+              l.hash
+          );
+        }
+      })();
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RB084FHFC3"></script>
     <script>

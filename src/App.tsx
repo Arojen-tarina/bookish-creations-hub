@@ -23,7 +23,7 @@ const App = () => (
           <AdMobBanner className="w-full" />
         </div>
       </div>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
         <Routes>
           <Route path="/" element={<Digipeli />} />
           <Route path="/ohjekirja" element={<Ohjekirja />} />

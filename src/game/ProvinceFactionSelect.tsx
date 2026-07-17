@@ -97,7 +97,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
           {/* Ohjekirja link */}
           <div className="mt-4 pt-3 border-t border-slate-700/50 grid gap-2 sm:grid-cols-3">
             <a
-              href="/ohjekirja#digipeli"
+              href={`${import.meta.env.BASE_URL}ohjekirja#digipeli`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
@@ -106,7 +106,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               Verkkopelin ohjeet
             </a>
             <a
-              href="/ohjekirja#lautapeli"
+              href={`${import.meta.env.BASE_URL}ohjekirja#lautapeli`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
@@ -115,7 +115,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               Lautapelin ohjeet
             </a>
             <a
-              href="/ohjekirja#video"
+              href={`${import.meta.env.BASE_URL}ohjekirja#video`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"

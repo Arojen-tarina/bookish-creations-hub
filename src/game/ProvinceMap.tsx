@@ -39,7 +39,8 @@ const projectPoint = (x: number, y: number) => ({
 });
 
 // ============= FACTION-STYLED MAP SPRITES =============
-const SPRITE_BASE = '/assets/sprites/';
+// BASE_URL-aware so the app works at a subpath too (e.g. GitHub Pages)
+const SPRITE_BASE = `${import.meta.env.BASE_URL}assets/sprites/`;
 const FACTION_SPRITE_STYLE: Record<string, string> = {
   mongol: 'mongol',
   kipchak: 'mongol',

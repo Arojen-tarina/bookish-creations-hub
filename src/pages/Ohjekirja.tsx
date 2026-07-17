@@ -184,7 +184,7 @@ const Ohjekirja = () => {
             <div className="mt-6 overflow-hidden rounded-2xl border border-amber-700/30 bg-black">
               <video
                 id="helpVideo"
-                src="/mongolien-valtakunta.mp4"
+                src={`${import.meta.env.BASE_URL}mongolien-valtakunta.mp4`}
                 controls
                 preload="metadata"
                 className="w-full h-auto"
