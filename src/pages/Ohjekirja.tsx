@@ -5,6 +5,7 @@ import { BookOpen, ArrowLeft, Play } from 'lucide-react';
 
 const sections = [
   { id: 'johdanto', label: 'Johdanto' },
+  { id: 'taru', label: 'Maailman taru ja kodeksi' },
   { id: 'tavoite', label: 'Pelin tavoite ja voittoehdot' },
   { id: 'fraktiot', label: 'Fraktiot' },
   { id: 'vuoron-rakenne', label: 'Vuoron rakenne' },
@@ -229,7 +230,6 @@ const Ohjekirja = () => {
                     </div>
                   </div>
                 </div>
-                </div>
               </div>
             </div>
           </section>
@@ -244,26 +244,79 @@ const Ohjekirja = () => {
             </p>
           </section>
 
+          <section id="taru" className="rounded-3xl border border-amber-700/40 bg-gradient-to-b from-amber-950/30 to-slate-950/80 p-6">
+            <h2 className="text-2xl font-semibold text-amber-100">🌌 Arojen Tarinat — Maailman taru ja kodeksi</h2>
+            <p className="mt-3 text-sm leading-relaxed text-amber-200/80 italic">
+              Aroilla kerrotaan yhä vanhoja tarinoita — maailmasta, jonka jumalat lauloivat olemassaoloon, ja suuresta kahtiajaosta, joka repi ihmiskunnan kahtia. Tämä kodeksi kokoaa arojen kansojen uskomukset, lait ja legendat.
+            </p>
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {[
+                {
+                  t: '🧭 Kosminen laulu ja Suuri Hirvas',
+                  d: 'Ennen kaikkea oli vain ääretön alkumeri. Sitten tuli Handgai, Suuri Hirvas, joka käveli alkuvesien päällä, nosti ensimmäisen maan (Dengin), kohotti taivaan ja veisti loputtomat arot. Maailma laulettiin olemaan — jokainen kivi, eläin ja ihminen on osa jumalallista säveltä. Jumalat laulavat sitä yhä pitääkseen maailman koossa, mutta ihmiskunta on unohtanut sanat. Todellinen onni on oman säkeen uudelleen löytämistä.',
+                },
+                {
+                  t: '🔥 Vastoinkäymisten laki',
+                  d: 'Mukavuus on ansa. Uskon ytimen mukaan edistys syntyy vain vaikeuksien kautta: helppo elämä kasvattaa pehmeitä ja pysähtyneitä yhteiskuntia. Kärsimys, nälkä ja luonnonvoimista selviytyminen ovat tuli, joka karkaisee ihmisen. Luonto on armoton ja itseään korjaava — kun yksi laji kaatuu, toinen täyttää tyhjiön.',
+                },
+                {
+                  t: '🦅 Eläinpantheon ja henkien lait',
+                  d: 'Jumalat kulkevat maan päällä pyhien eläinten hahmossa. Kotka on taivaiden omatunto — kunniaton teko sen katseen alla painaa mieltä. Karhu edustaa voimaa ja pidättyväisyyttä, ja karhunlihan uskotaan parantavan. Pöllön vahingoittaminen on ehdoton tabu, joka johtaa yhteisöstä karkottamiseen. Hirvet ovat metsän kuninkaita, joiden taljoista tehdään vain arvokkaimmat asut. Polun ylittävä kettu on paha enne, joka vaatii puhdistautumisrituaalin — ja rotta on ehdoton vihollinen: kerran vuodessa kaikki heimot julistavat aselevon ja käyvät yhdessä rottien hävitykseen.',
+                },
+                {
+                  t: '⚔️ Kaksi sivilisaatiota — Suuri kahtiajako',
+                  d: 'Suuri joki halkaisee maailman. Pohjoisen arojen heimot ovat ylpeitä paimentolaisia, joille pysyvät kivimuurit ovat luonnottomia vankiloita — he liikkuvat vuodenaikojen mukana suurissa jurttakaravaaneissa, liikkuvissa kaupungeissa, joissa on omat korttelinsa sepille, parantajille ja pyhäköille. Etelän valtakunnat ovat valtava, byrokraattinen koneisto: kivi, laki ja paperityö, ammattiarmeijat, kilpimuurit ja linnoitukset. Etelä on unohtanut yhteisen alkuperänsä ja kutsuu pohjoisen kansoja barbaareiksi — kohtalokas erehdys.',
+                },
+                {
+                  t: '🛠️ Selviytymisen säännöt',
+                  d: 'Arojen kovat lait pitävät heimot hengissä: metsästyksen on oltava kestävää, ettei Handgai vihastu, siksi talous perustuu juurikasvien keruuseen. Vaatteet ja haarniskat kyllästetään eläinrasvalla purevaa kylmyyttä vastaan. Ahneus on sosiaalinen kuolemantuomio — kaikki ruoka ja resurssit jaetaan tasan. Raskain rangaistus on karkotus: maailmassa, jossa selviytyminen vaatii ehdotonta yhteistyötä, se on hidas ja varma kuolema.',
+                },
+                {
+                  t: '👥 Rajaseudun mahtajat',
+                  d: 'Ganbataar, Rautatyranni, takoo hajanaisista heimoista yhtä pelottavaa valtakuntaa — nerokas strategi, jota kasvava julmuus ja vainoharha syövät. Hänen puolisonsa Bolormaa, vieraan maan prinsessa, on älyn ja diplomatian ääni, joka toi aroille tiedon kaukaisista kauppareiteistä, piirityskoneista ja hallinnosta. Heidän poikansa Temüü, kapinallinen perillinen, on tekniikan mestari, joka halveksii isänsä julmuutta ja rakentaa hiljaa vastarintaliikettä — meritokratiaa, joka perustuisi yhteisiin etuihin ja diplomatiaan.',
+                },
+                {
+                  t: '🗺️ Strategiset alueet',
+                  d: 'Suuren joen ylityspaikat ovat lopullisia solmukohtia: hallitse siltoja turvataksesi kauppareitit tai hyökätäksesi etelään. Korkeat vuorisolat ovat luonnon linnoitusmuureja, jotka pysäyttävät etelän armeijat. Kosteikot ovat arojen hedelmällisintä maata — ja ikuisesti kiisteltyjä väijytysvyöhykkeitä.',
+                },
+                {
+                  t: '📜 Aikakaudet ennen sotaa',
+                  d: 'Ensimmäisen säkeen aikana ihmiset elivät henkimaailman rinnalla eikä lakeja tarvittu — laulu itse ohjasi. Sitten tuli Suuri unohdus: musiikki katosi ihmismielistä, ja pakokauhussa kansa jakautui. Etelään paenneet rakensivat muurinsa ja byrokratiansa; aroille jääneet omaksuivat kylmyyden ja niukkuuden opettajikseen. Viisisataa vuotta maailma eli kivessä ja taljassa — kunnes kolmekymmentä vuotta sitten orjuudesta noussut Ganbataar aloitti yhdistämisen terrorin kautta, ja ruutitynnyri oli valmis. Yksi kipinä riittää.',
+                },
+              ].map((chapter) => (
+                <div key={chapter.t} className="rounded-2xl border border-amber-800/30 bg-slate-950/70 p-4">
+                  <h3 className="text-base font-semibold text-amber-200">{chapter.t}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">{chapter.d}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <section id="tavoite" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
             <h2 className="text-2xl font-semibold text-amber-100">2. Pelin tavoite ja voittoehdot</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Peli voidaan voittaa kolmella tavalla: sotilaallisella, taloudellisella ja teknologisella voitolla. Vastustajat voivat myös voittaa omia ehtojaan täyttäessään.
+              Peli voidaan voittaa neljällä tavalla: sotilaallisella, taloudellisella, teknologisella ja diplomaattisella voitolla. Jokainen polku on tasapainotettu vaatimaan vertailukelpoisen määrän suunnittelua — valitse strategiasi ja pidä se elossa loppupeliin asti. Vastustajat voivat myös voittaa omia ehtojaan täyttäessään.
             </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Sotilaallinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">30 provinssia</p>
-                <p className="mt-1 text-sm text-slate-300">Hallitse vähintään 30 provinssia (~40% kartasta).</p>
+                <p className="mt-2 text-amber-100 font-semibold">Vihollisten pääkaupungit</p>
+                <p className="mt-1 text-sm text-slate-300">Valtaa kaikkien vastustajien pääkaupungit tai hallitse vähintään 30 provinssia.</p>
               </div>
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Taloudellinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">500 kultaa</p>
-                <p className="mt-1 text-sm text-slate-300">Kerää valtakuntaasi vähintään 500 kultaa.</p>
+                <p className="mt-2 text-amber-100 font-semibold">500 kultaa + Silkkitie</p>
+                <p className="mt-1 text-sm text-slate-300">Kerää vähintään 500 kultaa ja hallitse yli puolta Silkkitien solmukohdista.</p>
               </div>
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Teknologinen</p>
                 <p className="mt-2 text-amber-100 font-semibold">5 teknologiakorttia</p>
                 <p className="mt-1 text-sm text-slate-300">Pelaa 5 pysyvää teknologiakorttia.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Diplomaattinen</p>
+                <p className="mt-2 text-amber-100 font-semibold">Liitto kaikkien kanssa</p>
+                <p className="mt-1 text-sm text-slate-300">Solmi liittosopimus jokaisen elossa olevan valtakunnan kanssa (vähintään kaksi liittolaista).</p>
               </div>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-slate-300">
@@ -373,7 +426,16 @@ const Ohjekirja = () => {
                 <p className="mt-2 text-sm text-slate-300">Molemmat osapuolet heittävät noppaa. Suhdeluvun mukaan määrätään voittaja ja tappiot.</p>
               </div>
             </div>
-            <p className="mt-4 text-sm text-amber-200">Vinkki: Linnoitetut kaupungit ovat vaikeita valloittaa — tarvitset vahvan armeijan murtamaan ne.</p>
+            <div className="mt-4 rounded-3xl border border-amber-700/30 bg-slate-950/90 p-4">
+              <h3 className="text-base font-semibold text-amber-100">Piiritystaktiikat</h3>
+              <ul className="mt-2 space-y-1.5 text-sm text-slate-300 list-disc list-inside">
+                <li>Rynnäkkö: hyökkäys linnoitusta vastaan kuluttaa muureja, mutta hyökkääjän tappiot ovat suuret.</li>
+                <li>Saarto: ympäröi provinssi joka puolelta — linnoitus rapistuu ja puolustajan talous kärsii vuoro vuorolta.</li>
+                <li>Neuvottelu: murskaavan ylivoiman edessä varuskunta voi antautua ilman taistelua, jolloin rakennukset säästyvät.</li>
+                <li>Insinöörityöt: piiritysyksiköt heikentävät linnoituksen tehoa taistelussa — jokainen piirityskone laskee muurien hyötyä.</li>
+              </ul>
+            </div>
+            <p className="mt-4 text-sm text-amber-200">Vinkki: Linnoitetut kaupungit ovat vaikeita valloittaa — valitse taktiikkasi fraktiosi vahvuuksien mukaan.</p>
           </section>
 
           <section id="rakentaminen" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
@@ -386,8 +448,9 @@ const Ohjekirja = () => {
                 { title: 'Leiri', cost: '15 kultaa', labor: '0', effect: '+2 ruokaa/vuoro, mahdollistaa armeijan rekrytoinnin' },
                 { title: 'Markkina', cost: '25 kultaa', labor: '1 käsityöläinen', effect: '+3 kultaa/vuoro' },
                 { title: 'Linnoitus', cost: '50 kultaa', labor: '2 käsityöläistä', effect: '+3 puolustus, garnisooni, linnoitustaso +1 (max 3)' },
-                { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro' },
-                { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro' },
+                { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro, rekrytoidut joukot saavat +10 moraalia' },
+                { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro, parempi ratsuväen rekrytointi' },
+                { title: 'Silta', cost: '20 kultaa', labor: '1 käsityöläinen', effect: '+2 kultaa/vuoro Silkkitien provinssissa — karavaanien ylityspaikka' },
               ].map((building) => (
                 <div key={building.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{building.title}</h3>

@@ -40,8 +40,9 @@ export const GameOverScreen = ({ isOpen, isVictory, winCondition, turn, year, on
             {isVictory ? (
               <>
                 {winCondition === 'military' && 'Olet valloittanut tarpeeksi alueita hallitaksesi Euraasian!'}
-                {winCondition === 'economic' && 'Olet kerännyt valtavan rikkauden ja hallitset kauppaa!'}
+                {winCondition === 'economic' && 'Silkkitien solmukohdat ja aarrekammiosi ovat vertaansa vailla — kauppa on sinun!'}
                 {winCondition === 'technology' && 'Olet saavuttanut teknologisen ylivertaisuuden!'}
+                {winCondition === 'diplomatic' && 'Kaikki valtakunnat ovat liittolaisiasi — arojen rauha on sinun ansiotasi!'}
                 {!winCondition && 'Olet voittanut pelin!'}
               </>
             ) : (

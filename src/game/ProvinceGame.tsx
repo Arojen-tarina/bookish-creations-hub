@@ -275,6 +275,7 @@ export const ProvinceGame = () => {
               playerFaction={playerFaction}
               highlightedProvinces={attackMode ? attackableProvinces : [...availableMoves, ...attackableProvinces]}
               defenseBonus={gameState.defenseBonus}
+              buildingsMap={gameState.buildings || {}}
             />
           </div>
           

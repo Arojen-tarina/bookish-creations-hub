@@ -25,14 +25,52 @@ export interface ProvinceMapProps {
   showArmies?: boolean;
   isMinimap?: boolean;
   defenseBonus?: number;
+  buildingsMap?: Record<string, string[]>;
 }
 
 const TOKEN_RADIUS = 2.2 * SCALE_FACTOR;
 const HEX_SPREAD = 1.12;
+// The new hex board art is wider than tall (1953x1349) and is letterboxed
+// onto the square board image; compress y so tokens land on the map band.
+const LETTERBOX_Y = 0.69;
 const projectPoint = (x: number, y: number) => ({
   x: 50 + (x - 50) * HEX_SPREAD,
-  y: 50 + (y - 50) * HEX_SPREAD,
+  y: 65 + (y - 65) * HEX_SPREAD * LETTERBOX_Y,
 });
+
+// ============= FACTION-STYLED MAP SPRITES =============
+const SPRITE_BASE = '/assets/sprites/';
+const FACTION_SPRITE_STYLE: Record<string, string> = {
+  mongol: 'mongol',
+  kipchak: 'mongol',
+  jin: 'chinese',
+  song: 'chinese',
+  xixia: 'chinese',
+  khwarezm: 'persian',
+  rus: 'novgorod',
+};
+const spriteStyle = (ownerId: string | null) =>
+  (ownerId && FACTION_SPRITE_STYLE[ownerId]) || 'novgorod';
+export const fortSprite = (ownerId: string | null) =>
+  `${SPRITE_BASE}fort_${spriteStyle(ownerId)}.png`;
+export const campSprite = (ownerId: string | null) =>
+  `${SPRITE_BASE}camp_${spriteStyle(ownerId)}.png`;
+export const bridgeSprite = (ownerId: string | null) =>
+  `${SPRITE_BASE}bridge_${spriteStyle(ownerId)}.png`;
+const RESOURCE_SPRITE: Record<string, string> = {
+  horses: 'horse',
+  livestock: 'food',
+  grain: 'food',
+  salt: 'food',
+  fur: 'wood',
+  iron: 'iron',
+  silk: 'gold',
+  gold: 'gold',
+  gems: 'gold',
+  spices: 'stone',
+};
+export const resourceSprite = (tradeGood: string) =>
+  `${SPRITE_BASE}res_${RESOURCE_SPRITE[tradeGood] || 'stone'}.png`;
 
 // Coordinate Grid Component
 const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
@@ -139,6 +177,7 @@ const ProvinceToken = ({
   isPlayerOwned,
   onClick,
   onHover,
+  buildingsList = [],
 }: {
   province: Province;
   isSelected: boolean;
@@ -146,10 +185,13 @@ const ProvinceToken = ({
   isPlayerOwned: boolean;
   onClick: () => void;
   onHover: (p: Province | null) => void;
+  buildingsList?: string[];
 }) => {
   const ownerColor = province.ownerId ? FACTION_DATA_1206[province.ownerId]?.color : '#888';
   const r = TOKEN_RADIUS + (province.isCapital ? 0.5 * SCALE_FACTOR : 0);
   const center = projectPoint(province.center.x, province.center.y);
+  const hasCamp = buildingsList.includes('camp');
+  const hasBridge = buildingsList.includes('bridge');
 
   return (
     <g
@@ -230,17 +272,58 @@ const ProvinceToken = ({
         </text>
       )}
 
-      {/* Fort marker */}
+      {/* Fort sprite (faction-styled, grows with fort level) */}
       {province.fortLevel > 0 && (
-        <rect
-          x={center.x + r * 0.5}
-          y={center.y - r * 0.9}
-          width={1.2 * SCALE_FACTOR}
-          height={1.2 * SCALE_FACTOR}
-          rx={0.15 * SCALE_FACTOR}
-          fill="#4a5568"
-          stroke="#1a1a1a"
-          strokeWidth={0.1 * SCALE_FACTOR}
+        <image
+          href={fortSprite(province.ownerId)}
+          x={center.x - 2.9 * SCALE_FACTOR}
+          y={center.y - r - (2.9 + province.fortLevel * 0.35) * SCALE_FACTOR + 0.2}
+          width={(4.3 + province.fortLevel * 0.5) * SCALE_FACTOR}
+          height={(2.9 + province.fortLevel * 0.35) * SCALE_FACTOR}
+          preserveAspectRatio="xMidYMax meet"
+          opacity={0.98}
+          pointerEvents="none"
+        />
+      )}
+
+      {/* Camp sprite */}
+      {hasCamp && (
+        <image
+          href={campSprite(province.ownerId)}
+          x={center.x - r - 4.6 * SCALE_FACTOR}
+          y={center.y - r * 0.4}
+          width={4.6 * SCALE_FACTOR}
+          height={3 * SCALE_FACTOR}
+          preserveAspectRatio="xMidYMax meet"
+          opacity={0.98}
+          pointerEvents="none"
+        />
+      )}
+
+      {/* Bridge sprite */}
+      {hasBridge && (
+        <image
+          href={bridgeSprite(province.ownerId)}
+          x={center.x + r * 0.55}
+          y={center.y + r * 0.25}
+          width={4.4 * SCALE_FACTOR}
+          height={2.5 * SCALE_FACTOR}
+          preserveAspectRatio="xMidYMid meet"
+          opacity={0.98}
+          pointerEvents="none"
+        />
+      )}
+
+      {/* Trade good resource token */}
+      {province.tradeGood && (
+        <image
+          href={resourceSprite(province.tradeGood)}
+          x={center.x - r - 2 * SCALE_FACTOR}
+          y={center.y - r - 1.4 * SCALE_FACTOR}
+          width={2 * SCALE_FACTOR}
+          height={2.8 * SCALE_FACTOR}
+          preserveAspectRatio="xMidYMid meet"
+          pointerEvents="none"
         />
       )}
 
@@ -374,8 +457,8 @@ const Minimap = ({
         {provinces.map(p => (
           <circle
             key={p.id}
-            cx={p.center.x}
-            cy={p.center.y}
+            cx={projectPoint(p.center.x, p.center.y).x}
+            cy={projectPoint(p.center.x, p.center.y).y}
             r={1.2}
             fill={p.ownerId ? FACTION_DATA_1206[p.ownerId]?.color : '#666'}
             fillOpacity={0.9}
@@ -403,6 +486,7 @@ export const ProvinceMap = ({
   highlightedProvinces = [],
   isMinimap = false,
   defenseBonus = 0,
+  buildingsMap = {},
 }: ProvinceMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -538,6 +622,7 @@ export const ProvinceMap = ({
             isPlayerOwned={province.ownerId === playerFaction}
             onClick={() => onProvinceClick(province.id)}
             onHover={setHoveredProvince}
+            buildingsList={buildingsMap[province.id] || []}
           />
         ))}
 

@@ -42,6 +42,9 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
           <p className="text-amber-200/60 text-lg">
             Vuosi 1206 — Valitse valtakuntasi
           </p>
+          <p className="text-amber-200/40 text-sm mt-1 italic max-w-2xl mx-auto">
+            Suuri Hirvas lauloi tämän maailman olemaan — nyt sen kohtalo lauletaan teräksellä, kullalla ja liitoilla.
+          </p>
         </div>
 
         {/* How to play guide */}
@@ -68,21 +71,26 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
             ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-3 gap-2 text-center">
+          <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🗺️</div>
-              <div className="text-[10px] text-amber-200 font-bold">30 provinssia</div>
+              <div className="text-[10px] text-amber-200 font-bold">Valtaa pääkaupungit</div>
               <div className="text-[9px] text-stone-500">Sotilasvoitto</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">💰</div>
-              <div className="text-[10px] text-amber-200 font-bold">500 kultaa</div>
+              <div className="text-[10px] text-amber-200 font-bold">500 kultaa + Silkkitie</div>
               <div className="text-[9px] text-stone-500">Talousvoitto</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🔬</div>
               <div className="text-[10px] text-amber-200 font-bold">5 teknologiaa</div>
               <div className="text-[9px] text-stone-500">Teknologiavoitto</div>
+            </div>
+            <div className="bg-amber-900/20 rounded-lg p-2">
+              <div className="text-base">🤝</div>
+              <div className="text-[10px] text-amber-200 font-bold">Liitto kaikkien kanssa</div>
+              <div className="text-[9px] text-stone-500">Diplomatiavoitto</div>
             </div>
           </div>
           
