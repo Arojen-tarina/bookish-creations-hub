@@ -39,8 +39,39 @@ const projectPoint = (x: number, y: number) => ({
 });
 
 // ============= FACTION-STYLED MAP SPRITES =============
-// BASE_URL-aware so the app works at a subpath too (e.g. GitHub Pages)
-const SPRITE_BASE = `${import.meta.env.BASE_URL}assets/sprites/`;
+// Imported as modules so Vite bundles them (hashed files, or inlined
+// data-URLs in the single-file build) — no runtime path issues anywhere.
+import fortMongolImg from '@/assets/sprites/fort_mongol.png';
+import fortChineseImg from '@/assets/sprites/fort_chinese.png';
+import fortNovgorodImg from '@/assets/sprites/fort_novgorod.png';
+import fortPersianImg from '@/assets/sprites/fort_persian.png';
+import campMongolImg from '@/assets/sprites/camp_mongol.png';
+import campChineseImg from '@/assets/sprites/camp_chinese.png';
+import campNovgorodImg from '@/assets/sprites/camp_novgorod.png';
+import campPersianImg from '@/assets/sprites/camp_persian.png';
+import bridgeMongolImg from '@/assets/sprites/bridge_mongol.png';
+import bridgeChineseImg from '@/assets/sprites/bridge_chinese.png';
+import bridgeNovgorodImg from '@/assets/sprites/bridge_novgorod.png';
+import bridgePersianImg from '@/assets/sprites/bridge_persian.png';
+import resWoodImg from '@/assets/sprites/res_wood.png';
+import resFoodImg from '@/assets/sprites/res_food.png';
+import resStoneImg from '@/assets/sprites/res_stone.png';
+import resGoldImg from '@/assets/sprites/res_gold.png';
+import resHorseImg from '@/assets/sprites/res_horse.png';
+import resIronImg from '@/assets/sprites/res_iron.png';
+
+const FORT_SPRITES: Record<string, string> = {
+  mongol: fortMongolImg, chinese: fortChineseImg, novgorod: fortNovgorodImg, persian: fortPersianImg,
+};
+const CAMP_SPRITES: Record<string, string> = {
+  mongol: campMongolImg, chinese: campChineseImg, novgorod: campNovgorodImg, persian: campPersianImg,
+};
+const BRIDGE_SPRITES: Record<string, string> = {
+  mongol: bridgeMongolImg, chinese: bridgeChineseImg, novgorod: bridgeNovgorodImg, persian: bridgePersianImg,
+};
+const RES_SPRITES: Record<string, string> = {
+  wood: resWoodImg, food: resFoodImg, stone: resStoneImg, gold: resGoldImg, horse: resHorseImg, iron: resIronImg,
+};
 const FACTION_SPRITE_STYLE: Record<string, string> = {
   mongol: 'mongol',
   kipchak: 'mongol',
@@ -52,12 +83,9 @@ const FACTION_SPRITE_STYLE: Record<string, string> = {
 };
 const spriteStyle = (ownerId: string | null) =>
   (ownerId && FACTION_SPRITE_STYLE[ownerId]) || 'novgorod';
-export const fortSprite = (ownerId: string | null) =>
-  `${SPRITE_BASE}fort_${spriteStyle(ownerId)}.png`;
-export const campSprite = (ownerId: string | null) =>
-  `${SPRITE_BASE}camp_${spriteStyle(ownerId)}.png`;
-export const bridgeSprite = (ownerId: string | null) =>
-  `${SPRITE_BASE}bridge_${spriteStyle(ownerId)}.png`;
+export const fortSprite = (ownerId: string | null) => FORT_SPRITES[spriteStyle(ownerId)];
+export const campSprite = (ownerId: string | null) => CAMP_SPRITES[spriteStyle(ownerId)];
+export const bridgeSprite = (ownerId: string | null) => BRIDGE_SPRITES[spriteStyle(ownerId)];
 const RESOURCE_SPRITE: Record<string, string> = {
   horses: 'horse',
   livestock: 'food',
@@ -71,7 +99,7 @@ const RESOURCE_SPRITE: Record<string, string> = {
   spices: 'stone',
 };
 export const resourceSprite = (tradeGood: string) =>
-  `${SPRITE_BASE}res_${RESOURCE_SPRITE[tradeGood] || 'stone'}.png`;
+  RES_SPRITES[RESOURCE_SPRITE[tradeGood] || 'stone'];
 
 // Coordinate Grid Component
 const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {

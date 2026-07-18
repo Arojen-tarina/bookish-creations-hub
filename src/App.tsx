@@ -6,7 +6,14 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// Single-file/offline build (VITE_SINGLEFILE): use hash routing so the app
+// works from file:// too; otherwise normal history routing with base path.
+const AppRouter: typeof BrowserRouter = import.meta.env.VITE_SINGLEFILE ? (HashRouter as typeof BrowserRouter) : BrowserRouter;
+const appRouterProps = import.meta.env.VITE_SINGLEFILE
+  ? {}
+  : { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" };
 import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
 import Shop from "./pages/Shop";
@@ -23,14 +30,14 @@ const App = () => (
           <AdMobBanner className="w-full" />
         </div>
       </div>
-      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
+      <AppRouter {...appRouterProps}>
         <Routes>
           <Route path="/" element={<Digipeli />} />
           <Route path="/ohjekirja" element={<Ohjekirja />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/digipeli" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </AppRouter>
   </QueryClientProvider>
 );
 
