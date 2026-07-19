@@ -274,15 +274,27 @@ const ProvinceToken = ({
 
       {/* Capital crown */}
       {province.isCapital && (
-        <text
-          x={center.x}
-          y={center.y + 0.5}
-          textAnchor="middle"
-          fontSize={2 * SCALE_FACTOR}
-          className="pointer-events-none select-none"
-        >
-          👑
-        </text>
+        <>
+          <text
+            x={center.x}
+            y={center.y - 0.5}
+            textAnchor="middle"
+            fontSize={1.4 * SCALE_FACTOR}
+            className="pointer-events-none select-none"
+            opacity={0.9}
+          >
+            🏛️
+          </text>
+          <text
+            x={center.x}
+            y={center.y + 0.8}
+            textAnchor="middle"
+            fontSize={2 * SCALE_FACTOR}
+            className="pointer-events-none select-none"
+          >
+            👑
+          </text>
+        </>
       )}
 
       {/* Garrison indicator */}
@@ -298,6 +310,20 @@ const ProvinceToken = ({
           style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}
         >
           ⚔
+        </text>
+      )}
+
+      {/* City indicator — always show a city in each province */}
+      {!province.isCapital && !province.garrison && (
+        <text
+          x={center.x}
+          y={center.y + 0.6}
+          textAnchor="middle"
+          fontSize={1.4 * SCALE_FACTOR}
+          className="pointer-events-none select-none"
+          opacity={0.8}
+        >
+          🏛️
         </text>
       )}
 
