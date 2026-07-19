@@ -34,8 +34,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-
-
+import type { PlayableCard } from '@/game/cards.ts';
 
 export const ProvinceGame = () => {
   const {
@@ -58,6 +57,8 @@ export const ProvinceGame = () => {
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
   const [introDone, setIntroDone] = useState(false);
+  const [playedCardOverlay, setPlayedCardOverlay] = useState<PlayableCard | null>(null);
+  const [overlayImageError, setOverlayImageError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fullscreen
@@ -102,6 +103,17 @@ export const ProvinceGame = () => {
       setShowAIOverlay(true);
     }
   }, [gameState?.turn, gameState?.aiActionLog]);
+
+  useEffect(() => {
+    if (!playedCardOverlay) return;
+
+    const timer = window.setTimeout(() => {
+      setPlayedCardOverlay(null);
+      setOverlayImageError(false);
+    }, 1800);
+
+    return () => window.clearTimeout(timer);
+  }, [playedCardOverlay]);
 
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
@@ -658,6 +670,8 @@ export const ProvinceGame = () => {
                   cards={gameState.hand}
                   onPlayCard={(card) => {
                     playCard(card);
+                    setPlayedCardOverlay(card);
+                    setOverlayImageError(false);
                     const eff = card.parsedEffect;
                     toast.success(`🃏 ${card.name}`, { description: eff.description });
                   }}
@@ -699,6 +713,26 @@ export const ProvinceGame = () => {
         battle={pendingBattle}
         onClose={clearBattle}
       />
+
+      {playedCardOverlay && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/85 backdrop-blur-sm px-4 pointer-events-none">
+          <div className="flex items-center justify-center max-h-[85vh] max-w-[90vw]">
+            {overlayImageError ? (
+              <div className="rounded-3xl border border-amber-500/30 bg-slate-900/95 px-8 py-10 text-center shadow-2xl shadow-black/60">
+                <p className="text-xl font-semibold text-amber-200">{playedCardOverlay.name}</p>
+                <p className="mt-2 max-w-[260px] text-sm text-slate-300">{playedCardOverlay.description}</p>
+              </div>
+            ) : (
+              <img
+                src={`/cards/${playedCardOverlay.id}.png`}
+                alt={playedCardOverlay.name}
+                className="max-h-[80vh] max-w-[90vw] h-auto w-auto object-contain rounded-3xl border border-amber-200/40 shadow-2xl shadow-black/60"
+                onError={() => setOverlayImageError(true)}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Back link */}
       <Link 
