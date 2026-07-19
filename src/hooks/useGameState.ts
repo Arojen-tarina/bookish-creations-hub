@@ -27,98 +27,67 @@ import {
   EVENT_CARDS,
   AI_PERSONALITIES,
 } from '@/types/game';
+import { createHexGridLayout } from '@/hooks/hexMapLayout';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 // Create initial hex grid - larger for more strategic depth
 const createHexGrid = (): HexTile[] => {
   const hexes: HexTile[] = [];
-  const gridRadius = 4;
-  
-  const regionData = [
-    { name: 'Mongoliasteppi', terrain: 'steppe' as const },
-    { name: 'Gobin autiomaa', terrain: 'desert' as const },
-    { name: 'Kiinan valtakunta', terrain: 'city' as const },
-    { name: 'Samarkand', terrain: 'river' as const },
-    { name: 'Persianlahti', terrain: 'city' as const },
-    { name: 'Venäjän metsät', terrain: 'forest' as const },
-    { name: 'Vuoristopassit', terrain: 'mountain' as const },
-    { name: 'Silkkitie', terrain: 'river' as const },
-  ];
-  
-  for (let q = -gridRadius; q <= gridRadius; q++) {
-    const r1 = Math.max(-gridRadius, -q - gridRadius);
-    const r2 = Math.min(gridRadius, -q + gridRadius);
-    
-    for (let r = r1; r <= r2; r++) {
-      const index = hexes.length;
-      const region = regionData[index % regionData.length];
-      
-      // Terrain based on position for variety
-      let terrain = region.terrain;
-      let hasCity = false;
-      
-      // Center is steppe (Mongolia)
-      if (Math.abs(q) + Math.abs(r) <= 1) {
-        terrain = 'steppe';
-      } else if (q >= 3) {
-        terrain = Math.random() > 0.5 ? 'city' : 'forest';
-        hasCity = terrain === 'city';
-      } else if (q <= -3) {
-        terrain = 'forest';
-      } else if (r >= 3) {
-        terrain = Math.random() > 0.5 ? 'desert' : 'river';
-      } else if (r <= -3) {
-        terrain = 'mountain';
-      } else if (Math.abs(q - r) >= 3) {
-        terrain = Math.random() > 0.6 ? 'city' : 'steppe';
-        hasCity = terrain === 'city';
-      }
-      
-      const resourceProduction: HexTile['resourceProduction'] = {};
-      switch (terrain) {
-        case 'steppe':
-          resourceProduction.horses = 2;
-          resourceProduction.cattle = 1;
-          break;
-        case 'city':
-          resourceProduction.gold = 3;
-          resourceProduction.artisans = 2;
-          hasCity = true;
-          break;
-        case 'river':
-          resourceProduction.food = 3;
-          resourceProduction.gold = 1;
-          break;
-        case 'forest':
-          resourceProduction.food = 2;
-          break;
-        case 'desert':
-          resourceProduction.gold = 1;
-          break;
-        case 'mountain':
-          resourceProduction.artisans = 1;
-          break;
-      }
-      
-      hexes.push({
-        id: `hex-${q}-${r}`,
-        q,
-        r,
-        terrain,
-        regionName: region.name,
-        ownerId: null,
-        units: [],
-        buildings: [],
-        hasCity,
-        hasFortress: false,
-        hasTradeRoute: terrain === 'city' || terrain === 'river',
-        resourceProduction,
-        defenseBonus: TERRAIN_INFO[terrain].defenseBonus,
-      });
+  const layoutTiles = createHexGridLayout();
+
+  for (const layoutTile of layoutTiles) {
+    let terrain: HexTile['terrain'] = 'steppe';
+
+    if (layoutTile.ownerId === 'china') {
+      terrain = Math.abs(layoutTile.q + layoutTile.r) % 2 === 0 ? 'forest' : 'river';
+    } else if (layoutTile.ownerId === 'persia') {
+      terrain = Math.abs(layoutTile.q + layoutTile.r) % 2 === 0 ? 'desert' : 'river';
+    } else if (layoutTile.ownerId === 'russia') {
+      terrain = 'forest';
+    } else if (Math.abs(layoutTile.q) >= 3 || Math.abs(layoutTile.r) >= 3) {
+      terrain = 'mountain';
     }
+
+    const resourceProduction: HexTile['resourceProduction'] = {};
+    switch (terrain) {
+      case 'steppe':
+        resourceProduction.horses = 2;
+        resourceProduction.cattle = 1;
+        break;
+      case 'river':
+        resourceProduction.food = 3;
+        resourceProduction.gold = 1;
+        break;
+      case 'forest':
+        resourceProduction.food = 2;
+        break;
+      case 'desert':
+        resourceProduction.gold = 1;
+        break;
+      case 'mountain':
+        resourceProduction.artisans = 1;
+        break;
+    }
+
+    hexes.push({
+      id: layoutTile.id,
+      q: layoutTile.q,
+      r: layoutTile.r,
+      terrain,
+      regionName: layoutTile.regionName,
+      ownerId: layoutTile.ownerId,
+      units: [],
+      buildings: [],
+      hasCity: layoutTile.hasCity,
+      hasFortress: false,
+      hasTradeRoute: terrain === 'river' || layoutTile.citySize === 'large',
+      citySize: layoutTile.citySize,
+      resourceProduction,
+      defenseBonus: TERRAIN_INFO[terrain].defenseBonus,
+    });
   }
-  
+
   return hexes;
 };
 

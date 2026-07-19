@@ -77,6 +77,7 @@ export interface HexTile {
   hasCity: boolean;
   hasFortress: boolean;
   hasTradeRoute: boolean;
+  citySize?: 'small' | 'medium' | 'large';
   resourceProduction: Partial<Record<ResourceType, number>>;
   isHighlighted?: boolean;
   defenseBonus: number;
