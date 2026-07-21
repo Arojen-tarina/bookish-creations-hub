@@ -16,6 +16,7 @@ const appRouterProps = import.meta.env.VITE_SINGLEFILE
   : { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" };
 import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
+import Codex from "./pages/Codex";
 import Shop from "./pages/Shop";
 import { AdMobBanner } from "@/components/ui/AdMobBanner.tsx";
 
@@ -34,6 +35,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Digipeli />} />
           <Route path="/ohjekirja" element={<Ohjekirja />} />
+          <Route path="/codex" element={<Codex />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/digipeli" element={<Navigate to="/" replace />} />
         </Routes>

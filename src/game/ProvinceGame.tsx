@@ -220,11 +220,24 @@ export const ProvinceGame = () => {
                 <Wrench className="w-3.5 h-3.5 text-orange-400" />
                 <span className="text-orange-100 font-bold text-sm">{gameState.artisans}</span>
               </div>
+              <div className="flex items-center gap-1" title="Vaikutusvalta (diplomatiavoitto)">
+                <span className="text-sm">🕊️</span>
+                <span className="text-sky-100 font-bold text-sm">{gameState.influence ?? 0}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Arvovalta (kulttuurivoitto)">
+                <span className="text-sm">🏛️</span>
+                <span className="text-purple-100 font-bold text-sm">{gameState.prestige ?? 0}</span>
+              </div>
             </div>
           )}
           
           {/* Right: Controls */}
           <div className="flex items-center gap-2">
+            <Link to="/codex" title="Rajaseudun Kronikka — maailmankirja &amp; kodeksi">
+              <Button variant="ghost" size="icon" className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
+                <ScrollText className="w-4 h-4" />
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </Button>
@@ -257,13 +270,19 @@ export const ProvinceGame = () => {
                 <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} miehiä</span>
                 <span className="text-green-300">🌾 {gameState.lastCollection.foodChange >= 0 ? '+' : ''}{gameState.lastCollection.foodChange} ruokaa</span>
               </div>
-              {(gameState.lastCollection.silkRoadBonus > 0 || gameState.lastCollection.marketBonus > 0) && (
+              {(gameState.lastCollection.silkRoadBonus > 0 || gameState.lastCollection.marketBonus > 0 || gameState.lastCollection.influenceGain > 0 || gameState.lastCollection.prestigeGain > 0) && (
                 <div className="flex items-center justify-center gap-3 text-xs text-stone-400 mt-1">
                   {gameState.lastCollection.silkRoadBonus > 0 && (
                     <span className="text-amber-400">🛤️ Silkkitie +{gameState.lastCollection.silkRoadBonus}</span>
                   )}
                   {gameState.lastCollection.marketBonus > 0 && (
                     <span className="text-amber-400">🏪 Markkinat +{gameState.lastCollection.marketBonus}</span>
+                  )}
+                  {gameState.lastCollection.influenceGain > 0 && (
+                    <span className="text-sky-300">🕊️ Vaikutusvalta +{gameState.lastCollection.influenceGain}</span>
+                  )}
+                  {gameState.lastCollection.prestigeGain > 0 && (
+                    <span className="text-purple-300">🏛️ Arvovalta +{gameState.lastCollection.prestigeGain}</span>
                   )}
                 </div>
               )}
@@ -356,9 +375,12 @@ export const ProvinceGame = () => {
                           </h4>
                           
                           <div className="space-y-2.5">
-                            {(Object.entries(BUILDING_INFO) as [MVPBuildingType, typeof BUILDING_INFO[MVPBuildingType]][]).map(([type, info]) => {
+                            {(Object.entries(BUILDING_INFO) as [MVPBuildingType, typeof BUILDING_INFO[MVPBuildingType]][])
+                              .filter(([type]) => type !== 'wonder' || selectedProvince.id === playerFactionData?.capitalId)
+                              .map(([type, info]) => {
                               const existing = gameState.buildings[selectedProvince.id] || [];
-                              const alreadyBuilt = existing.includes(type);
+                              // Wonder & fortress voi rakentaa useasti; muut kerran
+                              const alreadyBuilt = type !== 'wonder' && existing.includes(type);
                               const hasGold = playerFactionData ? playerFactionData.treasury >= info.cost.gold : false;
                               const hasArtisans = info.cost.artisans ? gameState.artisans >= info.cost.artisans : true;
                               const canAfford = hasGold && hasArtisans;

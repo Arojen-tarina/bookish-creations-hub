@@ -9,7 +9,8 @@ import { getProvincesWithAdjacency } from '@/data/ProvinceData.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
-import { Crown, Sword, Coins, Shield, BookOpen } from 'lucide-react';
+import { Crown, Sword, Coins, Shield, BookOpen, ScrollText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId) => void;
@@ -45,6 +46,15 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
           <p className="text-amber-200/40 text-sm mt-1 italic max-w-2xl mx-auto">
             Suuri Hirvas lauloi tämän maailman olemaan — nyt sen kohtalo lauletaan teräksellä, kullalla ja liitoilla.
           </p>
+          <div className="mt-4 flex justify-center">
+            <Link
+              to="/codex"
+              className="inline-flex items-center gap-2 rounded-full border border-amber-600/40 bg-amber-950/40 px-5 py-2.5 text-sm font-semibold text-amber-200 hover:bg-amber-900/50 hover:border-amber-500/60 transition-colors"
+            >
+              <ScrollText className="w-4 h-4" />
+              Avaa Rajaseudun Kronikka — maailmankirja &amp; kodeksi
+            </Link>
+          </div>
         </div>
 
         {/* How to play guide */}
@@ -71,7 +81,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
             ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-center">
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🗺️</div>
               <div className="text-[10px] text-amber-200 font-bold">Valtaa pääkaupungit</div>
@@ -88,9 +98,14 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               <div className="text-[9px] text-stone-500">Teknologiavoitto</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
-              <div className="text-base">🤝</div>
-              <div className="text-[10px] text-amber-200 font-bold">Liitto kaikkien kanssa</div>
+              <div className="text-base">🕊️</div>
+              <div className="text-[10px] text-amber-200 font-bold">100 vaikutusvaltaa</div>
               <div className="text-[9px] text-stone-500">Diplomatiavoitto</div>
+            </div>
+            <div className="bg-amber-900/20 rounded-lg p-2">
+              <div className="text-base">🏛️</div>
+              <div className="text-[10px] text-amber-200 font-bold">60 arvovaltaa (Ihmeet)</div>
+              <div className="text-[9px] text-stone-500">Kulttuurivoitto</div>
             </div>
           </div>
           

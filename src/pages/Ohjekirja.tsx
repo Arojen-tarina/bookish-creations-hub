@@ -295,9 +295,9 @@ const Ohjekirja = () => {
           <section id="tavoite" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
             <h2 className="text-2xl font-semibold text-amber-100">2. Pelin tavoite ja voittoehdot</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Peli voidaan voittaa neljällä tavalla: sotilaallisella, taloudellisella, teknologisella ja diplomaattisella voitolla. Jokainen polku on tasapainotettu vaatimaan vertailukelpoisen määrän suunnittelua — valitse strategiasi ja pidä se elossa loppupeliin asti. Vastustajat voivat myös voittaa omia ehtojaan täyttäessään.
+              Peli voidaan voittaa viidellä tavalla: sotilaallisella, taloudellisella, teknologisella, diplomaattisella ja kulttuurisella voitolla. Jokainen polku on tasapainotettu vaatimaan vertailukelpoisen määrän suunnittelua — valitse strategiasi ja pidä se elossa loppupeliin asti. Vastustajat voivat myös voittaa omia ehtojaan täyttäessään.
             </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Sotilaallinen</p>
                 <p className="mt-2 text-amber-100 font-semibold">Vihollisten pääkaupungit</p>
@@ -306,7 +306,7 @@ const Ohjekirja = () => {
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Taloudellinen</p>
                 <p className="mt-2 text-amber-100 font-semibold">500 kultaa + Silkkitie</p>
-                <p className="mt-1 text-sm text-slate-300">Kerää vähintään 500 kultaa ja hallitse yli puolta Silkkitien solmukohdista.</p>
+                <p className="mt-1 text-sm text-slate-300">Pidä vähintään 500 kultaa kolme perättäistä vuoroa ja hallitse yli puolta Silkkitien solmukohdista.</p>
               </div>
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Teknologinen</p>
@@ -315,8 +315,13 @@ const Ohjekirja = () => {
               </div>
               <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Diplomaattinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">Liitto kaikkien kanssa</p>
-                <p className="mt-1 text-sm text-slate-300">Solmi liittosopimus jokaisen elossa olevan valtakunnan kanssa (vähintään kaksi liittolaista).</p>
+                <p className="mt-2 text-amber-100 font-semibold">100 vaikutusvaltaa 🕊️</p>
+                <p className="mt-1 text-sm text-slate-300">Kerää vaikutusvaltaa Silkkitien kauppasolmuista, liitoista ja pidetystä pääkaupungista — tai solmi liitto jokaisen valtakunnan kanssa.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Kulttuurinen</p>
+                <p className="mt-2 text-amber-100 font-semibold">60 arvovaltaa 🏛️</p>
+                <p className="mt-1 text-sm text-slate-300">Rakenna Ihmeitä pääkaupunkiisi. Jokainen ihme tuottaa arvovaltaa ja vaikutusvaltaa joka vuoro.</p>
               </div>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-slate-300">
@@ -451,6 +456,7 @@ const Ohjekirja = () => {
                 { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro, rekrytoidut joukot saavat +10 moraalia' },
                 { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro, parempi ratsuväen rekrytointi' },
                 { title: 'Silta', cost: '20 kultaa', labor: '1 käsityöläinen', effect: '+2 kultaa/vuoro Silkkitien provinssissa — karavaanien ylityspaikka' },
+                { title: 'Ihme 🏛️', cost: '80 kultaa', labor: '3 käsityöläistä', effect: 'Vain pääkaupungissa. Tuottaa arvovaltaa ja vaikutusvaltaa joka vuoro — kulttuurivoiton avain. Voi rakentaa useita.' },
               ].map((building) => (
                 <div key={building.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
                   <h3 className="text-base font-semibold text-amber-100">{building.title}</h3>

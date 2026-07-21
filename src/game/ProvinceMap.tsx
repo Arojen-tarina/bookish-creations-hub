@@ -28,7 +28,7 @@ export interface ProvinceMapProps {
   buildingsMap?: Record<string, string[]>;
 }
 
-const TOKEN_RADIUS = 2.2 * SCALE_FACTOR;
+const TOKEN_RADIUS = 1.75 * SCALE_FACTOR;
 const HEX_SPREAD = 1.12;
 // The new hex board art is wider than tall (1953x1349) and is letterboxed
 // onto the square board image; compress y so tokens land on the map band.
@@ -59,6 +59,19 @@ import resStoneImg from '@/assets/sprites/res_stone.png';
 import resGoldImg from '@/assets/sprites/res_gold.png';
 import resHorseImg from '@/assets/sprites/res_horse.png';
 import resIronImg from '@/assets/sprites/res_iron.png';
+// Yksikkögrafiikat (johtaja/heimopäällikkö, jalkaväki, ratsuväki) per faktiotyyli
+import leaderChineseImg from '@/assets/sprites/leader_chinese.png';
+import leaderMongolImg from '@/assets/sprites/leader_mongol.png';
+import leaderNovgorodImg from '@/assets/sprites/leader_novgorod.png';
+import leaderPersianImg from '@/assets/sprites/leader_persian.png';
+import infantryChineseImg from '@/assets/sprites/infantry_chinese.png';
+import infantryMongolImg from '@/assets/sprites/infantry_mongol.png';
+import infantryNovgorodImg from '@/assets/sprites/infantry_novgorod.png';
+import infantryPersianImg from '@/assets/sprites/infantry_persian.png';
+import cavalryChineseImg from '@/assets/sprites/cavalry_chinese.png';
+import cavalryMongolImg from '@/assets/sprites/cavalry_mongol.png';
+import cavalryNovgorodImg from '@/assets/sprites/cavalry_novgorod.png';
+import cavalryPersianImg from '@/assets/sprites/cavalry_persian.png';
 
 const FORT_SPRITES: Record<string, string> = {
   mongol: fortMongolImg, chinese: fortChineseImg, novgorod: fortNovgorodImg, persian: fortPersianImg,
@@ -100,6 +113,19 @@ const RESOURCE_SPRITE: Record<string, string> = {
 };
 export const resourceSprite = (tradeGood: string) =>
   RES_SPRITES[RESOURCE_SPRITE[tradeGood] || 'stone'];
+
+const LEADER_SPRITES: Record<string, string> = {
+  chinese: leaderChineseImg, mongol: leaderMongolImg, novgorod: leaderNovgorodImg, persian: leaderPersianImg,
+};
+const INFANTRY_SPRITES: Record<string, string> = {
+  chinese: infantryChineseImg, mongol: infantryMongolImg, novgorod: infantryNovgorodImg, persian: infantryPersianImg,
+};
+const CAVALRY_SPRITES: Record<string, string> = {
+  chinese: cavalryChineseImg, mongol: cavalryMongolImg, novgorod: cavalryNovgorodImg, persian: cavalryPersianImg,
+};
+export const leaderSprite = (ownerId: string | null) => LEADER_SPRITES[spriteStyle(ownerId)];
+export const infantrySprite = (ownerId: string | null) => INFANTRY_SPRITES[spriteStyle(ownerId)];
+export const cavalrySprite = (ownerId: string | null) => CAVALRY_SPRITES[spriteStyle(ownerId)];
 
 // Coordinate Grid Component
 const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
@@ -709,21 +735,36 @@ export const ProvinceMap = ({
               offsetAngle: number,
             ) => {
               if (armyGroup.length === 0) return;
-              const totalUnits = armyGroup.reduce((s, a) => s + a.cavalry + a.infantry, 0);
               const totalCav = armyGroup.reduce((s, a) => s + a.cavalry, 0);
               const totalInf = armyGroup.reduce((s, a) => s + a.infantry, 0);
               const hasMovement = armyGroup.some(a => a.movementLeft > 0);
               const anySelected = armyGroup.some(a => a.id === selectedArmyId);
               const mainArmy = armyGroup[0];
               const ownerColor = FACTION_DATA_1206[mainArmy.ownerId]?.color || '#888';
+              const hasChief = armyGroup.some(a => a.id === `army-${a.ownerId}-main`);
 
-              // Position badge at edge of token — pill shape for unit breakdown
+              // Valitse näytettävä yksikkögrafiikka: heimopäällikkö > vallitseva joukkotyyppi
+              const kind: 'leader' | 'cavalry' | 'infantry' =
+                hasChief ? 'leader' : totalCav >= totalInf && totalCav > 0 ? 'cavalry' : 'infantry';
+              const sprite =
+                kind === 'leader' ? leaderSprite(mainArmy.ownerId)
+                : kind === 'cavalry' ? cavalrySprite(mainArmy.ownerId)
+                : infantrySprite(mainArmy.ownerId);
+              const spriteW = (kind === 'leader' ? 4.6 : 5.4) * SCALE_FACTOR;
+              const spriteH = (kind === 'leader' ? 4.2 : 3.9) * SCALE_FACTOR;
+
               const rad = (offsetAngle * Math.PI) / 180;
-              const pillH = 1.6 * SCALE_FACTOR;
-              const pillW = (totalCav > 0 && totalInf > 0 ? 5.5 : 3.8) * SCALE_FACTOR;
-              const dist = r + pillH + 0.1 * SCALE_FACTOR;
+              const dist = r + spriteH * 0.5 + 0.2 * SCALE_FACTOR;
               const bx = center.x + Math.cos(rad) * dist;
               const by = center.y + Math.sin(rad) * dist;
+
+              // pieni lukumäärälappu spriten alle (🐎 N / ⚔ N)
+              const labelParts = [
+                totalCav > 0 ? `\u{1F40E}${totalCav}` : '',
+                totalInf > 0 ? `⚔${totalInf}` : '',
+              ].filter(Boolean).join(' ');
+              const labelW = (labelParts.length * 0.75 + 0.8) * SCALE_FACTOR;
+              const labelY = by + spriteH * 0.5 + 0.1 * SCALE_FACTOR;
 
               badges.push(
                 <g
@@ -738,69 +779,44 @@ export const ProvinceMap = ({
                   }}
                   className="cursor-pointer"
                 >
-                  {/* Selection glow */}
-                  {anySelected && (
-                    <rect
-                      x={bx - pillW / 2 - 0.4 * SCALE_FACTOR} y={by - pillH / 2 - 0.4 * SCALE_FACTOR}
-                      width={pillW + 0.8 * SCALE_FACTOR} height={pillH + 0.8 * SCALE_FACTOR}
-                      rx={pillH / 2 + 0.4 * SCALE_FACTOR}
-                      fill="none" stroke="#fbbf24" strokeWidth={0.25 * SCALE_FACTOR} className="animate-pulse"
-                    />
+                  {/* Faktiovärinen tausta-aura kontrastia varten */}
+                  <ellipse cx={bx} cy={by} rx={spriteW * 0.46} ry={spriteH * 0.44}
+                    fill={ownerColor} fillOpacity={0.35}
+                    stroke={anySelected ? '#fbbf24' : ownerColor}
+                    strokeWidth={anySelected ? 0.35 * SCALE_FACTOR : 0.15 * SCALE_FACTOR}
+                    className={anySelected ? 'animate-pulse' : ''} />
+
+                  {/* Yksikkögrafiikka */}
+                  <image href={sprite} x={bx - spriteW / 2} y={by - spriteH / 2}
+                    width={spriteW} height={spriteH}
+                    preserveAspectRatio="xMidYMid meet" className="pointer-events-none select-none" />
+
+                  {/* Heimopäällikön kruunumerkki */}
+                  {hasChief && (
+                    <text x={bx} y={by - spriteH * 0.42} textAnchor="middle"
+                      fontSize={1.5 * SCALE_FACTOR} className="pointer-events-none select-none">👑</text>
                   )}
 
-                  {/* Pill background */}
-                  <rect
-                    x={bx - pillW / 2} y={by - pillH / 2}
-                    width={pillW} height={pillH}
-                    rx={pillH / 2}
-                    fill={ownerColor}
-                    stroke={anySelected ? '#fbbf24' : '#1a1a1a'}
-                    strokeWidth={anySelected ? 0.3 * SCALE_FACTOR : 0.15 * SCALE_FACTOR}
-                  />
-
-                  {/* Unit breakdown: 🐴 N ⚔ N */}
-                  {totalCav > 0 && totalInf > 0 ? (
-                    <>
-                      <text x={bx - 1.6 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} className="pointer-events-none select-none">🐴</text>
-                      <text x={bx - 0.4 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
-                      <text x={bx + 0.9 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} className="pointer-events-none select-none">⚔</text>
-                      <text x={bx + 2.0 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.1 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
-                    </>
-                  ) : totalCav > 0 ? (
-                    <>
-                      <text x={bx - 0.7 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} className="pointer-events-none select-none">🐴</text>
-                      <text x={bx + 0.7 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalCav}</text>
-                    </>
-                  ) : (
-                    <>
-                      <text x={bx - 0.7 * SCALE_FACTOR} y={by + 0.5 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} className="pointer-events-none select-none">⚔</text>
-                      <text x={bx + 0.7 * SCALE_FACTOR} y={by + 0.45 * SCALE_FACTOR} textAnchor="middle" fontSize={1.2 * SCALE_FACTOR} fontWeight="bold" fill="white" className="pointer-events-none select-none">{totalInf}</text>
-                    </>
+                  {/* Lukumäärälappu */}
+                  {labelParts && (
+                    <g className="pointer-events-none select-none">
+                      <rect x={bx - labelW / 2} y={labelY} width={labelW} height={1.5 * SCALE_FACTOR}
+                        rx={0.75 * SCALE_FACTOR} fill="#1a1a1acc" stroke={ownerColor} strokeWidth={0.12 * SCALE_FACTOR} />
+                      <text x={bx} y={labelY + 1.1 * SCALE_FACTOR} textAnchor="middle"
+                        fontSize={1.05 * SCALE_FACTOR} fontWeight="bold" fill="white">{labelParts}</text>
+                    </g>
                   )}
 
-                  {/* Movement indicator for player */}
+                  {/* Liikepiste pelaajalle */}
                   {isPlayer && (
-                    <circle
-                      cx={bx + pillW / 2 - 0.3 * SCALE_FACTOR}
-                      cy={by - pillH / 2 + 0.3 * SCALE_FACTOR}
-                      r={0.35 * SCALE_FACTOR}
-                      fill={hasMovement ? '#22c55e' : '#ef4444'}
-                      stroke="#1a1a1a"
-                      strokeWidth={0.1 * SCALE_FACTOR}
-                    />
+                    <circle cx={bx + spriteW * 0.42} cy={by - spriteH * 0.42} r={0.4 * SCALE_FACTOR}
+                      fill={hasMovement ? '#22c55e' : '#ef4444'} stroke="#1a1a1a" strokeWidth={0.1 * SCALE_FACTOR} />
                   )}
 
-                  {/* Stack indicator */}
+                  {/* Pino-osoitin */}
                   {armyGroup.length > 1 && (
-                    <text
-                      x={bx - pillW / 2 + 0.5 * SCALE_FACTOR}
-                      y={by - pillH / 2 + 0.1 * SCALE_FACTOR}
-                      textAnchor="middle"
-                      fontSize={0.8 * SCALE_FACTOR}
-                      fill="#fbbf24"
-                      fontWeight="bold"
-                      className="pointer-events-none select-none"
-                    >
+                    <text x={bx - spriteW * 0.42} y={by - spriteH * 0.38} textAnchor="middle"
+                      fontSize={1.0 * SCALE_FACTOR} fill="#fbbf24" fontWeight="bold" className="pointer-events-none select-none">
                       ×{armyGroup.length}
                     </text>
                   )}

@@ -38,14 +38,20 @@ export const VICTORY_TARGETS = {
   tech: 5,
   /** Economic victory also requires controlling more than half of Silk Road hubs */
   silkRoadMajority: true,
+  /** Economic victory: pidä kultaraja useita perakkaisia vuoroja */
+  treasuryStreak: 3,
   /** Diplomatic victory: alliance with every surviving faction (min 2) */
   diplomaticMinAllies: 2,
+  /** Diplomatic victory (vaihtoehto): vaikutusvalta tavoitteeseen */
+  influence: 100,
+  /** Cultural victory: arvovalta ihmeista */
+  prestige: 60,
 };
 
 const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
 
 // ============= BUILDING TYPES =============
-export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable' | 'bridge';
+export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable' | 'bridge' | 'wonder';
 
 export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
@@ -57,6 +63,7 @@ export const BUILDING_INFO: Record<MVPBuildingType, {
   workshop: { name: 'Paja', emoji: '🔨', cost: { gold: 30, artisans: 1 }, effect: '+1 käsityöläinen/vuoro, rekrytoidut joukot saavat +10 moraalia' },
   stable: { name: 'Hevostalli', emoji: '🐎', cost: { gold: 40, artisans: 1 }, effect: '+1 hevonen/vuoro, parempi ratsuväen rekrytointi' },
   bridge: { name: 'Silta', emoji: '🌉', cost: { gold: 20, artisans: 1 }, effect: '+2 kultaa/vuoro Silkkitiellä, karavaanien ylityspaikka' },
+  wonder: { name: 'Ihme', emoji: '🏛️', cost: { gold: 80, artisans: 3 }, effect: 'Vain pääkaupungissa: +arvovaltaa ja +vaikutusvaltaa/vuoro (kulttuurivoitto)' },
 };
 
 // ============= EXTENDED STATE =============
@@ -68,6 +75,8 @@ export interface ResourceCollectionResult {
   foodChange: number;
   artisansGain: number;
   horsesGain: number;
+  influenceGain: number;
+  prestigeGain: number;
 }
 
 export interface ResourceIncome {
@@ -129,6 +138,11 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
 
   // Tribal Chief: set once the player's chief-led founding army has been lost
   chiefLost?: boolean;
+
+  // Design-doc statistics (pelaajakohtaiset)
+  influence: number;   // Vaikutusvalta — diplomatia & kauppasolmut (diplomatiavoitto)
+  prestige: number;    // Arvovalta — ihmeet (kulttuurivoitto)
+  treasuryStreak: number; // Perakkaiset vuorot >= talousvoiton kultaraja
 }
 
 // ============= INIT =============
@@ -385,7 +399,28 @@ const calculateResourceCollection = (state: MVPGameState, factionId: FactionId):
     artisansGain = Math.max(1, artisansGain);
   }
 
-  return { taxIncome, manpowerGain, marketBonus, silkRoadBonus, foodChange, artisansGain, horsesGain };
+  // ===== Vaikutusvalta & arvovalta (design-dokumentti) =====
+  // Silkkitien kauppasolmut, pidetty pääkaupunki, liitot ja ihmeet tuottavat vaikutusvaltaa.
+  const silkHubsOwned = ownedProvinces.filter(pp => pp.hasSilkRoad).length;
+  const capitalHeld = capital && capital.ownerId === factionId ? 1 : 0;
+  const allianceCount = (state.relations || []).filter(rel =>
+    (rel.factionA === factionId || rel.factionB === factionId) &&
+    rel.treaties.some(t => t.type === 'alliance')).length;
+  const wonderCount = Object.entries(state.buildings).filter(([pid, buildings]) => {
+    const pp = state.provinces.find(x => x.id === pid);
+    return pp?.ownerId === factionId && buildings.includes('wonder');
+  }).length;
+  const influenceGain = silkHubsOwned + capitalHeld * 2 + allianceCount * 2 + wonderCount * 2;
+  const prestigeGain = wonderCount * 3; // ihmeet tuottavat arvovaltaa (kulttuurivoitto)
+
+  // Aikaisen pelin talouskasvu (doc: nopeuta alkurakentamista)
+  const earlyBoost = state.turn <= 4 ? 4 : 0;
+
+  return {
+    taxIncome: taxIncome + earlyBoost,
+    manpowerGain, marketBonus, silkRoadBonus, foodChange, artisansGain, horsesGain,
+    influenceGain, prestigeGain,
+  };
 };
 
 // ============= COMBAT =============
@@ -584,7 +619,10 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       // Resources
       food: 10,
       artisans: 3,
-      
+      influence: 0,
+      prestige: 0,
+      treasuryStreak: 0,
+
       // AI
       aiLog: [],
       aiActionLog: [],
@@ -927,13 +965,16 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction || faction.treasury < info.cost.gold) return prev;
       if (info.cost.artisans && prev.artisans < info.cost.artisans) return prev;
-      
+
+      // Wonders may be raised only in the capital (doc: exclusive Capital construction)
+      if (type === 'wonder' && province.id !== faction.capitalId) return prev;
+
       const existing = prev.buildings[provinceId] || [];
-      // Fortress can be built multiple times (upgrades fortLevel up to 3)
+      // Fortress and Wonder can be built multiple times; other buildings only once
       if (type === 'fortress') {
         const currentFortLevel = province.fortLevel;
         if (currentFortLevel >= 3) return prev; // Max level reached
-      } else {
+      } else if (type !== 'wonder') {
         if (existing.includes(type)) return prev; // Other buildings only once
       }
       
@@ -979,12 +1020,19 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const capitalProvince = prev.provinces.find(p => p.id === faction.capitalId);
       if (capitalProvince && capitalProvince.ownerId !== playerFaction) return prev;
 
-      // Check if province has a camp or is capital
-      const hasCamp = (prev.buildings[provinceId] || []).includes('camp');
+      // Building roles (doc): Camp unlocks infantry, Stable unlocks cavalry.
+      // The capital can recruit either. Otherwise the matching building is required.
+      const provBuildings = prev.buildings[provinceId] || [];
+      const hasCamp = provBuildings.includes('camp');
+      const hasStable = provBuildings.includes('stable');
       const isCapital = province.id === faction.capitalId;
-      if (!hasCamp && !isCapital) return prev;
+      if (type === 'cavalry') {
+        if (!hasStable && !isCapital) return prev;
+      } else {
+        if (!hasCamp && !isCapital) return prev;
+      }
 
-      const stableCount = (prev.buildings[provinceId] || []).includes('stable') ? 1 : 0;
+      const stableCount = hasStable ? 1 : 0;
       // Forge (workshop): newly recruited units receive combat enhancements
       const forgeMoraleBonus = (prev.buildings[provinceId] || []).includes('workshop') ? 10 : 0;
       const cavalryCount = type === 'cavalry' ? Math.min(4 + stableCount, Math.floor(faction.horses / 2)) : Math.min(2, Math.floor(faction.horses / 2));
@@ -1094,6 +1142,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         factions: newFactions,
         food: Math.max(0, prev.food + collection.foodChange),
         artisans: prev.artisans + collection.artisansGain,
+        influence: prev.influence + collection.influenceGain,
+        prestige: prev.prestige + collection.prestigeGain,
         resourcesCollected: true,
         lastCollection: collection,
       };
@@ -1364,18 +1414,21 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
       // ============= TRIBAL CHIEF =============
       // Each faction's founding army ("army-<faction>-main") carries its Chief.
-      // Armies sharing the Chief's province rally: +5 morale.
+      // Armies in the Chief's province OR adjacent provinces rally (doc: +1 morale
+      // to adjacent armies; same-province gets a bigger bonus).
       const chiefLocations = new Map<string, string>();
       newArmies.forEach(a => {
         if (a.id === `army-${a.ownerId}-main`) chiefLocations.set(a.ownerId, a.provinceId);
       });
-      newArmies = newArmies.map(a =>
-        chiefLocations.has(a.ownerId) &&
-        chiefLocations.get(a.ownerId) === a.provinceId &&
-        a.id !== `army-${a.ownerId}-main`
-          ? { ...a, morale: Math.min(100, a.morale + 5) }
-          : a,
-      );
+      newArmies = newArmies.map(a => {
+        if (a.id === `army-${a.ownerId}-main`) return a;
+        const chiefProv = chiefLocations.get(a.ownerId);
+        if (!chiefProv) return a;
+        if (chiefProv === a.provinceId) return { ...a, morale: Math.min(100, a.morale + 5) };
+        const cp = newProvinces.find(p => p.id === chiefProv);
+        if (cp && cp.neighbors.includes(a.provinceId)) return { ...a, morale: Math.min(100, a.morale + 1) };
+        return a;
+      });
       // If the player's Chief has fallen (army destroyed), apply a one-time penalty.
       let chiefFell = false;
       if (
@@ -1390,7 +1443,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         newArmies = newArmies.map(a =>
           a.ownerId === playerFaction ? { ...a, morale: Math.max(10, a.morale - 10) } : a,
         );
-        aiLog.push('Heimopäällikkösi on kaatunut! Kansa suree: -30 kultaa, joukkojen moraali laskee.');
+        newState.influence = Math.max(0, (newState.influence || 0) - 15);
+        aiLog.push('Heimopäällikkösi on kaatunut! Kansa suree: -30 kultaa, -15 vaikutusvaltaa, joukkojen moraali laskee.');
       }
 
       // ============= SIEGE / FRONTLINE PROCESSING =============
@@ -1462,10 +1516,13 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       }
 
       // Economic victory: amass gold AND control a majority of Silk Road hubs
+      // AND maintain the treasury threshold for several consecutive rounds.
       const silkHubs = newProvinces.filter(p => p.hasSilkRoad);
       const playerSilkHubs = silkHubs.filter(p => p.ownerId === playerFaction).length;
       const hasSilkMajority = silkHubs.length > 0 && playerSilkHubs * 2 > silkHubs.length;
-      if (!gameOver && playerGold >= VICTORY_TARGETS.gold && hasSilkMajority) {
+      const newTreasuryStreak = playerGold >= VICTORY_TARGETS.gold ? (newState.treasuryStreak || 0) + 1 : 0;
+      if (!gameOver && playerGold >= VICTORY_TARGETS.gold && hasSilkMajority &&
+          newTreasuryStreak >= VICTORY_TARGETS.treasuryStreak) {
         gameOver = true;
         winnerId = playerFaction;
         winCondition = 'economic';
@@ -1478,7 +1535,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         winCondition = 'technology';
       }
 
-      // Diplomatic victory: alliance treaty with every surviving faction
+      // Diplomatic victory: reach the Influence target through alliances & trade hubs,
+      // or ally with every surviving rival.
       if (!gameOver) {
         const survivingRivals = newFactions.filter(f =>
           f.id !== playerFaction && newProvinces.some(p => p.ownerId === f.id));
@@ -1488,11 +1546,18 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
               ((rel.factionA === playerFaction && rel.factionB === rival.id) ||
                (rel.factionB === playerFaction && rel.factionA === rival.id)) &&
               rel.treaties.some(t => t.type === 'alliance')));
-        if (alliedWithAll) {
+        if ((newState.influence || 0) >= VICTORY_TARGETS.influence || alliedWithAll) {
           gameOver = true;
           winnerId = playerFaction;
           winCondition = 'diplomatic';
         }
+      }
+
+      // Cultural victory: accumulate Prestige by constructing Wonders.
+      if (!gameOver && (newState.prestige || 0) >= VICTORY_TARGETS.prestige) {
+        gameOver = true;
+        winnerId = playerFaction;
+        winCondition = 'cultural';
       }
       
       // Defeat if player has lost all provinces and armies
@@ -1540,6 +1605,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         winnerId,
         winCondition,
         chiefLost: prev.chiefLost || chiefFell,
+        treasuryStreak: newTreasuryStreak,
         aiLog,
         aiActionLog,
         resourcesCollected: false,
