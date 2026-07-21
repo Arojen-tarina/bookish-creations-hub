@@ -11,16 +11,15 @@ import { useState } from 'react';
 
 // Korttikuvat: bundlataan importteina (hajautetut tiedostot normaalibuildissa,
 // data-URL:t singlefile-buildissa). Osalla korteista ei ole kuvaa -> fallback.
-const CARD_IMAGE_MODULES = import.meta.glob('@/assets/cards/*.{jpg,jpeg,png}', {
+const CARD_IMAGE_MODULES = import.meta.glob('@/assets/cards/*.{jpg,jpeg}', {
   eager: true,
   query: '?url',
   import: 'default',
 }) as Record<string, string>;
 const CARD_IMAGES: Record<string, string> = {};
 for (const [path, url] of Object.entries(CARD_IMAGE_MODULES)) {
-  const id = path.split('/').pop()!.replace(/\.(jpe?g|png)$/i, '');
-  // Suosi optimoitua jpg-versiota jos sekä jpg että png löytyy samalle kortille.
-  if (!CARD_IMAGES[id] || /\.jpe?g$/i.test(path)) CARD_IMAGES[id] = url;
+  const id = path.split('/').pop()!.replace(/\.jpe?g$/i, '');
+  CARD_IMAGES[id] = url;
 }
 const cardImage = (id: string): string | undefined => CARD_IMAGES[id];
 
