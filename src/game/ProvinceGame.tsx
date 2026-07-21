@@ -30,11 +30,12 @@ import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
   Clock, Coins, Users, Sword, RotateCcw, Trophy, ScrollText,
-  Target, Crosshair, Wheat, Wrench, HelpCircle,
+  Target, Crosshair, Wheat, Wrench, HelpCircle, Volume2, VolumeX,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import type { PlayableCard } from '@/game/cards.ts';
+
+
 
 export const ProvinceGame = () => {
   const {
@@ -49,7 +50,7 @@ export const ProvinceGame = () => {
     collectResources,
   } = useProvinceGameState();
 
-  const { playAmbient, stopAmbient } = useAudioManager();
+  const { playAmbient, stopAmbient, settings: audioSettings, toggleMute } = useAudioManager();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -57,9 +58,49 @@ export const ProvinceGame = () => {
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
   const [introDone, setIntroDone] = useState(false);
-  const [playedCardOverlay, setPlayedCardOverlay] = useState<PlayableCard | null>(null);
-  const [overlayImageError, setOverlayImageError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
+  const HAND_BASE_H = 168;
+  const [handHeight, setHandHeight] = useState<number>(HAND_BASE_H);
+  const handDragRef = useRef<{ startY: number; startH: number } | null>(null);
+  const onHandResizeStart = useCallback((clientY: number) => {
+    handDragRef.current = { startY: clientY, startH: handHeight };
+    const move = (y: number) => {
+      if (!handDragRef.current) return;
+      const dy = handDragRef.current.startY - y; // ylös = suurempi
+      const next = Math.max(64, Math.min(360, handDragRef.current.startH + dy));
+      setHandHeight(next);
+    };
+    const onMouseMove = (e: MouseEvent) => move(e.clientY);
+    const onTouchMove = (e: TouchEvent) => { if (e.touches[0]) move(e.touches[0].clientY); };
+    const end = () => {
+      handDragRef.current = null;
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', end);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', end);
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', end);
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', end);
+  }, [handHeight]);
+  // Mittaa korttien luonnollinen (skaalaamaton) korkeus, jotta ne mahtuvat
+  // aina paneeliin kokonaan riippumatta tekstin määrästä.
+  const handContentRef = useRef<HTMLDivElement>(null);
+  const [handNaturalH, setHandNaturalH] = useState<number>(HAND_BASE_H);
+  useEffect(() => {
+    const el = handContentRef.current;
+    if (!el) return;
+    const measure = () => setHandNaturalH(Math.max(el.scrollHeight, 1));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [gameState?.hand]);
+  // Skaalaa niin, että sisältö täyttää paneelin korkeuden mutta ei koskaan ylitä sitä.
+  const handScale = Math.min(handHeight / Math.max(handNaturalH, 1), 1.6);
 
   // Fullscreen
   const toggleFullscreen = useCallback(async () => {
@@ -103,17 +144,6 @@ export const ProvinceGame = () => {
       setShowAIOverlay(true);
     }
   }, [gameState?.turn, gameState?.aiActionLog]);
-
-  useEffect(() => {
-    if (!playedCardOverlay) return;
-
-    const timer = window.setTimeout(() => {
-      setPlayedCardOverlay(null);
-      setOverlayImageError(false);
-    }, 1800);
-
-    return () => window.clearTimeout(timer);
-  }, [playedCardOverlay]);
 
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
@@ -233,6 +263,14 @@ export const ProvinceGame = () => {
           
           {/* Right: Controls */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost" size="icon"
+              onClick={toggleMute}
+              title={audioSettings.muted ? 'Musiikki pois päältä — klikkaa soittaaksesi' : 'Musiikki päällä — klikkaa mykistääksesi'}
+              className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
+            >
+              {audioSettings.muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
             <Link to="/codex" title="Rajaseudun Kronikka — maailmankirja &amp; kodeksi">
               <Button variant="ghost" size="icon" className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
                 <ScrollText className="w-4 h-4" />
@@ -668,10 +706,20 @@ export const ProvinceGame = () => {
         showSidebar ? 'right-[380px]' : 'right-0'
       }`}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
-          <div className="flex items-stretch">
+          {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
+          <div
+            className="group relative h-3 cursor-ns-resize flex items-center justify-center touch-none select-none"
+            onMouseDown={(e) => { e.preventDefault(); onHandResizeStart(e.clientY); }}
+            onTouchStart={(e) => { if (e.touches[0]) onHandResizeStart(e.touches[0].clientY); }}
+            onDoubleClick={() => setHandHeight(HAND_BASE_H)}
+            title="Raahaa muuttaaksesi korttien kokoa — kaksoisklikkaa palauttaaksesi"
+          >
+            <div className="w-16 h-1 rounded-full bg-amber-500/40 group-hover:bg-amber-400/80 transition-colors" />
+          </div>
+          <div className="flex items-stretch" style={{ height: handHeight }}>
             {/* Minimap */}
             <div className="w-[180px] flex-shrink-0 border-r border-slate-700/50 p-1.5">
-              <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '100px' }}>
+              <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '60px' }}>
                 <ProvinceMap
                   provinces={gameState.provinces}
                   armies={gameState.armies}
@@ -685,23 +733,31 @@ export const ProvinceGame = () => {
             </div>
 
 
-            {/* Cards */}
-            <div className="flex-1 p-3 overflow-hidden">
+            {/* Cards — skaalautuu raahatun korkeuden mukaan, aina kokonaan näkyvissä */}
+            <div className="flex-1 overflow-hidden">
               {gameState.hand && gameState.hand.length > 0 ? (
-                <CardHand
-                  cards={gameState.hand}
-                  onPlayCard={(card) => {
-                    playCard(card);
-                    setPlayedCardOverlay(card);
-                    setOverlayImageError(false);
-                    const eff = card.parsedEffect;
-                    toast.success(`🃏 ${card.name}`, { description: eff.description });
+                <div
+                  ref={handContentRef}
+                  style={{
+                    transform: `scale(${handScale})`,
+                    transformOrigin: 'left top',
+                    width: `${100 / handScale}%`,
                   }}
-                  canPlay={gameState.phase !== 'end'}
-                  currentPhase={gameState.phase}
-                  deckSize={gameState.deck?.length || 0}
-                  discardSize={gameState.discard?.length || 0}
-                />
+                  className="p-3"
+                >
+                  <CardHand
+                    cards={gameState.hand}
+                    onPlayCard={(card) => {
+                      playCard(card);
+                      const eff = card.parsedEffect;
+                      toast.success(`🃏 ${card.name}`, { description: eff.description });
+                    }}
+                    canPlay={gameState.phase !== 'end'}
+                    currentPhase={gameState.phase}
+                    deckSize={gameState.deck?.length || 0}
+                    discardSize={gameState.discard?.length || 0}
+                  />
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-full text-amber-200/40 text-sm">
                   Ei kortteja kädessä • 📦 {gameState.deck?.length || 0} pakassa
@@ -735,26 +791,6 @@ export const ProvinceGame = () => {
         battle={pendingBattle}
         onClose={clearBattle}
       />
-
-      {playedCardOverlay && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/85 backdrop-blur-sm px-4 pointer-events-none">
-          <div className="flex items-center justify-center max-h-[85vh] max-w-[90vw]">
-            {overlayImageError ? (
-              <div className="rounded-3xl border border-amber-500/30 bg-slate-900/95 px-8 py-10 text-center shadow-2xl shadow-black/60">
-                <p className="text-xl font-semibold text-amber-200">{playedCardOverlay.name}</p>
-                <p className="mt-2 max-w-[260px] text-sm text-slate-300">{playedCardOverlay.description}</p>
-              </div>
-            ) : (
-              <img
-                src={`/cards/${playedCardOverlay.id}.png`}
-                alt={playedCardOverlay.name}
-                className="max-h-[80vh] max-w-[90vw] h-auto w-auto object-contain rounded-3xl border border-amber-200/40 shadow-2xl shadow-black/60"
-                onError={() => setOverlayImageError(true)}
-              />
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Back link */}
       <Link 
