@@ -80,7 +80,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
           return (
             <div
               key={`${card.id}-${idx}`}
-              className={`relative flex-shrink-0 w-32 rounded-lg overflow-hidden transition-all duration-200 cursor-pointer
+              className={`relative flex-shrink-0 w-36 self-start rounded-lg overflow-hidden transition-all duration-200 cursor-pointer
                 ${isSelected
                   ? 'ring-2 ring-green-400 -translate-y-2 shadow-xl shadow-green-500/20'
                   : 'ring-1 ring-slate-600/50 hover:-translate-y-1 hover:ring-amber-500/50'
@@ -102,7 +102,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                   {/* efekti + pelaa-nappi kuvan päälle alareunaan */}
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-1.5 pb-1.5 pt-5">
                     <div className="rounded bg-amber-900/80 px-1.5 py-1 text-center backdrop-blur-sm ring-1 ring-amber-500/30">
-                      <span className="text-amber-100 text-[11px] font-bold leading-tight line-clamp-2">{emoji} {card.parsedEffect.description}</span>
+                      <span className="text-amber-100 text-[11px] font-bold leading-tight break-words">{emoji} {card.parsedEffect.description}</span>
                     </div>
                     {isSelected && canPlay && (
                       <Button
@@ -122,13 +122,13 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                 /* Ei kuvaa: tekstikortti */
                 <>
                   <div className={`${typeInfo.color} px-2 py-1 flex items-center justify-between gap-1`}>
-                    <span className="text-white text-[10px] font-bold truncate">{typeInfo.icon} {card.name}</span>
+                    <span className="text-white text-[10px] font-bold break-words">{typeInfo.icon} {card.name}</span>
                     <span className={`text-[9px] ${rarity.color} px-1 rounded text-white flex-shrink-0`}>{rarity.symbol}</span>
                   </div>
                   <div className="bg-slate-800 px-2 py-1.5">
-                    <p className="text-slate-300 text-[10px] leading-snug mb-1.5 line-clamp-2">{card.description}</p>
+                    <p className="text-slate-300 text-[10px] leading-snug mb-1.5 break-words">{card.description}</p>
                     <div className="bg-amber-900/40 rounded px-1.5 py-1 text-center">
-                      <span className="text-amber-200 text-[11px] font-bold leading-tight line-clamp-2">{emoji} {card.parsedEffect.description}</span>
+                      <span className="text-amber-200 text-[11px] font-bold leading-tight break-words">{emoji} {card.parsedEffect.description}</span>
                     </div>
                   </div>
                   {isSelected && canPlay && (
