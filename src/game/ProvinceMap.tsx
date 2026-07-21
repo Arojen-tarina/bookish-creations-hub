@@ -29,14 +29,10 @@ export interface ProvinceMapProps {
 }
 
 const TOKEN_RADIUS = 1.75 * SCALE_FACTOR;
-const HEX_SPREAD = 1.12;
-// The new hex board art is wider than tall (1953x1349) and is letterboxed
-// onto the square board image; compress y so tokens land on the map band.
-const LETTERBOX_Y = 0.69;
-const projectPoint = (x: number, y: number) => ({
-  x: 50 + (x - 50) * HEX_SPREAD,
-  y: 65 + (y - 65) * HEX_SPREAD * LETTERBOX_Y,
-});
+// Provinssien keskipisteet generoidaan nyt suoraan LAUTA-avaruudessa
+// (0..BOARD_SIZE), heksavyöhykkeen kokonaisten heksien keskelle, joten
+// projektio on identiteetti — ei enää kaksinkertaista muunnosta.
+const projectPoint = (x: number, y: number) => ({ x, y });
 
 // ============= FACTION-STYLED MAP SPRITES =============
 // Imported as modules so Vite bundles them (hashed files, or inlined
@@ -300,27 +296,15 @@ const ProvinceToken = ({
 
       {/* Capital crown */}
       {province.isCapital && (
-        <>
-          <text
-            x={center.x}
-            y={center.y - 0.5}
-            textAnchor="middle"
-            fontSize={1.4 * SCALE_FACTOR}
-            className="pointer-events-none select-none"
-            opacity={0.9}
-          >
-            🏛️
-          </text>
-          <text
-            x={center.x}
-            y={center.y + 0.8}
-            textAnchor="middle"
-            fontSize={2 * SCALE_FACTOR}
-            className="pointer-events-none select-none"
-          >
-            👑
-          </text>
-        </>
+        <text
+          x={center.x}
+          y={center.y + 0.5}
+          textAnchor="middle"
+          fontSize={2 * SCALE_FACTOR}
+          className="pointer-events-none select-none"
+        >
+          👑
+        </text>
       )}
 
       {/* Garrison indicator */}
@@ -336,20 +320,6 @@ const ProvinceToken = ({
           style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}
         >
           ⚔
-        </text>
-      )}
-
-      {/* City indicator — always show a city in each province */}
-      {!province.isCapital && !province.garrison && (
-        <text
-          x={center.x}
-          y={center.y + 0.6}
-          textAnchor="middle"
-          fontSize={1.4 * SCALE_FACTOR}
-          className="pointer-events-none select-none"
-          opacity={0.8}
-        >
-          🏛️
         </text>
       )}
 

@@ -1,8 +1,9 @@
 /**
  * ProvinceData.ts — Provinssidata vuoden 1206 aloitusta varten
  *
- * ~70 provinssia historiallisesti tärkeiltä alueilta.
- * Koordinaatit on sovitettu kuvitettuun pelilautaan (0-100 x 0-100).
+ * Täysi heksaruudukko: yksi kaupunki per ruutu (neutraali tai faktion omistama).
+ * Faktiot laudan reunoilla, tasaisesti jaettuna; neutraalit keskellä.
+ * Generoitu gen_provinces.py:llä. Koordinaatit sovitettu kuvitettuun lautaan.
  */
 import { Province, FactionId } from "@/types/province";
 
@@ -14,483 +15,226 @@ const p = (
   ownerId: FactionId | null,
   options: Partial<Province> = {},
 ): Province => ({
-  id,
-  name,
-  region,
-  terrain,
-  ownerId,
-  isCoastal: false,
-  isCapital: false,
-  neighbors: [],
-  baseTax: 2,
-  baseManpower: 3,
-  supply: 3,
-  hasSilkRoad: false,
-  unrest: 0,
-  fortLevel: 0,
-  developmentLevel: 1,
-  buildings: [],
-  garrison: 0,
+  id, name, region, terrain, ownerId,
+  isCoastal: false, isCapital: false, neighbors: [],
+  baseTax: 2, baseManpower: 3, supply: 3,
+  hasSilkRoad: false, unrest: 0, fortLevel: 0,
+  developmentLevel: 1, buildings: [], garrison: 0,
   center: { x: 0, y: 0 },
   ...options,
 });
 
-// ============= NORTH WEST (Rus, Western Siberia, Western Kipchak) =============
-// Coordinates: x < 45, y < 40
-const northWestProvinces: Province[] = [
-  // RUS KINGDOMS
-  p("novgorod", "Novgorod", "rus", "forest", "rus", {
-    isCapital: true,
-    baseTax: 6,
-    baseManpower: 8,
-    fortLevel: 2,
-    developmentLevel: 3,
-    tradeGood: "fur",
-    center: { x: 22, y: 26 },
-  }),
-  p('pskov', 'Pihkova', 'rus', 'forest', 'rus', {
-    baseTax: 3, baseManpower: 4, tradeGood: 'fur',
-    center: { x: 23, y: 42 },
-  }),
-  p("tver", "Tver", "rus", "forest", "rus", {
-    baseTax: 3,
-    baseManpower: 5,
-    center: { x: 44, y: 38 },
-  }),
-  p("vladimir", "Vladimir", "rus", "forest", "rus", {
-    baseTax: 5,
-    baseManpower: 7,
-    fortLevel: 1,
-    tradeGood: "fur",
-    center: { x: 49, y: 28 },
-  }),
-  p("smolensk", "Smolensk", "rus", "forest", "rus", {
-    baseTax: 4,
-    baseManpower: 6,
-    fortLevel: 1,
-    center: { x: 32, y: 48 },
-  }),
-  p("ryazan", "Rjazan", "rus", "forest", null, {
-    baseTax: 4,
-    baseManpower: 6,
-    center: { x: 56, y: 40 },
-  }),  p('georgia', 'Georgia', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 44, y: 51 },
-  }),  p('armenia', 'Armenia', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 66, y: 61 },
-  }),  p('khotan', 'Khotan', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 70, y: 76 },
-    hasSilkRoad: true,
-  }),
-
-  p('dunhuang', 'Dunhuang', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-      center: { x: 75, y: 55 },
-  }),
-p('tibet_east', 'Itä-Tiibet', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 93, y: 70 },
-    hasSilkRoad: true,
-  }),
-
-p('tibet_west', 'Länsi-Tiibet', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 78, y: 68 },
-    hasSilkRoad: true,
-  }),
-
-  p('lhasa', 'Lhasa', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 60, y: 24 },
-  }),
-
-    p('goryeo', 'Goryeo', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 58, y: 54 },
-  }),
-    p('korea_south', 'Etelä-Korea', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 100, y: 60 }, hasSilkRoad: true,
-  }),
-
-    p('manchuria_north', 'Pohjois-Mantšuria', 'rus', 'forest', null, {
-        baseTax: 4, baseManpower: 6,
-        center: { x: 86, y: 78 }, hasSilkRoad: true,
-    }),
-   p('yakutia', 'Jakutia', 'rus', 'forest', null, {
-    baseTax: 4, baseManpower: 6,
-    center: { x: 48, y: 59 },
-  }),
-
-  p("chernigov", "Tšernihiv", "rus", "farmland", "rus", {
-    baseTax: 5,
-    baseManpower: 7,
-    center: { x: 34, y: 40 },
-  }),
-  p("kiev", "Kiova", "rus", "farmland", "rus", {
-    baseTax: 7,
-    baseManpower: 10,
-    fortLevel: 2,
-    tradeGood: "grain",
-    center: { x: 32, y: 56 },
-  }),
-  // WESTERN SIBERIA
-  p("siberia_west", "Länsi-Siperia", "siberia", "taiga", "rus", {
-    baseTax: 1,
-    baseManpower: 2,
-    tradeGood: "fur",
-    center: { x: 29, y: 21 },
-  }),
-  // CENTRAL ASIA EDGES
-  p("altai", "Altai", "mongolia", "mountain", "mongol", {
-    baseTax: 1,
-    baseManpower: 2,
-    fortLevel: 1,
-    center: { x: 86, y: 24 },
-  }),
-  p("dzungaria", "Dzungaria", "central_asia", "steppe", "mongol", {
-    baseTax: 2,
-    baseManpower: 4,
-    tradeGood: "horses",
-    center: { x: 65, y: 32 },
-  }),
-  p("semirechye", "Seitsemän joki", "central_asia", "grassland", "rus", {
-    baseTax: 3,
-    baseManpower: 5,
-    tradeGood: "horses",
-    center: { x: 35, y: 30 },
-  }),
-  // KHWAREZM EDGES (moved to South West)
-];
-
-// ============= NORTH EAST (Mongolia, Eastern Manchuria, Northern China, Eastern Siberia) =============
-// Coordinates: x >= 45, y < 40
-const northEastProvinces: Province[] = [
-  // MONGOLIA
-  p("karakorum", "Karakorum", "mongolia", "steppe", "mongol", {
-    isCapital: true,
-    baseTax: 5,
-    baseManpower: 8,
-    fortLevel: 2,
-    developmentLevel: 3,
-    center: { x: 83, y: 40 },
-  }),
-  p("mongol_east", "Itä-Mongolia", "mongolia", "steppe", "mongol", {
-    baseTax: 2,
-    baseManpower: 5,
-    tradeGood: "horses",
-    center: { x: 90, y: 50 },
-    hasSilkRoad: true,
-  }),
-  p("mongol_central", "Keski-Mongolia", "mongolia", "steppe", "mongol", {
-    baseTax: 2,
-    baseManpower: 6,
-    tradeGood: "livestock",
-    center: { x: 78, y: 33 },
-  }),
-  p("mongol_west", "Länsi-Mongolia", "mongolia", "steppe", "mongol", {
-    baseTax: 1,
-    baseManpower: 4,
-    tradeGood: "horses",
-    center: { x: 72, y: 46 },
-  }),
-  p("kerulen", "Kerulenjoki", "mongolia", "grassland", "mongol", {
-    baseTax: 2,
-    baseManpower: 4,
-    tradeGood: "horses",
-    center: { x: 100, y: 29 },
-  }),
-  p("onon", "Ononjoki", "mongolia", "grassland", "mongol", {
-    baseTax: 2,
-    baseManpower: 4,
-    center: { x: 102, y: 37 },
-  }),
-  p("baikal", "Baikaljärvi", "mongolia", "taiga", "mongol", {
-    baseTax: 2,
-    baseManpower: 3,
-    tradeGood: "fur",
-    center: { x: 72, y: 22 },
-  }),
-  p("gobi_north", "Pohjois-Gobi", "mongolia", "desert", "mongol", {
-    baseTax: 1,
-    baseManpower: 2,
-    center: { x: 102, y: 20 },
-  }),
-  // MANCHURIA
-  // CENTRAL ASIA EDGES
-];
-
-// ============= SOUTH WEST (Caucasus, Persia, Western Khwarezm) =============
-// Coordinates: x < 45, y >= 40
-const southWestProvinces: Province[] = [
-  // CAUCASUS
-  p("azerbaijan", "Azerbaijan", "caucasus", "hills", "khwarezm", {
-    baseTax: 4,
-    baseManpower: 5,
-    tradeGood: "iron",
-    center: { x: 43, y: 84 },
-    hasSilkRoad: true,
-  }),
-  p("shirvan", "Shirvan", "caucasus", "hills", "khwarezm", {
-    baseTax: 3,
-    baseManpower: 4,
-    center: { x: 32, y: 78 },
-    hasSilkRoad: true,
-  }),
-  // KHWAREZM
-  p("khiva", "Khiva", "khwarezm", "desert", "khwarezm", {
-    baseTax: 3,
-    baseManpower: 4,
-    center: { x: 38, y: 68 },
-    hasSilkRoad: true,
-  }),
-  p("urgench", "Urgench", "khwarezm", "grassland", "khwarezm", {
-    baseTax: 6,
-    baseManpower: 8,
-    fortLevel: 2,
-    center: { x: 32, y: 90 },
-    hasSilkRoad: true,
-  }),
-
-  p("merv", "Merv", "khorasan", "farmland", "khwarezm", {
-    baseTax: 7,
-    baseManpower: 9,
-    fortLevel: 2,
-    center: { x: 52, y: 90 },
-    hasSilkRoad: true,
-  }),
-
-  p('nishapur', 'Nishapur', 'khorasan', 'hills', 'khwarezm', {
-    baseTax: 6, baseManpower: 8, hasSilkRoad: true, tradeGood: 'gems',
-    center: { x: 28, y: 108 }, 
-  }),
-  
-  p('balkh', 'Balkh', 'khorasan', 'grassland', 'khwarezm', {
-    baseTax: 5, baseManpower: 7, hasSilkRoad: true,
-    center: { x: 54, y: 80 },
-  }),
-  p("herat", "Herat", "khorasan", "farmland", null, {
-    baseTax: 6,
-    baseManpower: 8,
-    fortLevel: 1,
-    hasSilkRoad: true,
-    center: { x: 58, y: 86 },
-  }),
-  p("samarkand", "Samarkand", "transoxiana", "farmland", "khwarezm", {
-    isCapital: true,
-    baseTax: 10,
-    baseManpower: 12,
-    fortLevel: 3,
-    developmentLevel: 5,
-    hasSilkRoad: true,
-    tradeGood: "silk",
-    center: { x: 46, y: 76 },
-  }),
-  // PERSIA
-  p("isfahan", "Isfahan", "persia", "farmland", "khwarezm", {
-    baseTax: 7,
-    baseManpower: 9,
-    fortLevel: 2,
-    tradeGood: "silk",
-    center: { x: 17, y: 100 },
-  }),
-  p("shiraz", "Shiraz", "persia", "farmland", "khwarezm", {
-    baseTax: 6,
-    baseManpower: 7,
-    tradeGood: "spices",
-    center: { x: 42, y: 96 },
-  }),
-  p("tabriz", "Tabriz", "persia", "hills", "khwarezm", {
-    baseTax: 6,
-    baseManpower: 8,
-    fortLevel: 1,
-    hasSilkRoad: true,
-    center: { x: 21, y: 77 },
-  }),
-  p("ray", "Ray (Tehran)", "persia", "hills", null, {
-    baseTax: 5,
-    baseManpower: 7,
-    hasSilkRoad: true,
-    center: { x: 26, y: 66 },
-  }),
-  p("kerman", "Kerman", "persia", "desert", "khwarezm", {
-    baseTax: 3,
-    baseManpower: 4,
-    center: { x: 59, y: 102 },
-  }),
-];
-
-// ============= SOUTH EAST (Song China, Xia, Central Asia, Tibet, Korea) =============
-// Coordinates: x >= 45, y >= 40
-const southEastProvinces: Province[] = [
-  // CENTRAL ASIA
-  p("kashgar", "Kashgar", "central_asia", "desert", null, {
-    baseTax: 4,
-    baseManpower: 5,
-    hasSilkRoad: true,
-    tradeGood: "silk",
-    center: { x: 60, y: 68 },
-  }),
-  // GOBI
-  p('gobi_south', 'Etelä-Gobi', 'mongolia', 'desert', 'mongol', {
-    baseTax: 1, baseManpower: 1, hasSilkRoad: true,
-    center: { x: 102, y: 46 },
-  }),
-  // SONG CHINA
-  p("hangzhou", "Hangzhou", "song_china", "farmland", "song", {
-    isCapital: true,
-    baseTax: 12,
-    baseManpower: 15,
-    fortLevel: 2,
-    developmentLevel: 5,
-    isCoastal: true,
-    tradeGood: "silk",
-    center: { x: 94, y: 91 },
-  }),
-  p("nanjing", "Nanjing", "song_china", "farmland", "song", {
-    baseTax: 9,
-    baseManpower: 12,
-    fortLevel: 2,
-    tradeGood: "silk",
-    center: { x: 90, y: 85 },
-  }),
-  p("suzhou", "Suzhou", "song_china", "farmland", "song", {
-    baseTax: 8,
-    baseManpower: 10,
-    isCoastal: true,
-    tradeGood: "silk",
-    center: { x: 102, y: 94 },
-  }),
-  p("fujian", "Fujian", "song_china", "hills", "song", {
-    baseTax: 5,
-    baseManpower: 7,
-    isCoastal: true,
-    tradeGood: "spices",
-    center: { x: 100, y: 102 },
-  }),
-  p("guangdong", "Guangdong", "song_china", "farmland", "song", {
-    baseTax: 6,
-    baseManpower: 8,
-    isCoastal: true,
-    tradeGood: "spices",
-    center: { x: 86, y: 110 },
-  }),
-  p("jiangxi", "Jiangxi", "song_china", "hills", "song", {
-    baseTax: 5,
-    baseManpower: 7,
-    tradeGood: "grain",
-    center: { x: 88, y: 98 },
-  }),
-  p("hunan", "Hunan", "song_china", "farmland", "song", {
-    baseTax: 5,
-    baseManpower: 7,
-    tradeGood: "grain",
-    center: { x: 80, y: 95 },
-  }),
-  p("hubei", "Hubei", "song_china", "farmland", "song", {
-    baseTax: 6,
-    baseManpower: 8,
-    tradeGood: "grain",
-    center: { x: 82, y: 87 },
-  }),
-  p("sichuan", "Sichuan", "song_china", "hills", "song", {
-    baseTax: 7,
-    baseManpower: 10,
-    fortLevel: 2,
-    tradeGood: "salt",
-    center: { x: 72, y: 87 },
-    hasSilkRoad: true,
-  }),
-  p("yunnan", "Yunnan", "song_china", "mountain", "song", {
-    baseTax: 3,
-    baseManpower: 5,
-    tradeGood: "gems",
-    center: { x: 72, y: 99 },
-  }),
-  // TURFAN - Central Asia, assigned to Song
-  p("turfan", "Turfan", "central_asia", "desert", "song", {
-    baseTax: 2,
-    baseManpower: 3,
-    tradeGood: "spices",
-    center: { x: 76, y: 105 },
-  }),
-];
-
-// Combine all provinces organized by map quadrant (NW, NE, SW, SE)
 export const ALL_PROVINCES_1206: Province[] = [
-  ...northWestProvinces,
-  ...northEastProvinces,
-  ...southWestProvinces,
-  ...southEastProvinces,
+  p("pihkova", "Pihkova", "rus", "forest", "rus", { baseTax: 2, baseManpower: 3, developmentLevel: 1, fortLevel: 1, tradeGood: "fur", center: { x: 9.0, y: 26.0 } }),
+  p("tver", "Tver", "rus", "forest", "rus", { baseTax: 4, baseManpower: 4, developmentLevel: 1, tradeGood: "fur", center: { x: 18.0, y: 26.0 } }),
+  p("vladimir", "Vladimir", "rus", "forest", "rus", { baseTax: 3, baseManpower: 5, developmentLevel: 1, tradeGood: "fur", center: { x: 26.9, y: 26.0 } }),
+  p("smolensk", "Smolensk", "rus", "steppe", "rus", { baseTax: 3, baseManpower: 6, developmentLevel: 1, center: { x: 35.9, y: 26.0 } }),
+  p("rjazan", "Rjazan", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 3, developmentLevel: 1, center: { x: 44.8, y: 26.0 } }),
+  p("tsernigov", "Tšernigov", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 4, developmentLevel: 1, center: { x: 53.8, y: 26.0 } }),
+  p("kiova", "Kiova", "mongolia", "steppe", null, { baseTax: 4, baseManpower: 5, developmentLevel: 1, center: { x: 62.8, y: 26.0 } }),
+  p("polotsk", "Polotsk", "mongolia", "steppe", null, { baseTax: 3, baseManpower: 6, developmentLevel: 1, tradeGood: "horses", center: { x: 71.7, y: 26.0 } }),
+  p("murom", "Murom", "mongolia", "steppe", null, { baseTax: 3, baseManpower: 3, developmentLevel: 1, tradeGood: "horses", center: { x: 80.7, y: 26.0 } }),
+  p("suzdal", "Suzdal", "jin_china", "steppe", "mongol", { baseTax: 2, baseManpower: 4, developmentLevel: 1, tradeGood: "horses", center: { x: 89.6, y: 26.0 } }),
+  p("bulgar", "Bulgar", "jin_china", "hills", "mongol", { baseTax: 2, baseManpower: 5, developmentLevel: 1, fortLevel: 1, center: { x: 98.6, y: 26.0 } }),
+  p("sarkel", "Sarkel", "jin_china", "hills", "mongol", { baseTax: 4, baseManpower: 6, developmentLevel: 1, center: { x: 107.6, y: 26.0 } }),
+  p("itil", "Itil", "jin_china", "hills", "mongol", { baseTax: 3, baseManpower: 3, developmentLevel: 1, center: { x: 116.5, y: 26.0 } }),
+  p("tmutarakan", "Tmutarakan", "rus", "mountain", "rus", { baseTax: 2, baseManpower: 4, developmentLevel: 1, tradeGood: "iron", center: { x: 13.5, y: 37.1 } }),
+  p("novgorod", "Novgorod", "rus", "forest", "rus", { baseTax: 5, baseManpower: 9, developmentLevel: 4, fortLevel: 2, isCapital: true, tradeGood: "fur", center: { x: 22.4, y: 37.1 } }),
+  p("belgorod", "Belgorod", "rus", "forest", "rus", { baseTax: 4, baseManpower: 6, developmentLevel: 3, center: { x: 31.4, y: 37.1 } }),
+  p("galits", "Galitš", "rus", "steppe", "rus", { baseTax: 3, baseManpower: 3, developmentLevel: 1, center: { x: 40.4, y: 37.1 } }),
+  p("vitebsk", "Vitebsk", "mongolia", "steppe", "rus", { baseTax: 3, baseManpower: 4, developmentLevel: 2, fortLevel: 1, center: { x: 49.3, y: 37.1 } }),
+  p("minsk", "Minsk", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 5, developmentLevel: 3, tradeGood: "horses", center: { x: 58.3, y: 37.1 } }),
+  p("kursk", "Kursk", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 6, developmentLevel: 1, tradeGood: "horses", center: { x: 67.2, y: 37.1 } }),
+  p("perejaslav", "Perejaslav", "mongolia", "steppe", null, { baseTax: 4, baseManpower: 3, developmentLevel: 2, tradeGood: "horses", center: { x: 76.2, y: 37.1 } }),
+  p("otrar", "Otrar", "mongolia", "steppe", "mongol", { baseTax: 3, baseManpower: 4, developmentLevel: 3, center: { x: 85.2, y: 37.1 } }),
+  p("buhara", "Buhara", "jin_china", "steppe", "mongol", { baseTax: 3, baseManpower: 5, developmentLevel: 1, fortLevel: 1, center: { x: 94.1, y: 37.1 } }),
+  p("urgents", "Urgentš", "jin_china", "hills", "mongol", { baseTax: 2, baseManpower: 6, developmentLevel: 2, center: { x: 103.1, y: 37.1 } }),
+  p("karakorum", "Karakorum", "jin_china", "hills", "mongol", { baseTax: 5, baseManpower: 7, developmentLevel: 5, fortLevel: 2, isCapital: true, center: { x: 112.0, y: 37.1 } }),
+  p("merv", "Merv", "jin_china", "hills", "mongol", { baseTax: 4, baseManpower: 4, developmentLevel: 1, tradeGood: "iron", center: { x: 121.0, y: 37.1 } }),
+  p("herat", "Herat", "rus", "mountain", "rus", { baseTax: 3, baseManpower: 5, developmentLevel: 1, center: { x: 9.0, y: 48.3 } }),
+  p("balkh", "Balkh", "rus", "forest", "rus", { baseTax: 2, baseManpower: 6, developmentLevel: 3, center: { x: 18.0, y: 48.3 } }),
+  p("kasgar", "Kašgar", "rus", "forest", null, { baseTax: 2, baseManpower: 3, developmentLevel: 2, center: { x: 26.9, y: 48.3 } }),
+  p("taskent", "Taškent", "rus", "steppe", null, { baseTax: 4, baseManpower: 4, developmentLevel: 1, center: { x: 35.9, y: 48.3 } }),
+  p("talas", "Talas", "mongolia", "mountain", null, { baseTax: 3, baseManpower: 5, developmentLevel: 3, tradeGood: "iron", center: { x: 44.8, y: 48.3 } }),
+  p("nisapur", "Nišapur", "mongolia", "steppe", null, { baseTax: 3, baseManpower: 6, developmentLevel: 2, tradeGood: "horses", center: { x: 53.8, y: 48.3 } }),
+  p("tabriz", "Tabriz", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 3, developmentLevel: 1, tradeGood: "horses", center: { x: 62.8, y: 48.3 } }),
+  p("ray", "Ray", "mongolia", "steppe", null, { baseTax: 2, baseManpower: 4, developmentLevel: 3, center: { x: 71.7, y: 48.3 } }),
+  p("isfahan", "Isfahan", "mongolia", "steppe", null, { baseTax: 4, baseManpower: 5, developmentLevel: 2, center: { x: 80.7, y: 48.3 } }),
+  p("ganja", "Ganja", "jin_china", "steppe", null, { baseTax: 3, baseManpower: 6, developmentLevel: 1, center: { x: 89.6, y: 48.3 } }),
+  p("tbilisi", "Tbilisi", "jin_china", "hills", null, { baseTax: 3, baseManpower: 3, developmentLevel: 3, tradeGood: "iron", center: { x: 98.6, y: 48.3 } }),
+  p("derbent", "Derbent", "jin_china", "hills", "mongol", { baseTax: 2, baseManpower: 4, developmentLevel: 2, tradeGood: "iron", center: { x: 107.6, y: 48.3 } }),
+  p("shirvan", "Shirvan", "jin_china", "hills", "mongol", { baseTax: 2, baseManpower: 5, developmentLevel: 1, tradeGood: "iron", center: { x: 116.5, y: 48.3 } }),
+  p("ardabil", "Ardabil", "rus", "mountain", null, { baseTax: 3, baseManpower: 6, developmentLevel: 1, center: { x: 13.5, y: 59.4 } }),
+  p("kazvin", "Kazvin", "rus", "steppe", "rus", { baseTax: 3, baseManpower: 3, developmentLevel: 1, center: { x: 22.4, y: 59.4 } }),
+  p("gorgan", "Gorgan", "rus", "steppe", null, { baseTax: 2, baseManpower: 4, developmentLevel: 1, tradeGood: "horses", center: { x: 31.4, y: 59.4 } }),
+  p("altai", "Altai", "rus", "steppe", null, { baseTax: 2, baseManpower: 5, developmentLevel: 1, tradeGood: "horses", center: { x: 40.4, y: 59.4 } }),
+  p("baikal", "Baikal", "central_asia", "steppe", null, { baseTax: 4, baseManpower: 6, developmentLevel: 1, tradeGood: "horses", center: { x: 49.3, y: 59.4 } }),
+  p("kerulen", "Kerulen", "central_asia", "desert", null, { baseTax: 3, baseManpower: 3, developmentLevel: 1, center: { x: 58.3, y: 59.4 } }),
+  p("gobi", "Gobi", "central_asia", "desert", null, { baseTax: 3, baseManpower: 4, developmentLevel: 1, center: { x: 67.2, y: 59.4 } }),
+  p("dzungaria", "Dzungaria", "central_asia", "desert", null, { baseTax: 2, baseManpower: 5, developmentLevel: 1, center: { x: 76.2, y: 59.4 } }),
+  p("tuva", "Tuva", "central_asia", "steppe", null, { baseTax: 2, baseManpower: 6, developmentLevel: 1, center: { x: 85.2, y: 59.4 } }),
+  p("selenga", "Selenga", "jin_china", "steppe", null, { baseTax: 4, baseManpower: 3, developmentLevel: 1, tradeGood: "horses", center: { x: 94.1, y: 59.4 } }),
+  p("orhon", "Orhon", "jin_china", "farmland", null, { baseTax: 3, baseManpower: 4, developmentLevel: 1, tradeGood: "grain", center: { x: 103.1, y: 59.4 } }),
+  p("hangai", "Hangai", "jin_china", "farmland", "mongol", { baseTax: 3, baseManpower: 5, developmentLevel: 1, tradeGood: "grain", center: { x: 112.0, y: 59.4 } }),
+  p("uvs", "Uvs", "jin_china", "farmland", null, { baseTax: 2, baseManpower: 6, developmentLevel: 1, center: { x: 121.0, y: 59.4 } }),
+  p("dunhuang", "Dunhuang", "kipchak", "mountain", "khwarezm", { baseTax: 4, baseManpower: 3, developmentLevel: 1, hasSilkRoad: true, tradeGood: "iron", center: { x: 9.0, y: 70.6 } }),
+  p("turfan", "Turfan", "kipchak", "steppe", "khwarezm", { baseTax: 3, baseManpower: 4, developmentLevel: 2, fortLevel: 1, hasSilkRoad: true, tradeGood: "horses", center: { x: 18.0, y: 70.6 } }),
+  p("hami", "Hami", "kipchak", "steppe", null, { baseTax: 3, baseManpower: 5, developmentLevel: 3, hasSilkRoad: true, tradeGood: "horses", center: { x: 26.9, y: 70.6 } }),
+  p("kuqa", "Kuqa", "kipchak", "steppe", null, { baseTax: 2, baseManpower: 6, developmentLevel: 1, hasSilkRoad: true, center: { x: 35.9, y: 70.6 } }),
+  p("khotan", "Khotan", "central_asia", "steppe", null, { baseTax: 2, baseManpower: 3, developmentLevel: 2, hasSilkRoad: true, center: { x: 44.8, y: 70.6 } }),
+  p("yarkand", "Yarkand", "xixia", "mountain", null, { baseTax: 4, baseManpower: 4, developmentLevel: 3, hasSilkRoad: true, center: { x: 53.8, y: 70.6 } }),
+  p("aksu", "Aksu", "xixia", "desert", null, { baseTax: 3, baseManpower: 5, developmentLevel: 1, hasSilkRoad: true, center: { x: 62.8, y: 70.6 } }),
+  p("lop", "Lop", "xixia", "desert", null, { baseTax: 3, baseManpower: 6, developmentLevel: 2, hasSilkRoad: true, tradeGood: "salt", center: { x: 71.7, y: 70.6 } }),
+  p("ejin", "Ejin", "xixia", "grassland", null, { baseTax: 2, baseManpower: 3, developmentLevel: 3, hasSilkRoad: true, tradeGood: "livestock", center: { x: 80.7, y: 70.6 } }),
+  p("etsina", "Etsina", "jin_china", "grassland", null, { baseTax: 2, baseManpower: 4, developmentLevel: 1, hasSilkRoad: true, tradeGood: "livestock", center: { x: 89.6, y: 70.6 } }),
+  p("datong", "Datong", "song_china", "farmland", null, { baseTax: 4, baseManpower: 5, developmentLevel: 2, hasSilkRoad: true, center: { x: 98.6, y: 70.6 } }),
+  p("taiyuan", "Taiyuan", "song_china", "farmland", "song", { baseTax: 3, baseManpower: 6, developmentLevel: 3, fortLevel: 1, hasSilkRoad: true, center: { x: 107.6, y: 70.6 } }),
+  p("yanjing", "Yanjing", "song_china", "farmland", "song", { baseTax: 3, baseManpower: 3, developmentLevel: 1, hasSilkRoad: true, center: { x: 116.5, y: 70.6 } }),
+  p("baoding", "Baoding", "khwarezm", "mountain", "khwarezm", { baseTax: 2, baseManpower: 4, developmentLevel: 1, fortLevel: 1, tradeGood: "iron", center: { x: 13.5, y: 81.7 } }),
+  p("jinan", "Jinan", "khwarezm", "marsh", "khwarezm", { baseTax: 4, baseManpower: 5, developmentLevel: 3, tradeGood: "grain", center: { x: 22.4, y: 81.7 } }),
+  p("kaifeng", "Kaifeng", "khwarezm", "marsh", null, { baseTax: 3, baseManpower: 6, developmentLevel: 2, center: { x: 31.4, y: 81.7 } }),
+  p("luoyang", "Luoyang", "kipchak", "steppe", null, { baseTax: 3, baseManpower: 3, developmentLevel: 1, center: { x: 40.4, y: 81.7 } }),
+  p("changan", "Chang’an", "central_asia", "mountain", null, { baseTax: 2, baseManpower: 4, developmentLevel: 3, center: { x: 49.3, y: 81.7 } }),
+  p("xian", "Xian", "xixia", "steppe", null, { baseTax: 2, baseManpower: 5, developmentLevel: 2, tradeGood: "horses", center: { x: 58.3, y: 81.7 } }),
+  p("fenzhou", "Fenzhou", "xixia", "steppe", null, { baseTax: 4, baseManpower: 6, developmentLevel: 1, tradeGood: "horses", center: { x: 67.2, y: 81.7 } }),
+  p("hangzhou", "Hangzhou", "xixia", "steppe", null, { baseTax: 3, baseManpower: 3, developmentLevel: 3, tradeGood: "horses", center: { x: 76.2, y: 81.7 } }),
+  p("suzhou", "Suzhou", "xixia", "grassland", null, { baseTax: 3, baseManpower: 4, developmentLevel: 2, center: { x: 85.2, y: 81.7 } }),
+  p("ningbo", "Ningbo", "jin_china", "grassland", null, { baseTax: 2, baseManpower: 5, developmentLevel: 1, center: { x: 94.1, y: 81.7 } }),
+  p("fuzhou", "Fuzhou", "song_china", "farmland", null, { baseTax: 2, baseManpower: 6, developmentLevel: 3, center: { x: 103.1, y: 81.7 } }),
+  p("quanzhou", "Quanzhou", "song_china", "farmland", "song", { baseTax: 4, baseManpower: 3, developmentLevel: 2, center: { x: 112.0, y: 81.7 } }),
+  p("nanchang", "Nanchang", "song_china", "farmland", "song", { baseTax: 3, baseManpower: 4, developmentLevel: 1, tradeGood: "grain", center: { x: 121.0, y: 81.7 } }),
+  p("changsha", "Changsha", "khwarezm", "mountain", "khwarezm", { baseTax: 2, baseManpower: 5, developmentLevel: 1, center: { x: 9.0, y: 92.9 } }),
+  p("samarkand", "Samarkand", "khwarezm", "marsh", "khwarezm", { baseTax: 5, baseManpower: 10, developmentLevel: 3, fortLevel: 2, isCapital: true, center: { x: 18.0, y: 92.9 } }),
+  p("jiangling", "Jiangling", "khwarezm", "marsh", "khwarezm", { baseTax: 4, baseManpower: 3, developmentLevel: 1, center: { x: 26.9, y: 92.9 } }),
+  p("ezhou", "Ezhou", "kipchak", "grassland", "khwarezm", { baseTax: 3, baseManpower: 4, developmentLevel: 1, center: { x: 35.9, y: 92.9 } }),
+  p("chengdu", "Chengdu", "central_asia", "grassland", "khwarezm", { baseTax: 3, baseManpower: 5, developmentLevel: 1, fortLevel: 1, tradeGood: "livestock", center: { x: 44.8, y: 92.9 } }),
+  p("lhasa", "Lhasa", "xixia", "grassland", null, { baseTax: 2, baseManpower: 6, developmentLevel: 1, tradeGood: "livestock", center: { x: 53.8, y: 92.9 } }),
+  p("xigatse", "Xigatse", "xixia", "grassland", null, { baseTax: 2, baseManpower: 3, developmentLevel: 1, tradeGood: "livestock", center: { x: 62.8, y: 92.9 } }),
+  p("qamdo", "Qamdo", "xixia", "grassland", null, { baseTax: 4, baseManpower: 4, developmentLevel: 1, center: { x: 71.7, y: 92.9 } }),
+  p("nagqu", "Nagqu", "xixia", "grassland", "song", { baseTax: 3, baseManpower: 5, developmentLevel: 1, center: { x: 80.7, y: 92.9 } }),
+  p("golmud", "Golmud", "jin_china", "grassland", "song", { baseTax: 3, baseManpower: 6, developmentLevel: 1, fortLevel: 1, center: { x: 89.6, y: 92.9 } }),
+  p("dali", "Dali", "song_china", "farmland", "song", { baseTax: 2, baseManpower: 3, developmentLevel: 1, tradeGood: "grain", center: { x: 98.6, y: 92.9 } }),
+  p("hangzhou", "Lin'an", "song_china", "farmland", "song", { baseTax: 5, baseManpower: 8, developmentLevel: 3, fortLevel: 2, isCapital: true, tradeGood: "grain", center: { x: 107.6, y: 92.9 } }),
+  p("kunming", "Kunming", "song_china", "farmland", "song", { baseTax: 4, baseManpower: 5, developmentLevel: 1, tradeGood: "grain", center: { x: 116.5, y: 92.9 } }),
+  p("lijiang", "Lijiang", "khwarezm", "marsh", "khwarezm", { baseTax: 3, baseManpower: 6, developmentLevel: 1, center: { x: 13.5, y: 104.0 } }),
+  p("zhongwei", "Zhongwei", "khwarezm", "marsh", "khwarezm", { baseTax: 2, baseManpower: 3, developmentLevel: 2, center: { x: 22.4, y: 104.0 } }),
+  p("lanzhou", "Lanzhou", "khwarezm", "marsh", "khwarezm", { baseTax: 2, baseManpower: 4, developmentLevel: 3, tradeGood: "grain", center: { x: 31.4, y: 104.0 } }),
+  p("kama", "Kama", "kipchak", "grassland", null, { baseTax: 4, baseManpower: 5, developmentLevel: 1, tradeGood: "livestock", center: { x: 40.4, y: 104.0 } }),
+  p("vjatka", "Vjatka", "central_asia", "grassland", null, { baseTax: 3, baseManpower: 6, developmentLevel: 2, tradeGood: "livestock", center: { x: 49.3, y: 104.0 } }),
+  p("ustjug", "Ustjug", "xixia", "grassland", null, { baseTax: 3, baseManpower: 3, developmentLevel: 3, center: { x: 58.3, y: 104.0 } }),
+  p("beloozero", "Beloozero", "xixia", "grassland", null, { baseTax: 2, baseManpower: 4, developmentLevel: 1, center: { x: 67.2, y: 104.0 } }),
+  p("ladoga", "Ladoga", "xixia", "grassland", null, { baseTax: 2, baseManpower: 5, developmentLevel: 2, center: { x: 76.2, y: 104.0 } }),
+  p("pihkova_ita", "Pihkova-Itä", "xixia", "grassland", null, { baseTax: 4, baseManpower: 6, developmentLevel: 3, center: { x: 85.2, y: 104.0 } }),
+  p("torzhok", "Torzhok", "jin_china", "grassland", null, { baseTax: 3, baseManpower: 3, developmentLevel: 1, tradeGood: "livestock", center: { x: 94.1, y: 104.0 } }),
+  p("rostov", "Rostov", "song_china", "farmland", "song", { baseTax: 3, baseManpower: 4, developmentLevel: 2, tradeGood: "grain", center: { x: 103.1, y: 104.0 } }),
+  p("uglits", "Uglitš", "song_china", "farmland", "song", { baseTax: 2, baseManpower: 5, developmentLevel: 3, tradeGood: "grain", center: { x: 112.0, y: 104.0 } }),
+  p("kostroma", "Kostroma", "song_china", "farmland", "song", { baseTax: 2, baseManpower: 6, developmentLevel: 1, center: { x: 121.0, y: 104.0 } }),
 ];
 
-// Adjacency - Each province connected to its 3 nearest neighbors by distance (ignoring ownership)
-// u have to change these alphabetically
-// first alphabetically to last alphabetically
-// if Balkh has a route to Samarkand, write it as balkh: ["samarkand"]
 export const PROVINCE_ADJACENCY: Record<string, string[]> = {
-    altai: ['mongol_central', 'baikal', "gobi_north", "kerulen"],
-    armenia: ["goryeo", "dunhuang", "kashgar"],
-    azerbaijan: ['urgench', 'merv', 'balkh', "samarkand", "shirvan"],
-    baikal: ['altai', 'dzungaria', 'mongol_central', "lhasa"],
-    balkh: ['bukhara', 'azerbaijan', 'herat', "samarkand"],
-    bukhara: ['balkh', 'samarkand', 'kashgar'],
-    chernigov: ['tver', 'pskov', 'smolensk'],
-    dunhuang: ["mongol_west", "mongol_east", "tibet_west"],
-    dzungaria: ['mongol_central', 'altai', 'baikal', "lhasa", "ryazan"],
-    fujian: ['jiangxi', 'hangzhou', 'suzhou'],
-    georgia: ["tver", "yakutia"],
-    gobi_north: ['kerulen'],
-    gobi_south: ['onon', 'gobi_north', 'mongol_east'],
-    goryeo: ["yakutia", "armenia", "ryazan"],
-    guangdong: ['jiangxi', 'fujian', 'turfan'],
-    hangzhou: ['nanjing', 'fujian', 'suzhou'],
-    herat: ['merv', 'balkh', 'azerbaijan'],
-    hormuz: ['shiraz', 'kerman', 'merv'],
-    hubei: ['nanjing', 'hunan', 'sichuan', "manchuria_north"],
-    hunan: ['hubei', 'jiangxi', 'yunnan'],
-    isfahan: [ 'nishapur', 'urgench'],
-    jiangxi: ['fujian', 'guangdong', 'hunan'],
-    karakorum: ['mongol_central', 'mongol_east', 'kerulen', "mongol_west"],
-    kashgar: ['bukhara', 'balkh', 'samarkand', "tibet_west", "khotan"],
-    kerman: ['merv', 'yunnan', 'shiraz'],
-    kerulen: ['onon', 'mongol_east', 'gobi_south'],
-    khiva: ['tabriz', 'samarkand', 'shirvan', "yakutia",],
-    khotan: ["tibet_west", "kashgar", "sichuan"],
-    kiev: ['smolensk', 'ray', "yakutia"],
-    lhasa: ["vladimir"],
-    korea_south: ["mongol_east", "tibet_east", "tibet_west"],
-    manchuria_north: ["nanjing", "tibet_east"],
-    merv: ['kerman', 'azerbaijan', 'herat', "shiraz"],
-    mongol_central: ['altai', 'karakorum', 'dzungaria', "mongol_west"],
-    mongol_east: ['karakorum', 'kerulen', 'mongol_central', "mongol_west", "dunghuang"],
-    mongol_west: ['dzungaria', 'ryazan', 'mongol_central'],
-    nanjing: ['hangzhou', 'hubei', 'jiangxi'],
-    nishapur: ['shiraz', 'isfahan', 'hormuz'],
-    novgorod: ['semirechye', 'chernigov', 'pskov'],
-    onon: ['gobi_south', 'kerulen', 'mongol_east'],
-    pskov: ['chernigov', 'smolensk', 'novgorod'],
-    ray: ['kiev', 'tabriz', 'khiva'],
-    ryazan: ['mongol_west', 'tver', 'dzungaria'],
-    samarkand: ["balkh", "azerbaijan", "khiva"],
-    semirechye: ['novgorod', 'vladimir', 'tver'],
-    shiraz: ['hormuz', 'nishapur', 'kerman'],
-    shirvan: ['isfahan', 'tabriz', 'urgench'],
-    siberia_west: ['semirechye', 'vladimir', 'novgorod'],
-    sichuan: ['hubei', 'hunan', 'yunnan'],
-    smolensk: ['kiev', 'chernigov', 'pskov'],
-    suzhou: ['hangzhou', 'fujian', 'jiangxi'],
-    tabriz: ['shirvan', 'khiva', 'ray'],
-    turfan: ['yunnan', 'guangdong', 'hunan'],
-    tver: ['chernigov', 'semirechye', 'vladimir'],
-    urgench: ['azerbaijan', 'isfahan', 'samarkand'],
-    vladimir: ['semirechye', 'tver', 'chernigov'],
-    yunnan: ['turfan', 'hunan', 'sichuan'],
-    yakutia: ["goryeo", "georgia", "khiva"],
-
+  aksu: ['yarkand', 'lop', 'kerulen', 'gobi', 'xian', 'fenzhou'],
+  altai: ['gorgan', 'baikal', 'taskent', 'talas', 'kuqa', 'khotan'],
+  ardabil: ['kazvin', 'herat', 'balkh', 'dunhuang', 'turfan'],
+  baikal: ['altai', 'kerulen', 'talas', 'nisapur', 'khotan', 'yarkand'],
+  balkh: ['herat', 'kasgar', 'tmutarakan', 'novgorod', 'ardabil', 'kazvin'],
+  baoding: ['jinan', 'dunhuang', 'turfan', 'changsha', 'samarkand'],
+  belgorod: ['novgorod', 'galits', 'vladimir', 'smolensk', 'kasgar', 'taskent'],
+  beloozero: ['ustjug', 'ladoga', 'xigatse', 'qamdo'],
+  buhara: ['otrar', 'urgents', 'suzdal', 'bulgar', 'ganja', 'tbilisi'],
+  bulgar: ['suzdal', 'sarkel', 'buhara', 'urgents'],
+  changan: ['luoyang', 'xian', 'khotan', 'yarkand', 'chengdu', 'lhasa'],
+  changsha: ['samarkand', 'baoding', 'lijiang'],
+  chengdu: ['ezhou', 'lhasa', 'luoyang', 'changan', 'kama', 'vjatka'],
+  dali: ['golmud', 'hangzhou', 'ningbo', 'fuzhou', 'torzhok', 'rostov'],
+  datong: ['etsina', 'taiyuan', 'selenga', 'orhon', 'ningbo', 'fuzhou'],
+  derbent: ['tbilisi', 'shirvan', 'urgents', 'karakorum', 'orhon', 'hangai'],
+  dunhuang: ['turfan', 'ardabil', 'baoding'],
+  dzungaria: ['gobi', 'tuva', 'ray', 'isfahan', 'lop', 'ejin'],
+  ejin: ['lop', 'etsina', 'dzungaria', 'tuva', 'hangzhou', 'suzhou'],
+  etsina: ['ejin', 'datong', 'tuva', 'selenga', 'suzhou', 'ningbo'],
+  ezhou: ['jiangling', 'chengdu', 'kaifeng', 'luoyang', 'lanzhou', 'kama'],
+  fenzhou: ['xian', 'hangzhou', 'aksu', 'lop', 'xigatse', 'qamdo'],
+  fuzhou: ['ningbo', 'quanzhou', 'datong', 'taiyuan', 'dali', 'hangzhou'],
+  galits: ['belgorod', 'vitebsk', 'smolensk', 'rjazan', 'taskent', 'talas'],
+  ganja: ['isfahan', 'tbilisi', 'otrar', 'buhara', 'tuva', 'selenga'],
+  gobi: ['kerulen', 'dzungaria', 'tabriz', 'ray', 'aksu', 'lop'],
+  golmud: ['nagqu', 'dali', 'suzhou', 'ningbo', 'pihkova_ita', 'torzhok'],
+  gorgan: ['kazvin', 'altai', 'kasgar', 'taskent', 'hami', 'kuqa'],
+  hami: ['turfan', 'kuqa', 'kazvin', 'gorgan', 'jinan', 'kaifeng'],
+  hangai: ['orhon', 'uvs', 'derbent', 'shirvan', 'taiyuan', 'yanjing'],
+  hangzhou: ['dali', 'kunming', 'fuzhou', 'quanzhou', 'rostov', 'uglits'],
+  herat: ['balkh', 'tmutarakan', 'ardabil'],
+  isfahan: ['ray', 'ganja', 'perejaslav', 'otrar', 'dzungaria', 'tuva'],
+  itil: ['sarkel', 'karakorum', 'merv'],
+  jiangling: ['samarkand', 'ezhou', 'jinan', 'kaifeng', 'zhongwei', 'lanzhou'],
+  jinan: ['baoding', 'kaifeng', 'turfan', 'hami', 'samarkand', 'jiangling'],
+  kaifeng: ['jinan', 'luoyang', 'hami', 'kuqa', 'jiangling', 'ezhou'],
+  kama: ['lanzhou', 'vjatka', 'ezhou', 'chengdu'],
+  karakorum: ['urgents', 'merv', 'sarkel', 'itil', 'derbent', 'shirvan'],
+  kasgar: ['balkh', 'taskent', 'novgorod', 'belgorod', 'kazvin', 'gorgan'],
+  kazvin: ['ardabil', 'gorgan', 'balkh', 'kasgar', 'turfan', 'hami'],
+  kerulen: ['baikal', 'gobi', 'nisapur', 'tabriz', 'yarkand', 'aksu'],
+  khotan: ['kuqa', 'yarkand', 'altai', 'baikal', 'luoyang', 'changan'],
+  kiova: ['tsernigov', 'polotsk', 'minsk', 'kursk'],
+  kostroma: ['uglits', 'kunming'],
+  kunming: ['hangzhou', 'quanzhou', 'nanchang', 'uglits', 'kostroma'],
+  kuqa: ['hami', 'khotan', 'gorgan', 'altai', 'kaifeng', 'luoyang'],
+  kursk: ['minsk', 'perejaslav', 'kiova', 'polotsk', 'tabriz', 'ray'],
+  ladoga: ['beloozero', 'pihkova_ita', 'qamdo', 'nagqu'],
+  lanzhou: ['zhongwei', 'kama', 'jiangling', 'ezhou'],
+  lhasa: ['chengdu', 'xigatse', 'changan', 'xian', 'vjatka', 'ustjug'],
+  lijiang: ['zhongwei', 'changsha', 'samarkand'],
+  lop: ['aksu', 'ejin', 'gobi', 'dzungaria', 'fenzhou', 'hangzhou'],
+  luoyang: ['kaifeng', 'changan', 'kuqa', 'khotan', 'ezhou', 'chengdu'],
+  merv: ['karakorum', 'itil', 'shirvan'],
+  minsk: ['vitebsk', 'kursk', 'tsernigov', 'kiova', 'nisapur', 'tabriz'],
+  murom: ['polotsk', 'suzdal', 'perejaslav', 'otrar'],
+  nagqu: ['qamdo', 'golmud', 'hangzhou', 'suzhou', 'ladoga', 'pihkova_ita'],
+  nanchang: ['quanzhou', 'yanjing', 'kunming'],
+  ningbo: ['suzhou', 'fuzhou', 'etsina', 'datong', 'golmud', 'dali'],
+  nisapur: ['talas', 'tabriz', 'vitebsk', 'minsk', 'baikal', 'kerulen'],
+  novgorod: ['tmutarakan', 'belgorod', 'tver', 'vladimir', 'balkh', 'kasgar'],
+  orhon: ['selenga', 'hangai', 'tbilisi', 'derbent', 'datong', 'taiyuan'],
+  otrar: ['perejaslav', 'buhara', 'murom', 'suzdal', 'isfahan', 'ganja'],
+  perejaslav: ['kursk', 'otrar', 'polotsk', 'murom', 'ray', 'isfahan'],
+  pihkova: ['tver', 'tmutarakan'],
+  pihkova_ita: ['ladoga', 'torzhok', 'nagqu', 'golmud'],
+  polotsk: ['kiova', 'murom', 'kursk', 'perejaslav'],
+  qamdo: ['xigatse', 'nagqu', 'fenzhou', 'hangzhou', 'beloozero', 'ladoga'],
+  quanzhou: ['fuzhou', 'nanchang', 'taiyuan', 'yanjing', 'hangzhou', 'kunming'],
+  ray: ['tabriz', 'isfahan', 'kursk', 'perejaslav', 'gobi', 'dzungaria'],
+  rjazan: ['smolensk', 'tsernigov', 'galits', 'vitebsk'],
+  rostov: ['torzhok', 'uglits', 'dali', 'hangzhou'],
+  samarkand: ['changsha', 'jiangling', 'baoding', 'jinan', 'lijiang', 'zhongwei'],
+  sarkel: ['bulgar', 'itil', 'urgents', 'karakorum'],
+  selenga: ['tuva', 'orhon', 'ganja', 'tbilisi', 'etsina', 'datong'],
+  shirvan: ['derbent', 'karakorum', 'merv', 'hangai', 'uvs'],
+  smolensk: ['vladimir', 'rjazan', 'belgorod', 'galits'],
+  suzdal: ['murom', 'bulgar', 'otrar', 'buhara'],
+  suzhou: ['hangzhou', 'ningbo', 'ejin', 'etsina', 'nagqu', 'golmud'],
+  tabriz: ['nisapur', 'ray', 'minsk', 'kursk', 'kerulen', 'gobi'],
+  taiyuan: ['datong', 'yanjing', 'orhon', 'hangai', 'fuzhou', 'quanzhou'],
+  talas: ['taskent', 'nisapur', 'galits', 'vitebsk', 'altai', 'baikal'],
+  taskent: ['kasgar', 'talas', 'belgorod', 'galits', 'gorgan', 'altai'],
+  tbilisi: ['ganja', 'derbent', 'buhara', 'urgents', 'selenga', 'orhon'],
+  tmutarakan: ['novgorod', 'pihkova', 'tver', 'herat', 'balkh'],
+  torzhok: ['pihkova_ita', 'rostov', 'golmud', 'dali'],
+  tsernigov: ['rjazan', 'kiova', 'vitebsk', 'minsk'],
+  turfan: ['dunhuang', 'hami', 'ardabil', 'kazvin', 'baoding', 'jinan'],
+  tuva: ['dzungaria', 'selenga', 'isfahan', 'ganja', 'ejin', 'etsina'],
+  tver: ['pihkova', 'vladimir', 'tmutarakan', 'novgorod'],
+  uglits: ['rostov', 'kostroma', 'hangzhou', 'kunming'],
+  urgents: ['buhara', 'karakorum', 'bulgar', 'sarkel', 'tbilisi', 'derbent'],
+  ustjug: ['vjatka', 'beloozero', 'lhasa', 'xigatse'],
+  uvs: ['hangai', 'shirvan', 'yanjing'],
+  vitebsk: ['galits', 'minsk', 'rjazan', 'tsernigov', 'talas', 'nisapur'],
+  vjatka: ['kama', 'ustjug', 'chengdu', 'lhasa'],
+  vladimir: ['tver', 'smolensk', 'novgorod', 'belgorod'],
+  xian: ['changan', 'fenzhou', 'yarkand', 'aksu', 'lhasa', 'xigatse'],
+  xigatse: ['lhasa', 'qamdo', 'xian', 'fenzhou', 'ustjug', 'beloozero'],
+  yanjing: ['taiyuan', 'hangai', 'uvs', 'quanzhou', 'nanchang'],
+  yarkand: ['khotan', 'aksu', 'baikal', 'kerulen', 'changan', 'xian'],
+  zhongwei: ['lijiang', 'lanzhou', 'samarkand', 'jiangling'],
 };
 
 // Apply adjacency
@@ -498,44 +242,33 @@ ALL_PROVINCES_1206.forEach((province) => {
   province.neighbors = PROVINCE_ADJACENCY[province.id] || [];
 });
 
-// Helper used by game state hook
 export const getProvincesWithAdjacency = (): Province[] =>
-  ALL_PROVINCES_1206.map((p) => ({ ...p, neighbors: PROVINCE_ADJACENCY[p.id] || [] }));
-// SilkRoad.ts
-// Vastaa Silkkitien reitistä ja sen bonuksista
+  ALL_PROVINCES_1206.map((prov) => ({ ...prov, neighbors: PROVINCE_ADJACENCY[prov.id] || [] }));
 
+// ================= SILKKITIE =================
 export type SilkRoadNodeType = "province" | "hex" | "city";
+export interface SilkRoadNode { id: string; type: SilkRoadNodeType; }
+export interface SilkRoadBonus { taxBonus: number; tradePowerBonus: number; supplyBonus: number; unrestReduction: number; }
 
-export interface SilkRoadNode {
-  id: string;
-  type: SilkRoadNodeType;
-}
-
-export interface SilkRoadBonus {
-  taxBonus: number;
-  tradePowerBonus: number;
-  supplyBonus: number;
-  unrestReduction: number;
-}
-
-// Yleinen Silkkitie-bonus
 export const SILK_ROAD_BONUS: SilkRoadBonus = {
-  taxBonus: 2,
-  tradePowerBonus: 3,
-  supplyBonus: 2,
-  unrestReduction: 1,
+  taxBonus: 2, tradePowerBonus: 3, supplyBonus: 2, unrestReduction: 1,
 };
 
-// Silkkitien reitti (tähän voi lisätä myöhemmin lisää)
 export const SILK_ROAD_NODES: SilkRoadNode[] = [
-  { id: "samarkand", type: "province" },
-  { id: "bukhara", type: "province" },
-  { id: "urgench", type: "province" },
-  { id: "shirvan", type: "province" }, // ✅ TÄMÄ PROVINSSI
-  { id: "tabriz", type: "province" },
-  { id: "ray", type: "province" },
+  { id: "dunhuang", type: "province" },
+  { id: "turfan", type: "province" },
+  { id: "hami", type: "province" },
+  { id: "kuqa", type: "province" },
+  { id: "khotan", type: "province" },
+  { id: "yarkand", type: "province" },
+  { id: "aksu", type: "province" },
+  { id: "lop", type: "province" },
+  { id: "ejin", type: "province" },
+  { id: "etsina", type: "province" },
+  { id: "datong", type: "province" },
+  { id: "taiyuan", type: "province" },
+  { id: "yanjing", type: "province" },
 ];
 
-// Helper
 export const isOnSilkRoad = (provinceId: string): boolean =>
   SILK_ROAD_NODES.some((node) => node.type === "province" && node.id === provinceId);
