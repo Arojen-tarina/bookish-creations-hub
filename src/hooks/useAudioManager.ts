@@ -6,6 +6,23 @@
  * Tukee master/musiikki/SFX -äänenvoimakkuuksia ja mykistystä.
  */
 import { useCallback, useRef, useEffect, useState } from 'react';
+// Pelin soundtrack (pelaajan omat nauhoitteet) — soitetaan taustamusiikkina.
+// Lyhyt pääteema upotetaan (toimii myös yhden tiedoston offline-versiossa).
+// Pidemmät kappaleet ladataan erillisinä tiedostoina normaali-/Pages-buildissa,
+// jottei single-file paisu liian isoksi.
+import musicTrack1 from '@/assets/music/track1.mp3';
+// Pelaajan uusin nauhoite (Nauhoite peliä varten 1). Upotetaan single-fileen,
+// jotta se soi myös offline-versiossa; muut pitkät raidat ladataan erikseen.
+import musicTrack4 from '@/assets/music/track4.mp3';
+
+const MUSIC_PLAYLIST: string[] = import.meta.env.VITE_SINGLEFILE
+  ? [musicTrack1, musicTrack4]
+  : [
+      musicTrack1,
+      `${import.meta.env.BASE_URL}music/track2.mp3`,
+      `${import.meta.env.BASE_URL}music/track3.mp3`,
+      `${import.meta.env.BASE_URL}music/track4.mp3`,
+    ];
 
 interface AudioSettings {
   masterVolume: number;
@@ -160,6 +177,8 @@ export const useAudioManager = (): AudioManagerReturn => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const ambientSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const ambientTrackRef = useRef<number>(0);
+  const musicElRef = useRef<HTMLAudioElement | null>(null);
+  const musicIdxRef = useRef<number>(0);
   const ambientTimeoutRef = useRef<number | null>(null);
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
@@ -376,47 +395,52 @@ export const useAudioManager = (): AudioManagerReturn => {
   }, [clearAmbientTimeout, getEffectiveVolume, settings.muted]);
 
   // Ambient: Background string-music loop with morin khuur / jouhikko / kantele flavor
+  // Taustamusiikki: pelaajan omat soundtrackit HTMLAudio-soittolistana (kiertää).
   const playAmbient = useCallback(() => {
     if (settings.muted) return;
-
-    const ctx = getAudioContext();
-
-    if (ambientSourceRef.current) {
-      ambientSourceRef.current.stop();
+    let el = musicElRef.current;
+    if (!el) {
+      el = new Audio();
+      el.preload = 'auto';
+      el.setAttribute('data-game-music', '1');
+      if (typeof document !== 'undefined') document.body.appendChild(el);
+      const advance = () => {
+        musicIdxRef.current = (musicIdxRef.current + 1) % MUSIC_PLAYLIST.length;
+        const nextEl = musicElRef.current;
+        if (nextEl) {
+          nextEl.src = MUSIC_PLAYLIST[musicIdxRef.current];
+          nextEl.play().catch(() => {});
+        }
+      };
+      el.addEventListener('ended', advance);
+      // Jos jokin kappale ei lataudu (esim. offline-versiossa), siirry seuraavaan
+      el.addEventListener('error', () => { if (MUSIC_PLAYLIST.length > 1) advance(); });
+      musicElRef.current = el;
     }
-    clearAmbientTimeout();
-
-    ambientTrackRef.current = Math.random() < 0.5 ? 0 : 1;
-    const buffer = createMusicBuffer(ctx, ambientTrackRef.current);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-
-    const gainNode = ctx.createGain();
-    gainNode.gain.value = getEffectiveVolume('music') * 0.18;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 1200;
-    filter.Q.value = 1.2;
-
-    source.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    source.start();
-    ambientSourceRef.current = source;
-
-    scheduleAmbientSwitch(ctx);
-  }, [getAudioContext, settings.muted, getEffectiveVolume, clearAmbientTimeout, scheduleAmbientSwitch]);
+    el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
+    if (!el.src) el.src = MUSIC_PLAYLIST[musicIdxRef.current];
+    el.play().catch(() => {
+      // Selain saattaa estaa automaattitoiston ennen kayttajan vuorovaikutusta
+    });
+  }, [settings.muted, getEffectiveVolume]);
 
   const stopAmbient = useCallback(() => {
-    if (ambientSourceRef.current) {
-      ambientSourceRef.current.stop();
-      ambientSourceRef.current = null;
+    if (musicElRef.current) {
+      musicElRef.current.pause();
     }
-    clearAmbientTimeout();
-  }, [clearAmbientTimeout]);
+  }, []);
+
+  // Paivita musiikin aanenvoimakkuus/mykistys elavana asetusten muuttuessa
+  useEffect(() => {
+    const el = musicElRef.current;
+    if (!el) return;
+    if (settings.muted) {
+      el.pause();
+    } else {
+      el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
+      if (el.paused && el.src) el.play().catch(() => {});
+    }
+  }, [settings.muted, settings.masterVolume, settings.musicVolume, getEffectiveVolume]);
 
   // Cleanup
   useEffect(() => {

@@ -1,664 +1,334 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
-import { Card, CardContent } from '@/components/ui/card.tsx';
-import { BookOpen, ArrowLeft, Play } from 'lucide-react';
+import { ArrowLeft, ScrollText, Printer } from 'lucide-react';
 
-const sections = [
-  { id: 'johdanto', label: 'Johdanto' },
-  { id: 'taru', label: 'Maailman taru ja kodeksi' },
-  { id: 'tavoite', label: 'Pelin tavoite ja voittoehdot' },
-  { id: 'fraktiot', label: 'Fraktiot' },
-  { id: 'vuoron-rakenne', label: 'Vuoron rakenne' },
-  { id: 'resurssit', label: 'Resurssit ja talous' },
-  { id: 'armeijat', label: 'Armeijat ja liikkuminen' },
-  { id: 'taistelu', label: 'Taistelujärjestelmä' },
-  { id: 'rakentaminen', label: 'Rakentaminen' },
-  { id: 'kortit', label: 'Korttijärjestelmä' },
-  { id: 'diplomatia', label: 'Diplomatiajärjestelmä' },
-  { id: 'kartta', label: 'Kartta ja maastot' },
-  { id: 'kauppatavarat', label: 'Kauppatavarat' },
-  { id: 'tekoaly', label: 'Tekoäly (AI)' },
-  { id: 'strategia', label: 'Strategiavinkkejä' },
+/**
+ * Ohjekirja.tsx — Arojen Tarinat / Story of the Steppe (1206)
+ *
+ * Pelin virallinen sääntökirja, kirjoitettu lakikirjan tapaan pykälittäin (§).
+ * Jokainen luku vastaa pelin osajärjestelmää ja pykälät kuvaavat säännöt
+ * tarkasti niin kuin ne on koodissa toteutettu.
+ *
+ * HUOM navigaatiosta: käytämme onClick + scrollIntoView -menetelmää emmekä
+ * href="#id"-ankkureita, koska yksitiedostoversio (HashRouter) käyttää
+ * URL:n hash-osaa reititykseen. Näin sisältönavigaatio toimii kaikissa
+ * julkaisumuodoissa (normaali, GitHub Pages, yksitiedosto/file://).
+ */
+
+const CHAPTERS: { id: string; num: string; label: string }[] = [
+  { id: 'johdanto',    num: 'I',     label: 'Johdanto ja pelin idea' },
+  { id: 'kasitteet',   num: 'II',    label: 'Peruskäsitteet ja termistö' },
+  { id: 'voitto',      num: 'III',   label: 'Voittoehdot — viisi tietä' },
+  { id: 'fraktiot',    num: 'IV',    label: 'Fraktiot ja aloitusasetelma' },
+  { id: 'kartta',      num: 'V',     label: 'Kartta, provinssit ja maasto' },
+  { id: 'vuoro',       num: 'VI',    label: 'Vuoron rakenne (6 vaihetta)' },
+  { id: 'talous',      num: 'VII',   label: 'Resurssit ja talous' },
+  { id: 'silkkitie',   num: 'VIII',  label: 'Silkkitie ja kauppasolmut' },
+  { id: 'rakennukset', num: 'IX',    label: 'Rakennukset' },
+  { id: 'armeijat',    num: 'X',     label: 'Armeijat, rekrytointi ja liike' },
+  { id: 'taistelu',    num: 'XI',    label: 'Taistelujärjestelmä' },
+  { id: 'piiritys',    num: 'XII',   label: 'Piiritys ja pääkaupungit' },
+  { id: 'paallikko',   num: 'XIII',  label: 'Heimopäällikkö' },
+  { id: 'kortit',      num: 'XIV',   label: 'Korttijärjestelmä' },
+  { id: 'diplomatia',  num: 'XV',    label: 'Diplomatia' },
+  { id: 'kauppa',      num: 'XVI',   label: 'Kauppatavarat' },
+  { id: 'tekoaly',     num: 'XVII',  label: 'Tekoäly (AI)' },
+  { id: 'strategia',   num: 'XVIII', label: 'Strategiavinkkejä' },
 ];
 
-const Ohjekirja = () => {
-  const scrollToVideo = () => {
-    const section = document.getElementById('video');
-    if (!section) return;
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+const goTo = (id: string) => {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
 
-  const playVideo = () => {
-    scrollToVideo();
-    const video = document.getElementById('helpVideo') as HTMLVideoElement | null;
-    if (video) {
-      video.play().catch(() => {
-        // Browsers may block autoplay until the user interacts with the page.
-      });
-    }
-  };
+/* ---------- pienet apukomponentit ---------- */
+
+const Chapter = ({ id, num, title, children }: { id: string; num: string; title: string; children: React.ReactNode }) => (
+  <section id={id} className="scroll-mt-24 border-t border-amber-800/30 pt-8 mt-10 first:mt-0 first:border-t-0 first:pt-0">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-amber-200 mb-1">
+      <span className="text-amber-500/70 mr-2 font-serif">Luku {num}.</span>{title}
+    </h2>
+    <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-300">{children}</div>
+  </section>
+);
+
+const Para = ({ n, children }: { n: string; children: React.ReactNode }) => (
+  <p className="pl-12 -indent-12">
+    <span className="inline-block w-10 text-amber-400/90 font-semibold font-serif tabular-nums mr-2">§ {n}</span>
+    {children}
+  </p>
+);
+
+const Table = ({ head, rows }: { head: string[]; rows: (string | number)[][] }) => (
+  <div className="overflow-x-auto my-4 rounded-lg border border-slate-700/60">
+    <table className="w-full text-sm">
+      <thead className="bg-slate-800/80 text-amber-200">
+        <tr>{head.map((h, i) => <th key={i} className="text-left font-semibold px-3 py-2 whitespace-nowrap">{h}</th>)}</tr>
+      </thead>
+      <tbody>
+        {rows.map((r, i) => (
+          <tr key={i} className={i % 2 ? 'bg-slate-900/40' : 'bg-slate-950/40'}>
+            {r.map((c, j) => <td key={j} className="px-3 py-2 align-top border-t border-slate-800/60">{c}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const Ohjekirja = () => {
+  const [q, setQ] = useState('');
+  const filtered = CHAPTERS.filter(c => c.label.toLowerCase().includes(q.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 px-4 py-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-4xl font-semibold text-amber-200">Mongolien Valtakunta — Ohjekirja</h1>
-            <p className="mt-3 text-slate-400 max-w-3xl">
-              Valloituksen aika — 1206 jKr. Strateginen vuoropohjainen peli, jossa johdat yhtä historian suurimmista imperiumeista tai puolustat omaa valtakuntaasi sen edessä.
-            </p>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Yläpalkki */}
+      <header className="sticky top-0 z-20 border-b border-amber-800/30 bg-slate-950/95 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <ScrollText className="w-6 h-6 text-amber-300" />
+            <div>
+              <h1 className="text-lg sm:text-xl font-semibold text-amber-200 leading-tight">Arojen Tarinat — Sääntökirja</h1>
+              <p className="text-[11px] text-slate-400 leading-tight">Story of the Steppe · vuosi 1206 · pykälittäin</p>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 sm:items-end">
-            <Link to="/" className="inline-flex items-center gap-2">
-              <Button variant="secondary" size="sm">
-                <ArrowLeft className="w-4 h-4" /> Palaa peliin
-              </Button>
-            </Link>
-            <Button variant="secondary" size="sm" onClick={() => window.print()}>
-              Tulosta ohjekirja
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" onClick={() => window.print()} className="hidden sm:inline-flex">
+              <Printer className="w-4 h-4 mr-1" /> Tulosta
             </Button>
+            <Link to="/">
+              <Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> Peliin</Button>
+            </Link>
           </div>
         </div>
+      </header>
 
-        <Card className="bg-slate-900/90 border border-amber-700/30 shadow-2xl">
-          <CardContent className="space-y-6 p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center gap-3 text-amber-200">
-                <BookOpen className="w-6 h-6" />
-                <div>
-                  <h2 className="text-2xl font-semibold">Sisältö</h2>
-                  <p className="text-sm text-slate-400">Verkkopelin ja lautapelin ohjeet löytyvät omista osioistaan.</p>
-                </div>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-3">
-                <a href="#digipeli" className="rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-center text-sm text-amber-200 hover:bg-slate-800 transition-colors">Verkkopelin ohjeet</a>
-                <a href="#lautapeli" className="rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-center text-sm text-amber-200 hover:bg-slate-800 transition-colors">Lautapelin ohjeet</a>
-                <a href="#video" className="rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-center text-sm text-amber-200 hover:bg-slate-800 transition-colors">Yhden vuoron video</a>
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-[1fr_0.55fr]">
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-xl font-semibold text-amber-100">Sisällysluettelo</h3>
-                <ol className="mt-4 space-y-3 text-sm text-slate-300">
-                  {sections.map((section) => (
-                    <li key={section.id}>
-                      <a href={`#${section.id}`} className="text-amber-200 hover:text-amber-100 transition-colors">
-                        {section.label}
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-xl font-semibold text-amber-100">Versio 1.0</h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                  Tämä verkkoversio sisältää koko ohjekirjan. Sivu on rakennettu siten, että tärkeimmät aiheet löytyvät nopeasti eri osioista.
-                </p>
-                <div className="mt-5 grid gap-3">
-                  <div className="rounded-2xl border border-slate-700/40 bg-slate-900/80 p-4">
-                    <p className="text-sm text-slate-400">Pelin tavoite ja voittoehdot</p>
-                    <p className="mt-2 text-amber-100 font-semibold">Sotilaallinen, taloudellinen, teknologinen</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-700/40 bg-slate-900/80 p-4">
-                    <p className="text-sm text-slate-400">Fraktiot</p>
-                    <p className="mt-2 text-amber-100 font-semibold">Seitsemän historiallista valintaa</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mt-8 space-y-6">
-          <section id="digipeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-amber-100">Verkkopelin ohjeet</h2>
-                <p className="mt-2 text-sm text-slate-300">
-                  Tässä osiossa kerrotaan pelin käyttöliittymästä, vuororakenteesta ja pelin perustoiminnoista. Löydät täältä myös ohjeet siitä, mitä eri napit tekevät pelikentällä.
-                </p>
-              </div>
-            </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-lg font-semibold text-amber-100">Tärkeimmät toiminnot</h3>
-                <ul className="mt-4 space-y-3 text-sm text-slate-300">
-                  <li>• Palaa peliin - vie takaisin pelin aloitusnäkymään.</li>
-                  <li>• Tulosta ohjekirja - avaa selaimen tulostusikkunan.</li>
-                  <li>• Vuoropalkin napit - siirtyvät resurssi-, kortti-, liike-, taistelu- ja rakentamisvaiheisiin.</li>
-                  <li>• Kartan provinsseja klikatessa valitset kohdealueen tai armeijan.</li>
-                </ul>
-              </div>
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-lg font-semibold text-amber-100">Ohjeet etenemiseen</h3>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  Verkkopelissä painikkeet toimivat interaktiivisesti: esimerkiksi <strong>Yhden vuoron video</strong> vie suoraan videokatsaukseen ja <strong>Palaa peliin</strong> vie takaisin pelin käynnistysnäkymään.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section id="lautapeli" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-amber-100">Lautapelin ohjeet</h2>
-                <p className="mt-2 text-sm text-slate-300">
-                  Tämä osuus kuvaa pelin perinteistä lautapeliä. Vaikka peli toimii selaimessa, lautapelin säännöt ovat samat ja ohjeiden painikkeet avustavat siirtymässä eri aiheisiin.
-                </p>
-              </div>
-            </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-lg font-semibold text-amber-100">Lautapelin periaatteet</h3>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  Lautapelinä ajatus on sama: etene provinsseittain, kerää resursseja ja hanki voittoehdot täyttämällä alue- tai kultatavoitteen sekä kehittämällä teknologiaa.
-                </p>
-              </div>
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <h3 className="text-lg font-semibold text-amber-100">Navigointi</h3>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  Käytä ohjekirjan yläreunan linkkejä siirtyäksesi eri osioihin: <strong>Verkkopelin ohjeet</strong> vie verkkopeliosioon, <strong>Lautapelin ohjeet</strong> lautapeliin ja <strong>Yhden vuoron video</strong> suoraan videonäkymään.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section id="video" className="rounded-3xl border border-amber-700/30 bg-slate-900/90 p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-amber-100">Yhden vuoron videokatsaus</h2>
-                <p className="mt-2 text-sm text-slate-300">
-                  Tiivis lisäosio näyttää yhden vuoron kulun selkeästi, vaiheittain. Tämä ei ole oikea video, mutta tarjoaa visualisoidun katsauksen vuoron etenemiseen.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={playVideo}
-                className="inline-flex items-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-950/80 px-4 py-3 text-sm text-amber-200 hover:bg-slate-800 transition-colors"
-              >
-                <Play className="w-4 h-4" /> Yhden vuoron läpikäynti
-              </button>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-2xl border border-amber-700/30 bg-black">
-              <video
-                id="helpVideo"
-                src={`${import.meta.env.BASE_URL}mongolien-valtakunta.mp4`}
-                controls
-                preload="metadata"
-                className="w-full h-auto"
-              >
-                Selaimesi ei tue video-elementtiä.
-              </video>
-            </div>
-
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <ol className="space-y-4 text-sm text-slate-300">
-                  <li>
-                    <strong>1. Resurssit:</strong> Kerää verot, miesvoima, ruokaa, hevosia ja käsityöläisiä hallitsemistasi provinsseista.
-                  </li>
-                  <li>
-                    <strong>2. Kortit:</strong> Nosta kortti ja käytä se oikeassa hetkessä. Kortit antavat esimerkiksi verotuloja, taistelubonuksia ja teknologiaa.
-                  </li>
-                  <li>
-                    <strong>3. Liikkuminen:</strong> Siirrä armeijasi viereisiin provinssiin. Muista maaston kohina ja liikkumispisteiden määrä.
-                  </li>
-                  <li>
-                    <strong>4. Taistelu:</strong> Hyökkää vihollista vastaan. Taistelut ratkaistaan automaattisesti, mutta taktiset valinnat vaikuttavat lopputulokseen.
-                  </li>
-                  <li>
-                    <strong>5. Rakentaminen:</strong> Rakenna leirejä, markkinoita, linnoituksia ja pajoja. Ne kasvattavat tuotantoa ja puolustusta.
-                  </li>
-                  <li>
-                    <strong>6. Vuoron lopetus:</strong> Vahvista asemat ja anna tekoälyn toimia. Seuraa tilannetta seuraavalla kierroksella.
-                  </li>
-                </ol>
-              </div>
-              <div className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-5">
-                <div className="aspect-[16/9] overflow-hidden rounded-3xl bg-slate-900/90 shadow-inner">
-                  <div className="relative h-full w-full bg-[radial-gradient(circle_at_top_left,_rgba(248,211,113,0.15),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.12),_transparent_30%)]">
-                    <div className="absolute inset-0 flex flex-col justify-center items-center gap-3 p-4 text-slate-300">
-                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20 text-amber-300">
-                        <Play className="w-6 h-6" />
-                      </div>
-                      <p className="text-center text-sm leading-relaxed">
-                        Videokatsauksen paikka: tässä kuvataan yhden vuoron kulku pelissä.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section id="johdanto" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">1. Johdanto</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Mongolien Valtakunta on strateginen vuoropohjainen peli, jossa pelaaja asettuu yhden seitsemästä historiallisesta fraktiosta johtoon vuonna 1206 jKr. — samana vuonna, kun Tšingis-kaani yhdisti mongoliheimojen liittokunnan.
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Peli sijoittuu laajalle alueelle Itä-Aasiasta Keski-Aasiaan ja Venäjälle. Kartta koostuu noin 70 provinssista, joista kukin on yksilöllinen maastonsa, resurssiensa ja strategisen sijaintinsa osalta.
-            </p>
-          </section>
-
-          <section id="taru" className="rounded-3xl border border-amber-700/40 bg-gradient-to-b from-amber-950/30 to-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">🌌 Arojen Tarinat — Maailman taru ja kodeksi</h2>
-            <p className="mt-3 text-sm leading-relaxed text-amber-200/80 italic">
-              Aroilla kerrotaan yhä vanhoja tarinoita — maailmasta, jonka jumalat lauloivat olemassaoloon, ja suuresta kahtiajaosta, joka repi ihmiskunnan kahtia. Tämä kodeksi kokoaa arojen kansojen uskomukset, lait ja legendat.
-            </p>
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              {[
-                {
-                  t: '🧭 Kosminen laulu ja Suuri Hirvas',
-                  d: 'Ennen kaikkea oli vain ääretön alkumeri. Sitten tuli Handgai, Suuri Hirvas, joka käveli alkuvesien päällä, nosti ensimmäisen maan (Dengin), kohotti taivaan ja veisti loputtomat arot. Maailma laulettiin olemaan — jokainen kivi, eläin ja ihminen on osa jumalallista säveltä. Jumalat laulavat sitä yhä pitääkseen maailman koossa, mutta ihmiskunta on unohtanut sanat. Todellinen onni on oman säkeen uudelleen löytämistä.',
-                },
-                {
-                  t: '🔥 Vastoinkäymisten laki',
-                  d: 'Mukavuus on ansa. Uskon ytimen mukaan edistys syntyy vain vaikeuksien kautta: helppo elämä kasvattaa pehmeitä ja pysähtyneitä yhteiskuntia. Kärsimys, nälkä ja luonnonvoimista selviytyminen ovat tuli, joka karkaisee ihmisen. Luonto on armoton ja itseään korjaava — kun yksi laji kaatuu, toinen täyttää tyhjiön.',
-                },
-                {
-                  t: '🦅 Eläinpantheon ja henkien lait',
-                  d: 'Jumalat kulkevat maan päällä pyhien eläinten hahmossa. Kotka on taivaiden omatunto — kunniaton teko sen katseen alla painaa mieltä. Karhu edustaa voimaa ja pidättyväisyyttä, ja karhunlihan uskotaan parantavan. Pöllön vahingoittaminen on ehdoton tabu, joka johtaa yhteisöstä karkottamiseen. Hirvet ovat metsän kuninkaita, joiden taljoista tehdään vain arvokkaimmat asut. Polun ylittävä kettu on paha enne, joka vaatii puhdistautumisrituaalin — ja rotta on ehdoton vihollinen: kerran vuodessa kaikki heimot julistavat aselevon ja käyvät yhdessä rottien hävitykseen.',
-                },
-                {
-                  t: '⚔️ Kaksi sivilisaatiota — Suuri kahtiajako',
-                  d: 'Suuri joki halkaisee maailman. Pohjoisen arojen heimot ovat ylpeitä paimentolaisia, joille pysyvät kivimuurit ovat luonnottomia vankiloita — he liikkuvat vuodenaikojen mukana suurissa jurttakaravaaneissa, liikkuvissa kaupungeissa, joissa on omat korttelinsa sepille, parantajille ja pyhäköille. Etelän valtakunnat ovat valtava, byrokraattinen koneisto: kivi, laki ja paperityö, ammattiarmeijat, kilpimuurit ja linnoitukset. Etelä on unohtanut yhteisen alkuperänsä ja kutsuu pohjoisen kansoja barbaareiksi — kohtalokas erehdys.',
-                },
-                {
-                  t: '🛠️ Selviytymisen säännöt',
-                  d: 'Arojen kovat lait pitävät heimot hengissä: metsästyksen on oltava kestävää, ettei Handgai vihastu, siksi talous perustuu juurikasvien keruuseen. Vaatteet ja haarniskat kyllästetään eläinrasvalla purevaa kylmyyttä vastaan. Ahneus on sosiaalinen kuolemantuomio — kaikki ruoka ja resurssit jaetaan tasan. Raskain rangaistus on karkotus: maailmassa, jossa selviytyminen vaatii ehdotonta yhteistyötä, se on hidas ja varma kuolema.',
-                },
-                {
-                  t: '👥 Rajaseudun mahtajat',
-                  d: 'Ganbataar, Rautatyranni, takoo hajanaisista heimoista yhtä pelottavaa valtakuntaa — nerokas strategi, jota kasvava julmuus ja vainoharha syövät. Hänen puolisonsa Bolormaa, vieraan maan prinsessa, on älyn ja diplomatian ääni, joka toi aroille tiedon kaukaisista kauppareiteistä, piirityskoneista ja hallinnosta. Heidän poikansa Temüü, kapinallinen perillinen, on tekniikan mestari, joka halveksii isänsä julmuutta ja rakentaa hiljaa vastarintaliikettä — meritokratiaa, joka perustuisi yhteisiin etuihin ja diplomatiaan.',
-                },
-                {
-                  t: '🗺️ Strategiset alueet',
-                  d: 'Suuren joen ylityspaikat ovat lopullisia solmukohtia: hallitse siltoja turvataksesi kauppareitit tai hyökätäksesi etelään. Korkeat vuorisolat ovat luonnon linnoitusmuureja, jotka pysäyttävät etelän armeijat. Kosteikot ovat arojen hedelmällisintä maata — ja ikuisesti kiisteltyjä väijytysvyöhykkeitä.',
-                },
-                {
-                  t: '📜 Aikakaudet ennen sotaa',
-                  d: 'Ensimmäisen säkeen aikana ihmiset elivät henkimaailman rinnalla eikä lakeja tarvittu — laulu itse ohjasi. Sitten tuli Suuri unohdus: musiikki katosi ihmismielistä, ja pakokauhussa kansa jakautui. Etelään paenneet rakensivat muurinsa ja byrokratiansa; aroille jääneet omaksuivat kylmyyden ja niukkuuden opettajikseen. Viisisataa vuotta maailma eli kivessä ja taljassa — kunnes kolmekymmentä vuotta sitten orjuudesta noussut Ganbataar aloitti yhdistämisen terrorin kautta, ja ruutitynnyri oli valmis. Yksi kipinä riittää.',
-                },
-              ].map((chapter) => (
-                <div key={chapter.t} className="rounded-2xl border border-amber-800/30 bg-slate-950/70 p-4">
-                  <h3 className="text-base font-semibold text-amber-200">{chapter.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-300">{chapter.d}</p>
-                </div>
+      <div className="mx-auto max-w-7xl px-4 py-8 grid gap-8 lg:grid-cols-[280px_1fr]">
+        {/* Sisällysluettelo */}
+        <aside className="lg:sticky lg:top-[76px] lg:self-start">
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4">
+            <input
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="Etsi lukua…"
+              className="w-full mb-3 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            />
+            <nav className="space-y-1 max-h-[70vh] overflow-y-auto pr-1">
+              {filtered.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => goTo(c.id)}
+                  className="w-full text-left text-sm px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-amber-200 transition-colors"
+                >
+                  <span className="text-amber-500/70 font-serif mr-2">{c.num}.</span>{c.label}
+                </button>
               ))}
-            </div>
-          </section>
+            </nav>
+          </div>
+        </aside>
 
-          <section id="tavoite" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">2. Pelin tavoite ja voittoehdot</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Peli voidaan voittaa viidellä tavalla: sotilaallisella, taloudellisella, teknologisella, diplomaattisella ja kulttuurisella voitolla. Jokainen polku on tasapainotettu vaatimaan vertailukelpoisen määrän suunnittelua — valitse strategiasi ja pidä se elossa loppupeliin asti. Vastustajat voivat myös voittaa omia ehtojaan täyttäessään.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Sotilaallinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">Vihollisten pääkaupungit</p>
-                <p className="mt-1 text-sm text-slate-300">Valtaa kaikkien vastustajien pääkaupungit tai hallitse vähintään 30 provinssia.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Taloudellinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">500 kultaa + Silkkitie</p>
-                <p className="mt-1 text-sm text-slate-300">Pidä vähintään 500 kultaa kolme perättäistä vuoroa ja hallitse yli puolta Silkkitien solmukohdista.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Teknologinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">5 teknologiakorttia</p>
-                <p className="mt-1 text-sm text-slate-300">Pelaa 5 pysyvää teknologiakorttia.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Diplomaattinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">100 vaikutusvaltaa 🕊️</p>
-                <p className="mt-1 text-sm text-slate-300">Kerää vaikutusvaltaa Silkkitien kauppasolmuista, liitoista ja pidetystä pääkaupungista — tai solmi liitto jokaisen valtakunnan kanssa.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Kulttuurinen</p>
-                <p className="mt-2 text-amber-100 font-semibold">60 arvovaltaa 🏛️</p>
-                <p className="mt-1 text-sm text-slate-300">Rakenna Ihmeitä pääkaupunkiisi. Jokainen ihme tuottaa arvovaltaa ja vaikutusvaltaa joka vuoro.</p>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-slate-300">
-              Häviö saavutetaan, jos menetät kaikki armeijasi ja provinssisi. Myös tekoälyfraktiot voivat voittaa: jos jokin AI-fraktio hallitsee 30+ provinssia, se voittaa pelin.
-            </p>
-          </section>
+        {/* Sisältö */}
+        <main className="min-w-0">
 
-          <section id="fraktiot" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">3. Fraktiot</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Valittavana on seitsemän fraktiota. Jokaisella on omat vahvuutensa, aloitusresurssinsa ja strategiset erityispiirteensä.
-            </p>
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              {[
-                { name: 'Mongolien valtakunta', leader: 'Tšingis-kaani', bonus: '+30% ratsuväki, +20% piiritys', resources: '50 kultaa, 80 miehiä, 100 hevosta', tip: 'Paras ensimmäiselle pelikerralle' },
-                { name: 'Jin-dynastia', leader: 'Keisari Xuanzong', bonus: '+20% verot, vahvat linnoitukset', resources: '150 kultaa, 200 miehiä, 30 hevosta' },
-                { name: 'Song-dynastia', leader: 'Keisari Ningzong', bonus: '+30% verot, -10% ratsuväki', resources: '200 kultaa, 150 miehiä, 20 hevosta' },
-                { name: 'Länsi-Xia', leader: 'Keisari Xiangzong', bonus: '+10% ratsuväki, +10% verot', resources: '60 kultaa, 60 miehiä, 40 hevosta' },
-                { name: 'Khwarezmin valtakunta', leader: 'Šaahi Muhammad II', bonus: '+10% ratsuväki/verot/piiritys', resources: '120 kultaa, 100 miehiä, 50 hevosta' },
-                { name: 'Venäjän ruhtinaskunta', leader: 'Suuriruhtinas', bonus: '+10% verot/piiritys', resources: '80 kultaa, 80 miehiä, 25 hevosta' },
-                { name: 'Kipnakit', leader: 'Kaani Köten', bonus: '+20% ratsuväki, -10% verot/piiritys', resources: '30 kultaa, 50 miehiä, 70 hevosta' },
-              ].map((faction) => (
-                <div key={faction.name} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-5">
-                  <h3 className="text-lg font-semibold text-amber-100">{faction.name}</h3>
-                  <p className="text-sm text-slate-300">Johtaja: {faction.leader}</p>
-                  <p className="mt-2 text-sm text-slate-300">Bonukset: {faction.bonus}</p>
-                  <p className="mt-1 text-sm text-slate-300">Aloitusresurssit: {faction.resources}</p>
-                  {faction.tip && <p className="mt-2 text-sm text-amber-200">Vinkki: {faction.tip}</p>}
-                </div>
-              ))}
-            </div>
-          </section>
+          <Chapter id="johdanto" num="I" title="Johdanto ja pelin idea">
+            <Para n="1.1">Arojen Tarinat (Story of the Steppe) on vuoropohjainen strategiapeli, joka sijoittuu vuoteen 1206 jKr. — hetkeen, jolloin Temüjin julistettiin Tšingis-kaaniksi ja arojen kansat mullistivat maailman. Pelaaja johtaa yhtä neljästä suurvallasta ja pyrkii voittoon jotakin viidestä eri voittotiestä pitkin (Luku III).</Para>
+            <Para n="1.2">Peli on yhden pelaajan peli tekoälyvastustajia vastaan. Jokainen vuosi on yksi vuoro, joka jakautuu kuuteen vaiheeseen (Luku VI). Pelaaja hallitsee provinsseja (kyliä), kerää resursseja, rakentaa rakennuksia, rekrytoi armeijoita, pelaa kortteja, käy diplomatiaa ja sotaa.</Para>
+            <Para n="1.3">Tämä sääntökirja kuvaa pelin säännöt sellaisina kuin ne on toteutettu. Numeroarvot (kustannukset, bonukset, kynnykset) ovat sitovia ja vastaavat pelin logiikkaa. Ristiriitatilanteessa peli itse ratkaisee, mutta tavoite on, että tämä kirja ja peli ovat yhtäpitävät.</Para>
+          </Chapter>
 
-          <section id="vuoron-rakenne" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">4. Vuoron rakenne</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Jokainen vuoro koostuu kuudesta vaiheesta, jotka suoritetaan järjestyksessä. Voit siirtyä vaiheiden välillä painamalla vaihepalkin seuraavaa vaihetta.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                { step: 'Resurssit', desc: 'Kerää verot, miesvoima, ruoka, hevoset ja käsityöläiset hallitsemistasi provinsseista.' },
-                { step: 'Kortit', desc: 'Nosta yksi kortti pakasta. Pelaa kortteja saadaksesi hetkellisiä tai pysyviä bonuksia.' },
-                { step: 'Liikkuminen', desc: 'Siirrä armeijojasi naapuriprovinsseihin. Maasto vaikuttaa liikkumiskustannukseen.' },
-                { step: 'Taistelu', desc: 'Taistelut ratkaistaan automaattisesti kun armeijasi liikkuu vihollisen alueelle.' },
-                { step: 'Rakentaminen', desc: 'Rakenna rakennuksia hallitsemiisi provinsseihin. Vaatii kultaa ja käsityöläisiä.' },
-                { step: 'Vuoron lopetus', desc: 'Lopeta vuorosi. AI-fraktiot toimivat, liikkumispisteet palautuvat, vuosi etenee.' },
-              ].map((item) => (
-                <div key={item.step} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <p className="text-sm uppercase tracking-[0.12em] text-slate-400">{item.step}</p>
-                  <p className="mt-2 text-sm text-slate-300">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          <Chapter id="kasitteet" num="II" title="Peruskäsitteet ja termistö">
+            <Para n="2.1"><b>Provinssi (kylä):</b> yksi heksaruutu kartalla. Jokaisella provinssilla on omistaja (fraktio tai neutraali), maasto, peruskehitys, mahdollinen kauppatavara ja linnoitustaso.</Para>
+            <Para n="2.2"><b>Fraktio:</b> pelattava valtakunta. Käytössä on neljä fraktiota: mongolit, Song (Kiina), Venäjän ruhtinaskunnat ja Khwarezm (Persia).</Para>
+            <Para n="2.3"><b>Resurssit:</b> kulta, ruoka, hevoset, miesvoima (manpower), käsityöläiset (artisans). Lisäksi kaksi arvomittaria: vaikutusvalta ja arvovalta.</Para>
+            <Para n="2.4"><b>Vaikutusvalta:</b> diplomaattinen paino, jota syntyy kauppasolmuista, pidetystä pääkaupungista, liitoista ja ihmeistä. Diplomatiavoiton mittari.</Para>
+            <Para n="2.5"><b>Arvovalta:</b> kulttuurinen maine, jota syntyy vain Ihmeistä (rakennus). Kulttuurivoiton mittari.</Para>
+            <Para n="2.6"><b>Armeija:</b> yksikköjoukko, jolla on ratsuväkeä, jalkaväkeä ja mahdollisesti piiritysyksiköitä, sekä moraali ja tarjonta.</Para>
+            <Para n="2.7"><b>Silkkitie:</b> kartan poikki kulkeva kauppareitti; sen varren provinssit ovat kauppasolmuja, jotka tuottavat lisätuloa ja vaikutusvaltaa (Luku VIII).</Para>
+          </Chapter>
 
-          <section id="resurssit" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">5. Resurssit ja talous</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Pelissä on viisi pääresurssia: kulta, miesvoima, ruoka, hevoset ja käsityöläiset. Ne ovat välttämättömiä armeijan ylläpitoon, rakentamiseen ja laajentumiseen.
-            </p>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {[
-                { title: 'Kulta', desc: 'Yleisin resurssi. Käytetään rakentamiseen ja armeijan rekrytointiin. Provinssien verot ja markkinat tuottavat kultaa.' },
-                { title: 'Miesvoima', desc: 'Tarvitaan armeijan rekrytointiin. Tuotanto perustuu provinssien väestöön ja leireihin.' },
-                { title: 'Ruoka', desc: 'Armeijan ylläpito. Jokainen armeija kuluttaa ruokaa vuorolla. Viljelyalueet ja leirit kasvattavat tuotantoa.' },
-                { title: 'Hevoset', desc: 'Tarvitaan ratsuväen rekrytointiin. Steppiprovinssit ja hevoskauppaprovinssit tuottavat yleensä enemmän.' },
-                { title: 'Käsityöläiset', desc: 'Tarvitaan rakennuksiin. Pajat ja tietyt provinsseilla toimivat resurssit lisäävät käsityöläisten määrää.' },
-              ].map((item) => (
-                <div key={item.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{item.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-amber-200">Vinkki: Rakenna pajoja aikaisin — ilman käsityöläisiä et voi rakentaa linnoituksia puolustukseen.</p>
-          </section>
+          <Chapter id="voitto" num="III" title="Voittoehdot — viisi tietä">
+            <Para n="3.1">Peli päättyy voittoon, kun mikä tahansa seuraavista viidestä ehdosta täyttyy pelaajan vuoron lopussa. Ehdot tarkistetaan joka vuoron lopussa.</Para>
+            <Para n="3.2"><b>Sotilasvoitto:</b> valtaa jokaisen vihollisfraktion pääkaupunki — TAI hallitse vähintään <b>30 provinssia</b> (noin 40 % kartasta).</Para>
+            <Para n="3.3"><b>Talousvoitto:</b> kolme ehtoa yhtä aikaa: (a) valtion kassassa vähintään <b>500 kultaa</b>, (b) hallitset <b>enemmistöä silkkitien kauppasolmuista</b> (yli puolet), ja (c) pidät kultarajan <b>vähintään 3 peräkkäistä vuoroa</b> (peräkkäisyyslaskuri nollautuu, jos kulta laskee alle 500:n).</Para>
+            <Para n="3.4"><b>Teknologiavoitto:</b> pelaa <b>vähintään 5 teknologiakorttia</b> (pysyvät tek-kortit).</Para>
+            <Para n="3.5"><b>Diplomatiavoitto:</b> saavuta <b>vaikutusvaltaa vähintään 100</b> — TAI solmi liitto jokaisen elossa olevan vihollisfraktion kanssa (vähintään 2 liittolaista).</Para>
+            <Para n="3.6"><b>Kulttuurivoitto:</b> kerää <b>arvovaltaa vähintään 60</b> rakentamalla Ihmeitä pääkaupunkiin.</Para>
+            <Para n="3.7"><b>Tappio:</b> pelaaja häviää, jos menettää kaikki provinssinsa ja kaikki armeijansa. Myös tekoäly voi voittaa sotilas- tai talousvoitolla, jolloin peli päättyy.</Para>
+          </Chapter>
 
-          <section id="armeijat" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">6. Armeijat ja liikkuminen</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Armeijan rekrytointi vaatii kultaa, miesvoimaa ja ruokaa. Uusia joukkoja ei voi siirtää rekrytointivuorollaan.
-            </p>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Rekrytointi</h3>
-                <p className="mt-2 text-sm text-slate-300">Uusi armeija tarvitsee noin 20 kultaa, 5 miesvoimaa ja 2 ruokaa. Protoyyppi sisältää ratsuväkeä, jalkaväkeä ja moraalia.</p>
-              </div>
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Liikkuminen</h3>
-                <p className="mt-2 text-sm text-slate-300">Jokaisella armeijalla on 3 liikkumispistettä vuorolla. Maasto vaikuttaa kustannukseen: steppi ja ruohomaa maksavat 1, vuoristo ja suo 3.</p>
-              </div>
-            </div>
-          </section>
+          <Chapter id="fraktiot" num="IV" title="Fraktiot ja aloitusasetelma">
+            <Para n="4.1">Pelissä on neljä fraktiota, jotka sijoittuvat laudan kulmiin: rus vasempaan yläkulmaan, mongolit oikeaan yläkulmaan, Song oikeaan alakulmaan ja Khwarezm vasempaan alakulmaan. Kartan keskusta on neutraalia.</Para>
+            <Para n="4.2">Jokainen fraktio aloittaa 12 provinssilla, pääkaupungilla ja yhdellä perustaja-armeijalla, jota johtaa Heimopäällikkö (Luku XIII). Aloitusresurssit ja erikoisbonukset alla.</Para>
+            <Table
+              head={['Fraktio', 'Väri', 'Hallitsija', 'Pääkaupunki', 'Kulta', 'Miesvoima', 'Hevoset', 'Erikoisbonukset']}
+              rows={[
+                ['Mongolien valtakunta', '🟡 keltainen', 'Tšingis-kaani', 'Karakorum', 50, 80, 100, 'Ratsuväki +30 %, piiritys +20 % · aggressiivinen'],
+                ['Song-dynastia', '🟢 vihreä', 'Keisari Ningzong', "Lin'an (Hangzhou)", 200, 150, 20, 'Verotus +30 %, ratsuväki −10 %, piiritys −10 % · kauppias'],
+                ['Venäjän ruhtinaskunnat', '⚪ harmaa', 'Suuriruhtinas', 'Novgorod', 80, 80, 25, 'Verotus +10 %, piiritys +10 % · puolustava'],
+                ['Khwarezmin valtakunta', '🟣 purppura', 'Šaahi Muhammad II', 'Samarkand', 120, 100, 50, 'Ratsuväki +10 %, verotus +20 %, piiritys +10 % · laajentuva'],
+              ]}
+            />
+            <Para n="4.3">Aloitussuhteet: kaikki fraktiot alkavat neutraaleina toisiinsa (suhde 0, luottamus 50, uhka 30). Poikkeus: mongoleja kohtaan muilla on lähtökohtainen epäluulo (suhde −20, uhka 60), koska mongolit ovat aggressiivinen laajentuja.</Para>
+            <Para n="4.4">Aloitusvarat (yhteiset pelaajalle): ruokaa 10, käsityöläisiä 3, vaikutusvalta 0, arvovalta 0. Aloituskäsi: 5 korttia (Luku XIV).</Para>
+          </Chapter>
 
-          <section id="taistelu" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">7. Taistelujärjestelmä</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Taistelu käynnistyy automaattisesti, kun armeijasi liikkuu vihollisen alueelle tai linnoitettuun provinssiin.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Laskenta</h3>
-                <p className="mt-2 text-sm text-slate-300">Hyökkääjän voima perustuu ratsuväkeen, jalkaväkeen, moraaliin ja mahdollisiin piirityslaitteisiin. Puolustajalla linnoitukset ja maasto tuovat lisäbonuksia.</p>
-              </div>
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Tuloksen kriteerit</h3>
-                <p className="mt-2 text-sm text-slate-300">Molemmat osapuolet heittävät noppaa. Suhdeluvun mukaan määrätään voittaja ja tappiot.</p>
-              </div>
-            </div>
-            <div className="mt-4 rounded-3xl border border-amber-700/30 bg-slate-950/90 p-4">
-              <h3 className="text-base font-semibold text-amber-100">Piiritystaktiikat</h3>
-              <ul className="mt-2 space-y-1.5 text-sm text-slate-300 list-disc list-inside">
-                <li>Rynnäkkö: hyökkäys linnoitusta vastaan kuluttaa muureja, mutta hyökkääjän tappiot ovat suuret.</li>
-                <li>Saarto: ympäröi provinssi joka puolelta — linnoitus rapistuu ja puolustajan talous kärsii vuoro vuorolta.</li>
-                <li>Neuvottelu: murskaavan ylivoiman edessä varuskunta voi antautua ilman taistelua, jolloin rakennukset säästyvät.</li>
-                <li>Insinöörityöt: piiritysyksiköt heikentävät linnoituksen tehoa taistelussa — jokainen piirityskone laskee muurien hyötyä.</li>
-              </ul>
-            </div>
-            <p className="mt-4 text-sm text-amber-200">Vinkki: Linnoitetut kaupungit ovat vaikeita valloittaa — valitse taktiikkasi fraktiosi vahvuuksien mukaan.</p>
-          </section>
+          <Chapter id="kartta" num="V" title="Kartta, provinssit ja maasto">
+            <Para n="5.1">Kartta on heksaruudukko, jonka jokaisessa kokonaisessa heksissä on yksi kylä. Kylät jakautuvat fraktioiden (reunat/kulmat) ja neutraalien (keskusta) kesken. Naapuruus lasketaan odd-r-heksalayoutilla: kukin ruutu rajautuu enintään kuuteen naapuriin.</Para>
+            <Para n="5.2">Maasto vaikuttaa liikkumisen hintaan, puolustukseen, tarjontarajaan ja verotukseen. Liikekustannus riippuu yksikkötyypistä (jalka/ratsu/piiritys). Puolustusbonus lisätään puolustajan taisteluvoimaan (Luku XI).</Para>
+            <Table
+              head={['Maasto', 'Jalka', 'Ratsu', 'Piiritys', 'Puolustus', 'Tarjonta', 'Verokerroin']}
+              rows={[
+                ['🌾 Steppi', 1, 1, 2, 0, 3, '0.8×'],
+                ['🌿 Ruohomaa', 1, 1, 2, 0, 5, '1.0×'],
+                ['🌾 Viljelymaa', 1, 1, 2, 0, 8, '1.5×'],
+                ['🌲 Metsä', 2, 1, 3, '+1', 4, '0.9×'],
+                ['⛰️ Kukkulat', 2, 2, 3, '+2', 4, '0.8×'],
+                ['⛰️ Vuoristo', 3, 3, 4, '+3', 2, '0.5×'],
+                ['🏜️ Aavikko', 2, 2, 3, 0, 1, '0.3×'],
+                ['🌿 Suo', 3, 3, 4, '+1', 2, '0.4×'],
+                ['🌲 Taiga', 2, 2, 3, '+1', 2, '0.6×'],
+                ['❄️ Tundra', 2, 2, 3, 0, 1, '0.2×'],
+              ]}
+            />
+            <Para n="5.3">Viljelymaa ja ruohomaa tuottavat ruokaa; steppi ja hevos-provinssit tuottavat hevosia; viljelymaa ja kukkulat tuottavat käsityöläisiä (Luku VII). Vuoristo ja kukkulat antavat parhaan puolustuksen mutta hidastavat liikettä.</Para>
+          </Chapter>
 
-          <section id="rakentaminen" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">8. Rakentaminen</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Rakentaminen tapahtuu rakennusvaiheessa. Jokainen rakennus voidaan rakentaa vain kerran per provinssi.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                { title: 'Leiri', cost: '15 kultaa', labor: '0', effect: '+2 ruokaa/vuoro, mahdollistaa armeijan rekrytoinnin' },
-                { title: 'Markkina', cost: '25 kultaa', labor: '1 käsityöläinen', effect: '+3 kultaa/vuoro' },
-                { title: 'Linnoitus', cost: '50 kultaa', labor: '2 käsityöläistä', effect: '+3 puolustus, garnisooni, linnoitustaso +1 (max 3)' },
-                { title: 'Paja', cost: '30 kultaa', labor: '1 käsityöläinen', effect: '+1 käsityöläinen/vuoro, rekrytoidut joukot saavat +10 moraalia' },
-                { title: 'Hevostalli', cost: '40 kultaa', labor: '1 käsityöläinen', effect: '+1 hevonen/vuoro, parempi ratsuväen rekrytointi' },
-                { title: 'Silta', cost: '20 kultaa', labor: '1 käsityöläinen', effect: '+2 kultaa/vuoro Silkkitien provinssissa — karavaanien ylityspaikka' },
-                { title: 'Ihme 🏛️', cost: '80 kultaa', labor: '3 käsityöläistä', effect: 'Vain pääkaupungissa. Tuottaa arvovaltaa ja vaikutusvaltaa joka vuoro — kulttuurivoiton avain. Voi rakentaa useita.' },
-              ].map((building) => (
-                <div key={building.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{building.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">Hinta: {building.cost}, {building.labor}</p>
-                  <p className="mt-1 text-sm text-slate-300">Vaikutus: {building.effect}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-amber-200">Vinkki: Rakenna ensin paja, sitten markkinat — näin saat sekä käsityöläisiä että kultaa kasvavalla tahdilla.</p>
-          </section>
+          <Chapter id="vuoro" num="VI" title="Vuoron rakenne (6 vaihetta)">
+            <Para n="6.1">Jokainen vuoro (vuosi) etenee kuuden vaiheen läpi kiinteässä järjestyksessä. Vaiheesta toiseen siirrytään "Seuraava"-painikkeella.</Para>
+            <Para n="6.2"><b>1. Resurssit:</b> kerää tulot hallituista provinsseista (kulta, miesvoima, ruoka, hevoset, käsityöläiset) sekä vaikutus- ja arvovalta. Tulot lasketaan Luvun VII kaavoilla.</Para>
+            <Para n="6.3"><b>2. Kortit:</b> nosta 1 kortti pakasta (aloituskäsi on 5) ja pelaa haluamasi kortit kädestäsi. Korttien vaikutukset Luvussa XIV.</Para>
+            <Para n="6.4"><b>3. Liike:</b> siirrä armeijoita naapuriprovinsseihin maaston liikekustannuksen mukaan.</Para>
+            <Para n="6.5"><b>4. Taistelu:</b> ratkaise hyökkäykset vihollisen tai neutraalin hallitsemiin provinsseihin (Luku XI).</Para>
+            <Para n="6.6"><b>5. Rakenna:</b> rakenna rakennuksia omiin provinsseihisi ja rekrytoi joukkoja (Luvut IX–X).</Para>
+            <Para n="6.7"><b>6. Lopeta vuoro:</b> tekoälyvastustajat tekevät siirtonsa, piiritykset etenevät, pysyvät bonukset päivittyvät, voittoehdot tarkistetaan ja uusi vuosi alkaa.</Para>
+          </Chapter>
 
-          <section id="kortit" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">9. Korttijärjestelmä</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Peli sisältää korttipakan, josta nostat yhden kortin korttivaiheessa. Kortteja voi pelata käyttäen käsiäsi saadakseen erilaisia etuja.
-            </p>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {[
-                { title: 'Strategia', desc: 'Taistelubonuksia: hyökkäys, puolustus, liikkuminen. Hetkellinen vaikutus.' },
-                { title: 'Diplomatia', desc: 'Kultaa, puolustusta ja diplomaattisia etuja. Voivat kestää 1–3 vuoroa.' },
-                { title: 'Teknologia', desc: 'Pysyviä bonuksia hyökkäykseen, puolustukseen tai liikkeeseen.' },
-                { title: 'Resurssit', desc: 'Välittömiä resursseja kuten hevosia, kultaa, ruokaa tai käsityöläisiä.' },
-              ].map((card) => (
-                <div key={card.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{card.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">{card.desc}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-slate-300">Kun pakka loppuu, poistopakan kortit sekoitetaan uudeksi pakaksi.</p>
-          </section>
+          <Chapter id="talous" num="VII" title="Resurssit ja talous">
+            <Para n="7.1"><b>Kultatulo</b> = (provinssien perusvero + silkkitiebonus + markkinabonus + siltabonus) × pääkaupunkikerroin. Markkina tuottaa +3 kultaa/kpl, silkkitien silta +2 kultaa/kpl. Jos pääkaupunki on menetetty, kerroin on 0.5 (tulo puolittuu), muutoin 1.0.</Para>
+            <Para n="7.2"><b>Alkupelin piristys:</b> vuoroilla 1–4 kultatuloon lisätään +4 rakentamisen vauhdittamiseksi.</Para>
+            <Para n="7.3"><b>Miesvoima</b> = 30 % provinssien yhteenlasketusta perusmiesvoimasta (pyöristetään alas).</Para>
+            <Para n="7.4"><b>Ruoka</b> = −1 per armeija (ylläpito) + 0.5 × viljely-/ruohomaaprovinssit + 2 × leirit. Ruoka voi olla negatiivista muutosta; se kuluu joukkojen ylläpitoon.</Para>
+            <Para n="7.5"><b>Hevoset</b> = steppi-/hevosprovinssien lukumäärä + hevostallien lukumäärä (1 per talli).</Para>
+            <Para n="7.6"><b>Käsityöläiset</b> = 0.5 × (viljelymaa- ja kukkulaprovinssit) + pajojen lukumäärä. Jos hallitset vähintään 3 provinssia, saat vähintään 1 käsityöläisen/vuoro.</Para>
+            <Para n="7.7"><b>Vaikutusvalta/vuoro</b> = kauppasolmut (1/kpl) + pidetty pääkaupunki (2) + liitot (2/kpl) + ihmeet (2/kpl).</Para>
+            <Para n="7.8"><b>Arvovalta/vuoro</b> = 3 × ihmeiden lukumäärä.</Para>
+          </Chapter>
 
-          <section id="diplomatia" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">10. Diplomatiajärjestelmä</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Voit tehdä sopimuksia muiden fraktioiden kanssa. Hyväksyminen riippuu suhteesta, luottamuksesta ja fraktion tavoitteista.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                { title: 'Hyökkäämättömyys', desc: 'Estää hyökkäykset fraktioiden välillä.' },
-                { title: 'Kauppasopimus', desc: 'Lisää molempien kauppatuloja.' },
-                { title: 'Liittosopimus', desc: 'Vahva yhteistyö ja mahdollinen yhteinen puolustus.' },
-                { title: 'Aselepo', desc: 'Väliaikainen rauhan tila.' },
-                { title: 'Vasallisuus', desc: 'Heikompi fraktio maksaa veroja vahvemmalle.' },
-                { title: 'Rauha', desc: 'Muodollinen rauhansopimus.' },
-                { title: 'Yllättävä sota', desc: 'Sota alkaa heti ja kaikki muut fraktiot julistavat sinulle sodan.' },
-                { title: 'Formaalinen sota', desc: 'Sota ilmoitetaan, mutta alkaa vasta seuraavan vuoron lopussa.' },
-              ].map((item) => (
-                <div key={item.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{item.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-amber-200">Vinkki: Älä riko sopimuksia kevyesti — luottamus palautuu hitaasti.</p>
-          </section>
+          <Chapter id="silkkitie" num="VIII" title="Silkkitie ja kauppasolmut">
+            <Para n="8.1">Silkkitie on kartan keskirivin poikki kulkeva kauppareitti. Sen varren provinssit ovat kauppasolmuja (silkkitie-lippu).</Para>
+            <Para n="8.2"><b>Silkkitiebonus</b> = kauppasolmujen perusvero + 2 × silkki-kauppatavaraa tuottavat solmut + <b>ketjubonus</b>. Ketjubonus palkitsee yhtenäisten solmujaksojen hallinnasta: kukin toisiinsa kytketty klusteri (koko &gt; 1) antaa noin <span className="whitespace-nowrap">1.6 × (klusterikoko^1.45)</span> lisäkultaa. Yhtenäinen pätkä silkkitietä on siis paljon arvokkaampi kuin hajanaiset pysäkit.</Para>
+            <Para n="8.3">Silkkitien enemmistön hallinta (yli puolet kaikista solmuista) on talousvoiton edellytys (§ 3.3) ja tuottaa merkittävää vaikutusvaltaa (§ 7.7).</Para>
+          </Chapter>
 
-          <section id="faq" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">11. Usein kysytyt kysymykset</h2>
-            <div className="mt-4 space-y-4 text-sm text-slate-300">
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa antaa leiri?</h3>
-                <p className="mt-2">Leiri antaa +2 ruokaa per vuoro omassa provinssissaan. Se myös mahdollistaa armeijan rekrytoinnin kyseisestä provinssista, jos omistat sen.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Onko pelissä maatilarakennusta?</h3>
-                <p className="mt-2">Käytössä ei ole erillistä maatilarakennusta. Viljelymaaprovinsseilla on parempi tukituotanto ja leirit lisäävät ruokaa.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Paljonko ruokaa kuluu hevosesta tai sotilaasta?</h3>
-                <p className="mt-2">Rekrytointi kuluttaa heti 2 ruokaa. Jokainen armeija kuluttaa yhden ruoan per vuoro kaupungin ruokatuotannon vähentyessä sen mukaan, kuinka monta armeijaa omistat.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Mistä hevoset tulevat ja kuinka paljon ne tuottavat?</h3>
-                <p className="mt-2">Hevosia saa steppe- ja hevoskauppatavara-provinssien kautta sekä hevos­tallista. Hevoset eivät suoraan anna kultaa, mutta ne mahdollistavat ratsuväen rekrytoinnin.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Miten yksiköt toimivat — onko yksi sotilas yksi armeija?</h3>
-                <p className="mt-2">Pelissä armeija on joukko, joka voi sisältää useita ratsuväen ja jalkaväen yksiköitä. Yksittäistä sotilasta ei pelata erillisenä kappaleena, vaan armeijoiden vahvuus lasketaan näiden joukkojen summana.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Monta korttia voi käyttää ja milloin?</h3>
-                <p className="mt-2">Aloitat viidellä kortilla ja saat kortin lisäyksen korttivaiheessa. Kortteja voi pelata silloin kun ne ovat kädessäsi, eli käytännössä useita per vuoro, kunnes kätesi loppuu. Kortteja ei voi pelata vuoron lopetusvaiheessa.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Vaikuttaako maasto, kun tulen tai lähden kaupungista?</h3>
-                <p className="mt-2">Kyllä, maasto vaikuttaa sekä liikkeeseen että puolustukseen. Liikkuminen kohdeprovinssiin käyttää sen liikkumiskustannuksen, ja puolustus bonukset lasketaan, kun omaisuus puolustaa kyseisessä maastossa.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Voiko paimentolais- tai neutraalissa kaupungissa olla rakennuksia?</h3>
-                <p className="mt-2">Rakennuksia voi rakentaa vain omissa provinssissasi. Neutraalit tai nomadit-provinssit eivät rakenna automaattisesti, eikä niissä voi lisätä omia rakennuksia ennen niiden valtaamista.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Saavatko paimentolaiset lisää rakennuksia?</h3>
-                <p className="mt-2">Nomadiprovinsseilla ei ole automaattista rakennustuotantoa. Rakenna omistamissasi provinssissa, jotta saat markkinat, tallit ja linnoitukset käyttöön.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Mitä maasto tekee pelissä?</h3>
-                <p className="mt-2">Maasto määrää liikkeen hinnan ja puolustusbonuksen. Jalkaväen liike metsässä on hitaampaa (kustannus 2) kuin ratsuväen (kustannus 1), ja vuoristo vie enemmän aikaa kaikilta joukoilta. Metsä ja kukkulat antavat hyvät puolustusbonukset. Joen ylitys ei ole tässä versiota vielä erikseen laskettu.</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-amber-100">Monta kultaa saa per vuoro?</h3>
-                <p className="mt-2">Kultaa kertyy verotuloista, markkinoista ja kauppatavaroista. Markkina antaa +3 kultaa per vuoro. Silkkitien provinsseille saat verotulojen tuplauksen ja lisäbonuksia ketjun hallinnasta, erityisesti jos kontrolloit yhtenäisiä silkkitien osuuksia ja silkkiä tuottavia keskuksia.</p>
-              </div>
-            </div>
-          </section>
+          <Chapter id="rakennukset" num="IX" title="Rakennukset">
+            <Para n="9.1">Rakennukset pystytetään Rakenna-vaiheessa omiin provinsseihin. Ne maksavat kultaa ja usein käsityöläisiä. Jokainen rakennus antaa pysyvän edun.</Para>
+            <Table
+              head={['Rakennus', 'Kulta', 'Käsityöl.', 'Vaikutus']}
+              rows={[
+                ['⛺ Leiri', 15, '—', '+2 ruokaa/vuoro; jalkaväen rekrytointipiste'],
+                ['🏪 Markkina', 25, 1, '+3 kultaa/vuoro'],
+                ['🌉 Silta', 20, 1, '+2 kultaa/vuoro silkkitiellä; karavaanien ylityspaikka'],
+                ['🔨 Paja', 30, 1, '+1 käsityöläinen/vuoro; rekrytoidut joukot +10 moraalia'],
+                ['🐎 Hevostalli', 40, 1, '+1 hevonen/vuoro; ratsuväen rekrytointipiste'],
+                ['🏯 Linnoitus', 50, 2, '+3 puolustus (nostaa linnoitustasoa)'],
+                ['🏛️ Ihme', 80, 3, 'Vain pääkaupungissa: +arvovaltaa ja +vaikutusvaltaa/vuoro'],
+              ]}
+            />
+            <Para n="9.2"><b>Rakennusten roolit rekrytoinnissa:</b> Leiri avaa jalkaväen rekrytoinnin, Hevostalli avaa ratsuväen rekrytoinnin. Pääkaupungissa voi rekrytoida kumpaakin ilman erillistä rakennusta (Luku X).</Para>
+            <Para n="9.3"><b>Ihme</b> on ainoa arvovallan lähde ja siten kulttuurivoiton avain. Sen voi rakentaa vain pääkaupunkiin.</Para>
+          </Chapter>
 
-          <section id="kartta" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">12. Kartta ja maastot</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Kartta koostuu noin 70 provinssista. Liikkuminen tapahtuu naapuriprovinsseihin, ja maasto vaikuttaa sekä liikkeeseen että puolustukseen.
-            </p>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {[
-                { terrain: 'Steppi / Ruohomaa / Viljelymaa', move: '1', defense: '0', supply: '5–8', tax: '×1.0' },
-                { terrain: 'Metsä / Taiga / Aavikko / Kukkulat', move: '2', defense: '1–2', supply: '2–4', tax: '×0.9–0.8' },
-                { terrain: 'Vuoristo / Suo', move: '3', defense: '3 / 1', supply: '1–2', tax: '×0.5–0.4' },
-              ].map((item) => (
-                <div key={item.terrain} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{item.terrain}</h3>
-                  <p className="mt-2 text-sm text-slate-300">Liike: {item.move}, Puolustus: {item.defense}, Tarjonta: {item.supply}, Verokerroin: {item.tax}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-slate-200">Silkkitie kulkee kartan läpi ja tarjoaa erityisiä kauppatuloja niille provinsseille, joissa se kulkee. Yhtenäisen reitin hallinta kasvattaa bonus-tuloja ja tekee kaupungin suojelusta strategisen prioriteetin.</p>
-          </section>
+          <Chapter id="armeijat" num="X" title="Armeijat, rekrytointi ja liike">
+            <Para n="10.1"><b>Rekrytointikustannukset:</b> Jalkaväki maksaa <b>10 kultaa ja 5 ruokaa</b>. Ratsuväki maksaa <b>20 kultaa, 5 hevosta ja 10 ruokaa</b>.</Para>
+            <Para n="10.2"><b>Rekrytoinnin ehdot:</b> jalkaväkeä voi rekrytoida provinssista, jossa on Leiri (tai pääkaupungista); ratsuväkeä provinssista, jossa on Hevostalli (tai pääkaupungista). Jos pääkaupunki on menetetty, rekrytointi on keskeytetty, kunnes se vallataan takaisin.</Para>
+            <Para n="10.3"><b>Joukon kokoonpano:</b> Jalkaväkirekry tuottaa 5 jalkaväkeä (+enintään 2 ratsua käytettävissä olevien hevosten mukaan). Ratsuväkirekry tuottaa ratsuväkeä <span className="whitespace-nowrap">min(4 + tallit, hevoset/2)</span> ja loput jalkaväkenä (vähintään 2). Paja antaa uusille joukoille +10 moraalia (perusmoraali 70, pajalla 80).</Para>
+            <Para n="10.4"><b>Liike:</b> armeija siirtyy naapuriprovinssiin maksamalla maaston liikekustannuksen (Luku V). Piiritysyksiköt käyttävät piirityskustannusta; muuten ratsuvaltaisella joukolla (ratsu ≥ jalka) käytetään ratsukustannusta, muutoin jalkakustannusta.</Para>
+            <Para n="10.5"><b>Moraali ja tarjonta:</b> jokaisella armeijalla on moraali (0–100) ja tarjonta. Voitokas taistelu nostaa moraalia (+5). Heimopäällikön läheisyys nostaa moraalia (Luku XIII).</Para>
+          </Chapter>
 
-          <section id="kauppatavarat" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">13. Kauppatavarat</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Monet provinsseista tuottavat erityisiä kauppatavaroita, jotka tarjoavat lisäetuja talouteen ja diplomatiaan.
-            </p>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {[
-                { name: 'Hevoset', value: '3', effect: '+2 ratsuväen rekrytointi' },
-                { name: 'Silkki', value: '5', effect: '+50% kauppaverot' },
-                { name: 'Mausteet', value: '4', effect: '+25% kauppaverot' },
-                { name: 'Kulta', value: '6', effect: '+3 kultaa/vuoro' },
-                { name: 'Rauta', value: '3', effect: '-20% yksiköiden kustannus' },
-                { name: 'Turkikset', value: '4', effect: '+30% diplomaattinen arvo' },
-                { name: 'Vilja', value: '2', effect: '+2 miesvoimaa' },
-                { name: 'Suola', value: '3', effect: '+1 tarjonta' },
-                { name: 'Karja', value: '2', effect: '+1 miesvoima, +1 tarjonta' },
-                { name: 'Jalokivet', value: '5', effect: '+2 diplomaattinen arvo' },
-              ].map((item) => (
-                <div key={item.name} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{item.name}</h3>
-                  <p className="mt-2 text-sm text-slate-300">Arvo: {item.value}</p>
-                  <p className="mt-1 text-sm text-slate-300">Vaikutus: {item.effect}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          <Chapter id="taistelu" num="XI" title="Taistelujärjestelmä">
+            <Para n="11.1"><b>Taisteluvoima:</b> Hyökkääjän voima = 2 × ratsuväki + jalkaväki + piiritys + hyökkäysbonukset. Puolustajan voima = 2 × ratsuväki + jalkaväki. Ratsuväki on siis kaksinkertaisen arvoista raakavoimassa.</Para>
+            <Para n="11.2"><b>Nopanheitto:</b> molemmat heittävät 1d6. Hyökkääjän pistemäärä = voima + noppa. Puolustajan pistemäärä = voima + noppa + 2 × maaston puolustusbonus + 3 × tehollinen linnoitustaso.</Para>
+            <Para n="11.3"><b>Piiritys heikentää muureja:</b> tehollinen linnoitustaso = linnoitustaso − 0.5 × piiritysyksiköt (ei alle 0). Piiritysyksiköt siis murtavat puolustusta.</Para>
+            <Para n="11.4"><b>Ratkaisu:</b> suuremman pistemäärän saanut voittaa. Jos hyökkääjä voittaa, puolustaja kärsii vahinkoa (hyökkääjän voima − puolustusbonukset); jos häviää, hyökkääjä kärsii vahinkoa puolustajan voiman verran.</Para>
+            <Para n="11.5"><b>Tappioiden jako:</b> vahinko osuu ensin jalkaväkeen; ylijäävä vahinko poistaa ratsuväkeä puolella teholla (ratsuväki kestää paremmin). Puolustaja tuhoutuu, jos menettää kaiken sekä ratsu- että jalkaväkensä.</Para>
+            <Para n="11.6"><b>Korttien vaikutus:</b> pelatut strategiakortit voivat antaa hyökkäys-, puolustus- tai liikebonuksia, jotka lisätään voimalaskuun (Luku XIV).</Para>
+          </Chapter>
 
-          <section id="tekoaly" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">14. Tekoäly (AI)</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              AI-vastustajat toimivat vuoron lopussa automaattisesti. Ne keräävät resursseja, arvioivat uhkia ja tekevät siirtoja oman strategiansa mukaisesti.
-            </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                { title: 'Aggressiivinen', desc: 'Hyökkäilee usein ja etsii heikkoja kohteita.' },
-                { title: 'Puolustava', desc: 'Rakentaa linnoituksia ja suojelee rajaprovinsseja.' },
-                { title: 'Kauppias', desc: 'Panostaa talouteen ja välttää turhia sotiakin.' },
-                { title: 'Laajentava', desc: 'Etsii uusia alueita ja pyrkii kasvuun.' },
-                { title: 'Varovainen', desc: 'Hyökkää vain, jos ylivoima on selvästi omalla puolella.' },
-              ].map((item) => (
-                <div key={item.title} className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                  <h3 className="text-base font-semibold text-amber-100">{item.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          <Chapter id="piiritys" num="XII" title="Piiritys ja pääkaupungit">
+            <Para n="12.1"><b>Saarto:</b> jos provinssi on kokonaan vihollisten hallitsemien naapureiden ympäröimä, se joutuu piiritykseen ja piiritysmittari kasvaa vuoro vuorolta.</Para>
+            <Para n="12.2"><b>Piirityksen vaikutus:</b> jos provinssissa on linnoitus, sen taso laskee −1/vuoro piirityksessä. Jos linnoitusta ei ole, omistaja menettää 5 kultaa/vuoro (tarjonnan katkeaminen). Piiritysmittari nollautuu, kun saarto puretaan.</Para>
+            <Para n="12.3"><b>Menetetty pääkaupunki:</b> jos oma pääkaupunki on vihollisen hallussa, (a) kaikki kultatulo puolittuu (§ 7.1) ja (b) rekrytointi on keskeytetty (§ 10.2), kunnes pääkaupunki vallataan takaisin.</Para>
+            <Para n="12.4"><b>Vihollisen pääkaupungit</b> ovat sotilasvoiton avain: kaikkien vihollispääkaupunkien valtaaminen päättää pelin voittoon (§ 3.2).</Para>
+          </Chapter>
 
-          <section id="strategia" className="rounded-3xl border border-slate-700/50 bg-slate-950/80 p-6">
-            <h2 className="text-2xl font-semibold text-amber-100">14. Strategiavinkkejä</h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Aloittelijan vinkit</h3>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
-                  <li>Kerää ensin resursseja rakentamalla leirejä ja markkinoita lähiprovinsseihin.</li>
-                  <li>Älä yritä valloittaa liian montaa rintamaa yhtä aikaa — keskitä voimasi.</li>
-                  <li>Rakenna paja aikaisin saadaksesi käsityöläisiä tuleviin rakennusprojekteihin.</li>
-                  <li>Pidä huoli ruokahuollosta — armeijat ilman ruokaa heikentyvät.</li>
-                  <li>Käytä diplomatiakortteja kultaresurssien keräämiseen alkupelissä.</li>
-                </ul>
-              </div>
-              <div className="rounded-3xl border border-slate-700/40 bg-slate-950/90 p-4">
-                <h3 className="text-base font-semibold text-amber-100">Edistyneet strategiat</h3>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
-                  <li>Linnoita pääkaupunkisi ja tärkeimmät rajaprovinssit ennen laajentumista.</li>
-                  <li>Valloita provinsseja, joissa on arvokkaita kauppatavaroita kuten silkki ja kulta.</li>
-                  <li>Teknologiakortit antavat pysyviä bonuksia ja laskevat voittoehtoon — pelaa ne mahdollisimman aikaisin.</li>
-                  <li>Hyödynnä steppimaastoa nopeaan liikkumiseen — ratsuarmeija voi yllättää vihollisen.</li>
-                  <li>Tarkkaile AI-fraktioiden laajenemista — älä anna kenenkään kasvaa liian suureksi.</li>
-                </ul>
-              </div>
+          <Chapter id="paallikko" num="XIII" title="Heimopäällikkö">
+            <Para n="13.1">Jokaisen fraktion perustaja-armeija ("main"-armeija) kantaa Heimopäällikköä. Päällikkö on sekä johtaja että moraalin lähde.</Para>
+            <Para n="13.2"><b>Moraalibonus:</b> päällikön kanssa samassa provinssissa olevat armeijat saavat +5 moraalia, ja viereisissä provinsseissa olevat armeijat pienemmän bonuksen. Bonukset päivittyvät vuoron lopussa.</Para>
+            <Para n="13.3"><b>Päällikön kaatuminen:</b> jos pelaajan perustaja-armeija tuhoutuu, seuraa kertaluontoinen rangaistus: <b>−30 kultaa</b>, <b>−15 vaikutusvaltaa</b> ja kaikkien pelaajan joukkojen moraali laskee (−10). Tämä tapahtuu vain kerran.</Para>
+            <Para n="13.4">Päällikön suojeleminen on siis strategisesti tärkeää: älä lähetä perustaja-armeijaa turhiin riskeihin varhaisessa vaiheessa.</Para>
+          </Chapter>
+
+          <Chapter id="kortit" num="XIV" title="Korttijärjestelmä">
+            <Para n="14.1"><b>Kortin nosto:</b> peli alkaa 5 kortin kädellä; Kortit-vaiheessa nostat 1 uuden kortin/vuoro. Pelatut kortit menevät poistopakkaan (paitsi pysyvät teknologiakortit).</Para>
+            <Para n="14.2"><b>Korttityypit:</b> strategia (taistelubonukset), teknologia (pysyvät bonukset; 5 pelattua = teknologiavoitto), diplomatia (suhteet) ja resurssi (kulta/ruoka/hevoset/käsityöläiset).</Para>
+            <Para n="14.3"><b>Harvinaisuudet:</b> tavallinen, epätavallinen, harvinainen, legendaarinen. Harvinaisemmat kortit ovat voimakkaampia mutta esiintyvät harvemmin.</Para>
+            <Para n="14.4"><b>Vaikutusten kesto:</b> resurssikortit vaikuttavat heti (kulta/ruoka/hevoset/käsityöläiset lisätään varastoihin). Hyökkäys-/puolustusbonukset ovat voimassa määrätyn keston (usein tämän vuoron); liikebonus lisää joukkojen liikepisteitä heti. Pysyvät hyökkäys-/puolustuskortit (teknologia) jäävät voimaan koko pelin.</Para>
+            <Para n="14.5">Kortit näkyvät pelinäkymän alalaidan korttipaneelissa kuvitettuina. Paneelia voi suurentaa ja pienentää raahaamalla sen yläreunaa; kortit skaalautuvat aina näkyviin kokonaan.</Para>
+          </Chapter>
+
+          <Chapter id="diplomatia" num="XV" title="Diplomatia">
+            <Para n="15.1"><b>Suhteet:</b> jokaisella fraktioparilla on suhdeluku, luottamus, uhka ja rajakitka. Sopimukset (treaties) muuttavat näitä.</Para>
+            <Para n="15.2"><b>Sopimustyypit:</b> rauhanomaiset — hyökkäämättömyys (non_aggression), rauha, aselepo (truce) ja liitto (alliance); sekä sotaan liittyvät — muodollinen sota (war_formal) ja yllätyshyökkäys (war_surprise).</Para>
+            <Para n="15.3"><b>Liitto</b> tuottaa +2 vaikutusvaltaa/vuoro (§ 7.7). Liitto jokaisen elossa olevan vihollisen kanssa (väh. 2) on yksi diplomatiavoiton reitti (§ 3.5).</Para>
+            <Para n="15.4"><b>Sodanjulistus:</b> muodollinen sota aktivoituu määrätyllä vuorolla ja romahduttaa suhteen (−90), luottamuksen (0) ja nostaa uhkaa (+30). Mongoleihin kohdistuu jo alusta korkeampi uhka (§ 4.3).</Para>
+          </Chapter>
+
+          <Chapter id="kauppa" num="XVI" title="Kauppatavarat">
+            <Para n="16.1">Osa provinsseista tuottaa kauppatavaraa, joka antaa pysyvän edun sen omistajalle. Arvo (value) kuvaa tavaran suhteellista arvokkuutta kaupassa.</Para>
+            <Table
+              head={['Tavara', 'Arvo', 'Vaikutus']}
+              rows={[
+                ['🪙 Kulta', 6, '+3 kultaa/vuoro'],
+                ['🧣 Silkki', 5, '+3 kultaa/vuoro (vahvistaa silkkitietä)'],
+                ['💎 Jalokivet', 5, '+2 kultaa/vuoro ja +1 moraali'],
+                ['🌶️ Mausteet', 4, '+2 kultaa/vuoro'],
+                ['🧥 Turkikset', 4, '+1 tarjonta ja +1 moraali'],
+                ['🐴 Hevoset', 3, '+2 ratsuväen rekrytointi'],
+                ['⚔️ Rauta', 3, '−20 % yksiköiden kustannus'],
+                ['🧂 Suola', 3, '+1 tarjonta'],
+                ['🌾 Vilja', 2, '+2 miesvoimaa'],
+                ['🐄 Karja', 2, '+1 miesvoimaa, +1 tarjonta'],
+              ]}
+            />
+          </Chapter>
+
+          <Chapter id="tekoaly" num="XVII" title="Tekoäly (AI)">
+            <Para n="17.1">Vuoron lopussa jokainen tekoälyfraktio tekee siirtonsa persoonallisuutensa mukaan: aggressiivinen (mongolit) laajentaa ja hyökkää, kauppias (Song) keskittyy talouteen, puolustava (rus) linnoittautuu ja laajentuva (Khwarezm) valtaa neutraaleja.</Para>
+            <Para n="17.2">Tekoäly voi voittaa sotilas- tai talousvoitolla samoin ehdoin kuin pelaaja. Tekoälyn siirrot näkyvät vuoronvaihdon ilmoituksissa.</Para>
+            <Para n="17.3">Tekoäly ottaa huomioon uhka- ja suhdeluvut: korkea uhka lisää hyökkäysalttiutta. Mongolien korkea lähtöuhka tekee niistä todennäköisen aggressorin.</Para>
+          </Chapter>
+
+          <Chapter id="strategia" num="XVIII" title="Strategiavinkkejä">
+            <Para n="18.1"><b>Käytä alkupelin piristys:</b> vuoroilla 1–4 saat +4 kultaa/vuoro. Rakenna aikaisin markkinoita ja leirejä talouden ja rekrytoinnin pohjaksi.</Para>
+            <Para n="18.2"><b>Hallitse silkkitietä yhtenäisesti:</b> ketjubonus (§ 8.2) palkitsee vierekkäisistä kauppasolmuista epäsuhtaisen paljon — kokoa yhtenäinen jakso hajanaisten pysäkkien sijaan.</Para>
+            <Para n="18.3"><b>Suojele pääkaupunkia ja päällikköä:</b> menetetty pääkaupunki puolittaa tulon ja pysäyttää rekrytoinnin; päällikön kaatuminen maksaa 30 kultaa ja 15 vaikutusvaltaa.</Para>
+            <Para n="18.4"><b>Valitse voittotie ajoissa:</b> mongoleilla sotilastie on luontevin (ratsuväki +30 %), Songilla talous- ja kulttuuritie (verotus +30 %), Khwarezmilla laajentuminen ja Venäjällä puolustava kulutussota.</Para>
+            <Para n="18.5"><b>Käytä maastoa:</b> puolusta vuoristossa ja kukkuloilla (+3/+2 puolustus), hyökkää ratsuväellä avomaastossa, missä liike on halpaa.</Para>
+            <Para n="18.6"><b>Piiritysyksiköt muureja vastaan:</b> linnoitettuja provinsseja vastaan tuo piiritysyksiköitä — ne heikentävät tehollista linnoitustasoa (§ 11.3).</Para>
+          </Chapter>
+
+          <footer className="mt-14 pt-6 border-t border-amber-800/30 text-center text-sm text-slate-500">
+            <p>Arojen Tarinat — Story of the Steppe · Sääntökirja · vuosi 1206</p>
+            <div className="mt-3 flex justify-center gap-2">
+              <button onClick={() => goTo('johdanto')} className="text-amber-300 hover:text-amber-100 text-sm">↑ Takaisin alkuun</button>
+              <span className="text-slate-600">·</span>
+              <Link to="/" className="text-amber-300 hover:text-amber-100 text-sm">Palaa peliin</Link>
             </div>
-            <p className="mt-4 text-sm text-amber-200">Hyvää peliä ja onnea valloituksen tiellä!</p>
-          </section>
-        </div>
+          </footer>
+
+        </main>
       </div>
     </div>
   );

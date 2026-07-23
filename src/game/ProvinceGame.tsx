@@ -29,11 +29,16 @@ import { Card, CardContent } from '@/components/ui/card.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
-  Clock, Coins, Users, Sword, RotateCcw, Trophy, ScrollText,
-  Target, Crosshair, Wheat, Wrench, HelpCircle, Volume2, VolumeX,
+  Clock, Users, Sword, RotateCcw, Trophy, ScrollText,
+  Target, Crosshair, Wrench, HelpCircle, Volume2, VolumeX,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+
+// Resurssikuvakkeet (sprite-assetit) HUD:iin
+import resGoldIcon from '@/assets/sprites/res_gold.png';
+import resFoodIcon from '@/assets/sprites/res_food.png';
+import resHorseIcon from '@/assets/sprites/res_horse.png';
 
 
 
@@ -229,18 +234,18 @@ export const ProvinceGame = () => {
           
           {/* Center: Resources */}
           {playerFactionData && (
-            <div className="flex items-center gap-3 bg-slate-800/30 rounded-lg px-3 py-1">
+            <div className="flex items-center gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-3 py-1 shadow-inner">
               <div className="flex items-center gap-1" title="Kulta">
-                <Coins className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-amber-100 font-bold text-sm">{playerFactionData.treasury}</span>
+                <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
+                <span className="text-amber-100 font-bold text-sm tabular-nums">{playerFactionData.treasury}</span>
               </div>
               <div className="flex items-center gap-1" title="Ruoka">
-                <Wheat className="w-3.5 h-3.5 text-green-400" />
-                <span className="text-green-100 font-bold text-sm">{gameState.food}</span>
+                <img src={resFoodIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
+                <span className="text-green-100 font-bold text-sm tabular-nums">{gameState.food}</span>
               </div>
               <div className="flex items-center gap-1" title="Hevoset">
-                <span className="text-sm">🐴</span>
-                <span className="text-blue-100 font-bold text-sm">{playerFactionData.horses}</span>
+                <img src={resHorseIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
+                <span className="text-blue-100 font-bold text-sm tabular-nums">{playerFactionData.horses}</span>
               </div>
               <div className="flex items-center gap-1" title="Miesvoima">
                 <Users className="w-3.5 h-3.5 text-blue-400" />

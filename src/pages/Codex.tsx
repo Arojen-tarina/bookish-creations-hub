@@ -25,6 +25,144 @@ const chapters: Chapter[] = [
   { id: 'mahtajat', numeral: 'VI', title: 'Rajaseudun mahtajat', subtitle: 'Ganbataar, Bolormaa ja Temüü' },
   { id: 'aikakaudet', numeral: 'VII', title: 'Aikakaudet', subtitle: 'Maailma ennen sotaa' },
   { id: 'alueet', numeral: 'VIII', title: 'Strategiset alueet', subtitle: 'Kartta aseena' },
+  { id: 'vaijytys', numeral: 'IX', title: 'Väijytys', subtitle: 'Metsän ansa ja piirityksen oppitunti' },
+  { id: 'susi', numeral: 'X', title: 'Suden tarina', subtitle: 'Pimeän kesyttäjä ja tasapaino' },
+  { id: 'seremonia', numeral: 'XI', title: 'Seremonia ja sankaruus', subtitle: 'Kurkkulaulu, hauta ja Temüün vala' },
+  { id: 'perheriita', numeral: 'XII', title: 'Perheriita', subtitle: 'Kaksintaistelu ja vallan nousu' },
+  { id: 'vallanvaihto', numeral: 'XIII', title: 'Vallanvaihto', subtitle: 'Yhdistämissodat ja uusi taktiikka' },
+  { id: 'jalleenrakennus', numeral: 'XIV', title: 'Jälleenrakennus', subtitle: 'Ulanbataar ja etelän uhka' },
+  { id: 'uusielama', numeral: 'XV', title: 'Uusi elämä, samat tottumukset', subtitle: 'Marssi etelän miljoona-armeijaa vastaan' },
+  { id: 'loputonsota', numeral: 'XVI', title: 'Loputon sota', subtitle: 'Sillat, joki ja pattitilanne' },
+  { id: 'aamu', numeral: 'XVII', title: 'Kaikki yöt loppuvat aamuun', subtitle: 'Rauha, paluu ja dynastia' },
+  { id: 'loppusanat', numeral: 'XVIII', title: 'Loppusanat', subtitle: 'Tarinat jotka meitä yhdistävät' },
+  { id: 'heimot', numeral: 'Liite A', title: 'Heimot ja kansat', subtitle: 'Kronikan valtakunnat ja heimot' },
+  { id: 'henkilot', numeral: 'Liite B', title: 'Henkilögalleria', subtitle: 'Kirjan keskeiset hahmot' },
+];
+
+// Kertovat luvut (Qorchin kronikan tarinat) — samassa hengessä kuin aiemmat luvut,
+// tiivistettyinä pelin loren tyyliin.
+const tales: { id: string; numeral: string; title: string; paras: string[] }[] = [
+  {
+    id: 'vaijytys', numeral: 'IX', title: 'Väijytys — metsän ansa',
+    paras: [
+      'Vihollisen marssiessa kohti metsää arolaiset ratsujousiampujat odottivat sen siimeksessä kärsivällisinä. Vuosikymmenten sota oli opettanut molemmat osapuolet lukemaan toisiaan: eteläiset aavistivat ansan, ja arolaiset tiesivät heidän aavistavan. Niinpä eteläiset etenivät kilvet edessä ja keihäät pystyssä, muodostivat torjuntalinjan koko metsän reunaan ja huusivat toisilleen tahtimerkkejä.',
+      'Komentaja Batu ei epäröinyt. Fanfaarin soidessa hän ratsasti linjojen halki ja antoi perääntymismerkin — näennäisen paon kohti kolmen kilometrin päässä olevaa leiritystä. Kun eteläiset seurasivat, metsän perälle jätetty reservi syöksyi esiin ja ampui tervalla sytytettyjä nuolia heidän sivustoihinsa. Isku ei ollut tuhoisa, mutta se hämmensi; molemmat vetäytyivät, ja raskaammat tappiot jäivät etelälle.',
+      'Yö kuului juonille. Arolaiset vakoojat soluttautuivat linnakkeeseen levittämään harhatietoa; ryömittyään kilometrejä havujen alla parikymmentä soturia kiipesi köysillä muurien yli, piirsi tarkat kuvat sisätiloista ja sytytti puolet muonavarastoista. Kymmenen heistä jäi kilpirinkiin suojaamaan pakoa — he löivät miekkojaan kilpiin, huusivat rytmisesti ja kaatuivat mieheen, jotta tiedustelutieto pääsisi perille.',
+      'Aamulla pioneerit heittivät rautaiset lassot vihollisen heikoimpiin paaluihin ja vetivät ulkomuurit alas. Eteläiset perääntyivät sisemmille muureilleen kaataen kuumaa tervaa ja palavia nuolia — muurit murtuivat, mutta linnake kesti. Tuntikausien tulinuolisade poltatti puolustajilta kahden viikon vesivarastot yhdessä päivässä.',
+      '«Antakaa heidän korjata muurinsa», heimopäällikkö sanoi. «He vain väsyttävät itsensä nopeammin.» Vihollinen tiesi hävinneensä: se pystytti muureille soihtuja pitäviä olkiukkoja ja pakeni yön turvin. Viikkoa myöhemmin arolaiset palasivat vahvistuksin ja valtasivat tyhjän linnakkeen. Voitto oli vain torjuntavoitto — ja oppitunti: kevyt ratsuväki murskaa avomaastossa, mutta pitkä piiritys vaatii kuria ja oikeita piirityskoneita, joita heimolta vielä puuttui.',
+    ],
+  },
+  {
+    id: 'susi', numeral: 'X', title: 'Suden tarina — pimeän kesyttäjä',
+    paras: [
+      'Qorchin toinen tarina kertoo sudesta. Alkuaikoina harva tiesi toisesta kosmisesta voimasta: universumin madonreikien läpi oli kulkenut olento, jonka energia oli ulospäin pimeää. Se oli menettänyt kotinsa, ja magneettinen vetovoima palautti sen aina samalle planeetalle.',
+      'Vaikka se säteili ulospäin tuhoa — söi maasta kuolleen ja saastuttavan — sen sisin oli puhdasta valoa, joka ei päässyt tuikkimaan ulos. Se sytytti sotia, mutta ajoi lopulta kaiken elollisen yhteistä hyvää ja luonnon tasapainoa. Kotia etsittyään se valitsi olomuodokseen suden; suden silmät vaihtuivat vihreästä siniseksi — väriksi, joka merkitsee tasapainoa valon ja pimeyden välillä.',
+      'Sudet metsästivät nälästä, eivät huvin vuoksi, ja laumana ne kaatoivat karhunkin. Kun Suuren Hirven kansa löysi ne keitaalta, hirvet saartoivat sudet — mutta viekkaina nämä hyppäsivät kiven päältä saartorenkaan yli ja pakenivat. Niin alkoi ikuinen takaa-ajo maapallon ympäri, ja molempien kannat kasvoivat.',
+      'Kun ajo kiihtyi rajuimmilleen, olennon sisin irtosi eläimestä puhtaaksi energiaksi, joka pyöri niin voimallisesti, että se antoi maailmalle fyysisen olomuodon — sellaisen, joka ei enää tarvinnut kosmisia voimia ylläpitäjäkseen. Vihdoin väsyneet olennot saivat levätä maailman ympärillä, symbioosissa kesyttämiensä lajien kanssa. Sillä valoa ei ole ilman pimeyttä eikä pimeyttä ilman valoa; rakkaus aloittaa, mutta vasta tasapaino ylläpitää.',
+    ],
+  },
+  {
+    id: 'seremonia', numeral: 'XI', title: 'Seremonia ja sankaruus',
+    paras: [
+      'Torjuntavoiton jälkeen shamaanilla oli edessään pitkä päivä: henkien lepyttäminen, synninpäästö, taistelukentän puhdistaminen ja kaatuneiden hautaaminen. Johtajat haudattiin erikseen, rivimiehet yhdessä — ei arvon vuoksi vaan lukumäärän, ja aina nimettömiin, tuntemattomiin hautoihin, ympäristöä säästäen. Rituaali laulettiin perinteisenä kurkkulauluna suitsukkeiden savussa.',
+      'Shamaani johti myös parantajia. Hoito oli alkeellista — haavoja poltettiin desinfioinniksi, raajoja amputoitiin, käytettiin yrttejä, alkoholia ja soiden iilimatoja. Parantajat olivat naisia, ainoita joita sotaleireihin päästettiin: kovettuneita, hajuaistinsa menettäneitä, työssään miehiä taitavampia. Kurkkulaulullaan shamaani rauhoitti niin parantajat kuin kuolevatkin.',
+      'Tässä taistelussa oli sankarinsa: vartija, joka leikkasi henkivartijoiden lähipiiriin soluttautuneen salamurhaajan kurkun auki juuri ennen kuin tikari löysi heimopäällikön selän. Mutta shamaanin katse kääntyi nuoreen poikaan — Temüühün, joka itki tapettuaan ensimmäisen miehensä.',
+      '«Itke vain, se helpottaa», shamaani sanoi. «Olet syvällinen ja herkkä sielu — taistelukenttä ei ole kaltaisillesi tehty.» Silloin Temüün isä Ganbataar tarttui poikaansa niskasta ja tavoitteli miekkaansa. «En sinuna tekisi tuota», shamaani sanoi tyynenä; hengellisen miehen surmasta koko suku teloitettaisiin. Ganbataar poistui uhaten poikaansa pieksennällä.',
+      'Kahden kesken shamaani asetti kätensä pojan olalle ja puhui kuin sanansaattaja: Temüün oli haastettava isänsä julkisesti kaksintaisteluun ja surmattava tämä — vain niin hän vapauttaisi äitinsä ja sisaruksensa tyrannin vallasta ja nousisi mieheksi, joka jonain päivänä yhdistäisi kaikki heimot. Se oli manipulaatiota, mutta shamaani uskoi tekevänsä oikein. Pelokkaana mutta päättäväisenä Temüü vastasi: «Tulkoon kosmisten olentojen tahto maan päälle.» Se oli ensimmäinen askel polulle, jolta ei ollut paluuta.',
+    ],
+  },
+  {
+    id: 'perheriita', numeral: 'XII', title: 'Perheriita — kaksintaistelu',
+    paras: [
+      'Leiritykset oli purettu ja armeija väsynyt, kun Temüü käveli miekkatelineen ohi ja otti kaksi teroitettua terää. Toisen hän heitti isänsä Ganbataarin jalkojen juureen — ikivanha haaste, jonka torjuminen tarkoitti elämää ilman kunniaa, arolaiselle orjuuttakin alhaisempaa. Äiti aneli häntä lopettamaan; Temüü ei katsonut häneen. Shamaani Qorchin manipuloimana, katkeruutensa peittäen, hän oli valmis kohtaamaan tyranninsa.',
+      'Ganbataar pilkkasi poikaansa — «tiedätkö kuka minä olen?» — mutta otti haasteen vastaan häijy hymy huulillaan. Nuoret soturit katsoivat Temüüta ihaillen, ja moni heimolainen nyökkäsi hiljaa hyväksyen, sillä he tiesivät miten tämä mies oli perhettään kohdellut. Shamaani veti hiekkaan seremoniaympyrän, puhdisti kentän suitsukkein ja asetti neljä henkivartijaa valvomaan taistelun rehellisyyttä.',
+      'Ennen aloitusmerkkiä Ganbataar löi kunniattomasti Temüün kypärää. Taistelusta tuli raaka: miekka, kilpi ja paini vuorottelivat, molemmat kaatuivat ja nousivat. Nuorempana Temüü toipui nopeammin. Hän vei isänsä maahan, haki molemmat miekat ja asetti ne tämän kurkulle. «Opetin sinut hyvin, poika», Ganbataar sanoi viimeiset sanansa. Temüü katkaisi hänen kaulansa kuin teloituksessa, ja hiljaisuuden jälkeen joukot alkoivat hurrata hänen nimeään.',
+      'Shamaani julisti Temüün voittajaksi ja hänen perheensä sadanpäämiehen sukuun: paremmat jurtat, paikka sotaneuvostossa, vuosien kärsimyksen loppu. Äiti itki yhtä aikaa surusta ja helpotuksesta. Silti Temüü horjui kahden vaiheilla — hän pakeni metsään ja huusi niin että metsä kaikui, ylpeänä mutta shokissa, aavistellen mitä motiiveja Qorchilla oli hänen varalleen.',
+      'Vetäytymisen sijaan Temüü käänsi armeijan länteen lyömään perääntynyttä vihollista. Kun heimojohtajat pilkkasivat häntä neuvostoteltassa, hänen kymmenen uskollistaan surmasivat heidät, ja Temüü jäi ainoaksi johtajaksi. Hän hylkäsi veren ja koston pätevyyden hyväksi: kelvollinen ihminen nostettaisiin ansioidensa mukaan, ja idän ja lännen väliin määrättiin rakennettavaksi ensimmäinen hallinnollinen kaupunki, jossa alettaisiin pitää kirjaa.',
+    ],
+  },
+  {
+    id: 'vallanvaihto', numeral: 'XIII', title: 'Vallanvaihto — yhdistämissodat',
+    paras: [
+      'Temüü lähetti jäljellä oleville heimoille sodanjulistukset. Vastaukset olivat raivokkaita: «minä syljen päällesi», «ripustan pääsi seipääseen, sinä nulikka». Kuukauden kuluessa hän kokosi kymmentuhatpäisen armeijan oikeine keittäjineen, metsästäjineen ja parantajineen — sekä rengashaarniskat ja piirityskoneet, jotka oli opittu viholliselta.',
+      'Taisteluissa hänen kurinalaiset kilpimuurinsa kestivät nuolisateet, hevosjousiampujat kiusasivat selustoja, ja tuoreiden rivien kierto ratkaisi väsymyksen, jonka hän oli edellisistä taisteluista oppinut. Voitot olivat kurin voittoja lukumäärästä.',
+      'Ratkaiseva koitos käytiin koalitiota vastaan, jolla oli kolminkertainen ylivoima ja alkeelliset tuliaseet — «ihmeaseet». Temüü muisti isänsä kääröistä lukemansa Aleksanterin, joka mursi persialaiset ratsastamalla muodostelman raoista suoraan kohti kuningasta. Hän houkutteli ratsuväellä musketit tuleen, ohensi rivinsä syötiksi ja iski sitten 3000 hevosen kärkimuodostelmalla heikkoon keskustaan. Keskusta murtui, ja Temüü katkaisi ylikomentajan kaulan. Sota oli voitettu.',
+      'Nyt oli aika hajauttaa monet armeijat ja kouluttaa yksi yhtenäinen. Ryöstöretkistä siirryttiin «valloitusretkeen» ja oikeusvaltioon: otettiin mallia halveksituilta ulkomaalaisilta, annettiin mahdollisuus kauppiaille ja rakentajille sotureiden rinnalla, sallittiin kansalaisille omat jumalat ja pukeutuminen — mutta armeijaan ja virkakoneistoon luotiin kova kuri ja yksi keskushallinnollinen pääkaupunki.',
+    ],
+  },
+  {
+    id: 'jalleenrakennus', numeral: 'XIV', title: 'Jälleenrakennus — Ulanbataar',
+    paras: [
+      'Yhdistetyn valtakunnan hallinnollinen keskus rakennettiin Ulanbataariin. Temüü saapui voittajana, mutta väsyneenä ja haavoittuneena — kasvoissa ja selässä miekan viiltoja, mielessä pelko että hän oli muuttumassa isänsä kaltaiseksi: vihaiseksi ja pettyneeksi, pakotetuksi tielle jota ei ollut valinnut.',
+      'Ensimmäistä kertaa vuosiin hän näki unta. Lapsuutensa hevoset puhuivat hänelle: «Temüü, etsi meidät. Älä unohda kuka oikeasti olet.» Ne muistuttivat herkästä pojasta, joka ei kyennyt satuttamaan kärpästäkään ja josta oli tullut mies joka määrää ihmisiä kuolemaan — ja kehottivat häntä muistamaan aron hevosen, joka kulki tuulen mukana.',
+      'Valtaistuinsalissa alaiset tulivat ja menivät. Uskollisen soturin hän palkitsi sotasaaliskirstulla ja palvelijoilla; ryöstetylle maanviljelijälle hän antoi uuden tilan. Kun vallanhimoinen Qorchi vihdoin tuli perimään palkkiotaan ja uhkasi häntä, Temüü käski kaartinsa riisua shamaanin aseista ja heittää tämä tyrmään — vieraat taputtivat.',
+      'Sotajoukot palkittiin ruhtinaallisesti, jotteivät ne nousisi kapinaan; maatiloja säädeltiin lailla, ja Bolormaan tahdosta kaikki väkivalta naisia ja lapsia kohtaan kiellettiin. Yhteiskunta alkoi palkita muitakin kuin autokraattisia miestenmiehiä.',
+      'Mutta etelästä saapui uusi uhka: vaaleaihoinen, hienosti pukeutunut sanansaattaja ovelalla äänellään. Hän vaati Temüüta luovuttamaan heti — muuten eteläheimot ottaisivat kaiken. «Meillä on miljoonapäinen joukko, teillä ei mitään meidän teknologiaamme tai älyämme vastaavaa, senkin barbaarit.» Uuden ajan raja oli piirretty.',
+    ],
+  },
+  {
+    id: 'uusielama', numeral: 'XV', title: 'Uusi elämä, samat tottumukset',
+    paras: [
+      'Kun sanansaattaja saapui saliin, Temüü oli tyyni — hän tiesi jo mihin tämä johtaisi. Aina oli luultu seuraavan taistelun olevan viimeinen, mutta jokainen konflikti johti vain syvempään. Häntä eivät enää painaneet voitto tai häviö; hän tekisi vain sen mitä miehen hänen asemassaan oli tehtävä: varustaisi joukot ja päättäisi sodan, jos vain voisi — vaikka epäili sitä.',
+      'Keisarilliselta parvekkeelta hän puhui kansalle, joka ei halunnut uuteen sotaan mutta tiesi lähtevänsä. Vanhat veteraanit eivät olleet ehtineet nauttia rauhasta päivääkään; nyt oli uuden sukupolven vuoro todistaa itsensä. Temüü vannoi johtavansa edestä ja uhraavansa henkensä kansansa puolesta. Sepät teroittivat miekkoja — mutta tällä kertaa tunnelma oli riemukas: oli muurit, järjestys ja turva, ja paraatimarssi soi uutta sävellystä.',
+      'Marssi oli pitkä. Luontoon naamioituneet partisaanit ampuivat putkista nuolia ja sabotoivat huoltolinjoja; ratsuväki menetti ensimmäisenä päivänä kymmenen kallista ratsua. Viikossa kaatui sata miestä, vihollinen kolme kertaa enemmän. Vastassa oli miljoona-armeija — kymmenkertainen — mutta hidas ja maaorjiin nojaava. Arojen oppi kuului: armeija on yhtä vahva kuin heikoin lenkkinsä.',
+      'Vihollisen propaganda sai jopa arolaiskylät uskomaan, että on parempi kuolla taivaallisen keisarin puolesta kuin alistua. Kapea vuorisola oli ilmeinen ansapaikka, mutta sen kiertäminen olisi vienyt päivän jota heillä ei ollut — heidän oli astuttava ansaan ja lyötävä partisaanit siinä ja nyt. Päällikkö saatiin kiinni ja päästettiin vapaaksi; partisaanit murtuivat, mutta jättivät tiedon siitä mikä odotti joella.',
+      'Jokea ei sulkenut kivimuuri vaan laivat, jotka oli rautaketjuin sidottu toisiinsa ja miehitetty levy- ja rengashaarniskoin varustetuin eliittisoturein. Sitä ei voinut lävistää suoralla hyökkäyksellä eikä kiertää eikä paeta. Leiri pystytettiin ampumaetäisyyden ulkopuolelle, viesti lähetettiin Ulanbataariin, ja piirityskoneet alkoivat murjoa laivoja raskain kivin — jotka eivät helpolla syttyneet tai murtuneet.',
+    ],
+  },
+  {
+    id: 'loputonsota', numeral: 'XVI', title: 'Loputon sota',
+    paras: [
+      'Seuraavana päivänä laivalinja murtui; alukset purjehtivat takaisin merelle, osa upposi. Silti jokea ei ylitetty väsyneenä. Insinöörit esittivät uuden keinon: rakentaa omalle puolelle puista sillat ja pudottaa ne joen yli — kaksi päivää työtä, mutta varma ylitys. Uiminen olisi ollut kuolema jousiampujien alla.',
+      'Sillat pudotettiin strategisiin kohtiin ja tulinuolet sammutettiin pitkin tikuin. Sitten seurasi arolaisille ominainen juoni: nuoret rivimiehet hyökkäsivät sillan yli, taistelivat viisi minuuttia ja vetäytyivät nopeasti. Kurittomat viholliset ryntäsivät perässä — komentajan «pysähtykää!» hukkui meluun — ja saivat nuolet niskaansa. Ratsuväki valtasi vastarannan, katkaisi upseerin kaulan ja piiritti kolonnan, joka teloitettiin taistelun vimmassa.',
+      'Ratsuväki poltti vihollisen tarvikekärryt. Taivaallinen keisari perääntyi eliittiratsuväkineen jättäen pakotetut talonpojat oman onnensa nojaan; nämä antautuivat perääntymällä. Sanansaattaja tarjosi tuhat miljoonaa kultaharkkoa, jos suuri valloittaja poistuisi — Temüü nauroi ja teloitti hänet, vaikkei viestinviejää saanut koskaan surmata.',
+      'Kolmen päivän marssin päästä etelässä kohosivat rannikon muurit, niin paksut ettei mikään teknologia niitä murtaisi. Syntyi pattitilanne: arokansa oli lyömätön avomaalla, etelä lyömätön piirityksessä — molemmat haavoittumattomia toisilleen. Opetus oli annettu: turha lähettää armeijoita avoimeen sotaan aroja vastaan.',
+      'Neuvostossa väiteltiin, miten hallita eteläisiä kauppaheimoja. Sotapäälliköt vaativat raskaita varuskuntia, yöpartioita ja vanhojen jumalten kaatamista; poliittiset neuvonantajat halusivat säilyttää heidän merkantiiliyhteiskuntansa, uskontonsa ja autonomiansa ja oppia heidän ylivertaisista arkistoistaan, muureistaan ja kaupastaan. Temüü valitsi molemmat: ensin näyttää sotavoima paraatein ja fanfaarein, sitten antaa liberaali, autonominen hallinto ja sulauttaa järjestelmät yhteen.',
+    ],
+  },
+  {
+    id: 'aamu', numeral: 'XVII', title: 'Kaikki yöt loppuvat aamuun',
+    paras: [
+      '«Kokous on päättynyt, minä palaan Ulanbataariin.» Temüüllä oli sotureita palkittavana ja maanviljelijöitä autettavana, ja kansa oli kyllästynyt loputtomaan sotaan. Ennen paluutaan hän teki päivän retken vuorelle ja leiriytyi sen huipulle.',
+      'Yöllä vuorella hän näki henkiä, hirven ja susia — kerran hänen oli kiivettävä puuhun susilaumaa piiloon ja nukuttava siellä. Ensi kertaa vuosiin hän tunsi rauhaa ja oli vihdoin valmis muuttumaan siksi mieheksi, joksi hänen oli tarkoitus tulla.',
+      'Hän päätti vetäytyä Ulanbataarin lämpimien muurien taakse, kohdella ihmisiä lämmöllä ja antaa nuoremmille upseereille vastuuta rintamasta. Tavoitteena oli pitää valtakunta poissa sodista lopun hallintonsa ajan, antaa väestön kasvaa ja rakentaa maatalousyhteiskunta — sillä hajanainen suuri valtakunta on heikko; parempi olla yhtenäinen ja vahva kuten kiinalaisilta oli opittu.',
+      'Aamun sarastaessa hän ratsasti viikon takaisin pääkaupunkiin. Portteja ei avattu — hänen tulostaan ei ollut tietoa — ennen kuin muurin vartijat tunnistivat päällikkönsä. Sisällä sotaneuvosto kiisteli siitä missä hallitsija on, pöytä täynnä kääröjä eikä mitään tehtynä. «Hiljaisuus — olenko ollut poissa niin kauan, että valtakunta on jo kaatunut?» Seurasi kolmituntinen kokous maakaupoista, laista, verotuksesta ja armeijoiden hajauttamisesta — hallinnoijan loputon työ.',
+      'Hän tapasi väsyneen äitinsä ja käveli tämän kanssa puutarhassa puhuen vuosista ja tulevasta rauhasta; sisarukset kertoivat hyviä uutisia, avioliittoja oli järjestetty. Lopulta saliin oli kutsuttu tusina hienostunutta naista, joista hovi etsi hallitsijalle vaimon ja jalkavaimot dynastian jatkoksi. Yksi heistä oli täsmälleen Temüün mittainen ja kasvoiltaan hänen kaltaisensa, mutta sisäänpäin kääntynyt ja herkkä siinä missä Temüü oli ulospäinsuuntautunut — juuri se viehätti häntä. Elämä olisi rauhallista vielä monta vuosikymmentä.',
+    ],
+  },
+  {
+    id: 'loppusanat', numeral: 'XVIII', title: 'Loppusanat',
+    paras: [
+      'Tämä ei silti ollut tarinamme loppu. Mikään armeija ei ole voittamaton, mikään dynastia ei kestä ikuisesti. Sota on jokaisen valtion elinehto — sitä käydään resurssien niukkuudesta ja ajatusten törmätessä, sillä ihminen pitää luonnostaan omaa sisäryhmäänsä muita parempana.',
+      'Ihminen on tribaalinen ja väkivaltainen, mutta myös sosiaalinen ja poliittinen eläin, joka kykenee empatiaan ja itsensä ylittämiseen. Jokainen sukupolvi voi olla edellistä parempi, oppia historiasta ja kääntää heikkoutensa vahvuudeksi — kun järki ei pelaa, pelaa luovuus. Suurten kärsimysten jälkeen ovat aina koittaneet kulta-ajat: keksittiin rengas, tiet, tuli ja koneet jotka käyvät höyryllä.',
+      'Meitä ei yhdistä se, voitammeko vai häviämme, vaan tarinat jotka jaamme — rakkaudesta ja menetyksestä, sodasta ja rauhasta. Ne on kirjoitettu yhteiseen historiaamme, joka kuuluu kaikille eikä vain niille jotka luulevat omistavansa sen.',
+      'Sukupolvien välillä on oltava tasapaino: nuorten on kuunneltava vanhempiaan ja myös kaadettava heidän varjonsa, ettei ne kaatuisi heidän päälleen; vanhempien on jaettava osaamisensa paremman maailman puolesta eikä takerruttava valtaan voimiensa ehtyessä. Ihmisen on laajennettava ymmärrystään, elettävä sovussa ympäristönsä kanssa ja nähtävä kaikki elämän arvoisina — ja luovuttava tribaalisesta katseesta ennen kuin ydin-, vety- ja antimateriapommit hävittävät kaiken elämän rakkaalta maapalloltamme.',
+    ],
+  },
+];
+
+// Liite: heimot ja kansat, jotka esiintyvät kronikassa.
+const tribes: { emoji: string; name: string; text: string }[] = [
+  { emoji: '🐎', name: 'Arokansat (pohjoiset heimot)', text: 'Temüün kansa. Paimentolaisia, joiden voima on kevyessä ratsuväessä ja hevosjousiampujissa. Ankara arojen laki, kunnia ja radikaali tasa-arvo pitävät heidät koossa. Aiemmin hajanaisia, keskenään sotivia heimoja — Temüün yhdistäminä lyömättömiä avomaalla. Heidän oppinsa: armeija on yhtä vahva kuin heikoin lenkkinsä.' },
+  { emoji: '🛡️', name: 'Eteläiset heimot', text: 'Rajaseudun perivihollinen. Konventionaalista raskasta keihäsjalkaväkeä, joka taistelee kilpimuuri- ja testudo-muodostelmissa kehittyneiden muurien takana. Kärsivällisiä pitkässä sodassa, mutta kurittomia riveissään ja avuttomia kevyttä ratsuväkeä vastaan avoimella kentällä.' },
+  { emoji: '🏗️', name: 'Läntinen heimo', text: 'Rajaseudun rakentajat, joilla oli vahva insinööritekniikka. He osasivat pystyttää muureja, siltoja ja piirityskoneita muita taitavammin. Juuri heiltä arokansat oppivat rakentamisen ja saivat haltuunsa piirityskoneet, joilla vihollisten linnakkeet lopulta murrettiin — sekä rengashaarniskoiden valmistuksen.' },
+  { emoji: '💥', name: 'Itäinen heimo', text: 'Ruudin haltijat. Heillä oli tuliaseet ja «ihmeaseet» — alkeelliset musketit, jotka pystyivät murtamaan ratsuväen syöksyn. Tämä tulivoima teki heistä pelättyjä avoimessakin taistelussa, kunnes arokansat oppivat kiertämään sen nopeudella ja harhautuksella.' },
+  { emoji: '⚔️', name: 'Läntinen koalitio', text: 'Luoteis-, lounais- ja läntisten heimojen liitto, joka yhdisti läntisen insinööritaidon ja itäisen ruudin. Kolminkertainen ylivoima, koulutetut joukot ja tuliaseet — murrettiin silti Aleksanterilta lainatulla kärkihyökkäyksellä suoraan heikkoon keskustaan ja komentajan kimppuun.' },
+  { emoji: '🏯', name: 'Eteläinen keisarikunta', text: 'Merkantiili suursivistys «taivaallisen keisarin» alla: miljoona-armeija, maaorjat, laivoista rautaketjuin sidotut jokimuurit ja läpäisemättömät rannikkomuurit. Lyömätön piirityksessä mutta heikko avomaalla. Käy partisaanisotaa ja propagandaa — ja pitää arkistoja, muureja, tuliaseita ja kauppaa aroja paremmin.' },
+  { emoji: '👑', name: 'Vuoden 1206 valtakunnat', text: 'Pelissä maailma kiteytyy neljäksi mahdiksi: mongolit (arojen perilliset), Song-Kiina (kauppias-sivistys), Venäjän ruhtinaskunnat (metsien puolustajat) ja Khwarezm (karavaanireittien valtias). Ne kantavat kronikan aro–kivi-jännitettä pelilaudalle.' },
+];
+
+// Liite: kronikan keskeiset henkilöt.
+const characters: { emoji: string; name: string; role: string; text: string }[] = [
+  { emoji: '🗡️', name: 'Temüü', role: 'Päähenkilö · yhdistäjä', text: 'Herkkä, älykäs poika, jonka shamaani Qorchi ohjaa sotapolulle. Surmaa tyranni-isänsä kaksintaistelussa, yhdistää heimot ja perustaa Ulanbataarin. Kantaa läpi elämänsä sisäistä ristiriitaa herkkyyden ja väkivallan välillä.' },
+  { emoji: '🪓', name: 'Ganbataar', role: 'Temüün isä · tyranni', text: 'Juopunut, väkivaltainen sadanpäämies, joka alisti perheensä. Kunniaton myös taistelussa — löi ennen aloitusmerkkiä. Kaatui Temüün kädestä kaksintaistelussa, mutta sai silti soturin hautajaiset.' },
+  { emoji: '🕯️', name: 'Qorchi', role: 'Shamaani · sanansaattaja', text: 'Kosmisten voimien tulkki ja suden sekä hirven tarinoiden kertoja. Manipuloi Temüün kohtalonsa tielle ja kasvatti samalla omaa valtaansa — kunnes Temüü lopulta vangitsi hänet vallanhimosta.' },
+  { emoji: '🐦', name: 'Bolormaa', role: 'Tiedon tuoja · uudistaja', text: 'Toi aroille tiedon ja kirjoitetun sanan. Uudistaja, jonka tahdosta kiellettiin kaikki väkivalta naisia ja lapsia kohtaan — arolaisyhteiskunnan hiljainen kääntöpiste.' },
+  { emoji: '🏇', name: 'Batu', role: 'Komentaja', text: 'Kokenut kenttäkomentaja metsäväijytyksessä. Määräsi fanfaarilla teeskennellyn perääntymisen ja tulinuoli-väijytyksen vihollisen sivustaan — arolaisen harhautustaktiikan mestari.' },
+  { emoji: '🌾', name: 'Temüün äiti', role: 'Perheen suojelija', text: 'Kesti tyranni-aviomiehen vuodet ja ruokki lapsensa juureksilla ankarana talvena. Miehen kuoltua vapautunut ja viisas neuvonantaja, joka vetäytyi maaseudulle poikansa vapauttamaan rauhaan.' },
+  { emoji: '👥', name: 'Temüün sisarukset', role: 'Kuusi sisarusta', text: 'Perhe, josta Temüü kantoi vastuun jo lapsena. Kasvoivat vainojen keskellä aikuisiksi; rauhan tultua heille järjestettiin avioliittoja ja turvattu elämä sadanpäämiehen suvun jäseninä.' },
+  { emoji: '🐉', name: 'Taivaallinen keisari', role: 'Etelän hallitsija', text: 'Eteläisen keisarikunnan ylimielinen hallitsija. Perääntyi eliittiratsuväkineen jättäen pakotetut talonpojat kuolemaan, ja hymyili ivallisesti läpäisemättömien muuriensa takaa — lyömätön piirityksessä, voitettu avomaalla.' },
+  { emoji: '💜', name: 'Ensimmäinen vaimo', role: 'Hallitsijatar', text: 'Temüün mittainen nainen, kasvoiltaan hänen kaltaisensa mutta sisäänpäin kääntynyt ja herkkä. Juuri tämä viehätti Temüüta yli muiden; hän istuisi toisella valtaistuimella ja jatkaisi dynastiaa.' },
 ];
 
 const pantheon = [
@@ -297,6 +435,42 @@ const Codex = () => {
               ))}
             </div>
 
+            {/* IX–XVIII — Kronikan tarinat */}
+            {tales.map((tale) => (
+              <Story key={tale.id} numeral={tale.numeral} id={tale.id} title={tale.title} paras={tale.paras} />
+            ))}
+
+            {/* Liite A — Heimot ja kansat */}
+            <ChapterHeading numeral="Liite A" id="heimot" title="Heimot ja kansat" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {tribes.map((t) => (
+                <div key={t.name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-600/30 bg-black/30 text-2xl">{t.emoji}</div>
+                    <h3 className="font-display text-base font-semibold text-amber-200">{t.name}</h3>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-amber-100/80">{t.text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Liite B — Henkilögalleria */}
+            <ChapterHeading numeral="Liite B" id="henkilot" title="Henkilögalleria" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {characters.map((c) => (
+                <div key={c.name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-amber-600/30 bg-black/30 text-2xl">{c.emoji}</div>
+                    <div>
+                      <h3 className="font-display text-base font-semibold text-amber-100">{c.name}</h3>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-amber-500/70">{c.role}</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-amber-100/80">{c.text}</p>
+                </div>
+              ))}
+            </div>
+
             <div className="border-t border-amber-800/30 pt-8 text-center">
               <p className="font-display italic text-amber-300/70">
                 «Suuri Hirvas lauloi tämän maailman olemaan — nyt sen kohtalo lauletaan teräksellä, kullalla ja liitoilla.»
@@ -330,6 +504,22 @@ const Rule = ({ title, text }: { title: string; text: string }) => (
   <div className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5">
     <h3 className="font-display text-base font-semibold text-amber-200">{title}</h3>
     <p className="mt-2 text-sm leading-relaxed text-amber-100/75">{text}</p>
+  </div>
+);
+
+const Story = ({ numeral, id, title, paras }: { numeral: string; id: string; title: string; paras: string[] }) => (
+  <div>
+    <ChapterHeading numeral={numeral} id={id} title={title} />
+    <div className="space-y-4">
+      {paras.map((p, i) => (
+        <p
+          key={i}
+          className={`text-[15px] leading-relaxed text-amber-100/85 ${i === 0 ? 'first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-5xl first-letter:font-bold first-letter:text-amber-400/80' : ''}`}
+        >
+          {p}
+        </p>
+      ))}
+    </div>
   </div>
 );
 

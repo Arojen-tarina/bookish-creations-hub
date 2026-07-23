@@ -24,3 +24,12 @@ dist-ssr
 *.sw?
 
 dist-single/
+
+# delivery artifacts
+*.zip
+
+# Android signing (ÄLÄ commitoi näitä)
+*.jks
+*.keystore
+android/keystore.properties
+android/app/release/

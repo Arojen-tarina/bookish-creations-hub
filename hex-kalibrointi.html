@@ -51,10 +51,10 @@
       <div class="row"><label>Rivit <b id="rowsV">8</b></label><input type="range" id="rows" min="3" max="30" step="1" value="8"></div>
     </div>
 
-    <div class="row"><label>Vaakaväli (dx) <input class="num" id="dxN" type="number" step="0.1"></label><input type="range" id="dx" min="2" max="20" step="0.05" value="8.96"></div>
-    <div class="row"><label>Pystyväli (dy) <input class="num" id="dyN" type="number" step="0.1"></label><input type="range" id="dy" min="2" max="20" step="0.05" value="11.14"></div>
-    <div class="row"><label>Aloitus X (vasen) <input class="num" id="x0N" type="number" step="0.1"></label><input type="range" id="x0" min="-10" max="60" step="0.1" value="9"></div>
-    <div class="row"><label>Aloitus Y (ylä) <input class="num" id="y0N" type="number" step="0.1"></label><input type="range" id="y0" min="-10" max="60" step="0.1" value="26"></div>
+    <div class="row"><label>Vaakaväli (dx) <input class="num" id="dxN" type="number" step="0.01"></label><input type="range" id="dx" min="2" max="20" step="0.01" value="8.96"></div>
+    <div class="row"><label>Pystyväli (dy) <input class="num" id="dyN" type="number" step="0.01"></label><input type="range" id="dy" min="2" max="20" step="0.01" value="11.14"></div>
+    <div class="row"><label>Aloitus X (vasen) <input class="num" id="x0N" type="number" step="0.01"></label><input type="range" id="x0" min="-10" max="60" step="0.01" value="9"></div>
+    <div class="row"><label>Aloitus Y (ylä) <input class="num" id="y0N" type="number" step="0.01"></label><input type="range" id="y0" min="-10" max="60" step="0.01" value="26"></div>
     <div class="row"><label>Pisteen koko <b id="dsV">2.0</b></label><input type="range" id="ds" min="0.5" max="5" step="0.1" value="2.0"></div>
 
     <div class="chk"><input type="checkbox" id="odd" checked><label for="odd">Parittomat rivit siirretty ½ heksiä (odd-r)</label></div>
@@ -74,7 +74,7 @@
     </div>
 
     <textarea id="out" readonly></textarea>
-    <p class="hint">Lähetä nämä parametrit minulle, niin ajan generaattorin ja päivitän pelin kartan. Koordinaatit ovat lauta-avaruudessa 0–130 (sama kuin pelin sisällä).</p>
+    <p class="hint">Kaikkia arvoja voi säätää 0,01:n tarkkuudella: kirjoita luku suoraan kenttään tai käytä liukusäädintä. Nuolinäppäimet siirtävät 0,2, ja Shift+nuoli hienosäätää 0,01. Lähetä valmiit parametrit minulle, niin ajan generaattorin ja päivitän pelin kartan. Koordinaatit ovat lauta-avaruudessa 0–130.</p>
   </div>
 </div>
 
@@ -90,7 +90,7 @@ function readInputs(){
 }
 // sync number boxes
 const numMap = {dx:'dxN', dy:'dyN', x0:'x0N', y0:'y0N'};
-function syncNums(){ for(const k in numMap){ document.getElementById(numMap[k]).value = (+document.getElementById(k).value).toFixed(1); } }
+function syncNums(){ for(const k in numMap){ document.getElementById(numMap[k]).value = (+document.getElementById(k).value).toFixed(2); } }
 
 function quadColor(x,y){
   if(!S.quad) return '#38bdf8';
@@ -137,13 +137,14 @@ document.getElementById('copy').addEventListener('click',()=>{ out.select(); doc
 
 // keyboard nudging
 window.addEventListener('keydown',e=>{
-  const step = e.shiftKey?1:0.2; let used=true;
+  // Shift = hienosäätö 0.01, muuten 0.2
+  const step = e.shiftKey?0.01:0.2; let used=true;
   if(e.key==='ArrowLeft') x0.value=(+x0.value-step).toFixed(2);
   else if(e.key==='ArrowRight') x0.value=(+x0.value+step).toFixed(2);
   else if(e.key==='ArrowUp') y0.value=(+y0.value-step).toFixed(2);
   else if(e.key==='ArrowDown') y0.value=(+y0.value+step).toFixed(2);
-  else if(e.key==='+'||e.key==='=') { dx.value=(+dx.value+0.1).toFixed(2); dy.value=(+dy.value+0.1).toFixed(2); }
-  else if(e.key==='-') { dx.value=(+dx.value-0.1).toFixed(2); dy.value=(+dy.value-0.1).toFixed(2); }
+  else if(e.key==='+'||e.key==='=') { dx.value=(+dx.value+step).toFixed(2); dy.value=(+dy.value+step).toFixed(2); }
+  else if(e.key==='-') { dx.value=(+dx.value-step).toFixed(2); dy.value=(+dy.value-step).toFixed(2); }
   else used=false;
   if(used){ e.preventDefault(); render(); }
 });

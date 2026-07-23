@@ -5,40 +5,68 @@
  * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
  */
 import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
-import { getProvincesWithAdjacency } from '@/data/ProvinceData.ts';
+import { ACTIVE_FACTIONS } from '@/hooks/useProvinceGameState.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
-import { Crown, Sword, Coins, Shield, BookOpen, ScrollText } from 'lucide-react';
+import { Sword, Coins, Shield, BookOpen, ScrollText, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+// Faktioiden johtajakuvat (kulttuurikohtaiset sprite-assetit)
+import leaderMongol from '@/assets/sprites/leader_mongol.png';
+import leaderChinese from '@/assets/sprites/leader_chinese.png';
+import leaderNovgorod from '@/assets/sprites/leader_novgorod.png';
+import leaderPersian from '@/assets/sprites/leader_persian.png';
+// Resurssikuvakkeet
+import resGold from '@/assets/sprites/res_gold.png';
+import resHorse from '@/assets/sprites/res_horse.png';
+// Tunnelmallinen taustakuva (maailmankartta, pehmennetty & tummennettu)
+import menuBg from '@/assets/menu-bg.jpg';
+
+const LEADER_ART: Record<string, string> = {
+  mongol: leaderMongol,
+  song: leaderChinese,
+  rus: leaderNovgorod,
+  khwarezm: leaderPersian,
+};
+
+// Faktioiden tarinalliset kuvaukset (lore-tunnelma)
+const FLAVOR: Record<string, string> = {
+  mongol: 'Aroilta nousee myrsky: Temüjin on yhdistänyt heimot, ja maailma vavahtaa kavioiden alla.',
+  song: 'Silkin ja ruudin sivistys, jonka aarteet ja oppineisuus houkuttelevat susia porteille.',
+  rus: 'Metsien ja jokien ruhtinaat vartioivat pyhiä kaupunkejaan pohjoisen kalvakassa valossa.',
+  khwarezm: 'Karavaanireittien valtias, jonka minareetit hohtavat Samarkandin yllä — ylväs mutta altis.',
+};
 
 interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId) => void;
 }
 
 export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) => {
-  // Show only factions that actually exist on the map (have provinces or a capital present)
-  const provinces = getProvincesWithAdjacency();
-  const factions = Object.values(FACTION_DATA_1206).filter(faction =>
-    provinces.some(p => p.ownerId === faction.id || p.id === faction.capitalId)
-  );
+  // Vain 4 aktiivista faktiota (Kiina=song, mongolit, rus, persia=khwarezm)
+  const factions = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id]);
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950 p-4 overflow-auto">
-      {/* Background effects */}
-      <div 
-        className="absolute inset-0 opacity-30"
+    <div className="fixed inset-0 flex items-center justify-center bg-slate-950 p-4 overflow-auto">
+      {/* Tunnelmallinen taustakuva: maailmankartta */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${menuBg})` }}
+      />
+      {/* Kevyt tummennus & lämmin sävy luettavuutta varten */}
+      <div
+        className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse at 30% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
-                       radial-gradient(ellipse at 70% 80%, rgba(180, 83, 9, 0.1) 0%, transparent 50%)`,
+          background: `linear-gradient(to bottom, rgba(2,6,23,0.50) 0%, rgba(2,6,23,0.32) 40%, rgba(2,6,23,0.62) 100%),
+                       radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.12) 0%, transparent 55%)`,
         }}
       />
-      
+
       <div className="relative z-10 max-w-5xl w-full">
         {/* Title */}
         <div className="text-center mb-6">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-amber-100 mb-2">
-            Mongolien Valtakunta
+            Arojen Tarinat
           </h1>
           <p className="text-amber-200/60 text-lg">
             Vuosi 1206 — Valitse valtakuntasi
@@ -109,41 +137,28 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
             </div>
           </div>
           
-          {/* Ohjekirja link */}
-          <div className="mt-4 pt-3 border-t border-slate-700/50 grid gap-2 sm:grid-cols-3">
-            <a
-              href={`${import.meta.env.BASE_URL}ohjekirja#digipeli`}
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* Ohjekirja link — reititinystävällinen (toimii myös HashRouterissa) */}
+          <div className="mt-4 pt-3 border-t border-slate-700/50 grid gap-2 sm:grid-cols-2">
+            <Link
+              to="/ohjekirja"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
             >
               <BookOpen className="w-4 h-4" />
-              Verkkopelin ohjeet
-            </a>
-            <a
-              href={`${import.meta.env.BASE_URL}ohjekirja#lautapeli`}
-              target="_blank"
-              rel="noopener noreferrer"
+              Sääntökirja (ohjeet)
+            </Link>
+            <Link
+              to="/codex"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
             >
-              <BookOpen className="w-4 h-4" />
-              Lautapelin ohjeet
-            </a>
-            <a
-              href={`${import.meta.env.BASE_URL}ohjekirja#video`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
-            >
-              <BookOpen className="w-4 h-4" />
-              Yhden vuoron video
-            </a>
+              <ScrollText className="w-4 h-4" />
+              Maailman kronikka
+            </Link>
           </div>
         </div>
 
         
         {/* Faction grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
           {factions.map(faction => {
             // Faction-specific stats
             const stats = {
@@ -177,27 +192,38 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
             }[faction.id];
             
             return (
-              <Card 
+              <Card
                 key={faction.id}
-                className="bg-slate-900/80 border-2 transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
-                style={{ borderColor: `${faction.color}40` }}
+                className="relative overflow-hidden border-2 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer group"
+                style={{
+                  borderColor: `${faction.color}55`,
+                  background: `linear-gradient(160deg, ${faction.color}22 0%, rgba(15,23,42,0.92) 45%, rgba(2,6,23,0.96) 100%)`,
+                  boxShadow: `0 10px 30px -12px ${faction.color}55`,
+                }}
                 onClick={() => onSelect(faction.id)}
               >
-                <CardContent className="p-4">
-                  {/* Header */}
+                {/* Faktion värihehku hoverissa */}
+                <div
+                  className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-40 blur-2xl transition-opacity duration-300 group-hover:opacity-70"
+                  style={{ backgroundColor: faction.color }}
+                />
+                <CardContent className="relative p-4">
+                  {/* Header: johtajakuva + nimi */}
                   <div className="flex items-center gap-3 mb-4">
-                    <div 
-                      className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform"
-                      style={{ 
-                        backgroundColor: faction.color,
-                        boxShadow: `0 0 20px ${faction.color}50`,
-                      }}
+                    <div
+                      className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 transition-transform group-hover:scale-105"
+                      style={{ ['--tw-ring-color' as string]: `${faction.color}`, boxShadow: `0 0 22px ${faction.color}55` }}
                     >
-                      <Crown className="w-6 h-6 text-white" />
+                      <img
+                        src={LEADER_ART[faction.id]}
+                        alt={faction.ruler}
+                        draggable={false}
+                        className="h-full w-full object-cover object-top select-none pointer-events-none"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-amber-100">{faction.name}</h3>
-                      <p className="text-sm text-stone-400">{faction.ruler}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-amber-100 leading-tight truncate">{faction.name}</h3>
+                      <p className="text-sm text-stone-400 truncate">{faction.ruler}</p>
                     </div>
                     <Badge className={difficultyColor}>{difficulty}</Badge>
                   </div>
@@ -255,12 +281,37 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                       {faction.id === 'kipchak' && '🐎 +20% ratsuväki, nopea liike'}
                     </div>
                   </div>
+
+                  {/* Tarinallinen kuvaus */}
+                  {FLAVOR[faction.id] && (
+                    <p className="mt-3 border-l-2 pl-3 text-xs italic leading-relaxed text-stone-300/80"
+                       style={{ borderColor: `${faction.color}88` }}>
+                      {FLAVOR[faction.id]}
+                    </p>
+                  )}
                   
-                  {/* Starting resources */}
-                  <div className="flex justify-center gap-4 mt-4 text-xs text-stone-400">
-                    <span>💰 {faction.treasury}</span>
-                    <span>👥 {faction.manpower}</span>
-                    <span>🐴 {faction.horses}</span>
+                  {/* Starting resources — kuvakkeilla */}
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
+                      <img src={resGold} alt="kulta" className="h-5 w-4 object-contain" draggable={false} />
+                      <span className="text-sm font-semibold text-amber-200 tabular-nums">{faction.treasury}</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
+                      <Users className="h-4 w-4 text-sky-300" />
+                      <span className="text-sm font-semibold text-sky-100 tabular-nums">{faction.manpower}</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
+                      <img src={resHorse} alt="hevoset" className="h-5 w-4 object-contain" draggable={false} />
+                      <span className="text-sm font-semibold text-orange-200 tabular-nums">{faction.horses}</span>
+                    </div>
+                  </div>
+
+                  {/* Valitse-kehote */}
+                  <div
+                    className="mt-4 rounded-xl py-2 text-center text-sm font-bold text-slate-900 opacity-90 transition-all group-hover:opacity-100"
+                    style={{ backgroundColor: faction.color }}
+                  >
+                    Johda {faction.name.split(' ')[0]} ▶
                   </div>
                 </CardContent>
               </Card>

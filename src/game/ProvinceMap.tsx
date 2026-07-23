@@ -28,7 +28,7 @@ export interface ProvinceMapProps {
   buildingsMap?: Record<string, string[]>;
 }
 
-const TOKEN_RADIUS = 1.75 * SCALE_FACTOR;
+const TOKEN_RADIUS = 1.45 * SCALE_FACTOR; // pienempi tiheämmälle 17x13-ruudukolle
 // Provinssien keskipisteet generoidaan nyt suoraan LAUTA-avaruudessa
 // (0..BOARD_SIZE), heksavyöhykkeen kokonaisten heksien keskelle, joten
 // projektio on identiteetti — ei enää kaksinkertaista muunnosta.
