@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.storyofthesteppe.game",
+      "package_name": "fi.bookish.creations.arojen.tarinat",
       "sha256_cert_fingerprints": [
         "B0:AF:60:05:87:16:17:46:8B:C9:A0:99:74:ED:18:E9:4F:31:64:04:DE:97:F4:21:FA:50:A9:E9:66:41:34:A1"
       ]

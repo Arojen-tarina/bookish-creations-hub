@@ -10,10 +10,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.storyofthesteppe.game"
+    namespace = "fi.bookish.creations.arojen.tarinat"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.storyofthesteppe.game"
+        applicationId "fi.bookish.creations.arojen.tarinat"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

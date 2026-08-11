@@ -1,4 +1,4 @@
-package com.storyofthesteppe.game;
+package fi.bookish.creations.arojen.tarinat;
 
 import com.getcapacitor.BridgeActivity;
 
