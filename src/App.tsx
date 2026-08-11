@@ -8,10 +8,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
-// Single-file/offline build (VITE_SINGLEFILE): use hash routing so the app
+// Single-file/offline build or file:// loading: use hash routing so the app
 // works from file:// too; otherwise normal history routing with base path.
-const AppRouter: typeof BrowserRouter = import.meta.env.VITE_SINGLEFILE ? (HashRouter as typeof BrowserRouter) : BrowserRouter;
-const appRouterProps = import.meta.env.VITE_SINGLEFILE
+const isFileProtocol = typeof window !== 'undefined' && window.location.protocol === 'file:';
+const useHashRouter = import.meta.env.VITE_SINGLEFILE || isFileProtocol;
+const AppRouter: typeof BrowserRouter = useHashRouter ? (HashRouter as typeof BrowserRouter) : BrowserRouter;
+const appRouterProps = useHashRouter
   ? {}
   : { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" };
 import Digipeli from "./pages/Digipeli";
