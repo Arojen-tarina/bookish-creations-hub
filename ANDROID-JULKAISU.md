@@ -94,3 +94,12 @@ versionName "1.1"  // näkyvä versio
 - **minSdk:** 24 · **target/compileSdk:** 36
 - Sisältää mainos-SDK:n (AdMob). Muista täyttää Play Consolen mainoskysely ja
   tietosuojaseloste sen mukaisesti.
+
+## Google Play -julkaisutiedot (en-US)
+- App name: Arojen Tarinat
+- Package name: fi.bookish.creations.arojen.tarinat
+- Release notes (en-US):
+  "Arojen Tarinat is a story-driven strategy game set on the plains of a mythical
+  steppe. This release includes the first signed Android App Bundle with stable
+  package configuration and improved compatibility for Android devices. Enjoy the
+  immersive narrative, strategic province control, and updated gameplay polish."
