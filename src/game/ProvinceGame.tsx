@@ -263,6 +263,14 @@ export const ProvinceGame = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="ghost" size="icon"
+              onClick={() => { setShowSidebar(true); setActiveTab('goals'); }}
+              title="Voittotavoitteet & valtakuntien tilanne (kulta, alueet, Silkkitie)"
+              className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
+            >
+              <Trophy className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost" size="icon"
               onClick={toggleMute}
               title={audioSettings.muted ? 'Musiikki pois päältä — klikkaa soittaaksesi' : 'Musiikki päällä — klikkaa mykistääksesi'}
               className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
