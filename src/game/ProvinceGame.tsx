@@ -18,7 +18,6 @@ import { CardHand } from './CardHand.tsx';
 import { PhaseBar } from './PhaseBar.tsx';
 import { VictoryGoals } from './VictoryGoals.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
-import { CreditsIntro } from './CreditsIntro.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
@@ -62,7 +61,6 @@ export const ProvinceGame = () => {
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
@@ -163,11 +161,6 @@ export const ProvinceGame = () => {
     }
     selectProvince(provinceId);
   }, [gameState, canMoveTo, moveArmy, selectProvince]);
-
-  // Show credits intro before everything else
-  if (!introDone) {
-    return <CreditsIntro onDone={() => setIntroDone(true)} />;
-  }
 
   // Faction select
   if (!gameStarted || !playerFaction) {
