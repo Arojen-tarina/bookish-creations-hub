@@ -31,15 +31,18 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 
 export type RecruitType = 'infantry' | 'cavalry';
 
+// Faktiot, jotka pelaaja voi valita (kartalla on aloitusalue jokaiselle)
+export const ACTIVE_FACTIONS: FactionId[] = ['mongol', 'song', 'rus', 'khwarezm'];
+
 // ============= VICTORY TARGETS =============
 export const VICTORY_TARGETS = {
-  provinces: 30, // ~40% of map (fallback military target)
-  gold: 500,
+  provinces: 130, // ~60% of the ~221 provincin kartasta (sotilaallinen voitto vaatii laajan valloituksen)
+  gold: 2000, // korkeampi kynnys ettei nopea kulta-alkuboosti (esim. Song) voita peliä muutamassa vuorossa
   tech: 5,
   /** Economic victory also requires controlling more than half of Silk Road hubs */
   silkRoadMajority: true,
   /** Economic victory: pidä kultaraja useita perakkaisia vuoroja */
-  treasuryStreak: 3,
+  treasuryStreak: 5,
   /** Diplomatic victory: alliance with every surviving faction (min 2) */
   diplomaticMinAllies: 2,
   /** Diplomatic victory (vaihtoehto): vaikutusvalta tavoitteeseen */
@@ -143,6 +146,7 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   influence: number;   // Vaikutusvalta — diplomatia & kauppasolmut (diplomatiavoitto)
   prestige: number;    // Arvovalta — ihmeet (kulttuurivoitto)
   treasuryStreak: number; // Perakkaiset vuorot >= talousvoiton kultaraja
+  aiTreasuryStreaks?: Partial<Record<FactionId, number>>; // sama vaatimus AI-fraktioille (estää yllättävät AI-voitot)
 }
 
 // ============= INIT =============
@@ -622,6 +626,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       influence: 0,
       prestige: 0,
       treasuryStreak: 0,
+      aiTreasuryStreaks: {},
 
       // AI
       aiLog: [],
@@ -1567,25 +1572,40 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         winCondition = null;
       }
       
-      // Check AI victory too
+      // Check AI victory too (samat ehdot kuin pelaajalla: joko kaikki muiden pääkaupungit
+      // tai VICTORY_TARGETS.provinces aluetta hallintaan, ja talousvoitto vaatii saman
+      // peräkkäisten vuorojen kultastreakin kuin pelaajalta — ei yllättäviä AI-voittoja)
+      const newAiTreasuryStreaks: Partial<Record<FactionId, number>> = {};
       for (const faction of newFactions) {
+        if (faction.id === playerFaction) continue;
+        const aiGoldForStreak = faction.treasury;
+        const prevStreak = newState.aiTreasuryStreaks?.[faction.id] || 0;
+        newAiTreasuryStreaks[faction.id] = aiGoldForStreak >= VICTORY_TARGETS.gold ? prevStreak + 1 : 0;
+      }
+      for (const faction of newFactions) {
+        if (gameOver) break;
         if (faction.id === playerFaction) continue;
         const aiProvinces = newProvinces.filter(p => p.ownerId === faction.id).length;
         const aiGold = faction.treasury;
         const aiTechCount = 0; // AI tech victory not implemented yet
-        const enemyOwned = newProvinces.filter(p => p.ownerId && p.ownerId !== faction.id).length;
-        
-        if (enemyOwned === 0 && aiProvinces > 0) {
+        const aiEnemyCapitals = newFactions
+          .filter(f => f.id !== faction.id)
+          .map(f => newProvinces.find(p => p.id === f.capitalId))
+          .filter((p): p is Province => Boolean(p));
+        const aiCapturedAllCapitals = aiEnemyCapitals.length > 0 && aiEnemyCapitals.every(p => p.ownerId === faction.id);
+
+        if ((aiCapturedAllCapitals && aiProvinces > 0) || aiProvinces >= VICTORY_TARGETS.provinces) {
           gameOver = true;
           winnerId = faction.id;
           winCondition = 'military';
-        } else if (!gameOver && aiGold >= VICTORY_TARGETS.gold &&
+        } else if (aiGold >= VICTORY_TARGETS.gold &&
           silkHubs.length > 0 &&
-          silkHubs.filter(p => p.ownerId === faction.id).length * 2 > silkHubs.length) {
+          silkHubs.filter(p => p.ownerId === faction.id).length * 2 > silkHubs.length &&
+          (newAiTreasuryStreaks[faction.id] || 0) >= VICTORY_TARGETS.treasuryStreak) {
           gameOver = true;
           winnerId = faction.id;
           winCondition = 'economic';
-        } else if (!gameOver && aiTechCount >= VICTORY_TARGETS.tech) {
+        } else if (aiTechCount >= VICTORY_TARGETS.tech) {
           gameOver = true;
           winnerId = faction.id;
           winCondition = 'technology';
@@ -1606,6 +1626,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         winCondition,
         chiefLost: prev.chiefLost || chiefFell,
         treasuryStreak: newTreasuryStreak,
+        aiTreasuryStreaks: newAiTreasuryStreaks,
         aiLog,
         aiActionLog,
         resourcesCollected: false,

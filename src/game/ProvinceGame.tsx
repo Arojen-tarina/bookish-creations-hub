@@ -211,7 +211,7 @@ export const ProvinceGame = () => {
       {/* ============= TOP HUD ============= */}
       <div className="fixed top-0 left-0 right-0 h-12 z-30">
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
-        <div className="relative h-full flex items-center justify-between px-3">
+        <div className="relative h-full flex items-center justify-between px-2 sm:px-3 gap-1">
           {/* Left: Faction + Year */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
@@ -227,7 +227,7 @@ export const ProvinceGame = () => {
           
           {/* Center: Resources */}
           {playerFactionData && (
-            <div className="flex items-center gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-3 py-1 shadow-inner">
+            <div className="flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto max-w-[46vw] sm:max-w-none scrollbar-thin">
               <div className="flex items-center gap-1" title="Kulta">
                 <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
                 <span className="text-amber-100 font-bold text-sm tabular-nums">{playerFactionData.treasury}</span>
@@ -357,7 +357,7 @@ export const ProvinceGame = () => {
         </div>
         
         {/* ============= SIDEBAR ============= */}
-        <div className={`fixed top-[88px] right-0 bottom-0 w-[380px] bg-slate-900/95 backdrop-blur-xl border-l border-amber-700/20 shadow-2xl transition-transform duration-300 z-20 overflow-hidden ${
+        <div className={`fixed top-[88px] right-0 bottom-0 w-full sm:w-[380px] bg-slate-900/95 backdrop-blur-xl border-l border-amber-700/20 shadow-2xl transition-transform duration-300 z-20 overflow-hidden ${
           showSidebar ? 'translate-x-0' : 'translate-x-full'
         }`}>
           <div className="h-full overflow-y-auto p-3 scrollbar-thin">
@@ -616,8 +616,44 @@ export const ProvinceGame = () => {
                     />
                   </CardContent>
                 </Card>
-                
-                {/* Active bonuses */}
+
+                {/* Valtakuntien tilanne — läpinäkyvyys siitä miten lähellä kukin on voittoa */}
+                <Card className="bg-slate-800/50 border-amber-700/30">
+                  <CardContent className="p-3">
+                    <h4 className="text-amber-100 text-xs font-bold mb-2">👑 Valtakuntien tilanne</h4>
+                    <div className="space-y-1.5">
+                      {(() => {
+                        const totalSilkHubs = gameState.provinces.filter(p => p.hasSilkRoad).length;
+                        return gameState.factions.map(f => {
+                          const provinceCount = gameState.provinces.filter(p => p.ownerId === f.id).length;
+                          const silkOwned = gameState.provinces.filter(p => p.hasSilkRoad && p.ownerId === f.id).length;
+                          const hasSilkMajority = totalSilkHubs > 0 && silkOwned * 2 > totalSilkHubs;
+                          const streak = f.id === playerFaction
+                            ? (gameState.treasuryStreak || 0)
+                            : (gameState.aiTreasuryStreaks?.[f.id] || 0);
+                          const nearEconomicVictory = f.treasury >= VICTORY_TARGETS.gold && hasSilkMajority;
+                          return (
+                            <div key={f.id} className="flex items-center gap-2 text-xs bg-slate-900/40 rounded-lg px-2 py-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: f.color }} />
+                              <span className={`font-semibold flex-shrink-0 ${f.id === playerFaction ? 'text-amber-200' : 'text-slate-300'}`}>
+                                {f.name}{f.id === playerFaction ? ' (sinä)' : ''}
+                              </span>
+                              <span className="text-slate-400 ml-auto">🗺️ {provinceCount}/{VICTORY_TARGETS.provinces}</span>
+                              <span className="text-amber-300">💰 {f.treasury}/{VICTORY_TARGETS.gold}</span>
+                              <span className={hasSilkMajority ? 'text-orange-300' : 'text-slate-500'}>🛤️ {silkOwned}/{totalSilkHubs}</span>
+                              {nearEconomicVictory && (
+                                <span className="text-red-300 font-bold" title="Talousvoiton ehdot täyttyvät — streak käynnissä">
+                                  ⏳ {streak}/{VICTORY_TARGETS.treasuryStreak}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {(gameState.attackBonus > 0 || gameState.defenseBonus > 0 || gameState.movementBonus > 0) && (
                   <Card className="bg-purple-900/30 border-purple-700/30">
                     <CardContent className="p-3">

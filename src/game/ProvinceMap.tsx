@@ -547,6 +547,9 @@ export const ProvinceMap = ({
   const [hoveredProvince, setHoveredProvince] = useState<Province | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showCoordinateGrid, setShowCoordinateGrid] = useState(false);
+  // Kosketusohjaus (puhelin): yhden sormen raahaus siirtää, kahden sormen nipistys zoomaa
+  const touchPanStartRef = useRef<{ x: number; y: number } | null>(null);
+  const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null);
 
   const viewBox = useMemo(() => {
     const w = BOARD_SIZE / zoom;
@@ -587,6 +590,45 @@ export const ProvinceMap = ({
   }, [viewBox]);
 
   const handleMouseUp = useCallback(() => setIsDragging(false), []);
+
+  const getTouchDistance = (touches: React.TouchList) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      touchPanStartRef.current = null;
+      pinchStartRef.current = { distance: getTouchDistance(e.touches), zoom };
+    } else if (e.touches.length === 1) {
+      pinchStartRef.current = null;
+      touchPanStartRef.current = { x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y };
+    }
+  }, [zoom, pan]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartRef.current) {
+      const newDistance = getTouchDistance(e.touches);
+      const scale = newDistance / pinchStartRef.current.distance;
+      setZoom(Math.max(0.8, Math.min(4, pinchStartRef.current.zoom * scale)));
+    } else if (e.touches.length === 1 && touchPanStartRef.current) {
+      setPan({
+        x: e.touches[0].clientX - touchPanStartRef.current.x,
+        y: e.touches[0].clientY - touchPanStartRef.current.y,
+      });
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 0) {
+      touchPanStartRef.current = null;
+      pinchStartRef.current = null;
+    } else if (e.touches.length === 1) {
+      pinchStartRef.current = null;
+      touchPanStartRef.current = { x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y };
+    }
+  }, [pan]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -629,8 +671,12 @@ export const ProvinceMap = ({
       onMouseUp={isMinimap ? undefined : handleMouseUp}
       onMouseLeave={isMinimap ? undefined : handleMouseUp}
       onWheel={isMinimap ? undefined : handleWheel}
+      onTouchStart={isMinimap ? undefined : handleTouchStart}
+      onTouchMove={isMinimap ? undefined : handleTouchMove}
+      onTouchEnd={isMinimap ? undefined : handleTouchEnd}
       style={{
         background: '#1a1a2e',
+        touchAction: isMinimap ? undefined : 'none',
         ...(isMinimap ? {} : {
           border: '6px solid #5c4a32',
           borderImage: 'linear-gradient(135deg, #8b6914, #c9a227, #8b6914, #5c3a1e) 1',

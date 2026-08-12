@@ -5,17 +5,47 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep line numbers for readable crash stack traces.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Capacitor's plugin bridge finds plugin methods via annotations at runtime.
+# Without keeping annotations, R8 strips them and the WebView<->native bridge
+# breaks (this is what caused release builds to crash after minifyEnabled=true).
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Capacitor core + plugins (annotated methods and plugin classes)
+-keep class com.getcapacitor.** { *; }
+-keep @com.getcapacitor.annotation.CapacitorPlugin public class * {
+    @com.getcapacitor.annotation.PermissionCallback <methods>;
+    @com.getcapacitor.annotation.ActivityCallback <methods>;
+    @com.getcapacitor.annotation.Permission <methods>;
+    @com.getcapacitor.PluginMethod public <methods>;
+}
+-keep public class * extends com.getcapacitor.Plugin { *; }
+
+# Legacy Cordova plugin compatibility
+-keep public class * extends org.apache.cordova.* {
+  public <methods>;
+  public <fields>;
+}
+
+# WebView JavaScript interface methods must survive obfuscation
+-keepclassmembers class * {
+   @android.webkit.JavascriptInterface <methods>;
+}
+
+# Google Mobile Ads / AdMob (capacitor-community/admob)
+-keep class com.google.android.gms.ads.** { *; }
+-keep class com.google.android.gms.internal.ads.** { *; }
+-keep class com.google.android.ump.** { *; }
+-keep class com.getcapacitor.community.admob.** { *; }
+-dontwarn com.google.android.gms.ads.**
+
+-keepclassmembers class * implements android.os.Parcelable {
+  public static final ** CREATOR;
+}
+-keepclassmembers enum * {
+  public static **[] values();
+  public static ** valueOf(java.lang.String);
+}
