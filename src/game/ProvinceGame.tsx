@@ -6,7 +6,7 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
-import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
+import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS, WONDER_MAX } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
@@ -45,7 +45,7 @@ export const ProvinceGame = () => {
   const {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
-    startGame, selectProvince, selectArmy, moveArmy,
+    startGame, selectProvince, selectArmy, moveArmy, mergeArmies,
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
@@ -423,7 +423,7 @@ export const ProvinceGame = () => {
                               .filter(([type]) => type !== 'wonder' || selectedProvince.id === playerFactionData?.capitalId)
                               .map(([type, info]) => {
                               const existing = gameState.buildings[selectedProvince.id] || [];
-                              // Wonder & fortress voi rakentaa useasti; muut kerran
+                              // Fortress: upgrades to level 3. Wonder: capped at WONDER_MAX. Others: once each.
                               const alreadyBuilt = type !== 'wonder' && existing.includes(type);
                               const hasGold = playerFactionData ? playerFactionData.treasury >= info.cost.gold : false;
                               const hasArtisans = info.cost.artisans ? gameState.artisans >= info.cost.artisans : true;
@@ -434,8 +434,15 @@ export const ProvinceGame = () => {
                               const fortLevel = selectedProvince.fortLevel;
                               const fortMaxed = isFortress && fortLevel >= 3;
                               const fortCanUpgrade = isFortress && !fortMaxed;
-                              const showAsBuilt = isFortress ? fortMaxed : alreadyBuilt;
-                              const showBuildButton = isFortress ? fortCanUpgrade : !alreadyBuilt;
+
+                              // Wonder special: capped at WONDER_MAX per capital
+                              const isWonder = type === 'wonder';
+                              const wonderCount = isWonder ? existing.filter(b => b === 'wonder').length : 0;
+                              const wonderMaxed = isWonder && wonderCount >= WONDER_MAX;
+                              const wonderCanBuild = isWonder && !wonderMaxed;
+
+                              const showAsBuilt = isFortress ? fortMaxed : isWonder ? wonderMaxed : alreadyBuilt;
+                              const showBuildButton = isFortress ? fortCanUpgrade : isWonder ? wonderCanBuild : !alreadyBuilt;
                               
                               return (
                                 <div
@@ -465,7 +472,12 @@ export const ProvinceGame = () => {
                                             Taso {fortLevel}{fortMaxed ? ' (MAX)' : ''}
                                           </span>
                                         )}
-                                        {!isFortress && alreadyBuilt && (
+                                        {isWonder && wonderCount > 0 && (
+                                          <span className="text-[10px] bg-amber-700/50 text-amber-200 px-1.5 py-0.5 rounded-full">
+                                            {wonderCount}/{WONDER_MAX}{wonderMaxed ? ' (MAX)' : ''}
+                                          </span>
+                                        )}
+                                        {!isFortress && !isWonder && alreadyBuilt && (
                                           <span className="text-[10px] bg-green-700/50 text-green-200 px-1.5 py-0.5 rounded-full">✓ Rakennettu</span>
                                         )}
                                       </div>
@@ -595,6 +607,20 @@ export const ProvinceGame = () => {
                                 <span className="text-red-300">🔴 Hyökkää ({attackableProvinces.length})</span>
                               )}
                             </div>
+                          )}
+
+                          {gameState.selectedArmyId && selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 1 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full mt-2 text-xs border-amber-600 text-amber-200 hover:bg-amber-900/40"
+                              onClick={() => {
+                                const others = selectedProvinceArmies.filter(a => a.ownerId === playerFaction && a.id !== gameState.selectedArmyId);
+                                if (others[0]) mergeArmies(gameState.selectedArmyId!, others[0].id);
+                              }}
+                            >
+                              🔗 Yhdistä armeijat
+                            </Button>
                           )}
                         </CardContent>
                       </Card>

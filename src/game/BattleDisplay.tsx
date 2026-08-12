@@ -263,10 +263,14 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
   const attackRoll = phase === 'rolling' ? rollingAttack : (battle.attackRoll || 3);
   const defenseRoll = phase === 'rolling' ? rollingDefense : (battle.defenseRoll || 3);
 
-  const rawAttackPower = battle.attacker.cavalry * 3 + battle.attacker.infantry * 1.5;
-  const rawDefensePower = battle.defender.cavalry * 2 + battle.defender.infantry * 2;
-  const totalAttack = Math.round(rawAttackPower + attackRoll * 2);
-  const totalDefense = Math.round(rawDefensePower + defenseRoll * 2);
+  // Use the exact scores the battle was actually resolved with (includes dice,
+  // terrain and fortification bonuses) so the displayed math never contradicts
+  // the real outcome. Fall back to an approximation only if scores are missing.
+  const hasRealScores = battle.attackerPower !== undefined && battle.defenderPower !== undefined;
+  const rawAttackPower = hasRealScores ? battle.attackerPower! - attackRoll : battle.attacker.cavalry * 3 + battle.attacker.infantry * 1.5;
+  const rawDefensePower = hasRealScores ? battle.defenderPower! - defenseRoll : battle.defender.cavalry * 2 + battle.defender.infantry * 2;
+  const totalAttack = hasRealScores ? Math.round(battle.attackerPower!) : Math.round(rawAttackPower + attackRoll * 2);
+  const totalDefense = hasRealScores ? Math.round(battle.defenderPower!) : Math.round(rawDefensePower + defenseRoll * 2);
 
   const showArmies = phase !== 'intro';
   const showDice = phase === 'rolling' || phase === 'power' || phase === 'losses' || phase === 'result';
@@ -434,7 +438,9 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                     <div className="text-3xl font-black text-red-400">
                       <AnimatedNumber target={totalAttack} />
                     </div>
-                    <p className="text-[10px] text-stone-500 mt-1">{Math.round(rawAttackPower)} + {attackRoll}×2</p>
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      {hasRealScores ? `${Math.round(rawAttackPower)} + 🎲${attackRoll}` : `${Math.round(rawAttackPower)} + ${attackRoll}×2`}
+                    </p>
                   </div>
                   <div className={`text-2xl font-black ${totalAttack > totalDefense ? 'text-red-400' : totalDefense > totalAttack ? 'text-blue-400' : 'text-stone-400'}`}>
                     {totalAttack > totalDefense ? '>' : totalDefense > totalAttack ? '<' : '='}
@@ -443,7 +449,9 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                     <div className="text-3xl font-black text-blue-400">
                       <AnimatedNumber target={totalDefense} />
                     </div>
-                    <p className="text-[10px] text-stone-500 mt-1">{Math.round(rawDefensePower)} + {defenseRoll}×2</p>
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      {hasRealScores ? `${Math.round(rawDefensePower)} + 🎲${defenseRoll} + maasto/linnoitus` : `${Math.round(rawDefensePower)} + ${defenseRoll}×2`}
+                    </p>
                   </div>
                 </div>
               </div>

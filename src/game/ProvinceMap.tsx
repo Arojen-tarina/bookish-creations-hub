@@ -753,7 +753,10 @@ export const ProvinceMap = ({
               if (armyGroup.length === 0) return;
               const totalCav = armyGroup.reduce((s, a) => s + a.cavalry, 0);
               const totalInf = armyGroup.reduce((s, a) => s + a.infantry, 0);
-              const hasMovement = armyGroup.some(a => a.movementLeft > 0);
+              // 'full' = every army can still move, 'partial' = some already moved, 'none' = all moved
+              const movedCount = armyGroup.filter(a => a.movementLeft <= 0).length;
+              const movementState: 'full' | 'partial' | 'none' =
+                movedCount === 0 ? 'full' : movedCount === armyGroup.length ? 'none' : 'partial';
               const anySelected = armyGroup.some(a => a.id === selectedArmyId);
               const mainArmy = armyGroup[0];
               const ownerColor = FACTION_DATA_1206[mainArmy.ownerId]?.color || '#888';
@@ -823,10 +826,11 @@ export const ProvinceMap = ({
                     </g>
                   )}
 
-                  {/* Liikepiste pelaajalle */}
+                  {/* Liikepiste pelaajalle: vihreä = kaikki voivat liikkua, keltainen = osa jo siirretty, punainen = kaikki siirretty */}
                   {isPlayer && (
                     <circle cx={bx + spriteW * 0.42} cy={by - spriteH * 0.42} r={0.4 * SCALE_FACTOR}
-                      fill={hasMovement ? '#22c55e' : '#ef4444'} stroke="#1a1a1a" strokeWidth={0.1 * SCALE_FACTOR} />
+                      fill={movementState === 'full' ? '#22c55e' : movementState === 'partial' ? '#eab308' : '#ef4444'}
+                      stroke="#1a1a1a" strokeWidth={0.1 * SCALE_FACTOR} />
                   )}
 
                   {/* Pino-osoitin */}

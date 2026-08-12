@@ -47,22 +47,22 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
   const factions = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id]);
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-slate-950 p-4 overflow-auto">
+    <div className="fixed inset-0 overflow-y-auto bg-slate-950 p-4">
       {/* Tunnelmallinen taustakuva: maailmankartta */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="fixed inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${menuBg})` }}
       />
       {/* Kevyt tummennus & lämmin sävy luettavuutta varten */}
       <div
-        className="absolute inset-0"
+        className="fixed inset-0"
         style={{
           background: `linear-gradient(to bottom, rgba(2,6,23,0.50) 0%, rgba(2,6,23,0.32) 40%, rgba(2,6,23,0.62) 100%),
                        radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.12) 0%, transparent 55%)`,
         }}
       />
 
-      <div className="relative z-10 max-w-5xl w-full">
+      <div className="relative z-10 max-w-5xl w-full mx-auto py-6">
         {/* Title */}
         <div className="text-center mb-6">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-amber-100 mb-2">

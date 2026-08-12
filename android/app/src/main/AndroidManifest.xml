@@ -9,6 +9,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Google Mobile Ads SDK crashes on startup (IllegalStateException) if this
+             meta-data is missing. TODO: replace with the real AdMob App ID (format
+             ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY, NOT the ad unit id) from
+             https://apps.admob.com -> App settings. Using Google's public test App ID
+             as a safe placeholder until then so the app no longer crashes. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"

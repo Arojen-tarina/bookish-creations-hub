@@ -56,6 +56,11 @@ const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build',
 // ============= BUILDING TYPES =============
 export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable' | 'bridge' | 'wonder';
 
+// Wonders were previously uncapped, letting a single turn's gold surplus buy
+// unlimited stacked Wonders and snowball a Cultural victory almost instantly.
+// Cap total Wonders per capital so Prestige gain scales gradually (max 3 * 3 = 9/turn).
+export const WONDER_MAX = 3;
+
 export const BUILDING_INFO: Record<MVPBuildingType, {
   name: string; emoji: string; cost: { gold: number; artisans?: number };
   effect: string;
@@ -507,6 +512,8 @@ const resolveCombat = (
   defenderInfantryLoss: number;
   attackRoll: number;
   defenseRoll: number;
+  attackerScore: number;
+  defenderScore: number;
 } => {
   const terrainInfo = PROVINCE_TERRAIN_INFO[terrain.terrain];
 
@@ -546,6 +553,8 @@ const resolveCombat = (
     defenderInfantryLoss: defenderLosses.infantryLoss,
     attackRoll,
     defenseRoll,
+    attackerScore,
+    defenderScore,
   };
 };
 
@@ -560,6 +569,7 @@ export interface UseProvinceGameStateReturn {
   selectProvince: (provinceId: string) => void;
   selectArmy: (armyId: string) => void;
   moveArmy: (armyId: string, targetProvinceId: string) => void;
+  mergeArmies: (armyId: string, mergeIntoId: string) => void;
   nextPhase: () => void;
   endTurn: () => void;
   resetGame: () => void;
@@ -788,6 +798,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           defenderMoraleLoss: result.attackerWins ? 20 : 10,
           attackRoll: result.attackRoll,
           defenseRoll: result.defenseRoll,
+          attackerPower: result.attackerScore,
+          defenderPower: result.defenderScore,
         };
         setTimeout(() => setPendingBattle(battleResult), 50);
         if (result.attackerWins) {
@@ -882,6 +894,40 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       }
     });
   }, [canMoveTo]);
+
+  // ============= MERGE ARMIES =============
+  // Player-facing equivalent of the AI-only 'merge' action: combine two of the
+  // player's own armies standing in the same province into one stack.
+  const mergeArmies = useCallback((armyId: string, mergeIntoId: string) => {
+    setGameState(prev => {
+      if (!prev || !playerFaction) return prev;
+      if (armyId === mergeIntoId) return prev;
+      const sourceIdx = prev.armies.findIndex(a => a.id === armyId);
+      const targetIdx = prev.armies.findIndex(a => a.id === mergeIntoId);
+      if (sourceIdx === -1 || targetIdx === -1) return prev;
+      const source = prev.armies[sourceIdx];
+      const target = prev.armies[targetIdx];
+      // Only the player's own armies, standing together, may be merged.
+      if (source.ownerId !== playerFaction || target.ownerId !== playerFaction) return prev;
+      if (source.provinceId !== target.provinceId) return prev;
+
+      const merged: Army = {
+        ...target,
+        cavalry: target.cavalry + source.cavalry,
+        infantry: target.infantry + source.infantry,
+        siege: target.siege + source.siege,
+        morale: Math.round((target.morale * (target.cavalry + target.infantry || 1) + source.morale * (source.cavalry + source.infantry || 1)) / ((target.cavalry + target.infantry + source.cavalry + source.infantry) || 1)),
+        // Merging spends the turn's movement for the combined stack.
+        movementLeft: Math.min(target.movementLeft, source.movementLeft),
+      };
+
+      const newArmies = prev.armies
+        .map((a, i) => (i === targetIdx ? merged : a))
+        .filter(a => a.id !== armyId);
+
+      return { ...prev, armies: newArmies, selectedArmyId: merged.id };
+    });
+  }, [playerFaction]);
 
   // ============= WAR DECLARATIONS =============
   // (declareWar moved below after `proposeTreaty` definition to avoid TDZ)
@@ -988,11 +1034,13 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (type === 'wonder' && province.id !== faction.capitalId) return prev;
 
       const existing = prev.buildings[provinceId] || [];
-      // Fortress and Wonder can be built multiple times; other buildings only once
+      // Fortress: leveled up to max 3. Wonder: capped at WONDER_MAX. Others: once each.
       if (type === 'fortress') {
         const currentFortLevel = province.fortLevel;
         if (currentFortLevel >= 3) return prev; // Max level reached
-      } else if (type !== 'wonder') {
+      } else if (type === 'wonder') {
+        if (existing.filter(b => b === 'wonder').length >= WONDER_MAX) return prev;
+      } else {
         if (existing.includes(type)) return prev; // Other buildings only once
       }
       
@@ -1767,7 +1815,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   return {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
-    startGame, selectProvince, selectArmy, moveArmy,
+    startGame, selectProvince, selectArmy, moveArmy, mergeArmies,
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,
