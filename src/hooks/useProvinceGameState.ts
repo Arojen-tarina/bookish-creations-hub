@@ -150,12 +150,21 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
 }
 
 // ============= INIT =============
+// Vain ACTIVE_FACTIONS ovat oikeita, simuloituja valtakuntia (näkyvät HUD:issa,
+// diplomatiassa ja voittoehdoissa). Muut FACTION_DATA_1206-heimot (jin, xixia,
+// kipchak) eivät koskaan tule peliin — niiden alueet ovat neutraaleja ruutuja.
 const createFactions = (playerFactionId: FactionId): Faction[] => {
-  return (Object.keys(FACTION_DATA_1206) as FactionId[]).map(id => ({
+  const ids = ACTIVE_FACTIONS.includes(playerFactionId) ? ACTIVE_FACTIONS : [...ACTIVE_FACTIONS, playerFactionId];
+  return ids.map(id => ({
     ...FACTION_DATA_1206[id],
     isPlayer: id === playerFactionId,
   }));
 };
+
+// Nollaa provinssit, joiden omistaja ei ole yksikään pelissä oleva valtakunta
+// (esim. jin/xixia/kipchak alkudataomistukset) takaisin neutraaleiksi.
+const neutralizeInactiveFactionProvinces = (provinces: Province[], activeFactionIds: FactionId[]): Province[] =>
+  provinces.map(p => (p.ownerId && !activeFactionIds.includes(p.ownerId) ? { ...p, ownerId: null } : p));
 
 const createDiplomaticRelations = (factions: Faction[]): DiplomaticRelation[] => {
   const relations: DiplomaticRelation[] = [];
@@ -213,7 +222,6 @@ const calculateProvinceCenterDistance = (a: { x: number; y: number }, b: { x: nu
 
 const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Faction[]): Province[] => {
   const factionIds = factions.map(f => f.id);
-  const targetCount = Math.floor(provinces.length / factionIds.length);
   const currentCounts = factionIds.reduce((acc, factionId) => ({ ...acc, [factionId]: 0 }), {} as Record<FactionId, number>);
   const updatedProvinces = provinces.map(province => ({ ...province }));
   const provinceById = new Map(updatedProvinces.map(p => [p.id, p]));
@@ -223,6 +231,11 @@ const equalizeStartingProvinceOwnership = (provinces: Province[], factions: Fact
       currentCounts[province.ownerId] += 1;
     }
   });
+
+  // Tasapainotetaan vain valtakuntien OLEMASSA OLEVAN alkualueen mukaan (ei koko
+  // kartan mukaan) — loput kartasta jää tarkoituksella neutraaliksi valloitettavaksi.
+  const totalOwnedByFactions = Object.values(currentCounts).reduce((sum, c) => sum + c, 0);
+  const targetCount = Math.max(1, Math.floor(totalOwnedByFactions / factionIds.length));
 
   const getProvinceValue = (province: Province) => province.baseTax + province.baseManpower + province.developmentLevel;
 
@@ -576,7 +589,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   // ============= START GAME =============
   const startGame = useCallback((selectedFaction: FactionId) => {
     const initialFactions = createFactions(selectedFaction);
-    const rawProvinces = getProvincesWithAdjacency();
+    const rawProvinces = neutralizeInactiveFactionProvinces(getProvincesWithAdjacency(), initialFactions.map(f => f.id));
     const provinces = equalizeStartingProvinceOwnership(rawProvinces, initialFactions);
 
     // Filter factions to those that actually have presence on the map (or are the selected player)
