@@ -13,9 +13,11 @@ import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router
 const isFileProtocol = typeof window !== 'undefined' && window.location.protocol === 'file:';
 const useHashRouter = import.meta.env.VITE_SINGLEFILE || isFileProtocol;
 const AppRouter: typeof BrowserRouter = useHashRouter ? (HashRouter as typeof BrowserRouter) : BrowserRouter;
-const appRouterProps = useHashRouter
-  ? {}
-  : { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" };
+// BASE_URL is "./" for local/Capacitor builds, which isn't a valid basename
+// (must start with "/"); only use it when it's an actual absolute base path.
+const rawBase = import.meta.env.BASE_URL;
+const basename = rawBase.startsWith("/") ? rawBase.replace(/\/$/, "") || "/" : "/";
+const appRouterProps = useHashRouter ? {} : { basename };
 import Digipeli from "./pages/Digipeli";
 import Ohjekirja from "./pages/Ohjekirja";
 import Codex from "./pages/Codex";
