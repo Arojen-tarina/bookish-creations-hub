@@ -126,12 +126,21 @@ export const ProvinceGame = () => {
   }, []);
 
   useEffect(() => {
-    if (gameStarted) {
-      playAmbient();
-    } else {
+    if (!gameStarted) {
       stopAmbient();
+      return;
     }
-    return () => stopAmbient();
+
+    playAmbient();
+    const resumeMusic = () => playAmbient();
+    document.addEventListener('pointerdown', resumeMusic, { once: true });
+    document.addEventListener('keydown', resumeMusic, { once: true });
+
+    return () => {
+      document.removeEventListener('pointerdown', resumeMusic);
+      document.removeEventListener('keydown', resumeMusic);
+      stopAmbient();
+    };
   }, [gameStarted, playAmbient, stopAmbient]);
 
   // Auto-collect resources when entering resource phase

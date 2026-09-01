@@ -22,6 +22,7 @@ const MUSIC_PLAYLIST: string[] = import.meta.env.VITE_SINGLEFILE
       `${import.meta.env.BASE_URL}music/track2.mp3`,
       `${import.meta.env.BASE_URL}music/track3.mp3`,
       `${import.meta.env.BASE_URL}music/track4.mp3`,
+      `${import.meta.env.BASE_URL}music/song.mp3`,
     ];
 
 interface AudioSettings {
