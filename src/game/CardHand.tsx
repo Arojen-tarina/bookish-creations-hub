@@ -8,6 +8,7 @@ import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
 import { MVPPhase } from './PhaseBar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
+import { useLanguage } from '@/lib/i18n.tsx';
 
 // Korttikuvat: bundlataan importteina (hajautetut tiedostot normaalibuildissa,
 // data-URL:t singlefile-buildissa). Osalla korteista ei ole kuvaa -> fallback.
@@ -48,12 +49,13 @@ interface CardHandProps {
 }
 
 export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, discardSize }: CardHandProps) => {
+  const { t } = useLanguage();
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   if (cards.length === 0) {
     return (
       <div className="flex items-center gap-3 px-4 py-2">
-        <span className="text-amber-200/50 text-sm">Ei kortteja kädessä</span>
+        <span className="text-amber-200/50 text-sm">{t('cards.none')}</span>
         <span className="text-amber-200/30 text-xs">📦 {deckSize} | 🗑️ {discardSize}</span>
       </div>
     );
@@ -113,7 +115,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                           setSelectedIdx(null);
                         }}
                       >
-                        ▶ Pelaa
+                        {t('cards.play')}
                       </Button>
                     )}
                   </div>
@@ -141,7 +143,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                           setSelectedIdx(null);
                         }}
                       >
-                        ▶ Pelaa
+                        {t('cards.play')}
                       </Button>
                     </div>
                   )}

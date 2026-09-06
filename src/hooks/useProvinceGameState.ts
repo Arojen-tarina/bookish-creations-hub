@@ -5,7 +5,7 @@
  * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
  * Sisältää: korttikäsi, AI-vuorot, rakennukset, voitto/häviöehdot.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Province,
   FactionId,
@@ -29,7 +29,56 @@ import { toast } from 'sonner';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
+// Persist the in-progress session in sessionStorage so navigating to the
+// guide/codex pages and back doesn't reset the active game (tab/session
+// scoped only — a genuinely new game via startGame() always overwrites it).
+const SESSION_STORAGE_KEY = 'arojen_tarinat_active_session_v1';
+
+interface PersistedSession {
+  gameStarted: boolean;
+  playerFaction: FactionId | null;
+  gameState: MVPGameState | null;
+}
+
+const loadPersistedSession = (): PersistedSession | null => {
+  try {
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedSession;
+    if (!parsed || typeof parsed !== 'object' || !parsed.gameState) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const savePersistedSession = (session: PersistedSession) => {
+  try {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  } catch {
+    // Ignore quota/availability errors — persistence is a convenience, not critical.
+  }
+};
+
+const clearPersistedSession = () => {
+  try {
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  } catch {
+    // Ignore.
+  }
+};
+
 export type RecruitType = 'infantry' | 'cavalry';
+
+export type Difficulty = 'easy' | 'normal' | 'hard';
+
+// Vaikeustason vaikutus tekoälyfaktioiden talouteen (aloitusvarat + vuorotulot).
+// Ei muuta tekoälyn päätöksentekoa, vain sen resurssikasvua.
+export const DIFFICULTY_AI_INCOME_MULTIPLIER: Record<Difficulty, number> = {
+  easy: 0.75,
+  normal: 1,
+  hard: 1.35,
+};
 
 // Faktiot, jotka pelaaja voi valita (kartalla on aloitusalue jokaiselle)
 export const ACTIVE_FACTIONS: FactionId[] = ['mongol', 'song', 'rus', 'khwarezm'];
@@ -565,7 +614,8 @@ export interface UseProvinceGameStateReturn {
   gameState: MVPGameState | null;
   pendingBattle: BattleResult | null;
   clearBattle: () => void;
-  startGame: (selectedFaction: FactionId) => void;
+  startGame: (selectedFaction: FactionId, difficulty?: Difficulty) => void;
+  loadGameState: (state: MVPGameState) => void;
   selectProvince: (provinceId: string) => void;
   selectArmy: (armyId: string) => void;
   moveArmy: (armyId: string, targetProvinceId: string) => void;
@@ -591,21 +641,38 @@ export interface UseProvinceGameStateReturn {
 }
 
 export const useProvinceGameState = (): UseProvinceGameStateReturn => {
-  const [gameStarted, setGameStarted] = useState(false);
-  const [playerFaction, setPlayerFaction] = useState<FactionId | null>(null);
-  const [gameState, setGameState] = useState<MVPGameState | null>(null);
+  const persisted = useRef<PersistedSession | null>(null);
+  if (persisted.current === null) {
+    persisted.current = loadPersistedSession() ?? { gameStarted: false, playerFaction: null, gameState: null };
+  }
+  const [gameStarted, setGameStarted] = useState(persisted.current.gameStarted);
+  const [playerFaction, setPlayerFaction] = useState<FactionId | null>(persisted.current.playerFaction);
+  const [gameState, setGameState] = useState<MVPGameState | null>(persisted.current.gameState);
   const [pendingBattle, setPendingBattle] = useState<BattleResult | null>(null);
 
+  // Keep the session in sync so navigating to /ohjekirja or /codex and back
+  // resumes the same game instead of losing it.
+  useEffect(() => {
+    if (gameStarted && gameState) {
+      savePersistedSession({ gameStarted, playerFaction, gameState });
+    }
+  }, [gameStarted, playerFaction, gameState]);
+
   // ============= START GAME =============
-  const startGame = useCallback((selectedFaction: FactionId) => {
+  const startGame = useCallback((selectedFaction: FactionId, difficulty: Difficulty = 'normal') => {
     const initialFactions = createFactions(selectedFaction);
     const rawProvinces = neutralizeInactiveFactionProvinces(getProvincesWithAdjacency(), initialFactions.map(f => f.id));
     const provinces = equalizeStartingProvinceOwnership(rawProvinces, initialFactions);
 
     // Filter factions to those that actually have presence on the map (or are the selected player)
-    const visibleFactions = initialFactions.filter(f =>
-      f.id === selectedFaction || provinces.some(p => p.ownerId === f.id)
-    );
+    const aiIncomeMultiplier = DIFFICULTY_AI_INCOME_MULTIPLIER[difficulty];
+    const visibleFactions = initialFactions
+      .filter(f => f.id === selectedFaction || provinces.some(p => p.ownerId === f.id))
+      .map(f => f.id === selectedFaction ? f : {
+        ...f,
+        treasury: Math.round(f.treasury * aiIncomeMultiplier),
+        manpower: Math.round(f.manpower * aiIncomeMultiplier),
+      });
 
     const relations = createDiplomaticRelations(visibleFactions);
     const armies = createStartingArmies(visibleFactions, provinces);
@@ -628,7 +695,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       gameOver: false,
       winnerId: null,
       gameSpeed: 'normal',
-      difficulty: 'normal',
+      difficulty,
       
       // Cards
       deck: remaining,
@@ -1275,10 +1342,15 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const aiActionLog: AIActionLog[] = [];
       
       // 1. Collect resources for AI factions only (player collects in resource phase)
+      const aiIncomeMultiplier = DIFFICULTY_AI_INCOME_MULTIPLIER[newState.difficulty as Difficulty] ?? 1;
       let newFactions = newState.factions.map(faction => {
         if (faction.id === playerFaction) return faction; // Player already collected
         const collection = calculateResourceCollection(newState, faction.id);
-        return { ...faction, treasury: faction.treasury + collection.taxIncome, manpower: faction.manpower + collection.manpowerGain };
+        return {
+          ...faction,
+          treasury: faction.treasury + Math.round(collection.taxIncome * aiIncomeMultiplier),
+          manpower: faction.manpower + Math.round(collection.manpowerGain * aiIncomeMultiplier),
+        };
       });
       
       // 2. Food: skip player (already handled in collectResources), just track for state
@@ -1784,9 +1856,18 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const resolveEvent = useCallback((_choiceIndex?: number) => {}, []);
 
   const resetGame = useCallback(() => {
+    clearPersistedSession();
     setGameStarted(false);
     setPlayerFaction(null);
     setGameState(null);
+  }, []);
+
+  // Hydrate the hook's state from a loaded save (manual slot, autosave, or import).
+  const loadGameState = useCallback((state: MVPGameState) => {
+    const loadedPlayerFaction = state.factions.find(f => f.isPlayer)?.id ?? state.currentPlayerId;
+    setPlayerFaction(loadedPlayerFaction);
+    setGameState(state);
+    setGameStarted(true);
   }, []);
 
   const clearBattle = useCallback(() => setPendingBattle(null), []);
@@ -1815,7 +1896,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   return {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
-    startGame, selectProvince, selectArmy, moveArmy, mergeArmies,
+    startGame, loadGameState, selectProvince, selectArmy, moveArmy, mergeArmies,
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,

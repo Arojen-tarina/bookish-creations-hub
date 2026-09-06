@@ -23,11 +23,16 @@ import Ohjekirja from "./pages/Ohjekirja";
 import Codex from "./pages/Codex";
 import Shop from "./pages/Shop";
 import { AdMobBanner } from "@/components/ui/AdMobBanner.tsx";
+import { LanguageProvider } from "@/lib/i18n.tsx";
+import { DeviceModeProvider } from "@/lib/deviceMode.tsx";
+import { MooseAssistant } from "@/game/MooseAssistant.tsx";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
+      <DeviceModeProvider>
       <Toaster />
       <Sonner />
       <div className="fixed bottom-0 left-0 right-0 z-40 p-3 pointer-events-auto flex justify-center">
@@ -44,6 +49,9 @@ const App = () => (
           <Route path="/digipeli" element={<Navigate to="/" replace />} />
         </Routes>
       </AppRouter>
+      <MooseAssistant />
+      </DeviceModeProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 

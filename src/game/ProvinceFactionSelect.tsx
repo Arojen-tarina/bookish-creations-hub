@@ -5,12 +5,16 @@
  * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
  */
 import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
-import { ACTIVE_FACTIONS } from '@/hooks/useProvinceGameState.ts';
+import { ACTIVE_FACTIONS, Difficulty } from '@/hooks/useProvinceGameState.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
-import { Sword, Coins, Shield, BookOpen, ScrollText, Users } from 'lucide-react';
+import { Sword, Coins, Shield, BookOpen, ScrollText, Users, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { SettingsMenu } from './SettingsMenu.tsx';
+import type { SaveMetadata } from '@/types/province.ts';
 
 // Faktioiden johtajakuvat (kulttuurikohtaiset sprite-assetit)
 import leaderMongol from '@/assets/sprites/leader_mongol.png';
@@ -39,10 +43,16 @@ const FLAVOR: Record<string, string> = {
 };
 
 interface ProvinceFactionSelectProps {
-  onSelect: (factionId: FactionId) => void;
+  onSelect: (factionId: FactionId, difficulty: Difficulty) => void;
+  continueSave?: SaveMetadata | null;
+  onContinue?: () => void;
 }
 
-export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) => {
+const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
+
+export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: ProvinceFactionSelectProps) => {
+  const { t } = useLanguage();
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal');
   // Vain 4 aktiivista faktiota (Kiina=song, mongolit, rus, persia=khwarezm)
   const factions = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id]);
   
@@ -63,16 +73,19 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
       />
 
       <div className="relative z-10 max-w-5xl w-full mx-auto py-6">
+        <div className="flex justify-end mb-2">
+          <SettingsMenu />
+        </div>
         {/* Title */}
         <div className="text-center mb-6">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-amber-100 mb-2">
-            Arojen Tarinat
+            {t('faction.title')}
           </h1>
           <p className="text-amber-200/60 text-lg">
-            Vuosi 1206 — Valitse valtakuntasi
+            {t('faction.subtitle')}
           </p>
           <p className="text-amber-200/40 text-sm mt-1 italic max-w-2xl mx-auto">
-            Suuri Hirvas lauloi tämän maailman olemaan — nyt sen kohtalo lauletaan teräksellä, kullalla ja liitoilla.
+            {t('faction.tagline')}
           </p>
           <div className="mt-4 flex justify-center">
             <Link
@@ -80,24 +93,46 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               className="inline-flex items-center gap-2 rounded-full border border-amber-600/40 bg-amber-950/40 px-5 py-2.5 text-sm font-semibold text-amber-200 hover:bg-amber-900/50 hover:border-amber-500/60 transition-colors"
             >
               <ScrollText className="w-4 h-4" />
-              Avaa Rajaseudun Kronikka — maailmankirja &amp; kodeksi
+              {t('faction.openCodex')}
             </Link>
           </div>
         </div>
 
+        {/* Continue previous game */}
+        {continueSave && onContinue && (
+          <div className="bg-amber-950/40 border border-amber-500/40 rounded-2xl p-4 mb-6 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+              <h2 className="text-amber-100 font-bold text-sm">{t('faction.continueTitle')}</h2>
+              <p className="text-amber-200/60 text-xs mt-0.5">
+                {t('faction.continueDesc', { turn: continueSave.turn, faction: FACTION_DATA_1206[continueSave.playerFaction]?.name ?? continueSave.playerFaction })}
+              </p>
+            </div>
+            <button
+              onClick={onContinue}
+              className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 text-sm transition-colors flex-shrink-0"
+            >
+              <Save className="w-4 h-4" />
+              {t('faction.continueButton')}
+            </button>
+          </div>
+        )}
+        {continueSave && (
+          <p className="text-center text-stone-500 text-xs mb-4">{t('faction.newGameBelow')}</p>
+        )}
+
         {/* How to play guide */}
         <div className="bg-slate-800/60 border border-amber-700/30 rounded-2xl p-5 mb-6 max-w-4xl mx-auto">
-          <h2 className="text-amber-200 font-bold text-lg mb-1 text-center">📜 Näin pelaat</h2>
-          <p className="text-stone-400 text-xs text-center mb-4">Joka vuoro käyt läpi 6 vaihetta järjestyksessä. Paina "Seuraava" siirtyäksesi vaiheesta toiseen.</p>
+          <h2 className="text-amber-200 font-bold text-lg mb-1 text-center">{t('faction.howToPlay')}</h2>
+          <p className="text-stone-400 text-xs text-center mb-4">{t('faction.howToPlayHint')}</p>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {[
-              { num: '1', icon: '🪙', title: 'Resurssit', desc: 'Saat automaattisesti kultaa ja miehiä omilta alueilta.', color: 'border-amber-700/40 bg-amber-900/10' },
-              { num: '2', icon: '🃏', title: 'Kortit', desc: 'Nosta kortti pakasta. Pelaa kortteja kädestäsi bonusten saamiseksi.', color: 'border-purple-700/40 bg-purple-900/10' },
-              { num: '3', icon: '🐴', title: 'Liikuta', desc: 'Klikkaa omaa aluettasi → valitse armeija → klikkaa viereistä aluetta.', color: 'border-green-700/40 bg-green-900/10' },
-              { num: '4', icon: '⚔️', title: 'Taistelu', desc: 'Liiku vihollisen alueelle hyökätäksesi. Nopat ratkaisevat voittajan.', color: 'border-red-700/40 bg-red-900/10' },
-              { num: '5', icon: '🏗️', title: 'Rakenna', desc: 'Rakenna leiri, markkina tai linnoitus omille alueilIesi.', color: 'border-blue-700/40 bg-blue-900/10' },
-              { num: '6', icon: '🏁', title: 'Lopeta vuoro', desc: 'AI-vastustajat tekevät omat siirtonsa. Uusi vuoro alkaa.', color: 'border-stone-600/40 bg-stone-800/20' },
+              { num: '1', icon: '🪙', title: t('faction.step1.title'), desc: t('faction.step1.desc'), color: 'border-amber-700/40 bg-amber-900/10' },
+              { num: '2', icon: '🃏', title: t('faction.step2.title'), desc: t('faction.step2.desc'), color: 'border-purple-700/40 bg-purple-900/10' },
+              { num: '3', icon: '🐴', title: t('faction.step3.title'), desc: t('faction.step3.desc'), color: 'border-green-700/40 bg-green-900/10' },
+              { num: '4', icon: '⚔️', title: t('faction.step4.title'), desc: t('faction.step4.desc'), color: 'border-red-700/40 bg-red-900/10' },
+              { num: '5', icon: '🏗️', title: t('faction.step5.title'), desc: t('faction.step5.desc'), color: 'border-blue-700/40 bg-blue-900/10' },
+              { num: '6', icon: '🏁', title: t('faction.step6.title'), desc: t('faction.step6.desc'), color: 'border-stone-600/40 bg-stone-800/20' },
             ].map(step => (
               <div key={step.num} className={`rounded-xl border p-3 ${step.color}`}>
                 <div className="flex items-center gap-2 mb-1.5">
@@ -112,28 +147,51 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
           <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-center">
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🗺️</div>
-              <div className="text-[10px] text-amber-200 font-bold">Valtaa pääkaupungit</div>
-              <div className="text-[9px] text-stone-500">Sotilasvoitto</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.military.title')}</div>
+              <div className="text-[9px] text-stone-500">{t('faction.goal.military.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">💰</div>
-              <div className="text-[10px] text-amber-200 font-bold">500 kultaa + Silkkitie</div>
-              <div className="text-[9px] text-stone-500">Talousvoitto</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.economic.title')}</div>
+              <div className="text-[9px] text-stone-500">{t('faction.goal.economic.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🔬</div>
-              <div className="text-[10px] text-amber-200 font-bold">5 teknologiaa</div>
-              <div className="text-[9px] text-stone-500">Teknologiavoitto</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.tech.title')}</div>
+              <div className="text-[9px] text-stone-500">{t('faction.goal.tech.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🕊️</div>
-              <div className="text-[10px] text-amber-200 font-bold">100 vaikutusvaltaa</div>
-              <div className="text-[9px] text-stone-500">Diplomatiavoitto</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.diplomatic.title')}</div>
+              <div className="text-[9px] text-stone-500">{t('faction.goal.diplomatic.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🏛️</div>
-              <div className="text-[10px] text-amber-200 font-bold">60 arvovaltaa (Ihmeet)</div>
-              <div className="text-[9px] text-stone-500">Kulttuurivoitto</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.cultural.title')}</div>
+              <div className="text-[9px] text-stone-500">{t('faction.goal.cultural.sub')}</div>
+            </div>
+          </div>
+
+          {/* Difficulty selector */}
+          <div className="mt-4 pt-3 border-t border-slate-700/50">
+            <p className="text-amber-200 font-bold text-sm text-center mb-2">{t('faction.difficulty')}</p>
+            <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
+              {DIFFICULTIES.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDifficulty(d)}
+                  className={`rounded-xl border px-2 py-2 text-center transition-colors ${
+                    selectedDifficulty === d
+                      ? 'border-amber-500 bg-amber-500/20'
+                      : 'border-slate-700/50 bg-slate-900/60 hover:bg-slate-800'
+                  }`}
+                >
+                  <span className={`block text-xs font-bold ${selectedDifficulty === d ? 'text-amber-100' : 'text-amber-200/70'}`}>
+                    {t(`difficulty.${d}`)}
+                  </span>
+                  <span className="block text-[10px] text-stone-500 mt-0.5 leading-snug">{t(`difficulty.${d}Desc`)}</span>
+                </button>
+              ))}
             </div>
           </div>
           
@@ -144,14 +202,14 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
             >
               <BookOpen className="w-4 h-4" />
-              Sääntökirja (ohjeet)
+              {t('faction.rulebook')}
             </Link>
             <Link
               to="/codex"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-600/30 bg-slate-900/80 px-4 py-3 text-amber-200 hover:bg-slate-800 transition-colors text-sm"
             >
               <ScrollText className="w-4 h-4" />
-              Maailman kronikka
+              {t('faction.worldChronicle')}
             </Link>
           </div>
         </div>
@@ -200,7 +258,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                   background: `linear-gradient(160deg, ${faction.color}22 0%, rgba(15,23,42,0.92) 45%, rgba(2,6,23,0.96) 100%)`,
                   boxShadow: `0 10px 30px -12px ${faction.color}55`,
                 }}
-                onClick={() => onSelect(faction.id)}
+                onClick={() => onSelect(faction.id, selectedDifficulty)}
               >
                 {/* Faktion värihehku hoverissa */}
                 <div
@@ -240,7 +298,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                           />
                         ))}
                       </div>
-                      <div className="text-[10px] text-stone-500 mt-1">Ratsuväki</div>
+                      <div className="text-[10px] text-stone-500 mt-1">{t('stat.cavalry')}</div>
                     </div>
                     <div className="bg-stone-800/50 rounded-lg p-2 text-center">
                       <Coins className="w-4 h-4 text-amber-400 mx-auto mb-1" />
@@ -252,7 +310,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                           />
                         ))}
                       </div>
-                      <div className="text-[10px] text-stone-500 mt-1">Talous</div>
+                      <div className="text-[10px] text-stone-500 mt-1">{t('stat.economy')}</div>
                     </div>
                     <div className="bg-stone-800/50 rounded-lg p-2 text-center">
                       <Shield className="w-4 h-4 text-blue-400 mx-auto mb-1" />
@@ -264,21 +322,15 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                           />
                         ))}
                       </div>
-                      <div className="text-[10px] text-stone-500 mt-1">Puolustus</div>
+                      <div className="text-[10px] text-stone-500 mt-1">{t('stat.defense')}</div>
                     </div>
                   </div>
                   
                   {/* Bonus */}
                   <div className="bg-stone-800/30 rounded-lg p-3 text-sm">
-                    <div className="text-amber-400 font-semibold mb-1">Erityiskyky:</div>
+                    <div className="text-amber-400 font-semibold mb-1">{t('faction.specialAbility')}</div>
                     <div className="text-stone-300 text-xs">
-                      {faction.id === 'mongol' && '🐴 +30% ratsuväen hyökkäys, nopea liike'}
-                      {faction.id === 'jin' && '🏯 +20% verot, vahvat linnoitukset'}
-                      {faction.id === 'song' && '💰 +30% verot, vahva talous'}
-                      {faction.id === 'xixia' && '⚖️ Tasapainoinen, +10% kaikki'}
-                      {faction.id === 'khwarezm' && '🛤️ +20% Silkkitien tulot'}
-                      {faction.id === 'rus' && '❄️ +10% puolustus, metsäbonus'}
-                      {faction.id === 'kipchak' && '🐎 +20% ratsuväki, nopea liike'}
+                      {t(`ability.${faction.id}`)}
                     </div>
                   </div>
 
@@ -311,7 +363,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
                     className="mt-4 rounded-xl py-2 text-center text-sm font-bold text-slate-900 opacity-90 transition-all group-hover:opacity-100"
                     style={{ backgroundColor: faction.color }}
                   >
-                    Johda {faction.name.split(' ')[0]} ▶
+                    {t('faction.leadPrompt', { name: faction.name.split(' ')[0] })}
                   </div>
                 </CardContent>
               </Card>
@@ -321,7 +373,7 @@ export const ProvinceFactionSelect = ({ onSelect }: ProvinceFactionSelectProps) 
         
         {/* Info */}
         <div className="text-center mt-8 text-stone-500 text-sm">
-          <p>Klikkaa valtakuntaa aloittaaksesi pelin</p>
+          <p>{t('faction.clickToStart')}</p>
         </div>
       </div>
     </div>

@@ -559,8 +559,26 @@ export const ProvinceMap = ({
     return { x, y, width: w, height: h };
   }, [zoom, pan]);
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev * 1.4, 4));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev / 1.4, 0.8));
+  // Keep the view from drifting off the board entirely — clamp pan so the
+  // viewBox always stays within [0, BOARD_SIZE] on both axes.
+  const clampPan = useCallback((p: { x: number; y: number }, z: number) => {
+    const maxOffset = Math.max(0, (BOARD_SIZE / 2) * (z - 1));
+    return {
+      x: Math.max(-maxOffset, Math.min(maxOffset, p.x)),
+      y: Math.max(-maxOffset, Math.min(maxOffset, p.y)),
+    };
+  }, []);
+
+  const handleZoomIn = () => setZoom(prev => {
+    const next = Math.min(prev * 1.4, 4);
+    setPan(p => clampPan(p, next));
+    return next;
+  });
+  const handleZoomOut = () => setZoom(prev => {
+    const next = Math.max(prev / 1.4, 0.8);
+    setPan(p => clampPan(p, next));
+    return next;
+  });
   const handleResetView = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -573,9 +591,9 @@ export const ProvinceMap = ({
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
     if (isDragging) {
-      setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+      setPan(clampPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }, zoom));
     }
-  }, [isDragging, dragStart]);
+  }, [isDragging, dragStart, zoom, clampPan]);
 
   // Convert SVG coordinates to board coordinates
   const getboardCoordinates = useCallback((x: number, y: number): { x: number; y: number } | null => {
@@ -611,14 +629,16 @@ export const ProvinceMap = ({
     if (e.touches.length === 2 && pinchStartRef.current) {
       const newDistance = getTouchDistance(e.touches);
       const scale = newDistance / pinchStartRef.current.distance;
-      setZoom(Math.max(0.8, Math.min(4, pinchStartRef.current.zoom * scale)));
+      const nextZoom = Math.max(0.8, Math.min(4, pinchStartRef.current.zoom * scale));
+      setZoom(nextZoom);
+      setPan(p => clampPan(p, nextZoom));
     } else if (e.touches.length === 1 && touchPanStartRef.current) {
-      setPan({
+      setPan(clampPan({
         x: e.touches[0].clientX - touchPanStartRef.current.x,
         y: e.touches[0].clientY - touchPanStartRef.current.y,
-      });
+      }, zoom));
     }
-  }, []);
+  }, [zoom, clampPan]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 0) {
@@ -633,15 +653,17 @@ export const ProvinceMap = ({
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(prev => Math.max(0.8, Math.min(4, prev * delta)));
-  }, []);
+    const nextZoom = Math.max(0.8, Math.min(4, zoom * delta));
+    setZoom(nextZoom);
+    setPan(p => clampPan(p, nextZoom));
+  }, [zoom, clampPan]);
 
   const handleMinimapNavigate = useCallback((x: number, y: number) => {
-    setPan({
+    setPan(clampPan({
       x: (BOARD_SIZE / 2 - x) * zoom,
       y: (BOARD_SIZE / 2 - y) * zoom,
-    });
-  }, [zoom]);
+    }, zoom));
+  }, [zoom, clampPan]);
 
   // All neighbor connections (deduplicated)
   const neighborLines = useMemo(() => {

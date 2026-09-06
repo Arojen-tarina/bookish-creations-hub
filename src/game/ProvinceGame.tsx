@@ -7,7 +7,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS, WONDER_MAX } from '@/hooks/useProvinceGameState.ts';
-import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
+import type { RecruitType, MVPGameState } from '@/hooks/useProvinceGameState.ts';
 import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
@@ -21,6 +21,7 @@ import { GameOverScreen } from './GameOverScreen.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
 import { FACTION_DATA_1206 } from '@/types/province.ts';
+import type { ProvinceGameState } from '@/types/province.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
@@ -29,10 +30,15 @@ import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
   Clock, Users, Sword, RotateCcw, Trophy, ScrollText,
-  Target, Crosshair, Wrench, HelpCircle, Volume2, VolumeX,
+  Target, Crosshair, Wrench, HelpCircle, Volume2, VolumeX, X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { useDeviceMode } from '@/lib/deviceMode.tsx';
+import { SettingsMenu } from './SettingsMenu.tsx';
+import { SaveLoadMenu } from './SaveLoadMenu.tsx';
+import { useSaveManager } from '@/hooks/useSaveManager.ts';
 
 // Resurssikuvakkeet (sprite-assetit) HUD:iin
 import resGoldIcon from '@/assets/sprites/res_gold.png';
@@ -42,10 +48,11 @@ import resHorseIcon from '@/assets/sprites/res_horse.png';
 
 
 export const ProvinceGame = () => {
+  const { t } = useLanguage();
   const {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
-    startGame, selectProvince, selectArmy, moveArmy, mergeArmies,
+    startGame, loadGameState, selectProvince, selectArmy, moveArmy, mergeArmies,
     nextPhase, endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
@@ -55,12 +62,17 @@ export const ProvinceGame = () => {
   } = useProvinceGameState();
 
   const { playAmbient, stopAmbient, settings: audioSettings, toggleMute } = useAudioManager();
+  const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
+  const { deviceMode } = useDeviceMode();
+  const isMobileMode = deviceMode === 'mobile';
   
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
+  const [showSidebar, setShowSidebar] = useState(() => !isMobileMode);
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
+  const [resourceNoticeDismissed, setResourceNoticeDismissed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
@@ -150,6 +162,19 @@ export const ProvinceGame = () => {
     }
   }, [gameState?.phase, gameState?.resourcesCollected, collectResources]);
 
+  // Autosave once per turn so "Continue" on the start screen always has a recent game
+  useEffect(() => {
+    if (gameState && gameState.turn > 0) {
+      autoSave(gameState as unknown as ProvinceGameState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.turn]);
+
+  // Reset the dismissible resource-collection notice each time a new one appears
+  useEffect(() => {
+    setResourceNoticeDismissed(false);
+  }, [gameState?.turn, gameState?.resourcesCollected]);
+
   // Show AI overlay after turn end
   useEffect(() => {
     if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
@@ -173,7 +198,17 @@ export const ProvinceGame = () => {
 
   // Faction select
   if (!gameStarted || !playerFaction) {
-    return <ProvinceFactionSelect onSelect={(f) => f && startGame(f)} />;
+    const continueMeta = autosaveMeta ?? (saves.length > 0 ? [...saves].sort((a, b) => b.timestamp - a.timestamp)[0] : null);
+    return (
+      <ProvinceFactionSelect
+        onSelect={(f, difficulty) => f && startGame(f, difficulty)}
+        continueSave={hasContinueGame ? continueMeta : null}
+        onContinue={() => {
+          const state = continueGame();
+          if (state) loadGameState(state as unknown as MVPGameState);
+        }}
+      />
+    );
   }
   if (!gameState) {
     return (
@@ -183,7 +218,7 @@ export const ProvinceGame = () => {
             <div className="absolute inset-0 rounded-full border-4 border-amber-500/30" />
             <div className="absolute inset-0 rounded-full border-4 border-amber-500 border-t-transparent animate-spin" />
           </div>
-          <p className="text-xl text-amber-200 animate-pulse">Ladataan...</p>
+          <p className="text-xl text-amber-200 animate-pulse">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -222,7 +257,7 @@ export const ProvinceGame = () => {
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
         <div className="relative h-full flex items-center justify-between px-2 sm:px-3 gap-1">
           {/* Left: Faction + Year */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
               <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: playerFactionData?.color }} />
               <span className="text-amber-100 font-bold text-sm hidden sm:block">{playerFactionData?.name}</span>
@@ -236,32 +271,32 @@ export const ProvinceGame = () => {
           
           {/* Center: Resources */}
           {playerFactionData && (
-            <div className="flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto max-w-[46vw] sm:max-w-none scrollbar-thin">
-              <div className="flex items-center gap-1" title="Kulta">
-                <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
+            <div className="flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 max-w-[46vw] sm:max-w-none scrollbar-thin">
+              <div className="flex items-center gap-1 flex-shrink-0" title={t('hud.gold')}>
+                <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain flex-shrink-0" draggable={false} />
                 <span className="text-amber-100 font-bold text-sm tabular-nums">{playerFactionData.treasury}</span>
               </div>
-              <div className="flex items-center gap-1" title="Ruoka">
+              <div className="flex items-center gap-1" title={t('hud.food')}>
                 <img src={resFoodIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
                 <span className="text-green-100 font-bold text-sm tabular-nums">{gameState.food}</span>
               </div>
-              <div className="flex items-center gap-1" title="Hevoset">
+              <div className="flex items-center gap-1" title={t('hud.horses')}>
                 <img src={resHorseIcon} alt="" className="h-5 w-4 object-contain" draggable={false} />
                 <span className="text-blue-100 font-bold text-sm tabular-nums">{playerFactionData.horses}</span>
               </div>
-              <div className="flex items-center gap-1" title="Miesvoima">
+              <div className="flex items-center gap-1" title={t('hud.manpower')}>
                 <Users className="w-3.5 h-3.5 text-blue-400" />
                 <span className="text-blue-100 font-bold text-sm">{playerFactionData.manpower}</span>
               </div>
-              <div className="flex items-center gap-1" title="Käsityöläiset">
+              <div className="flex items-center gap-1" title={t('hud.artisans')}>
                 <Wrench className="w-3.5 h-3.5 text-orange-400" />
                 <span className="text-orange-100 font-bold text-sm">{gameState.artisans}</span>
               </div>
-              <div className="flex items-center gap-1" title="Vaikutusvalta (diplomatiavoitto)">
+              <div className="flex items-center gap-1" title={t('hud.influence')}>
                 <span className="text-sm">🕊️</span>
                 <span className="text-sky-100 font-bold text-sm">{gameState.influence ?? 0}</span>
               </div>
-              <div className="flex items-center gap-1" title="Arvovalta (kulttuurivoitto)">
+              <div className="flex items-center gap-1" title={t('hud.prestige')}>
                 <span className="text-sm">🏛️</span>
                 <span className="text-purple-100 font-bold text-sm">{gameState.prestige ?? 0}</span>
               </div>
@@ -269,33 +304,44 @@ export const ProvinceGame = () => {
           )}
           
           {/* Right: Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <SettingsMenu />
+            <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
               variant="ghost" size="icon"
               onClick={() => { setShowSidebar(true); setActiveTab('goals'); }}
-              title="Voittotavoitteet & valtakuntien tilanne (kulta, alueet, Silkkitie)"
-              className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
+              title={t('hud.goalsButton')}
+              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'h-11 w-11' : 'h-8 w-8'}`}
             >
-              <Trophy className="w-4 h-4" />
+              <Trophy className={isMobileMode ? 'w-5 h-5' : 'w-4 h-4'} />
             </Button>
             <Button
               variant="ghost" size="icon"
               onClick={toggleMute}
-              title={audioSettings.muted ? 'Musiikki pois päältä — klikkaa soittaaksesi' : 'Musiikki päällä — klikkaa mykistääksesi'}
-              className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
+              title={audioSettings.muted ? t('hud.muteOn') : t('hud.muteOff')}
+              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'h-11 w-11' : 'h-8 w-8'}`}
             >
-              {audioSettings.muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {audioSettings.muted ? <VolumeX className={isMobileMode ? 'w-5 h-5' : 'w-4 h-4'} /> : <Volume2 className={isMobileMode ? 'w-5 h-5' : 'w-4 h-4'} />}
             </Button>
-            <Link to="/codex" title="Rajaseudun Kronikka — maailmankirja &amp; kodeksi">
-              <Button variant="ghost" size="icon" className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
-                <ScrollText className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowSidebar(!showSidebar)} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 text-xs h-8">
-              {showSidebar ? '◀ Piilota' : '▶ Valikko'}
+            {/* Simplified mobile HUD: hide the less-used codex/fullscreen shortcuts to save space */}
+            {!isMobileMode && (
+              <>
+                <Link to="/codex" title={t('hud.codex')}>
+                  <Button variant="ghost" size="icon" className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
+                    <ScrollText className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8">
+                  {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </Button>
+              </>
+            )}
+            <Button
+              variant="ghost" size="sm"
+              onClick={() => setShowSidebar(!showSidebar)}
+              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'text-sm h-11 px-3' : 'text-xs h-8'}`}
+            >
+              {showSidebar ? t('hud.hide') : t('hud.menu')}
             </Button>
           </div>
         </div>
@@ -308,38 +354,48 @@ export const ProvinceGame = () => {
           onNextPhase={nextPhase}
           onEndTurn={endTurn}
           disabled={showAIOverlay}
+          compact={!isMobileMode}
         />
       </div>
 
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
-      {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && (
-        <div className="fixed top-[160px] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-          <Card className="bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
+      {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && !resourceNoticeDismissed && (
+        <div className="fixed top-[160px] left-1/2 -translate-x-1/2 z-10">
+          <Card className="relative bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
+            <button
+              type="button"
+              onClick={() => setResourceNoticeDismissed(true)}
+              aria-label={t('resource.close')}
+              title={t('resource.close')}
+              className="absolute top-1.5 right-1.5 p-1 rounded-md text-green-300/70 hover:text-green-100 hover:bg-green-800/50 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
             <CardContent className="p-4 text-center">
-              <h3 className="text-green-100 font-bold text-lg mb-2">✅ Resurssit kerätty!</h3>
+              <h3 className="text-green-100 font-bold text-lg mb-2">{t('resource.collected')}</h3>
               <div className="flex items-center justify-center gap-4 text-sm flex-wrap">
-                <span className="text-amber-300">🪙 +{gameState.lastCollection.taxIncome} kultaa</span>
-                <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} miehiä</span>
-                <span className="text-green-300">🌾 {gameState.lastCollection.foodChange >= 0 ? '+' : ''}{gameState.lastCollection.foodChange} ruokaa</span>
+                <span className="text-amber-300">🪙 +{gameState.lastCollection.taxIncome} {t('resource.gold')}</span>
+                <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} {t('resource.men')}</span>
+                <span className="text-green-300">🌾 {gameState.lastCollection.foodChange >= 0 ? '+' : ''}{gameState.lastCollection.foodChange} {t('resource.food')}</span>
               </div>
               {(gameState.lastCollection.silkRoadBonus > 0 || gameState.lastCollection.marketBonus > 0 || gameState.lastCollection.influenceGain > 0 || gameState.lastCollection.prestigeGain > 0) && (
                 <div className="flex items-center justify-center gap-3 text-xs text-stone-400 mt-1">
                   {gameState.lastCollection.silkRoadBonus > 0 && (
-                    <span className="text-amber-400">🛤️ Silkkitie +{gameState.lastCollection.silkRoadBonus}</span>
+                    <span className="text-amber-400">🛤️ {t('resource.silkRoad')} +{gameState.lastCollection.silkRoadBonus}</span>
                   )}
                   {gameState.lastCollection.marketBonus > 0 && (
-                    <span className="text-amber-400">🏪 Markkinat +{gameState.lastCollection.marketBonus}</span>
+                    <span className="text-amber-400">🏪 {t('resource.market')} +{gameState.lastCollection.marketBonus}</span>
                   )}
                   {gameState.lastCollection.influenceGain > 0 && (
-                    <span className="text-sky-300">🕊️ Vaikutusvalta +{gameState.lastCollection.influenceGain}</span>
+                    <span className="text-sky-300">🕊️ {t('resource.influence')} +{gameState.lastCollection.influenceGain}</span>
                   )}
                   {gameState.lastCollection.prestigeGain > 0 && (
-                    <span className="text-purple-300">🏛️ Arvovalta +{gameState.lastCollection.prestigeGain}</span>
+                    <span className="text-purple-300">🏛️ {t('resource.prestige')} +{gameState.lastCollection.prestigeGain}</span>
                   )}
                 </div>
               )}
-              <p className="text-green-200/60 text-xs mt-2">Jatka seuraavaan vaiheeseen →</p>
+              <p className="text-green-200/60 text-xs mt-2">{t('resource.continue')}</p>
             </CardContent>
           </Card>
         </div>
@@ -347,7 +403,7 @@ export const ProvinceGame = () => {
 
       <div className="relative h-full pt-[88px] flex">
         {/* Map */}
-        <div className={`flex-1 relative transition-all duration-300 ${showSidebar ? 'lg:mr-[380px]' : ''}`}>
+        <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode && showSidebar ? 'lg:mr-[380px]' : ''}`}>
           <div className="absolute inset-0 p-1">
             <ProvinceMap
               provinces={gameState.provinces}
@@ -367,30 +423,32 @@ export const ProvinceGame = () => {
           {gameState.armies.filter(a => a.ownerId === playerFaction).length > 0 && selectedArmy && (
             <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
               <div className="bg-green-900/90 backdrop-blur-sm text-green-100 text-xs px-4 py-2 rounded-full border border-green-500/30">
-                Armeija valittu: 🐴{selectedArmy.cavalry} ⚔️{selectedArmy.infantry} • Liikettä: {selectedArmy.movementLeft} • Klikkaa kohdealuetta kartalla
+                {t('hud.armySelected')}: 🐴{selectedArmy.cavalry} ⚔️{selectedArmy.infantry} • {t('hud.movement')}: {selectedArmy.movementLeft} • {t('hud.clickTarget')}
               </div>
             </div>
           )}
         </div>
         
-        {/* ============= SIDEBAR ============= */}
-        <div className={`fixed top-[88px] right-0 bottom-0 w-full sm:w-[380px] bg-slate-900/95 backdrop-blur-xl border-l border-amber-700/20 shadow-2xl transition-transform duration-300 z-20 overflow-hidden ${
-          showSidebar ? 'translate-x-0' : 'translate-x-full'
+        {/* ============= SIDEBAR (side panel on desktop, bottom sheet on mobile) ============= */}
+        <div className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
+          isMobileMode
+            ? `left-0 right-0 bottom-0 top-auto h-[78vh] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
+            : `top-[88px] right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
         }`}>
           <div className="h-full overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full bg-slate-800/50 mb-3 grid grid-cols-4">
-                <TabsTrigger value="province" className="text-xs px-1.5">
-                  <Map className="w-3 h-3 mr-1" />Alue
+              <TabsList className={`w-full bg-slate-800/50 mb-3 grid grid-cols-4 ${isMobileMode ? 'h-12' : ''}`}>
+                <TabsTrigger value="province" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
+                  <Map className="w-3 h-3 mr-1" />{t('sidebar.tab.province')}
                 </TabsTrigger>
-                <TabsTrigger value="goals" className="text-xs px-1.5">
-                  <Trophy className="w-3 h-3 mr-1" />Tavoite
+                <TabsTrigger value="goals" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
+                  <Trophy className="w-3 h-3 mr-1" />{t('sidebar.tab.goals')}
                 </TabsTrigger>
-                <TabsTrigger value="log" className="text-xs px-1.5">
-                  <ScrollText className="w-3 h-3 mr-1" />Loki
+                <TabsTrigger value="log" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
+                  <ScrollText className="w-3 h-3 mr-1" />{t('sidebar.tab.log')}
                 </TabsTrigger>
-                <TabsTrigger value="diplomacy" className="text-xs px-1.5">
-                  <Handshake className="w-3 h-3 mr-1" />Dipl.
+                <TabsTrigger value="diplomacy" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
+                  <Handshake className="w-3 h-3 mr-1" />{t('sidebar.tab.diplomacy')}
                 </TabsTrigger>
               </TabsList>
               
@@ -771,7 +829,7 @@ export const ProvinceGame = () => {
             {/* Reset button at bottom */}
             <div className="mt-4 pt-3 border-t border-slate-700/30">
               <Button variant="destructive" size="sm" className="w-full text-xs" onClick={resetGame}>
-                <RotateCcw className="w-3.5 h-3.5 mr-1" /> Aloita alusta
+                <RotateCcw className="w-3.5 h-3.5 mr-1" /> {t('sidebar.reset')}
               </Button>
             </div>
           </div>
@@ -779,35 +837,37 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      <div className={`fixed bottom-0 left-0 z-40 transition-all ${
-        showSidebar ? 'right-[380px]' : 'right-0'
+      <div className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
+        !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
       }`}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
           {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
           <div
-            className="group relative h-3 cursor-ns-resize flex items-center justify-center touch-none select-none"
+            className={`group relative cursor-ns-resize flex items-center justify-center touch-none select-none ${isMobileMode ? 'h-6' : 'h-3'}`}
             onMouseDown={(e) => { e.preventDefault(); onHandResizeStart(e.clientY); }}
             onTouchStart={(e) => { if (e.touches[0]) onHandResizeStart(e.touches[0].clientY); }}
             onDoubleClick={() => setHandHeight(HAND_BASE_H)}
-            title="Raahaa muuttaaksesi korttien kokoa — kaksoisklikkaa palauttaaksesi"
+            title={t('cards.dragHint')}
           >
             <div className="w-16 h-1 rounded-full bg-amber-500/40 group-hover:bg-amber-400/80 transition-colors" />
           </div>
           <div className="flex items-stretch" style={{ height: handHeight }}>
-            {/* Minimap */}
-            <div className="w-[180px] flex-shrink-0 border-r border-slate-700/50 p-1.5">
-              <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '60px' }}>
-                <ProvinceMap
-                  provinces={gameState.provinces}
-                  armies={gameState.armies}
-                  selectedProvinceId={gameState.selectedProvinceId}
-                  onProvinceClick={selectProvince}
-                  playerFaction={playerFaction}
-                  highlightedProvinces={[]}
-                  isMinimap
-                />
+            {/* Minimap — hidden in mobile mode to keep the simplified view uncluttered */}
+            {!isMobileMode && (
+              <div className="w-[180px] flex-shrink-0 border-r border-slate-700/50 p-1.5">
+                <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '60px' }}>
+                  <ProvinceMap
+                    provinces={gameState.provinces}
+                    armies={gameState.armies}
+                    selectedProvinceId={gameState.selectedProvinceId}
+                    onProvinceClick={selectProvince}
+                    playerFaction={playerFaction}
+                    highlightedProvinces={[]}
+                    isMinimap
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
 
             {/* Cards — skaalautuu raahatun korkeuden mukaan, aina kokonaan näkyvissä */}
@@ -837,7 +897,7 @@ export const ProvinceGame = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full text-amber-200/40 text-sm">
-                  Ei kortteja kädessä • 📦 {gameState.deck?.length || 0} pakassa
+                  {t('cards.none')} • 📦 {gameState.deck?.length || 0} {t('cards.deckLabel')}
                 </div>
               )}
             </div>
@@ -875,7 +935,7 @@ export const ProvinceGame = () => {
         className="fixed bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group"
       >
         <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-        <span className="opacity-0 group-hover:opacity-100 transition-opacity">Etusivulle</span>
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity">{t('hud.backToHome')}</span>
       </Link>
     </div>
   );
