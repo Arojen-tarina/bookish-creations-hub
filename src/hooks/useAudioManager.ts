@@ -15,15 +15,23 @@ import musicTrack1 from '@/assets/music/track1.mp3';
 // jotta se soi myös offline-versiossa; muut pitkät raidat ladataan erikseen.
 import musicTrack4 from '@/assets/music/track4.mp3';
 
-const MUSIC_PLAYLIST: string[] = import.meta.env.VITE_SINGLEFILE
-  ? [musicTrack1, musicTrack4]
+// Kappaleiden tunnisteet (käytetään käännöksissä ja raitavalitsimessa, ks. i18n 'music.*')
+export type MusicTrackId = 'track1' | 'track2' | 'track3' | 'track4' | 'song';
+
+const MUSIC_TRACKS: { id: MusicTrackId; src: string }[] = import.meta.env.VITE_SINGLEFILE
+  ? [
+      { id: 'track1', src: musicTrack1 },
+      { id: 'track4', src: musicTrack4 },
+    ]
   : [
-      musicTrack1,
-      `${import.meta.env.BASE_URL}music/track2.mp3`,
-      `${import.meta.env.BASE_URL}music/track3.mp3`,
-      `${import.meta.env.BASE_URL}music/track4.mp3`,
-      `${import.meta.env.BASE_URL}music/song.mp3`,
+      { id: 'track1', src: musicTrack1 },
+      { id: 'track2', src: `${import.meta.env.BASE_URL}music/track2.mp3` },
+      { id: 'track3', src: `${import.meta.env.BASE_URL}music/track3.mp3` },
+      { id: 'track4', src: `${import.meta.env.BASE_URL}music/track4.mp3` },
+      { id: 'song', src: `${import.meta.env.BASE_URL}music/song.mp3` },
     ];
+
+const MUSIC_PLAYLIST: string[] = MUSIC_TRACKS.map(track => track.src);
 
 interface AudioSettings {
   masterVolume: number;
@@ -49,6 +57,9 @@ interface AudioManagerReturn {
   playProvinceCapture: () => void;
   playAmbient: () => void;
   stopAmbient: () => void;
+  musicTracks: MusicTrackId[];
+  currentTrack: MusicTrackId;
+  selectTrack: (id: MusicTrackId) => void;
 }
 
 // Simple audio synthesis for SFX (no external files needed)
@@ -181,6 +192,7 @@ export const useAudioManager = (): AudioManagerReturn => {
   const musicElRef = useRef<HTMLAudioElement | null>(null);
   const musicIdxRef = useRef<number>(0);
   const ambientTimeoutRef = useRef<number | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(MUSIC_TRACKS[0].id);
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_KEY);
@@ -397,8 +409,7 @@ export const useAudioManager = (): AudioManagerReturn => {
 
   // Ambient: Background string-music loop with morin khuur / jouhikko / kantele flavor
   // Taustamusiikki: pelaajan omat soundtrackit HTMLAudio-soittolistana (kiertää).
-  const playAmbient = useCallback(() => {
-    if (settings.muted) return;
+  const ensureMusicElement = useCallback((): HTMLAudioElement => {
     let el = musicElRef.current;
     if (!el) {
       el = new Audio();
@@ -407,6 +418,7 @@ export const useAudioManager = (): AudioManagerReturn => {
       if (typeof document !== 'undefined') document.body.appendChild(el);
       const advance = () => {
         musicIdxRef.current = (musicIdxRef.current + 1) % MUSIC_PLAYLIST.length;
+        setCurrentTrack(MUSIC_TRACKS[musicIdxRef.current].id);
         const nextEl = musicElRef.current;
         if (nextEl) {
           nextEl.src = MUSIC_PLAYLIST[musicIdxRef.current];
@@ -418,12 +430,31 @@ export const useAudioManager = (): AudioManagerReturn => {
       el.addEventListener('error', () => { if (MUSIC_PLAYLIST.length > 1) advance(); });
       musicElRef.current = el;
     }
+    return el;
+  }, []);
+
+  const playAmbient = useCallback(() => {
+    if (settings.muted) return;
+    const el = ensureMusicElement();
     el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
     if (!el.src) el.src = MUSIC_PLAYLIST[musicIdxRef.current];
     el.play().catch(() => {
       // Selain saattaa estaa automaattitoiston ennen kayttajan vuorovaikutusta
     });
-  }, [settings.muted, getEffectiveVolume]);
+  }, [settings.muted, getEffectiveVolume, ensureMusicElement]);
+
+  // Anna pelaajan valita kappale suoraan (esim. kurkkulaulu) sen sijaan, että
+  // sitä pitäisi odottaa koko soittolistan läpi.
+  const selectTrack = useCallback((id: MusicTrackId) => {
+    const idx = MUSIC_TRACKS.findIndex(track => track.id === id);
+    if (idx === -1) return;
+    musicIdxRef.current = idx;
+    setCurrentTrack(id);
+    const el = ensureMusicElement();
+    el.src = MUSIC_PLAYLIST[idx];
+    el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
+    if (!settings.muted) el.play().catch(() => {});
+  }, [ensureMusicElement, getEffectiveVolume, settings.muted]);
 
   const stopAmbient = useCallback(() => {
     if (musicElRef.current) {
@@ -473,5 +504,8 @@ export const useAudioManager = (): AudioManagerReturn => {
     playProvinceCapture,
     playAmbient,
     stopAmbient,
+    musicTracks: MUSIC_TRACKS.map(track => track.id),
+    currentTrack,
+    selectTrack,
   };
 };

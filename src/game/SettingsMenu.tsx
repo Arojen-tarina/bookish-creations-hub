@@ -9,13 +9,17 @@ import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, Language } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
+import type { MusicTrackId } from '@/hooks/useAudioManager.ts';
 
 interface SettingsMenuProps {
   className?: string;
   buttonClassName?: string;
+  musicTracks?: MusicTrackId[];
+  currentTrack?: MusicTrackId;
+  onSelectTrack?: (id: MusicTrackId) => void;
 }
 
-export const SettingsMenu = ({ className = '', buttonClassName = '' }: SettingsMenuProps) => {
+export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
   const [open, setOpen] = useState(false);
@@ -84,6 +88,27 @@ export const SettingsMenu = ({ className = '', buttonClassName = '' }: SettingsM
               </button>
             ))}
           </div>
+          {musicTracks && musicTracks.length > 0 && onSelectTrack && (
+            <>
+              <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mt-3 mb-1.5">{t('music.title')}</p>
+              <div className="space-y-1.5">
+                {musicTracks.map(id => (
+                  <button
+                    key={id}
+                    onClick={() => onSelectTrack(id)}
+                    className={`w-full text-left rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
+                      currentTrack === id
+                        ? 'bg-amber-500/20 border-amber-500/60 text-amber-100'
+                        : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
+                    }`}
+                  >
+                    {t(`music.${id}`)}
+                    {currentTrack === id && <span className="ml-1.5 text-[10px] text-amber-400/80">· {t('music.nowPlaying')}</span>}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

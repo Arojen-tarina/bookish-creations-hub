@@ -61,7 +61,7 @@ export const ProvinceGame = () => {
     collectResources,
   } = useProvinceGameState();
 
-  const { playAmbient, stopAmbient, settings: audioSettings, toggleMute } = useAudioManager();
+  const { playAmbient, stopAmbient, settings: audioSettings, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
@@ -305,7 +305,7 @@ export const ProvinceGame = () => {
           
           {/* Right: Controls */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <SettingsMenu />
+            <SettingsMenu musicTracks={musicTracks} currentTrack={currentTrack} onSelectTrack={selectTrack} />
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
               variant="ghost" size="icon"

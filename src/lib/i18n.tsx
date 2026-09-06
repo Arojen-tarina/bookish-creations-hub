@@ -167,6 +167,14 @@ export const translations: Record<Language, Record<string, string>> = {
     'device.mobile': 'Puhelin',
     'device.mobileDesc': 'Suuremmat kosketuspainikkeet, alavalikko, yksinkertaistettu näkymä.',
 
+    'music.title': 'Musiikkiraita',
+    'music.track1': 'Teema I',
+    'music.track2': 'Teema II',
+    'music.track3': 'Teema III',
+    'music.track4': 'Teema IV',
+    'music.song': 'Kurkkulaulu',
+    'music.nowPlaying': 'Soi nyt',
+
     'moose.title': 'Hirvi-avustaja',
     'moose.greeting': 'Hei! Olen Hirvi, oppaasi Arojen Tarinoissa. Kysy minulta mitä tahansa pelistä! 🫎',
     'moose.placeholder': 'Kysy jotain pelistä...',
@@ -327,6 +335,14 @@ export const translations: Record<Language, Record<string, string>> = {
     'device.desktopDesc': 'Denser layout, sidebar always visible, keyboard/mouse control.',
     'device.mobile': 'Mobile',
     'device.mobileDesc': 'Larger touch buttons, bottom menu, simplified view.',
+
+    'music.title': 'Soundtrack',
+    'music.track1': 'Theme I',
+    'music.track2': 'Theme II',
+    'music.track3': 'Theme III',
+    'music.track4': 'Theme IV',
+    'music.song': 'Throat Song',
+    'music.nowPlaying': 'Now playing',
 
     'moose.title': 'Moose Guide',
     'moose.greeting': "Hi! I'm Moose, your guide to Tales of the Steppe. Ask me anything about the game! 🫎",
