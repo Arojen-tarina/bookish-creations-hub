@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, BookOpen, Feather } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n.tsx';
 
 interface Chapter {
   id: string;
@@ -211,8 +212,86 @@ const assets = [
   { icon: '🌿', name: 'Kosteikot', text: 'Arojen hedelmällisintä maata, mutta jatkuvasti kiistelty vyöhyke, jossa kilpailevat heimot väijyttävät toisiaan juurikasvien keruusta.' },
 ];
 
+const englishLoreChapters = [
+  ['I', 'The Cosmic Song', 'Handgai and the birth of the world', 'Before all things there was an endless sea. Handgai, the Great Stag, shaped Dengin, raised the sky, and guided life from the smallest sea organisms into the people of the steppe. The universe was sung into being, and every stone, animal, and person remains part of that divine melody.'],
+  ['II', 'The Law of Adversity', 'Suffering is the fire that tempers', 'Comfort is a trap. Progress comes through hardship, hunger, and the mastery of nature. Suffering is treated as a literal fire that hardens human strength, while a life without difficulty produces soft and stagnant societies.'],
+  ['III', 'The Animal Pantheon', 'Gods in the shapes of sacred animals', 'The gods walk the world in animal form. The Eagle is the divine conscience, the Bear is strength and restraint, the Owl is an absolute taboo, the Fox warns of disaster, and the Rat represents disease and treachery. Handgai, the Great Stag, is the highest creator.'],
+  ['IV', 'The Great Divide', 'The steppe and the stone empire', 'The world is split by the Great River. In the north, mobile clans travel with their herds and workshops in vast, engineered yurts. In the south, a bureaucratic empire relies on stone, law, paper, professional armies, and immense fortifications.'],
+  ['V', 'Rules of Survival', 'Steppe laws and special roles', 'Hunting must remain sustainable, clothing is sealed against the cold with animal fat, and food is shared within the clan. Exile is the ultimate punishment. Scouts are respected elites, while shamans serve as doctors, dream interpreters, and political advisers.'],
+  ['VI', 'The Powers of the Borderlands', 'Ganbataar, Bolormaa, and Temüü', 'Ganbataar rules through fear and collective punishment. Bolormaa brings learning, diplomacy, and new technology from distant lands. Temüü, the sensitive heir, seeks a meritocracy built on shared interests rather than cruelty.'],
+  ['VII', 'The Ages', 'The world before the war', 'Humanity began under the Cosmic Song, then forgot it. The south embraced farming and bureaucracy, while the north learned endurance from cold and scarcity. Ganbataar later forged the scattered clans into a disciplined military power.'],
+  ['VIII', 'Strategic Lands', 'The map as a weapon', 'River crossings, high mountain passes, and wetlands are decisive strategic assets. Bridges secure trade and raids, mountain passes halt southern armies, and fertile wetlands remain contested ground where rival clans hunt and ambush one another.'],
+  ['IX', 'Ambush', 'The forest trap and the lesson of siege', 'Batu lured a southern army into a false retreat, then struck its flank with burning arrows. Scouts sabotaged the fortress from within, while engineers pulled down the outer wall. The lesson was clear: light cavalry dominates open ground, but a long siege requires discipline and proper machines.'],
+  ['X', 'The Wolf', 'The tamer of darkness and balance', 'A dark cosmic visitor chose the form of a wolf. Though its outward energy brought destruction, its core was pure light. The wolf became a sign of balance: there is no light without darkness, and love begins the work that balance sustains.'],
+  ['XI', 'Ceremony and Heroism', 'Throat song, burial, and Temüü\'s vow', 'After battle, shamans calmed spirits, cleansed the field, and buried the dead. Through throat song they comforted healers and the dying. Qorchi then pushed the young Temüü toward a public duel with his tyrant father, setting him on the path to unite the clans.'],
+  ['XII', 'A Family Quarrel', 'The duel and the rise of power', 'Temüü challenged Ganbataar and defeated him in a brutal duel. He then turned west, removed the old war leaders, and chose merit over blood and vengeance. The first administrative city was ordered built between east and west.'],
+  ['XIII', 'The Transfer of Power', 'Wars of unification and a new tactic', 'Temüü united the clans through discipline, shield walls, mounted archers, siege machines, and a decisive strike against the enemy center. Raiding gave way to conquest, law, trade, and a single central administration.'],
+  ['XIV', 'Reconstruction', 'Ulanbataar and the southern threat', 'The new capital rose at Ulanbataar. Temüü rewarded soldiers and farmers, imprisoned the ambitious shaman Qorchi, and outlawed violence against women and children. Then a southern envoy arrived with a threat backed by a million-man army.'],
+  ['XV', 'A New Life, Old Habits', 'The march against the southern army', 'Temüü promised to lead from the front, but the march brought ambushes, sabotage, and a river blocked by chained ships. The steppe army had speed and discipline; the southern empire had numbers, firearms, and fortified positions.'],
+  ['XVI', 'The Endless War', 'Bridges, the river, and stalemate', 'Engineers built bridges under fire and cavalry used feigned retreats to break the southern line. Yet the coastal walls could not be taken. The final lesson was to combine military strength with autonomous administration, trade, and respect for southern knowledge.'],
+  ['XVII', 'Every Night Ends in Dawn', 'Peace, return, and a dynasty', 'Exhausted by war, Temüü returned to Ulanbataar and chose peace. He wanted the population to grow, the armies to be entrusted to younger officers, and the empire to become strong through unity rather than endless conquest.'],
+  ['XVIII', 'Afterword', 'The stories that bind us', 'No army is invincible and no dynasty lasts forever. People are tribal and violent, but also social, political, empathetic, and capable of surpassing themselves. What binds us is not victory or defeat, but the stories we share.'],
+];
+
+const EnglishCodex = () => {
+  const rules = [
+    ['Sustainable hunting', 'Take from nature without destroying it, or Handgai will turn away.'],
+    ['Animal-fat protection', 'Clothing and armor are sealed against the killing cold, wind, and moisture.'],
+    ['Radical equality', 'Food and resources are shared within the clan; hoarding leads to exile.'],
+    ['The threat of exile', 'Breaking tribal law means certain death in a wilderness where survival requires cooperation.'],
+    ['Scout guilds', 'Scouts are elite mapmakers and guardians of hidden trade routes.'],
+    ['Shamans', 'Shamans interpret spirits, heal the sick, read dreams, and advise rulers.'],
+  ];
+  const pantheonEnglish = [
+    ['🦌', 'Handgai, the Great Stag', 'The highest creator, who guides life and fears what humanity may destroy.'],
+    ['🦅', 'The Eagle', 'The eyes of heaven and the divine conscience.'],
+    ['🐻', 'The Bear', 'Raw strength balanced by absolute restraint.'],
+    ['🦉', 'The Owl', 'An absolute taboo; harming one is a spiritual crime.'],
+    ['🦊', 'The Fox', 'An omen of disaster before a journey or battle.'],
+    ['🐀', 'The Rat', 'Disease, rot, and treachery, opposed by every clan once a year.'],
+  ];
+  const charactersEnglish = [
+    ['🗡️', 'Temüü', 'The unifier', 'A sensitive and intelligent boy who defeats his tyrant father, unites the clans, and carries the tension between empathy and violence.'],
+    ['🪓', 'Ganbataar', 'The tyrant', 'A drunken, violent warlord who rules his family through fear and dies in a duel with Temüü.'],
+    ['🕯️', 'Qorchi', 'The shaman', 'Interpreter of cosmic forces who guides Temüü toward power while quietly building his own influence.'],
+    ['🐦', 'Bolormaa', 'The reformer', 'A bringer of writing, learning, diplomacy, and protections for women and children.'],
+    ['🏇', 'Batu', 'The commander', 'A field commander whose feigned retreat and burning-arrow ambush become legendary.'],
+    ['🐉', 'The Heavenly Emperor', 'The southern ruler', 'A proud ruler with an immense army and impregnable walls, defeated in open ground.'],
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#1a1206] via-slate-950 to-black text-amber-50 font-body">
+      <div className="relative mx-auto max-w-6xl px-4 py-8 lg:py-14">
+        <div className="mb-8 flex items-center justify-between">
+          <Link to="/"><Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4" /> Back to game</Button></Link>
+          <Link to="/ohjekirja"><Button variant="secondary" size="sm"><BookOpen className="w-4 h-4" /> Rulebook</Button></Link>
+        </div>
+        <header className="relative mb-14 overflow-hidden rounded-3xl border border-amber-800/40 bg-gradient-to-b from-amber-950/40 to-slate-950/70 px-6 py-14 text-center shadow-2xl">
+          <Feather className="mx-auto mb-4 h-12 w-12 text-amber-300" />
+          <p className="font-display text-xs uppercase tracking-[0.5em] text-amber-500/70">Tales of the Steppe</p>
+          <h1 className="mt-3 font-display text-4xl font-bold tracking-wide text-amber-100 sm:text-5xl">The Borderlands Chronicle</h1>
+          <p className="mt-2 font-display text-lg text-amber-300/80">Worldbook &amp; Player Codex</p>
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-amber-100/70 italic">Everything you need to know about the world, its gods, peoples, heroes, and harsh laws of survival.</p>
+        </header>
+        <main className="space-y-16">
+          <section className="grid gap-4 sm:grid-cols-2">
+            {pantheonEnglish.map(([icon, name, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="mb-2 flex items-center gap-3"><span className="text-3xl">{icon}</span><h3 className="font-display text-base font-semibold text-amber-200">{name}</h3></div><p className="text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}
+          </section>
+          <section className="grid gap-4 sm:grid-cols-2">{rules.map(([title, text]) => <article key={title} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><h3 className="font-display text-base font-semibold text-amber-200">{title}</h3><p className="mt-2 text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}</section>
+          {englishLoreChapters.map(([numeral, title, subtitle, text]) => <section key={numeral} id={`english-${numeral}`}><div className="flex items-center gap-4"><span className="font-display text-5xl font-bold text-amber-500/30">{numeral}</span><div className="flex-1"><div className="h-px w-full bg-gradient-to-r from-amber-600/50 to-transparent" /><h2 className="mt-2 font-display text-2xl font-bold text-amber-100">{title}</h2><p className="text-xs uppercase tracking-[0.2em] text-amber-500/60">{subtitle}</p></div></div><p className="mt-5 text-[15px] leading-relaxed text-amber-100/85">{text}</p></section>)}
+          <section><h2 className="font-display text-3xl font-bold text-amber-100">People of the Chronicle</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{charactersEnglish.map(([icon, name, role, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="flex items-center gap-3"><span className="text-3xl">{icon}</span><div><h3 className="font-display font-semibold text-amber-200">{name}</h3><p className="text-[11px] uppercase tracking-[0.2em] text-amber-500/70">{role}</p></div></div><p className="mt-3 text-sm leading-relaxed text-amber-100/80">{text}</p></article>)}</div></section>
+          <div className="border-t border-amber-800/30 pt-8 text-center"><p className="font-display italic text-amber-300/70">“The Great Stag sang this world into being — now its fate is sung with steel, gold, and alliances.”</p><Link to="/" className="mt-6 inline-flex"><Button className="bg-amber-600 hover:bg-amber-500 text-white font-bold"><ArrowLeft className="w-4 h-4" /> Back to game</Button></Link></div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
 const Codex = () => {
+  const { lang } = useLanguage();
   const [active, setActive] = useState(chapters[0].id);
+
+  if (lang === 'en') return <EnglishCodex />;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
