@@ -76,6 +76,28 @@ export const ProvinceGame = () => {
   const [resourceNoticeDismissed, setResourceNoticeDismissed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Mittaa yläpalkin ja vaihepalkin todellinen korkeus, jotta alla oleva
+  // sisältö osataan sijoittaa oikein riippumatta siitä montako riviä
+  // yläpalkki tarvitsee (mobiilissa resurssit siirtyvät omalle rivilleen,
+  // jotta ne eivät koskaan jää painikkeiden alle).
+  const hudRef = useRef<HTMLDivElement>(null);
+  const phaseBarWrapRef = useRef<HTMLDivElement>(null);
+  const [hudHeight, setHudHeight] = useState(48);
+  const [phaseBarWrapHeight, setPhaseBarWrapHeight] = useState(40);
+  useEffect(() => {
+    const hudEl = hudRef.current;
+    const phaseEl = phaseBarWrapRef.current;
+    if (!hudEl || !phaseEl) return;
+    const roHud = new ResizeObserver(() => setHudHeight(hudEl.offsetHeight));
+    const roPhase = new ResizeObserver(() => setPhaseBarWrapHeight(phaseEl.offsetHeight));
+    roHud.observe(hudEl);
+    roPhase.observe(phaseEl);
+    setHudHeight(hudEl.offsetHeight);
+    setPhaseBarWrapHeight(phaseEl.offsetHeight);
+    return () => { roHud.disconnect(); roPhase.disconnect(); };
+  }, [isMobileMode]);
+  const headerTotalH = hudHeight + phaseBarWrapHeight;
+
   // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
   const HAND_BASE_H = 168;
   const [handHeight, setHandHeight] = useState<number>(HAND_BASE_H);
@@ -254,11 +276,11 @@ export const ProvinceGame = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
       
       {/* ============= TOP HUD ============= */}
-      <div className="fixed top-0 left-0 right-0 h-12 z-30">
+      <div ref={hudRef} className="fixed top-0 left-0 right-0 z-30">
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
-        <div className="relative h-full flex items-center justify-between px-2 sm:px-3 gap-1">
+        <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5' : 'h-12 items-center justify-between'}`}>
           {/* Left: Faction + Year */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className={`flex items-center gap-3 flex-shrink-0 ${isMobileMode ? 'order-1' : ''}`}>
             <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
               <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: playerFactionData?.color }} />
               <span className="text-amber-100 font-bold text-sm hidden sm:block">{playerFactionData?.name}</span>
@@ -270,9 +292,11 @@ export const ProvinceGame = () => {
             </div>
           </div>
           
-          {/* Center: Resources */}
+          {/* Center: Resources — own full-width row on mobile so it can never be squeezed to nothing behind the control buttons */}
           {playerFactionData && (
-            <div className="flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 max-w-[46vw] sm:max-w-none scrollbar-thin">
+            <div className={`flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 scrollbar-thin ${
+              isMobileMode ? 'order-3 w-full basis-full max-w-none' : 'max-w-[46vw] sm:max-w-none'
+            }`}>
               <div className="flex items-center gap-1 flex-shrink-0" title={t('hud.gold')}>
                 <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain flex-shrink-0" draggable={false} />
                 <span className="text-amber-100 font-bold text-sm tabular-nums">{playerFactionData.treasury}</span>
@@ -305,7 +329,7 @@ export const ProvinceGame = () => {
           )}
           
           {/* Right: Controls */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-2 ml-auto' : ''}`}>
             <SettingsMenu musicTracks={musicTracks} currentTrack={currentTrack} onSelectTrack={selectTrack} />
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
@@ -349,7 +373,7 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= PHASE BAR ============= */}
-      <div className="fixed top-12 left-0 right-0 z-40 px-3 py-1.5">
+      <div ref={phaseBarWrapRef} className="fixed left-0 right-0 z-40 px-3 py-1.5" style={{ top: hudHeight }}>
         <PhaseBar
           currentPhase={gameState.phase}
           onNextPhase={nextPhase}
@@ -362,7 +386,7 @@ export const ProvinceGame = () => {
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
       {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && !resourceNoticeDismissed && (
-        <div className="fixed top-[160px] left-1/2 -translate-x-1/2 z-10">
+        <div className="fixed left-1/2 -translate-x-1/2 z-10" style={{ top: headerTotalH + 20 }}>
           <Card className="relative bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
             <button
               type="button"
@@ -402,7 +426,7 @@ export const ProvinceGame = () => {
         </div>
       )}
 
-      <div className="relative h-full pt-[88px] flex">
+      <div className="relative h-full flex" style={{ paddingTop: headerTotalH }}>
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode && showSidebar ? 'lg:mr-[380px]' : ''}`}>
           <div className="absolute inset-0 p-1">
@@ -431,11 +455,14 @@ export const ProvinceGame = () => {
         </div>
         
         {/* ============= SIDEBAR (side panel on desktop, bottom sheet on mobile) ============= */}
-        <div className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
-          isMobileMode
-            ? `left-0 right-0 bottom-0 top-auto h-[78vh] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
-            : `top-[88px] right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
-        }`}>
+        <div
+          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
+            isMobileMode
+              ? `left-0 right-0 bottom-0 top-auto h-[78vh] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
+              : `right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
+          }`}
+          style={!isMobileMode ? { top: headerTotalH } : undefined}
+        >
           <div className="h-full overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className={`w-full bg-slate-800/50 mb-3 grid grid-cols-4 ${isMobileMode ? 'h-12' : ''}`}>
