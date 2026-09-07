@@ -160,6 +160,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'phase.next': 'Seuraava',
     'phase.endTurn': 'Lopeta vuoro',
     'phase.aiActing': '⏳ AI-pelaajat toimivat...',
+    'phase.collapse': 'Pienennä vaihepalkki (vedä alas)',
+    'phase.expand': 'Suurenna vaihepalkki (vedä ylös)',
 
     'device.title': 'Käyttöliittymä',
     'device.desktop': 'Tietokone',
@@ -329,6 +331,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'phase.next': 'Next',
     'phase.endTurn': 'End turn',
     'phase.aiActing': '⏳ AI players are acting...',
+    'phase.collapse': 'Shrink phase bar (drag down)',
+    'phase.expand': 'Expand phase bar (drag up)',
 
     'device.title': 'Interface',
     'device.desktop': 'Desktop',
