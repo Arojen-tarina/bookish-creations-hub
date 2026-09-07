@@ -278,7 +278,7 @@ export const ProvinceGame = () => {
       {/* ============= TOP HUD ============= */}
       <div ref={hudRef} className="fixed top-0 left-0 right-0 z-30">
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
-        <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5' : 'h-12 items-center justify-between'}`}>
+        <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5 min-h-[5rem]' : 'h-12 items-center justify-between'}`}>
           {/* Left: Faction + Year */}
           <div className={`flex items-center gap-3 flex-shrink-0 ${isMobileMode ? 'order-1' : ''}`}>
             <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
