@@ -35,6 +35,7 @@ import {
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/i18n.tsx';
+import { localizeCard, localizeEffectDescription } from '@/data/gameCardsTranslations.ts';
 import { useDeviceMode } from '@/lib/deviceMode.tsx';
 import { SettingsMenu } from './SettingsMenu.tsx';
 import { SaveLoadMenu } from './SaveLoadMenu.tsx';
@@ -48,7 +49,7 @@ import resHorseIcon from '@/assets/sprites/res_horse.png';
 
 
 export const ProvinceGame = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
@@ -771,9 +772,11 @@ export const ProvinceGame = () => {
                   <Card className="bg-green-900/30 border-green-700/30">
                     <CardContent className="p-3">
                       <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length})</h4>
-                      {gameState.playedTechCards.map(c => (
-                        <p key={c.id} className="text-xs text-green-300">• {c.name}: {c.parsedEffect.description}</p>
-                      ))}
+                      {gameState.playedTechCards.map(c => {
+                        const localized = localizeCard(c, lang);
+                        const effectText = localizeEffectDescription(c.id, c.parsedEffect.description, lang);
+                        return <p key={c.id} className="text-xs text-green-300">• {localized.name}: {effectText}</p>;
+                      })}
                     </CardContent>
                   </Card>
                 )}
@@ -887,7 +890,9 @@ export const ProvinceGame = () => {
                     onPlayCard={(card) => {
                       playCard(card);
                       const eff = card.parsedEffect;
-                      toast.success(`🃏 ${card.name}`, { description: eff.description });
+                      const localized = localizeCard(card, lang);
+                      const effectText = localizeEffectDescription(card.id, eff.description, lang);
+                      toast.success(`🃏 ${localized.name}`, { description: effectText });
                     }}
                     canPlay={gameState.phase !== 'end'}
                     currentPhase={gameState.phase}

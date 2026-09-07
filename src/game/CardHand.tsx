@@ -5,6 +5,7 @@
  */
 import { PlayableCard } from '@/game/cards.ts';
 import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
+import { localizeCard, localizeEffectDescription } from '@/data/gameCardsTranslations.ts';
 import { MVPPhase } from './PhaseBar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
@@ -49,7 +50,7 @@ interface CardHandProps {
 }
 
 export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, discardSize }: CardHandProps) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   if (cards.length === 0) {
@@ -72,7 +73,9 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
 
       {/* Cards row */}
       <div className="flex gap-3 overflow-x-auto pb-1">
-        {cards.map((card, idx) => {
+        {cards.map((rawCard, idx) => {
+          const card = localizeCard(rawCard, lang);
+          const effectText = localizeEffectDescription(card.id, card.parsedEffect.description, lang);
           const typeInfo = cardTypeInfo[card.type];
           const rarity = rarityInfo[card.rarity || 'common'];
           const isSelected = selectedIdx === idx;
@@ -104,7 +107,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                   {/* efekti + pelaa-nappi kuvan päälle alareunaan */}
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-1.5 pb-1.5 pt-5">
                     <div className="rounded bg-amber-900/80 px-1.5 py-1 text-center backdrop-blur-sm ring-1 ring-amber-500/30">
-                      <span className="text-amber-100 text-[11px] font-bold leading-tight break-words">{emoji} {card.parsedEffect.description}</span>
+                      <span className="text-amber-100 text-[11px] font-bold leading-tight break-words">{emoji} {effectText}</span>
                     </div>
                     {isSelected && canPlay && (
                       <Button
@@ -130,7 +133,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                   <div className="bg-slate-800 px-2 py-1.5">
                     <p className="text-slate-300 text-[10px] leading-snug mb-1.5 break-words">{card.description}</p>
                     <div className="bg-amber-900/40 rounded px-1.5 py-1 text-center">
-                      <span className="text-amber-200 text-[11px] font-bold leading-tight break-words">{emoji} {card.parsedEffect.description}</span>
+                      <span className="text-amber-200 text-[11px] font-bold leading-tight break-words">{emoji} {effectText}</span>
                     </div>
                   </div>
                   {isSelected && canPlay && (
