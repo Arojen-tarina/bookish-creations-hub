@@ -7,7 +7,7 @@
  * Toimii koko sovelluksessa, myös kesken pelin.
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Send } from 'lucide-react';
+import { X, Send, GripHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { matchMooseFaq } from './mooseFaq.ts';
@@ -162,9 +162,13 @@ export const MooseAssistant = () => {
         onTouchStart={(e) => { if (e.touches[0]) onDragStart(e.touches[0].clientX, e.touches[0].clientY); }}
         aria-label={t('moose.openAria')}
         title={t('moose.title')}
-        className="h-14 w-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 shadow-2xl shadow-black/40 border-2 border-amber-300/50 flex items-center justify-center text-3xl hover:scale-105 active:scale-95 transition-transform cursor-grab active:cursor-grabbing touch-none select-none"
+        className="relative h-14 w-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 shadow-2xl shadow-black/40 border-2 border-amber-300/50 flex items-center justify-center text-3xl hover:scale-105 active:scale-95 transition-transform cursor-grab active:cursor-grabbing touch-none select-none"
       >
         🫎
+        {/* Visible cue that this button can be dragged to reposition */}
+        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-slate-900/90 border border-amber-300/40 flex items-center justify-center">
+          <GripHorizontal className="w-3 h-3 text-amber-300/90" />
+        </span>
       </button>
     </div>
   );

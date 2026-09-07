@@ -65,14 +65,14 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = fals
     <div className="bg-slate-900/95 backdrop-blur-xl border border-amber-600/30 rounded-2xl shadow-2xl shadow-black/40">
       {/* Raahattava kahva: vedä alas pienentääksesi, ylös suurentaaksesi. Klikkaus togglaa. */}
       <div
-        className="group flex items-center justify-center h-4 cursor-ns-resize touch-none select-none"
+        className="group flex items-center justify-center gap-1 h-5 cursor-ns-resize touch-none select-none bg-amber-500/5 hover:bg-amber-500/15 rounded-t-2xl transition-colors"
         onMouseDown={(e) => { e.preventDefault(); onHandleDragStart(e.clientY); }}
         onTouchStart={(e) => { if (e.touches[0]) onHandleDragStart(e.touches[0].clientY); }}
         onClick={() => setCollapsed(v => !v)}
         title={collapsed ? t('phase.expand') : t('phase.collapse')}
       >
-        <GripHorizontal className="w-5 h-3 text-amber-500/40 group-hover:text-amber-400/80 transition-colors" />
-        {collapsed ? <ChevronDown className="w-3 h-3 text-amber-500/40 group-hover:text-amber-400/80" /> : <ChevronUp className="w-3 h-3 text-amber-500/40 group-hover:text-amber-400/80" />}
+        <GripHorizontal className="w-6 h-3.5 text-amber-400/70 group-hover:text-amber-300 transition-colors" />
+        {collapsed ? <ChevronDown className="w-3.5 h-3.5 text-amber-400/70 group-hover:text-amber-300" /> : <ChevronUp className="w-3.5 h-3.5 text-amber-400/70 group-hover:text-amber-300" />}
       </div>
 
       {/* Phase steps row — hidden when collapsed to shrink the bar */}
