@@ -295,7 +295,7 @@ export const ProvinceGame = () => {
           {/* Center: Resources — own full-width row on mobile so it can never be squeezed to nothing behind the control buttons */}
           {playerFactionData && (
             <div className={`flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 scrollbar-thin ${
-              isMobileMode ? 'order-3 w-full basis-full max-w-none' : 'max-w-[46vw] sm:max-w-none'
+              isMobileMode ? 'order-2 w-full basis-full max-w-none min-h-8' : 'max-w-[46vw] sm:max-w-none'
             }`}>
               <div className="flex items-center gap-1 flex-shrink-0" title={t('hud.gold')}>
                 <img src={resGoldIcon} alt="" className="h-5 w-4 object-contain flex-shrink-0" draggable={false} />
@@ -329,7 +329,7 @@ export const ProvinceGame = () => {
           )}
           
           {/* Right: Controls */}
-          <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-2 ml-auto' : ''}`}>
+          <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-3 ml-auto' : ''}`}>
             <SettingsMenu musicTracks={musicTracks} currentTrack={currentTrack} onSelectTrack={selectTrack} />
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
