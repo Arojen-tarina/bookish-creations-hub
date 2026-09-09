@@ -15,12 +15,17 @@ interface FaqEntry {
   answer: { fi: string; en: string };
 }
 
-const factionNames = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id].name).join(', ');
+const factionNamesFi = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id].name).join(', ');
+const factionNamesEn = 'Mongol Empire, Song Dynasty, Rus Principalities, Khwarezmian Empire';
+const buildingNamesEn: Record<string, string> = {
+  Leiri: 'Camp', Markkina: 'Market', Linnoitus: 'Fortress', Paja: 'Workshop',
+  Hevostalli: 'Stable', Silta: 'Bridge', Ihme: 'Wonder',
+};
 
 export const MOOSE_FAQ: FaqEntry[] = [
   {
     id: 'phases',
-    keywords: { fi: ['vuoro', 'vaihe', 'vaiheet', 'kuinka', 'pelata'], en: ['turn', 'phase', 'phases', 'how', 'play'] },
+    keywords: { fi: ['vuoro', 'vaihe', 'vaiheet'], en: ['turn', 'phase', 'phases'] },
     answer: {
       fi: 'Joka vuoro on 6 vaihetta järjestyksessä: 🪙 Resurssit → 🃏 Kortit → 🐴 Liike → ⚔️ Taistelu → 🏗️ Rakenna → 🏁 Lopeta. Paina "Seuraava" siirtyäksesi vaiheesta toiseen.',
       en: 'Each turn has 6 phases in order: 🪙 Resources → 🃏 Cards → 🐴 Move → ⚔️ Battle → 🏗️ Build → 🏁 End. Press "Next" to move to the next phase.',
@@ -71,15 +76,15 @@ export const MOOSE_FAQ: FaqEntry[] = [
     keywords: { fi: ['rakenna', 'rakennus', 'leiri', 'markkina', 'linnoitus', 'paja', 'talli', 'silta'], en: ['build', 'building', 'camp', 'market', 'fortress', 'workshop', 'stable', 'bridge'] },
     answer: {
       fi: `Rakennukset: ${Object.values(BUILDING_INFO).map(b => `${b.emoji} ${b.name} (${b.effect})`).join(' · ')}.`,
-      en: `Buildings: ${Object.values(BUILDING_INFO).map(b => `${b.emoji} ${b.name} (${b.effect})`).join(' · ')}.`,
+      en: `Buildings: ${Object.values(BUILDING_INFO).map(b => `${b.emoji} ${buildingNamesEn[b.name] || b.name} (${b.cost.gold} gold)`).join(' · ')}.`,
     },
   },
   {
     id: 'factions',
     keywords: { fi: ['valtakunta', 'valtakunnat', 'faktio', 'kansa', 'heimo'], en: ['faction', 'factions', 'realm', 'nation', 'tribe'] },
     answer: {
-      fi: `Voit pelata neljää valtakuntaa: ${factionNames}. Muut valtakunnat esiintyvät tekoälyvastustajina.`,
-      en: `You can play four realms: ${factionNames}. Other realms appear as AI opponents.`,
+      fi: `Voit pelata neljää valtakuntaa: ${factionNamesFi}. Muut valtakunnat esiintyvät tekoälyvastustajina.`,
+      en: `You can play four realms: ${factionNamesEn}. Other realms appear as AI opponents.`,
     },
   },
   {
@@ -134,18 +139,29 @@ export const MOOSE_FAQ: FaqEntry[] = [
 
 const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+const STOP_WORDS: Record<Language, Set<string>> = {
+  fi: new Set(['ja', 'tai', 'on', 'mita', 'miten', 'kuinka', 'voinko', 'saanko', 'haluan', 'pelata']),
+  en: new Set(['a', 'an', 'and', 'can', 'do', 'how', 'i', 'is', 'it', 'my', 'the', 'to', 'what', 'when', 'where', 'with']),
+};
+
 /** Palauttaa parhaiten osuvan FAQ-vastauksen tai null jos mikään ei osu riittävän hyvin. */
 export const matchMooseFaq = (question: string, lang: Language): string | null => {
-  const words = normalize(question).split(/[^a-zäöå0-9]+/).filter(Boolean);
+  const words = normalize(question)
+    .split(/[^a-z0-9]+/)
+    .filter(word => word.length >= 3 && !STOP_WORDS[lang].has(word));
   if (words.length === 0) return null;
 
   let best: { entry: FaqEntry; score: number } | null = null;
   for (const entry of MOOSE_FAQ) {
-    const kws = [...entry.keywords.fi, ...entry.keywords.en].map(normalize);
-    const score = kws.reduce((sum, kw) => sum + (words.some(w => w.includes(kw) || kw.includes(w)) ? 1 : 0), 0);
+    const kws = entry.keywords[lang].map(normalize);
+    const score = kws.reduce((sum, kw) => {
+      const exact = words.some(word => word === kw);
+      const stem = kw.length >= 4 && words.some(word => word.startsWith(kw) || kw.startsWith(word));
+      return sum + (exact ? 3 : stem ? 1 : 0);
+    }, 0);
     if (score > 0 && (!best || score > best.score)) {
       best = { entry, score };
     }
   }
-  return best ? best.entry.answer[lang] : null;
+  return best && best.score >= 3 ? best.entry.answer[lang] : null;
 };
