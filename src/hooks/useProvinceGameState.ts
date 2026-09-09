@@ -1784,8 +1784,18 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (relIdx === -1) return prev;
       const rel = prev.relations[relIdx];
       const isWar = treatyType === 'war_surprise' || treatyType === 'war_formal';
+      if (!isWar && rel.lastProposalTurn === prev.turn) return prev;
       const accepts = isWar ? true : Math.random() < ((rel.relation + 100) / 200) * (rel.trust / 100) + 0.2;
-      if (!accepts) return prev;
+      if (!accepts) {
+        const newRels = [...prev.relations];
+        newRels[relIdx] = {
+          ...rel,
+          lastProposalTurn: prev.turn,
+          relation: Math.max(-100, rel.relation - 3),
+          trust: Math.max(0, rel.trust - 2),
+        };
+        return { ...prev, relations: newRels };
+      }
 
       const newRels = prev.relations.map(r => {
         const involvesPlayer = r.factionA === playerFaction || r.factionB === playerFaction;
@@ -1818,6 +1828,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
             relation: isWar ? (treatyType === 'war_surprise' ? -100 : Math.max(-100, r.relation - 40)) : Math.min(100, r.relation + 10),
             trust: isWar ? 0 : Math.min(100, r.trust + 5),
             threat: isWar ? Math.min(100, r.threat + 30) : r.threat,
+            lastProposalTurn: isWar ? r.lastProposalTurn : prev.turn,
           };
         }
 

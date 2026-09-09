@@ -140,6 +140,7 @@ export interface DiplomaticRelation {
   treaties: Treaty[];
   borderFriction: number; // 0 to 100
   claims: string[]; // Province IDs that A claims from B
+  lastProposalTurn?: number;
 }
 
 export type TreatyType = 

@@ -5,6 +5,7 @@
  * voimassa olevat sopimukset ja mahdollistaa uusien ehdottamisen/purkamisen.
  */
 import { useState } from 'react';
+import { useLanguage } from '@/lib/i18n.tsx';
 import { FactionId, Faction, DiplomaticRelation, TreatyType, FACTION_DATA_1206 } from '@/types/province.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -29,6 +30,7 @@ interface DiplomacyPanelProps {
   factions: Faction[];
   relations: DiplomaticRelation[];
   playerFaction: FactionId;
+  currentTurn: number;
   onProposeTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
   onBreakTreaty: (targetFaction: FactionId, treatyType: TreatyType) => void;
 }
@@ -76,6 +78,28 @@ const TREATY_INFO: Record<TreatyType, { name: string; icon: React.ReactNode; des
   },
 };
 
+const TREATY_NAMES_EN: Record<TreatyType, string> = {
+  non_aggression: 'Non-aggression pact',
+  trade_agreement: 'Trade agreement',
+  alliance: 'Alliance',
+  truce: 'Truce',
+  tributary: 'Tributary',
+  peace: 'Peace treaty',
+  war_surprise: 'Surprise war',
+  war_formal: 'Formal war',
+};
+
+const TREATY_DESCRIPTIONS_EN: Record<TreatyType, string> = {
+  non_aggression: 'No war between you',
+  trade_agreement: '+10% tax income for both',
+  alliance: 'Defensive alliance - fight together',
+  truce: 'Temporary peace (5 turns)',
+  tributary: 'Pays tribute to its protector',
+  peace: 'Formal peace',
+  war_surprise: 'War starts immediately',
+  war_formal: 'War starts at the end of next turn',
+};
+
 const RelationBar = ({ value }: { value: number }) => {
   const normalized = (value + 100) / 2; // -100..100 -> 0..100
   const color = value > 30 ? 'bg-green-500' : value > -30 ? 'bg-amber-500' : 'bg-red-500';
@@ -94,16 +118,21 @@ const FactionRelationCard = ({
   faction,
   relation,
   playerFaction,
+  currentTurn,
   onProposeTreaty,
   onBreakTreaty,
 }: {
   faction: Faction;
   relation: DiplomaticRelation;
   playerFaction: FactionId;
+  currentTurn: number;
   onProposeTreaty: (treatyType: TreatyType) => void;
   onBreakTreaty: (treatyType: TreatyType) => void;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const { lang } = useLanguage();
+  const treatyName = (type: TreatyType) => lang === 'en' ? TREATY_NAMES_EN[type] : TREATY_INFO[type].name;
+  const treatyDescription = (type: TreatyType) => lang === 'en' ? TREATY_DESCRIPTIONS_EN[type] : TREATY_INFO[type].description;
   
   const relationIcon = relation.relation > 30 
     ? <TrendingUp className="w-4 h-4 text-green-400" />
@@ -125,10 +154,11 @@ const FactionRelationCard = ({
   const availableTreaties: TreatyType[] = ['non_aggression', 'trade_agreement', 'alliance', 'peace', 'war_surprise', 'war_formal'];
   const currentTreaties = relation.treaties.map(t => t.type);
   const offerableTreaties = availableTreaties.filter(t => !currentTreaties.includes(t));
+  const proposalUsedThisTurn = relation.lastProposalTurn === currentTurn;
   
   return (
     <Card 
-      className="bg-stone-800/50 border-stone-700/50 cursor-pointer transition-all hover:bg-stone-800/70"
+      className="bg-stone-900/90 border-stone-600/70 cursor-pointer transition-all hover:bg-stone-800/90"
       onClick={() => setExpanded(!expanded)}
     >
       <CardContent className="p-4">
@@ -143,19 +173,19 @@ const FactionRelationCard = ({
             </div>
             <div>
               <h4 className="text-amber-100 font-bold">{faction.name}</h4>
-              <p className="text-xs text-stone-400">{faction.ruler}</p>
+              <p className="text-xs text-stone-300">{faction.ruler}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {relationIcon}
-            <span className="text-sm text-stone-300">{relationText}</span>
+            <span className="text-sm font-medium text-stone-100">{lang === 'en' ? ({ Ystävällinen: 'Friendly', Positiivinen: 'Positive', Neutraali: 'Neutral', Vihamielinen: 'Hostile', Vihollinen: 'Enemy' } as Record<string, string>)[relationText] : relationText}</span>
           </div>
         </div>
         
         {/* Relation bar */}
         <div className="mb-3">
-          <div className="flex justify-between text-xs text-stone-400 mb-1">
-            <span>Suhde</span>
+          <div className="flex justify-between text-xs text-stone-200 mb-1">
+            <span>{lang === 'fi' ? 'Suhde' : 'Relation'}</span>
             <span>{relation.relation > 0 ? '+' : ''}{relation.relation}</span>
           </div>
           <RelationBar value={relation.relation} />
@@ -171,7 +201,7 @@ const FactionRelationCard = ({
                 className="bg-amber-900/50 text-amber-200 text-xs"
               >
                 {TREATY_INFO[treatyType].icon}
-                <span className="ml-1">{TREATY_INFO[treatyType].name}</span>
+                <span className="ml-1">{treatyName(treatyType)}</span>
               </Badge>
             ))}
           </div>
@@ -183,15 +213,15 @@ const FactionRelationCard = ({
             {/* Trust & Threat */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="flex justify-between text-xs text-stone-400 mb-1">
-                  <span>Luottamus</span>
+                <div className="flex justify-between text-xs text-stone-200 mb-1">
+                  <span>{lang === 'fi' ? 'Luottamus' : 'Trust'}</span>
                   <span>{relation.trust}%</span>
                 </div>
                 <Progress value={relation.trust} className="h-2" />
               </div>
               <div>
-                <div className="flex justify-between text-xs text-stone-400 mb-1">
-                  <span>Uhka</span>
+                <div className="flex justify-between text-xs text-stone-200 mb-1">
+                  <span>{lang === 'fi' ? 'Uhka' : 'Threat'}</span>
                   <span>{relation.threat}%</span>
                 </div>
                 <Progress value={relation.threat} className="h-2 [&>div]:bg-red-500" />
@@ -202,7 +232,7 @@ const FactionRelationCard = ({
             {relation.borderFriction > 0 && (
               <div className="flex items-center gap-2 text-amber-400 text-sm">
                 <AlertTriangle className="w-4 h-4" />
-                <span>Rajakitkaa: {relation.borderFriction}%</span>
+                <span>{lang === 'fi' ? 'Rajakitkaa' : 'Border friction'}: {relation.borderFriction}%</span>
               </div>
             )}
             
@@ -210,24 +240,27 @@ const FactionRelationCard = ({
             {relation.claims.length > 0 && (
               <div className="text-sm text-red-400">
                 <Sword className="w-4 h-4 inline mr-1" />
-                Vaatimuksia: {relation.claims.length} provinssia
+                {lang === 'fi' ? 'Vaatimuksia' : 'Claims'}: {relation.claims.length} {lang === 'fi' ? 'provinssia' : 'provinces'}
               </div>
             )}
             
             {/* Treaty actions */}
             <div className="space-y-2">
-              <h5 className="text-xs font-semibold text-stone-400 uppercase">Ehdota sopimusta</h5>
+              <h5 className="text-sm font-semibold text-amber-100 uppercase">{lang === 'fi' ? 'Ehdota sopimusta' : 'Propose treaty'}</h5>
+              <p className="text-xs text-stone-300">{lang === 'fi' ? 'Yksi rauhanomainen ehdotus per valtakunta per vuoro.' : 'One peaceful proposal per realm per turn.'}</p>
               <div className="flex flex-wrap gap-2">
                 {offerableTreaties.map(treatyType => (
                   <Button
                     key={treatyType}
                     variant="outline"
                     size="sm"
-                    className="border-amber-700/50 text-amber-200 hover:bg-amber-900/30"
+                    disabled={proposalUsedThisTurn && !['war_surprise', 'war_formal'].includes(treatyType)}
+                    title={treatyDescription(treatyType)}
+                    className="h-auto min-h-10 border-amber-600/70 bg-stone-950/60 py-2 text-left text-amber-100 hover:bg-amber-900/40 disabled:cursor-not-allowed disabled:border-stone-700 disabled:text-stone-500"
                     onClick={() => onProposeTreaty(treatyType)}
                   >
                     {TREATY_INFO[treatyType].icon}
-                    <span className="ml-1">{TREATY_INFO[treatyType].name}</span>
+                    <span className="ml-1"><span className="block">{treatyName(treatyType)}</span><span className="block text-xs font-normal text-stone-300">{treatyDescription(treatyType)}</span></span>
                   </Button>
                 ))}
               </div>
@@ -235,7 +268,7 @@ const FactionRelationCard = ({
               {/* Break treaty buttons */}
               {currentTreaties.length > 0 && (
                 <>
-                  <h5 className="text-xs font-semibold text-stone-400 uppercase mt-4">Pura sopimus</h5>
+                  <h5 className="text-sm font-semibold text-amber-100 uppercase mt-4">{lang === 'fi' ? 'Pura sopimus' : 'Break treaty'}</h5>
                   <div className="flex flex-wrap gap-2">
                     {currentTreaties.map(treatyType => (
                       <Button
@@ -246,7 +279,7 @@ const FactionRelationCard = ({
                         onClick={() => onBreakTreaty(treatyType)}
                       >
                         <X className="w-3 h-3 mr-1" />
-                        {TREATY_INFO[treatyType].name}
+                        {treatyName(treatyType)}
                       </Button>
                     ))}
                   </div>
@@ -264,9 +297,11 @@ export const DiplomacyPanel = ({
   factions,
   relations,
   playerFaction,
+  currentTurn,
   onProposeTreaty,
   onBreakTreaty,
 }: DiplomacyPanelProps) => {
+  const { lang } = useLanguage();
   const otherFactions = factions.filter(f => f.id !== playerFaction);
   
   const getRelationWith = (factionId: FactionId): DiplomaticRelation | null => {
@@ -282,12 +317,12 @@ export const DiplomacyPanel = ({
         <CardHeader className="pb-2">
           <CardTitle className="text-purple-100 text-lg flex items-center gap-2">
             <Handshake className="w-5 h-5" />
-            Diplomatia
+            {lang === 'fi' ? 'Diplomatia' : 'Diplomacy'}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-purple-200/60 mb-4">
-            Solmi sopimuksia ja hallitse suhteita muihin valtakuntiin
+            {lang === 'fi' ? 'Solmi sopimuksia ja hallitse suhteita muihin valtakuntiin' : 'Make treaties and manage relations with other realms'}
           </p>
           
           <ScrollArea className="h-[400px] pr-2">
@@ -302,6 +337,7 @@ export const DiplomacyPanel = ({
                     faction={faction}
                     relation={relation}
                     playerFaction={playerFaction}
+                    currentTurn={currentTurn}
                     onProposeTreaty={(type) => onProposeTreaty(faction.id, type)}
                     onBreakTreaty={(type) => onBreakTreaty(faction.id, type)}
                   />

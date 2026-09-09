@@ -849,6 +849,7 @@ export const ProvinceGame = () => {
                   factions={gameState.factions}
                   relations={gameState.relations}
                   playerFaction={playerFaction}
+                  currentTurn={gameState.turn}
                   onProposeTreaty={proposeTreaty}
                   onBreakTreaty={breakTreaty}
                 />

@@ -35,13 +35,6 @@ const LEADER_ART: Record<string, string> = {
 };
 
 // Faktioiden tarinalliset kuvaukset (lore-tunnelma)
-const FLAVOR: Record<string, string> = {
-  mongol: 'Aroilta nousee myrsky: Temüjin on yhdistänyt heimot, ja maailma vavahtaa kavioiden alla.',
-  song: 'Silkin ja ruudin sivistys, jonka aarteet ja oppineisuus houkuttelevat susia porteille.',
-  rus: 'Metsien ja jokien ruhtinaat vartioivat pyhiä kaupunkejaan pohjoisen kalvakassa valossa.',
-  khwarezm: 'Karavaanireittien valtias, jonka minareetit hohtavat Samarkandin yllä — ylväs mutta altis.',
-};
-
 interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId, difficulty: Difficulty) => void;
   continueSave?: SaveMetadata | null;
@@ -51,7 +44,7 @@ interface ProvinceFactionSelectProps {
 const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
 
 export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: ProvinceFactionSelectProps) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal');
   // Vain 4 aktiivista faktiota (Kiina=song, mongolit, rus, persia=khwarezm)
   const factions = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id]);
@@ -104,7 +97,7 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
             <div>
               <h2 className="text-amber-100 font-bold text-sm">{t('faction.continueTitle')}</h2>
               <p className="text-amber-200/60 text-xs mt-0.5">
-                {t('faction.continueDesc', { turn: continueSave.turn, faction: FACTION_DATA_1206[continueSave.playerFaction]?.name ?? continueSave.playerFaction })}
+                {t('faction.continueDesc', { turn: continueSave.turn, faction: t(`faction.name.${continueSave.playerFaction}`) })}
               </p>
             </div>
             <button
@@ -230,13 +223,13 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
             }[faction.id];
             
             const difficulty = {
-              mongol: 'Keskitaso',
-              jin: 'Helppo',
-              song: 'Helppo',
-              xixia: 'Vaikea',
-              khwarezm: 'Keskitaso',
-              rus: 'Vaikea',
-              kipchak: 'Erittäin vaikea',
+              mongol: 'normal',
+              jin: 'easy',
+              song: 'easy',
+              xixia: 'hard',
+              khwarezm: 'normal',
+              rus: 'hard',
+              kipchak: 'hard',
             }[faction.id];
             
             const difficultyColor = {
@@ -280,10 +273,10 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-amber-100 leading-tight truncate">{faction.name}</h3>
-                      <p className="text-sm text-stone-400 truncate">{faction.ruler}</p>
+                      <h3 className="text-lg font-bold text-amber-100 leading-tight truncate">{t(`faction.name.${faction.id}`)}</h3>
+                      <p className="text-sm text-stone-300 truncate">{t(`faction.ruler.${faction.id}`)}</p>
                     </div>
-                    <Badge className={difficultyColor}>{difficulty}</Badge>
+                    <Badge className={difficultyColor}>{t(`difficulty.${difficulty}`)}</Badge>
                   </div>
                   
                   {/* Stats */}
@@ -335,17 +328,17 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
                   </div>
 
                   {/* Tarinallinen kuvaus */}
-                  {FLAVOR[faction.id] && (
+                  {t(`faction.flavor.${faction.id}`) && (
                     <p className="mt-3 border-l-2 pl-3 text-xs italic leading-relaxed text-stone-300/80"
                        style={{ borderColor: `${faction.color}88` }}>
-                      {FLAVOR[faction.id]}
+                      {t(`faction.flavor.${faction.id}`)}
                     </p>
                   )}
                   
                   {/* Starting resources — kuvakkeilla */}
                   <div className="mt-4 grid grid-cols-3 gap-2">
                     <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
-                      <img src={resGold} alt="kulta" className="h-5 w-4 object-contain" draggable={false} />
+                      <img src={resGold} alt={lang === 'fi' ? 'kulta' : 'gold'} className="h-5 w-4 object-contain" draggable={false} />
                       <span className="text-sm font-semibold text-amber-200 tabular-nums">{faction.treasury}</span>
                     </div>
                     <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
@@ -353,7 +346,7 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
                       <span className="text-sm font-semibold text-sky-100 tabular-nums">{faction.manpower}</span>
                     </div>
                     <div className="flex items-center justify-center gap-1.5 rounded-lg bg-slate-950/50 py-1.5 ring-1 ring-slate-700/50">
-                      <img src={resHorse} alt="hevoset" className="h-5 w-4 object-contain" draggable={false} />
+                      <img src={resHorse} alt={lang === 'fi' ? 'hevoset' : 'horses'} className="h-5 w-4 object-contain" draggable={false} />
                       <span className="text-sm font-semibold text-orange-200 tabular-nums">{faction.horses}</span>
                     </div>
                   </div>
@@ -363,7 +356,7 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
                     className="mt-4 rounded-xl py-2 text-center text-sm font-bold text-slate-900 opacity-90 transition-all group-hover:opacity-100"
                     style={{ backgroundColor: faction.color }}
                   >
-                    {t('faction.leadPrompt', { name: faction.name.split(' ')[0] })}
+                    {t('faction.leadPrompt', { name: t(`faction.name.${faction.id}`) })}
                   </div>
                 </CardContent>
               </Card>
