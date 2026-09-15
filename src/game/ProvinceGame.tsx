@@ -885,24 +885,6 @@ export const ProvinceGame = () => {
             <div className="w-16 h-1 rounded-full bg-amber-500/40 group-hover:bg-amber-400/80 transition-colors" />
           </div>
           <div className="flex items-stretch" style={{ height: handHeight }}>
-            {/* Minimap — hidden in mobile mode to keep the simplified view uncluttered */}
-            {!isMobileMode && (
-              <div className="w-[180px] flex-shrink-0 border-r border-slate-700/50 p-1.5">
-                <div className="w-full h-full rounded-lg overflow-hidden border border-slate-600/30 bg-slate-800/50" style={{ minHeight: '60px' }}>
-                  <ProvinceMap
-                    provinces={gameState.provinces}
-                    armies={gameState.armies}
-                    selectedProvinceId={gameState.selectedProvinceId}
-                    onProvinceClick={selectProvince}
-                    playerFaction={playerFaction}
-                    highlightedProvinces={[]}
-                    isMinimap
-                  />
-                </div>
-              </div>
-            )}
-
-
             {/* Cards — skaalautuu raahatun korkeuden mukaan, aina kokonaan näkyvissä */}
             <div className="flex-1 overflow-hidden">
               {gameState.hand && gameState.hand.length > 0 ? (
