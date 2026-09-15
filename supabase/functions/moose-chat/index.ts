@@ -36,6 +36,13 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
   try {
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
     const now = Date.now();
@@ -53,7 +60,12 @@ Deno.serve(async (req) => {
     }
 
     const { message, lang }: ChatRequest = await req.json();
-    if (!message || typeof message !== "string" || message.length > 500) {
+    if (
+      typeof message !== "string"
+      || message.trim().length === 0
+      || message.length > 500
+      || (lang !== "fi" && lang !== "en")
+    ) {
       return new Response(
         JSON.stringify({ error: "Invalid message" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -98,6 +110,13 @@ Deno.serve(async (req) => {
 
     const data = await response.json();
     const reply: string = data?.choices?.[0]?.message?.content?.trim() ?? "";
+    if (!reply) {
+      console.error("AI gateway returned an empty response");
+      return new Response(
+        JSON.stringify({ error: "AI assistant returned an empty response" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     return new Response(
       JSON.stringify({ reply }),
