@@ -4,7 +4,7 @@
  * Käytetään vain kun paikallinen avainsanahaku (mooseFaq.ts) ei löydä
  * riittävän hyvää vastausta. Julkinen funktio (ei kirjautumista vaadita) —
  * pelillä ei ole käyttäjätilejä. Käyttää OpenAI:n ChatGPT-mallia ja vaatii
- * palvelimeen asetetun OPENAI_API_KEY-salaisuuden.
+ * palvelimeen asetetun LOVABLE_API_KEY-salaisuuden.
  */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "AI assistant is not configured" }),
@@ -82,14 +82,14 @@ Deno.serve(async (req) => {
 
     const systemPrompt = lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: message.slice(0, 500) },

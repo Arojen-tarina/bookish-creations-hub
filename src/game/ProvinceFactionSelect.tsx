@@ -5,7 +5,7 @@
  * tilastoineen (ratsuväki, talous, puolustus) ja vaikeustasoineen.
  */
 import { FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
-import { ACTIVE_FACTIONS, Difficulty } from '@/hooks/useProvinceGameState.ts';
+import { ACTIVE_FACTIONS, Difficulty, VICTORY_TARGETS } from '@/hooks/useProvinceGameState.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
@@ -140,27 +140,27 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
           <div className="mt-4 pt-3 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-center">
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🗺️</div>
-              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.military.title')}</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.military.title', { provinces: VICTORY_TARGETS.provinces })}</div>
               <div className="text-[9px] text-stone-500">{t('faction.goal.military.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">💰</div>
-              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.economic.title')}</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.economic.title', { gold: VICTORY_TARGETS.gold, streak: VICTORY_TARGETS.treasuryStreak })}</div>
               <div className="text-[9px] text-stone-500">{t('faction.goal.economic.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🔬</div>
-              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.tech.title')}</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.tech.title', { tech: VICTORY_TARGETS.tech })}</div>
               <div className="text-[9px] text-stone-500">{t('faction.goal.tech.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🕊️</div>
-              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.diplomatic.title')}</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.diplomatic.title', { influence: VICTORY_TARGETS.influence, allies: VICTORY_TARGETS.diplomaticMinAllies })}</div>
               <div className="text-[9px] text-stone-500">{t('faction.goal.diplomatic.sub')}</div>
             </div>
             <div className="bg-amber-900/20 rounded-lg p-2">
               <div className="text-base">🏛️</div>
-              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.cultural.title')}</div>
+              <div className="text-[10px] text-amber-200 font-bold">{t('faction.goal.cultural.title', { prestige: VICTORY_TARGETS.prestige })}</div>
               <div className="text-[9px] text-stone-500">{t('faction.goal.cultural.sub')}</div>
             </div>
           </div>
