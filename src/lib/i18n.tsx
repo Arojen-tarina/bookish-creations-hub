@@ -194,7 +194,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'moose.placeholder': 'Kysy jotain pelistä...',
     'moose.send': 'Lähetä',
     'moose.thinking': 'Hirvi miettii...',
-    'moose.fallback': 'Hmm, en ole varma tuosta — mutta kokeile Sääntökirjaa (📖) tai kysy toisin!',
+    'moose.fallback': 'Voin selittää vuoron vaiheet, voittotavat, fraktiot, taistelun, diplomatian, rakennukset ja kortit. Kysy esimerkiksi: “Miten voitan?” tai “Mitkä ovat vuoron vaiheet?”',
     'moose.openAria': 'Avaa Hirvi-avustaja',
 
     'save.title': 'Tallenna / Lataa peli',
@@ -377,7 +377,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'moose.placeholder': 'Ask something about the game...',
     'moose.send': 'Send',
     'moose.thinking': 'Moose is thinking...',
-    'moose.fallback': "Hmm, I'm not sure about that one — try the Rulebook (📖) or ask differently!",
+    'moose.fallback': 'I can explain turn phases, victory conditions, factions, combat, diplomacy, buildings, and cards. Ask about the rules, or open the Rulebook (📖) for details.',
     'moose.openAria': 'Open Moose guide',
 
     'save.title': 'Save / Load game',

@@ -140,28 +140,36 @@ export const MOOSE_FAQ: FaqEntry[] = [
 const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 const STOP_WORDS: Record<Language, Set<string>> = {
-  fi: new Set(['ja', 'tai', 'on', 'mita', 'miten', 'kuinka', 'voinko', 'saanko', 'haluan', 'pelata']),
-  en: new Set(['a', 'an', 'and', 'can', 'do', 'how', 'i', 'is', 'it', 'my', 'the', 'to', 'what', 'when', 'where', 'with']),
+  fi: new Set(['ja', 'tai', 'on', 'mita', 'miten', 'kuinka', 'voinko', 'saanko', 'haluan', 'pelata', 'peli', 'pelin', 'pelissä']),
+  en: new Set(['a', 'an', 'and', 'can', 'do', 'how', 'i', 'is', 'it', 'my', 'the', 'to', 'what', 'when', 'where', 'with', 'game', 'play', 'playing']),
 };
 
-/** Palauttaa parhaiten osuvan FAQ-vastauksen tai null jos mikään ei osu riittävän hyvin. */
+const genericHelp: Record<Language, string> = {
+  fi: 'Voin kertoa vuoron vaiheista, voittotavoista, fraktioista, taistelusta, diplomatiasta, rakennuksista ja korteista. Kysy esimerkiksi: “Miten voitan?” tai “Mitkä ovat vuoron vaiheet?”',
+  en: 'I can explain turn phases, victory conditions, factions, combat, diplomacy, buildings, and cards. Try asking: “How do I win?” or “What are the turn phases?”',
+};
+
+/** Palauttaa parhaiten osuvan FAQ-vastauksen tai yleisen ohjeen, jos tarkkaa vastausta ei ole. */
 export const matchMooseFaq = (question: string, lang: Language): string | null => {
   const words = normalize(question)
     .split(/[^a-z0-9]+/)
-    .filter(word => word.length >= 3 && !STOP_WORDS[lang].has(word));
-  if (words.length === 0) return null;
+    .filter(word => word.length >= 2 && !STOP_WORDS[lang].has(word));
+  if (words.length === 0) return genericHelp[lang];
 
   let best: { entry: FaqEntry; score: number } | null = null;
   for (const entry of MOOSE_FAQ) {
     const kws = entry.keywords[lang].map(normalize);
     const score = kws.reduce((sum, kw) => {
       const exact = words.some(word => word === kw);
-      const stem = kw.length >= 4 && words.some(word => word.startsWith(kw) || kw.startsWith(word));
-      return sum + (exact ? 3 : stem ? 1 : 0);
+      const partial = kw.length >= 3 && words.some(word => word.includes(kw) || kw.includes(word));
+      const prefix = kw.length >= 4 && words.some(word => word.startsWith(kw) || kw.startsWith(word));
+      return sum + (exact ? 4 : partial || prefix ? 2 : 0);
     }, 0);
     if (score > 0 && (!best || score > best.score)) {
       best = { entry, score };
     }
   }
-  return best && best.score >= 3 ? best.entry.answer[lang] : null;
+
+  if (!best) return genericHelp[lang];
+  return best.score >= 2 ? best.entry.answer[lang] : genericHelp[lang];
 };
