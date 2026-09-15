@@ -3,9 +3,8 @@
  *
  * Käytetään vain kun paikallinen avainsanahaku (mooseFaq.ts) ei löydä
  * riittävän hyvää vastausta. Julkinen funktio (ei kirjautumista vaadita) —
- * pelillä ei ole käyttäjätilejä. Palauttaa selkeän virheen jos
- * LOVABLE_API_KEY-salaisuutta ei ole asetettu, jolloin asiakassovellus
- * näyttää paikallisen varavastauksen.
+ * pelillä ei ole käyttäjätilejä. Käyttää OpenAI API -avainta, jos se on
+ * asetettu, ja toimii edelleen vanhan LOVABLE_API_KEY -fallbackin kanssa.
  */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -61,7 +60,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
+    const apiKey = Deno.env.get("OPENAI_API_KEY") ?? Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "AI assistant is not configured" }),
@@ -71,20 +70,33 @@ Deno.serve(async (req) => {
 
     const systemPrompt = lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const isOpenAi = !!Deno.env.get("OPENAI_API_KEY");
+    const response = await fetch(isOpenAi ? "https://api.openai.com/v1/chat/completions" : "https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message.slice(0, 500) },
-        ],
-        max_tokens: 300,
-      }),
+      body: JSON.stringify(
+        isOpenAi
+          ? {
+              model: "gpt-4o-mini",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: message.slice(0, 500) },
+              ],
+              temperature: 0.3,
+              max_tokens: 220,
+            }
+          : {
+              model: "google/gemini-2.5-flash",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: message.slice(0, 500) },
+              ],
+              max_tokens: 300,
+            }
+      ),
     });
 
     if (!response.ok) {
