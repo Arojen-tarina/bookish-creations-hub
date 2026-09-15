@@ -6,8 +6,6 @@
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
-import { Button } from '@/components/ui/button.tsx';
 import { useLanguage } from '@/lib/i18n.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
@@ -906,38 +904,6 @@ export const ProvinceMap = ({
           );
         })}
       </svg>
-
-      {/* Zoom controls */}
-      {!isMinimap && (
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <Button variant="outline" size="icon" onClick={handleZoomIn}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
-            title="Zoom in">
-            <ZoomIn className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={handleZoomOut}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
-            title="Zoom out">
-            <ZoomOut className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={handleResetView}
-            className="bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800"
-            title="Reset view">
-            <Maximize2 className="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => setShowCoordinateGrid(!showCoordinateGrid)}
-            className={`bg-stone-900/80 border-amber-700/40 text-amber-200 hover:bg-stone-800 ${showCoordinateGrid ? 'bg-amber-900/80 border-amber-600' : ''}`}
-            title="Toggle coordinate grid"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6-8a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000 4zm6 6a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 100-4 2 2 0 000-4z" />
-            </svg>
-          </Button>
-        </div>
-      )}
 
       {/* Minimap */}
       {!isMinimap && (
