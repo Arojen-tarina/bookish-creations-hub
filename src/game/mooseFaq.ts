@@ -149,7 +149,7 @@ const genericHelp: Record<Language, string> = {
   en: 'I can explain turn phases, victory conditions, factions, combat, diplomacy, buildings, and cards. Try asking: “How do I win?” or “What are the turn phases?”',
 };
 
-/** Palauttaa parhaiten osuvan FAQ-vastauksen tai yleisen ohjeen, jos tarkkaa vastausta ei ole. */
+/** Palauttaa parhaiten osuvan FAQ-vastauksen; tuntemattomat kysymykset ohjataan tekoälylle. */
 export const matchMooseFaq = (question: string, lang: Language): string | null => {
   const words = normalize(question)
     .split(/[^a-z0-9]+/)
@@ -170,6 +170,6 @@ export const matchMooseFaq = (question: string, lang: Language): string | null =
     }
   }
 
-  if (!best) return genericHelp[lang];
-  return best.score >= 2 ? best.entry.answer[lang] : genericHelp[lang];
+  if (!best) return null;
+  return best.score >= 2 ? best.entry.answer[lang] : null;
 };
