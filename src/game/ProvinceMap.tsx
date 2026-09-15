@@ -490,52 +490,6 @@ const ProvinceTooltip = ({
   );
 };
 
-// Minimap
-const Minimap = ({
-  provinces,
-  viewBox,
-  playerFaction,
-  onNavigate,
-}: {
-  provinces: Province[];
-  viewBox: { x: number; y: number; width: number; height: number };
-  playerFaction: FactionId;
-  onNavigate: (x: number, y: number) => void;
-}) => {
-  const ref = useRef<SVGSVGElement>(null);
-  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * BOARD_SIZE;
-    const y = ((e.clientY - rect.top) / rect.height) * BOARD_SIZE;
-    onNavigate(x, y);
-  };
-
-  return (
-    <div className="absolute bottom-4 left-4 w-40 h-40 bg-stone-900/90 border-2 border-amber-700/40 rounded-lg overflow-hidden shadow-xl">
-      <svg ref={ref} viewBox={`0 0 ${BOARD_SIZE} ${BOARD_SIZE}`} className="w-full h-full cursor-pointer" onClick={handleClick}>
-        <image href={gameBoardImg} x={0} y={0} width={BOARD_SIZE} height={BOARD_SIZE} />
-        {provinces.map(p => (
-          <circle
-            key={p.id}
-            cx={projectPoint(p.center.x, p.center.y).x}
-            cy={projectPoint(p.center.x, p.center.y).y}
-            r={1.2}
-            fill={p.ownerId ? FACTION_DATA_1206[p.ownerId]?.color : '#666'}
-            fillOpacity={0.9}
-          />
-        ))}
-        <rect
-          x={viewBox.x} y={viewBox.y}
-          width={viewBox.width} height={viewBox.height}
-          fill="none" stroke="#fbbf24" strokeWidth={0.8}
-        />
-      </svg>
-      <div className="absolute top-1 left-1 text-[8px] text-amber-200/60 font-bold">KARTTA</div>
-    </div>
-  );
-};
-
 export const ProvinceMap = ({
   provinces,
   armies,
@@ -904,16 +858,6 @@ export const ProvinceMap = ({
           );
         })}
       </svg>
-
-      {/* Minimap */}
-      {!isMinimap && (
-        <Minimap
-          provinces={provinces}
-          viewBox={viewBox}
-          playerFaction={playerFaction}
-          onNavigate={handleMinimapNavigate}
-        />
-      )}
 
       {/* Tooltip */}
       {!isMinimap && hoveredProvince && (
