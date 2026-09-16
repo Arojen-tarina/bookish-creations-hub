@@ -33,3 +33,6 @@ dist-single/
 *.keystore
 android/keystore.properties
 android/app/release/
+
+# Supabase CLI local cache
+supabase/.temp/
