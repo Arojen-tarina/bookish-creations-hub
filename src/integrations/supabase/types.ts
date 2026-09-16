@@ -35,6 +35,42 @@ export type Database = {
         }
         Relationships: []
       }
+      moose_knowledge: {
+        Row: {
+          id: string
+          category: string
+          title_fi: string
+          title_en: string
+          content_fi: string
+          content_en: string
+          keywords: string[]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          category: string
+          title_fi: string
+          title_en: string
+          content_fi: string
+          content_en: string
+          keywords?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          category?: string
+          title_fi?: string
+          title_en?: string
+          content_fi?: string
+          content_en?: string
+          keywords?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -6,6 +6,8 @@
  * pelillä ei ole käyttäjätilejä. Käyttää OpenAI:n ChatGPT-mallia ja vaatii
  * palvelimeen asetetun LOVABLE_API_KEY-salaisuuden.
  */
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -20,6 +22,46 @@ interface ChatRequest {
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 20;
 const RATE_WINDOW = 60000; // 1 minute
+
+interface KnowledgeRow {
+  category: "rules" | "lore";
+  title_fi: string;
+  title_en: string;
+  content_fi: string;
+  content_en: string;
+  keywords: string[];
+}
+
+const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+async function findKnowledge(message: string, lang: "fi" | "en"): Promise<string> {
+  const url = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !serviceKey) return "";
+
+  const db = createClient(url, serviceKey);
+  const { data, error } = await db
+    .from("moose_knowledge")
+    .select("category, title_fi, title_en, content_fi, content_en, keywords")
+    .limit(100);
+  if (error) {
+    console.error("Moose knowledge lookup failed:", error.message);
+    return "";
+  }
+
+  const words = normalize(message).split(/[^a-z0-9]+/).filter(word => word.length >= 3);
+  const ranked = ((data ?? []) as KnowledgeRow[]).map(row => {
+    const searchable = normalize(`${row[lang === "fi" ? "title_fi" : "title_en"]} ${row[lang === "fi" ? "content_fi" : "content_en"]} ${row.keywords.join(" ")}`);
+    const score = words.reduce((total, word) => total + (searchable.includes(word) ? 1 : 0), 0);
+    return { row, score };
+  }).filter(item => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
+
+  return ranked.map(({ row }) => {
+    const title = row[lang === "fi" ? "title_fi" : "title_en"];
+    const content = row[lang === "fi" ? "content_fi" : "content_en"];
+    return `[${row.category}] ${title}: ${content}`;
+  }).join("\n");
+}
 
 const SYSTEM_PROMPT_FI = `Olet "Hirvi" — iloinen, avulias hirvimaskotti pelissä "Arojen Tarinat" (Story of the Steppe, vuosi 1206, vuoropohjainen strategiapeli mongolien valloitusten ajasta).
 Vastaa LYHYESTI (max 3-4 lausetta) ja ystävällisesti suomeksi. Vastaa vain pelin sääntöihin, mekaniikkoihin ja tarinaan liittyviin kysymyksiin.
@@ -80,7 +122,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const systemPrompt = lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN;
+    const knowledge = await findKnowledge(message, lang);
+    const systemPrompt = `${lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN}
+  ${knowledge ? `\nAuthoritative knowledge from the game's rulebook and codex:\n${knowledge}` : ""}
+  Use the authoritative knowledge when it answers the question. If it does not, say that you do not know and point the player to the Rulebook or Chronicle. Do not invent missing facts.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
