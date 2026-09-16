@@ -119,7 +119,7 @@ export const MooseAssistant = () => {
       {open && (
         <div className="w-[min(90vw,340px)] h-[420px] max-h-[70vh] rounded-2xl border border-amber-700/40 bg-slate-900/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 border-b border-amber-700/30 bg-gradient-to-r from-amber-900/40 to-slate-900/40">
-            <span className="text-amber-100 font-bold text-sm flex items-center gap-1.5">🫎 {t('moose.title')}</span>
+            <span className="text-amber-100 font-bold text-sm">{t('moose.title')}</span>
             <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-amber-200/60 hover:text-amber-100 p-1 rounded-md hover:bg-amber-900/40">
               <X className="w-4 h-4" />
             </button>
@@ -162,9 +162,9 @@ export const MooseAssistant = () => {
         onTouchStart={(e) => { if (e.touches[0]) onDragStart(e.touches[0].clientX, e.touches[0].clientY); }}
         aria-label={t('moose.openAria')}
         title={t('moose.title')}
-        className="relative h-14 w-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 shadow-2xl shadow-black/40 border-2 border-amber-300/50 flex items-center justify-center text-3xl hover:scale-105 active:scale-95 transition-transform cursor-grab active:cursor-grabbing touch-none select-none"
+        className="relative h-14 w-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 shadow-2xl shadow-black/40 border-2 border-amber-300/50 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-grab active:cursor-grabbing touch-none select-none"
       >
-        🫎
+        <span className="text-sm font-bold text-amber-50">{t('moose.title').slice(0, 1)}</span>
         {/* Visible cue that this button can be dragged to reposition */}
         <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-slate-900/90 border border-amber-300/40 flex items-center justify-center">
           <GripHorizontal className="w-3 h-3 text-amber-300/90" />

@@ -864,23 +864,6 @@ export const ProvinceMap = ({
         <ProvinceTooltip province={hoveredProvince} position={mousePosition} defenseBonus={defenseBonus} />
       )}
 
-      {/* Info bar */}
-      {!isMinimap && (
-        <div className="absolute top-4 left-4 bg-stone-900/85 border-2 border-amber-700/40 rounded-lg px-4 py-2 text-sm text-amber-200/90">
-          <span className="font-bold">Vuosi 1206</span>
-          <span className="mx-2">•</span>
-          <span>{provinces.filter(p => p.ownerId === playerFaction).length} provinssia</span>
-          {showCoordinateGrid && (() => {
-            const coords = getboardCoordinates(mousePosition.x, mousePosition.y);
-            return coords ? (
-              <>
-                <span className="mx-2">•</span>
-                <span className="text-amber-400 font-mono">X: {coords.x.toFixed(1)}, Y: {coords.y.toFixed(1)}</span>
-              </>
-            ) : null;
-          })()}
-        </div>
-      )}
     </div>
   );
 };
