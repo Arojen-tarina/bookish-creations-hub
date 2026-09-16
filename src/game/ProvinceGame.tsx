@@ -746,6 +746,22 @@ export const ProvinceGame = () => {
                       targetGold={VICTORY_TARGETS.gold}
                       techCount={gameState.playedTechCards.length}
                       targetTech={VICTORY_TARGETS.tech}
+                      influence={gameState.influence ?? 0}
+                      targetInfluence={VICTORY_TARGETS.influence}
+                      alliesCount={gameState.factions.filter(f =>
+                        f.id !== playerFaction &&
+                        gameState.provinces.some(p => p.ownerId === f.id) &&
+                        (gameState.relations || []).some(rel =>
+                          ((rel.factionA === playerFaction && rel.factionB === f.id) ||
+                           (rel.factionB === playerFaction && rel.factionA === f.id)) &&
+                          rel.treaties.some(t => t.type === 'alliance')),
+                      ).length}
+                      targetAllies={Math.max(
+                        VICTORY_TARGETS.diplomaticMinAllies,
+                        gameState.factions.filter(f => f.id !== playerFaction && gameState.provinces.some(p => p.ownerId === f.id)).length,
+                      )}
+                      prestige={gameState.prestige ?? 0}
+                      targetPrestige={VICTORY_TARGETS.prestige}
                     />
                   </CardContent>
                 </Card>
