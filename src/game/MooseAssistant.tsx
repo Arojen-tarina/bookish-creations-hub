@@ -46,9 +46,31 @@ export const MooseAssistant = () => {
   }, []);
 
   useEffect(() => {
-    if (!pos) return;
-    setPos(prev => prev ? clampToViewport(prev.x, prev.y) : prev);
-  }, [clampToViewport, pos?.x, pos?.y]);
+    const handleResize = () => setPos(prev => prev ? clampToViewport(prev.x, prev.y) : prev);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [clampToViewport]);
+
+  // Chat-paneelin sijainti napin suhteen: avataan siihen suuntaan johon mahtuu,
+  // ettei paneeli koskaan työnny näytön ulkopuolelle napin ollessa reunalla.
+  const [panelSide, setPanelSide] = useState<{ vertical: 'top' | 'bottom'; horizontal: 'left' | 'right' }>({ vertical: 'top', horizontal: 'right' });
+  useEffect(() => {
+    if (!open) return;
+    const recompute = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const panelWidth = Math.min(340, window.innerWidth * 0.9);
+      const panelHeight = Math.min(420, window.innerHeight * 0.7);
+      const gap = 8;
+      setPanelSide({
+        vertical: rect.top - panelHeight - gap < 4 ? 'bottom' : 'top',
+        horizontal: rect.right - panelWidth < 4 ? 'left' : 'right',
+      });
+    };
+    recompute();
+    window.addEventListener('resize', recompute);
+    return () => window.removeEventListener('resize', recompute);
+  }, [open, pos]);
 
   const onDragStart = useCallback((clientX: number, clientY: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -123,11 +145,18 @@ export const MooseAssistant = () => {
   return (
     <div
       ref={containerRef}
-      className={pos ? 'fixed z-[60] flex flex-col items-end gap-2' : 'fixed bottom-20 right-3 sm:right-4 z-[60] flex flex-col items-end gap-2'}
+      className={pos ? 'fixed z-[60]' : 'fixed bottom-20 right-3 sm:right-4 z-[60]'}
       style={pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
     >
+      {/* Paneeli on absoluuttisesti sijoitettu napin suhteen, joten se ei koskaan
+          vaikuta containerin kokoon — nappi pysyy täsmälleen samassa kohdassa
+          riippumatta siitä onko chat auki. */}
       {open && (
-        <div className="w-[min(90vw,340px)] h-[420px] max-h-[70vh] rounded-2xl border border-amber-700/40 bg-slate-900/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
+        <div
+          className={`absolute w-[min(90vw,340px)] h-[420px] max-h-[70vh] rounded-2xl border border-amber-700/40 bg-slate-900/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden ${
+            panelSide.vertical === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
+          } ${panelSide.horizontal === 'right' ? 'right-0' : 'left-0'}`}
+        >
           <div className="flex items-center justify-between px-3 py-2 border-b border-amber-700/30 bg-gradient-to-r from-amber-900/40 to-slate-900/40">
             <span className="text-amber-100 font-bold text-sm flex items-center gap-1.5">🫎 {t('moose.title')}</span>
             <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-amber-200/60 hover:text-amber-100 p-1 rounded-md hover:bg-amber-900/40">
