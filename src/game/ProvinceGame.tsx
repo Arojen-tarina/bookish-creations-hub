@@ -17,6 +17,7 @@ import { BattleDisplay } from './BattleDisplay.tsx';
 import { CardHand } from './CardHand.tsx';
 import { PhaseBar } from './PhaseBar.tsx';
 import { VictoryGoals } from './VictoryGoals.tsx';
+import { AchievementsPanel } from './AchievementsPanel.tsx';
 import { GameOverScreen } from './GameOverScreen.tsx';
 import { EngagementLayer } from './EngagementLayer.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
@@ -746,6 +747,12 @@ export const ProvinceGame = () => {
                       techCount={gameState.playedTechCards.length}
                       targetTech={VICTORY_TARGETS.tech}
                     />
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800/50 border-amber-700/30">
+                  <CardContent className="p-3">
+                    <AchievementsPanel />
                   </CardContent>
                 </Card>
 

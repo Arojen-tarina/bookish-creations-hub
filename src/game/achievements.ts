@@ -141,6 +141,7 @@ class AchievementManager {
   async unlockAchievement(id: string): Promise<boolean> {
     if (!DEFINITIONS_BY_ID.has(id)) return false;
     const { alreadyUnlocked } = await AchievementNative.unlock({ id });
+    if (!alreadyUnlocked) window.dispatchEvent(new Event(ACHIEVEMENTS_UPDATED_EVENT));
     return !alreadyUnlocked;
   }
 
@@ -163,6 +164,9 @@ class AchievementManager {
 }
 
 export const achievementManager = new AchievementManager();
+
+/** Fired on window whenever an achievement is newly unlocked, so open UI can refresh. */
+export const ACHIEVEMENTS_UPDATED_EVENT = 'achievements:updated';
 
 /** True on Android/iOS builds; false in the browser (web/dev/preview). */
 export const isNativeAchievementStorage = () => Capacitor.isNativePlatform();
