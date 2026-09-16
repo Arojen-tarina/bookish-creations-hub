@@ -242,7 +242,7 @@ export const ProvinceInfoPanel = ({
                 onClick={() => onRecruitArmy('infantry')}
                 disabled={!canRecruit}
                 variant="outline"
-                className="w-full border-green-600 text-green-200 hover:bg-green-900/30"
+                className="w-full border-green-600 bg-green-900/30 text-green-200 hover:bg-green-900/50"
               >
                 <Sword className="w-4 h-4 mr-2" />
                 {lang === 'en' ? 'Recruit infantry' : 'Rekrytoi jalkaväki'}
@@ -251,7 +251,7 @@ export const ProvinceInfoPanel = ({
                 onClick={() => onRecruitArmy('cavalry')}
                 disabled={!canRecruit}
                 variant="outline"
-                className="w-full border-blue-600 text-blue-200 hover:bg-blue-900/30"
+                className="w-full border-blue-600 bg-blue-900/30 text-blue-200 hover:bg-blue-900/50"
               >
                 <Wrench className="w-4 h-4 mr-2" />
                 {lang === 'en' ? 'Recruit cavalry' : 'Rekrytoi ratsuväki'}
@@ -267,7 +267,7 @@ export const ProvinceInfoPanel = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  className="w-full border-amber-600 bg-amber-900/30 text-amber-200 hover:bg-amber-900/50"
                   onClick={() => onRepairFort(false)}
                   disabled={!canRepairGold}
                 >
@@ -276,7 +276,7 @@ export const ProvinceInfoPanel = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full border-amber-600 text-amber-200 hover:bg-amber-900/30"
+                  className="w-full border-amber-600 bg-amber-900/30 text-amber-200 hover:bg-amber-900/50"
                   onClick={() => onRepairFort(true)}
                   disabled={!canRepairArtisan}
                 >
