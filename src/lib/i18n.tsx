@@ -209,6 +209,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'save.saveFailed': 'Tallennus epäonnistui (tallennustila voi olla täynnä).',
     'save.loaded': 'Peli ladattu',
     'save.noSaves': 'Ei tallennuksia vielä.',
+
+    'achievements.unlocked': 'Saavutus avattu: {{name}}',
   },
   en: {
     'lang.switch': 'Language',
@@ -392,6 +394,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'save.saveFailed': 'Save failed (storage may be full).',
     'save.loaded': 'Game loaded',
     'save.noSaves': 'No saves yet.',
+
+    'achievements.unlocked': 'Achievement unlocked: {{name}}',
   },
 };
 

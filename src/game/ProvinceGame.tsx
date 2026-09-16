@@ -40,6 +40,7 @@ import { useDeviceMode } from '@/lib/deviceMode.tsx';
 import { SettingsMenu } from './SettingsMenu.tsx';
 import { SaveLoadMenu } from './SaveLoadMenu.tsx';
 import { useSaveManager } from '@/hooks/useSaveManager.ts';
+import { useAchievementTracking } from '@/hooks/useAchievementTracking.ts';
 
 // Resurssikuvakkeet (sprite-assetit) HUD:iin
 import resGoldIcon from '@/assets/sprites/res_gold.png';
@@ -66,6 +67,8 @@ export const ProvinceGame = () => {
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
+
+  useAchievementTracking(gameState, playerFaction, pendingBattle);
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
