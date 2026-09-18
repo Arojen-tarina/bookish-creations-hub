@@ -187,6 +187,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'music.track3': 'Teema III',
     'music.track4': 'Teema IV',
     'music.song': 'Kurkkulaulu',
+    'music.pianoConcerto1': 'Pianokonsertto I osa',
+    'music.pianoConcerto2': 'Pianokonsertto II osa',
+    'music.pianoConcerto3': 'Pianokonsertto III osa',
     'music.nowPlaying': 'Soi nyt',
 
     'moose.title': 'Hirvi-avustaja',
@@ -372,6 +375,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'music.track3': 'Theme III',
     'music.track4': 'Theme IV',
     'music.song': 'Throat Song',
+    'music.pianoConcerto1': 'Piano Concerto Mvt. I',
+    'music.pianoConcerto2': 'Piano Concerto Mvt. II',
+    'music.pianoConcerto3': 'Piano Concerto Mvt. III',
     'music.nowPlaying': 'Now playing',
 
     'moose.title': 'Moose Guide',

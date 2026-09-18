@@ -64,7 +64,7 @@ export const ProvinceGame = () => {
     collectResources,
   } = useProvinceGameState();
 
-  const { playAmbient, stopAmbient, settings: audioSettings, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
+  const { playCategory, settings: audioSettings, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
@@ -165,22 +165,18 @@ export const ProvinceGame = () => {
   }, []);
 
   useEffect(() => {
-    if (!gameStarted) {
-      stopAmbient();
-      return;
-    }
-
-    playAmbient();
-    const resumeMusic = () => playAmbient();
+    // Valikossa/introssa soi kurkkulaulu; pelin alettua vaihdetaan peliraitoihin.
+    const category = gameStarted ? 'gameplay' : 'menu';
+    playCategory(category);
+    const resumeMusic = () => playCategory(category);
     document.addEventListener('pointerdown', resumeMusic, { once: true });
     document.addEventListener('keydown', resumeMusic, { once: true });
 
     return () => {
       document.removeEventListener('pointerdown', resumeMusic);
       document.removeEventListener('keydown', resumeMusic);
-      stopAmbient();
     };
-  }, [gameStarted, playAmbient, stopAmbient]);
+  }, [gameStarted, playCategory]);
 
   // Auto-collect resources when entering resource phase
   useEffect(() => {

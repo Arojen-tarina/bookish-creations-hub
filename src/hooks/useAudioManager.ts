@@ -16,22 +16,41 @@ import musicTrack1 from '@/assets/music/track1.mp3';
 import musicTrack4 from '@/assets/music/track4.mp3';
 
 // Kappaleiden tunnisteet (käytetään käännöksissä ja raitavalitsimessa, ks. i18n 'music.*')
-export type MusicTrackId = 'track1' | 'track2' | 'track3' | 'track4' | 'song';
+export type MusicTrackId =
+  | 'track1' | 'track2' | 'track3' | 'track4' | 'song'
+  | 'pianoConcerto1' | 'pianoConcerto2' | 'pianoConcerto3';
 
-const MUSIC_TRACKS: { id: MusicTrackId; src: string }[] = import.meta.env.VITE_SINGLEFILE
+// Musiikkikategoriat: mikä kappale soi missäkin tilanteessa.
+// 'menu'     — aloitusruutu / valtakunnanvalinta (intro & käyttöliittymä)
+// 'gameplay' — varsinainen pelivuoro kartalla
+export type MusicCategory = 'menu' | 'gameplay';
+
+interface MusicTrackDef { id: MusicTrackId; src: string; category: MusicCategory }
+
+const MUSIC_TRACKS: MusicTrackDef[] = import.meta.env.VITE_SINGLEFILE
   ? [
-      { id: 'track1', src: musicTrack1 },
-      { id: 'track4', src: musicTrack4 },
+      // Single-file/offline-buildissa ei ole tilaa isoille lisäraidoille —
+      // molemmat upotetut raidat toimivat sekä valikossa että pelissä.
+      { id: 'track1', src: musicTrack1, category: 'gameplay' },
+      { id: 'track4', src: musicTrack4, category: 'gameplay' },
     ]
   : [
-      { id: 'track1', src: musicTrack1 },
-      { id: 'track2', src: `${import.meta.env.BASE_URL}music/track2.mp3` },
-      { id: 'track3', src: `${import.meta.env.BASE_URL}music/track3.mp3` },
-      { id: 'track4', src: `${import.meta.env.BASE_URL}music/track4.mp3` },
-      { id: 'song', src: `${import.meta.env.BASE_URL}music/song.mp3` },
+      // Kurkkulaulu soi VAIN valikossa/introssa — ei osa peliaikaisen kierron listaa.
+      { id: 'song', src: `${import.meta.env.BASE_URL}music/song.mp3`, category: 'menu' },
+      { id: 'track1', src: musicTrack1, category: 'gameplay' },
+      { id: 'track2', src: `${import.meta.env.BASE_URL}music/track2.mp3`, category: 'gameplay' },
+      { id: 'track3', src: `${import.meta.env.BASE_URL}music/track3.mp3`, category: 'gameplay' },
+      { id: 'track4', src: `${import.meta.env.BASE_URL}music/track4.mp3`, category: 'gameplay' },
+      { id: 'pianoConcerto1', src: `${import.meta.env.BASE_URL}music/piano-concerto-1.mp3`, category: 'gameplay' },
+      { id: 'pianoConcerto2', src: `${import.meta.env.BASE_URL}music/piano-concerto-2.mp3`, category: 'gameplay' },
+      { id: 'pianoConcerto3', src: `${import.meta.env.BASE_URL}music/piano-concerto-3.mp3`, category: 'gameplay' },
     ];
 
-const MUSIC_PLAYLIST: string[] = MUSIC_TRACKS.map(track => track.src);
+const tracksInCategory = (category: MusicCategory): MusicTrackDef[] => {
+  const inCat = MUSIC_TRACKS.filter(track => track.category === category);
+  // Fallback (esim. single-file-build ilman 'menu'-raitoja) — älä jää tyhjäksi.
+  return inCat.length > 0 ? inCat : MUSIC_TRACKS;
+};
 
 interface AudioSettings {
   masterVolume: number;
@@ -56,6 +75,7 @@ interface AudioManagerReturn {
   playTurnEnd: () => void;
   playProvinceCapture: () => void;
   playAmbient: () => void;
+  playCategory: (category: MusicCategory) => void;
   stopAmbient: () => void;
   musicTracks: MusicTrackId[];
   currentTrack: MusicTrackId;
@@ -191,6 +211,8 @@ export const useAudioManager = (): AudioManagerReturn => {
   const ambientTrackRef = useRef<number>(0);
   const musicElRef = useRef<HTMLAudioElement | null>(null);
   const musicIdxRef = useRef<number>(0);
+  // Mitä kategoriaa (menu/gameplay) soittolista juuri nyt kiertää.
+  const categoryRef = useRef<MusicCategory>(MUSIC_TRACKS[0].category);
   const ambientTimeoutRef = useRef<number | null>(null);
   const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(MUSIC_TRACKS[0].id);
   const [settings, setSettings] = useState<AudioSettings>(() => {
@@ -416,32 +438,53 @@ export const useAudioManager = (): AudioManagerReturn => {
       el.preload = 'auto';
       el.setAttribute('data-game-music', '1');
       if (typeof document !== 'undefined') document.body.appendChild(el);
+      // Kun kappale loppuu, siirry SEURAAVAAN samassa kategoriassa (esim. kurkkulaulu
+      // valikossa ei koskaan sekoitu peliaikaiseen soittolistaan tai päinvastoin).
       const advance = () => {
-        musicIdxRef.current = (musicIdxRef.current + 1) % MUSIC_PLAYLIST.length;
-        setCurrentTrack(MUSIC_TRACKS[musicIdxRef.current].id);
+        const catTracks = tracksInCategory(categoryRef.current);
+        const currentId = MUSIC_TRACKS[musicIdxRef.current]?.id;
+        const posInCat = Math.max(0, catTracks.findIndex(t => t.id === currentId));
+        const next = catTracks[(posInCat + 1) % catTracks.length];
+        musicIdxRef.current = MUSIC_TRACKS.findIndex(t => t.id === next.id);
+        setCurrentTrack(next.id);
         const nextEl = musicElRef.current;
         if (nextEl) {
-          nextEl.src = MUSIC_PLAYLIST[musicIdxRef.current];
+          nextEl.src = next.src;
           nextEl.play().catch(() => {});
         }
       };
       el.addEventListener('ended', advance);
       // Jos jokin kappale ei lataudu (esim. offline-versiossa), siirry seuraavaan
-      el.addEventListener('error', () => { if (MUSIC_PLAYLIST.length > 1) advance(); });
+      el.addEventListener('error', () => { if (MUSIC_TRACKS.length > 1) advance(); });
       musicElRef.current = el;
     }
     return el;
   }, []);
 
-  const playAmbient = useCallback(() => {
-    if (settings.muted) return;
+  // Soita tietyn kategorian (menu/gameplay) soittolistaa. Jos jo soimassa samaa
+  // kategoriaa, jatketaan samasta kappaleesta sen sijaan että aloitetaan alusta.
+  const playCategory = useCallback((category: MusicCategory) => {
     const el = ensureMusicElement();
+    const wasAlreadyInCategory = categoryRef.current === category && !!el.src;
+    categoryRef.current = category;
+    if (!wasAlreadyInCategory) {
+      const track = tracksInCategory(category)[0];
+      musicIdxRef.current = MUSIC_TRACKS.findIndex(t => t.id === track.id);
+      setCurrentTrack(track.id);
+      el.src = track.src;
+    }
     el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
-    if (!el.src) el.src = MUSIC_PLAYLIST[musicIdxRef.current];
+    if (settings.muted) return;
     el.play().catch(() => {
       // Selain saattaa estaa automaattitoiston ennen kayttajan vuorovaikutusta
     });
   }, [settings.muted, getEffectiveVolume, ensureMusicElement]);
+
+  // Jatka nykyistä (tai oletus-)kategoriaa — käytetään mm. käyttäjän ensimmäisen
+  // vuorovaikutuksen jälkeiseen autoplay-uudelleenyritykseen.
+  const playAmbient = useCallback(() => {
+    playCategory(categoryRef.current);
+  }, [playCategory]);
 
   // Anna pelaajan valita kappale suoraan (esim. kurkkulaulu) sen sijaan, että
   // sitä pitäisi odottaa koko soittolistan läpi.
@@ -449,9 +492,10 @@ export const useAudioManager = (): AudioManagerReturn => {
     const idx = MUSIC_TRACKS.findIndex(track => track.id === id);
     if (idx === -1) return;
     musicIdxRef.current = idx;
+    categoryRef.current = MUSIC_TRACKS[idx].category;
     setCurrentTrack(id);
     const el = ensureMusicElement();
-    el.src = MUSIC_PLAYLIST[idx];
+    el.src = MUSIC_TRACKS[idx].src;
     el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
     if (!settings.muted) el.play().catch(() => {});
   }, [ensureMusicElement, getEffectiveVolume, settings.muted]);
@@ -503,6 +547,7 @@ export const useAudioManager = (): AudioManagerReturn => {
     playTurnEnd,
     playProvinceCapture,
     playAmbient,
+    playCategory,
     stopAmbient,
     musicTracks: MUSIC_TRACKS.map(track => track.id),
     currentTrack,
