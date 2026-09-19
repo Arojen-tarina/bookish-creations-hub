@@ -1,0 +1,6 @@
+UPDATE public.moose_knowledge
+SET
+  content_fi = 'Pelaajan vuoron lopussa tarkistetaan viisi voittotietä. Sotilasvoitto tulee kaikkien vihollisten pääkaupunkien valtauksesta tai vähintään 130 provinssin hallinnasta. Talousvoitto vaatii vähintään 2000 kultaa, enemmistön Silkkitien kauppasolmuista ja kultarajan säilyttämisen vähintään viisi peräkkäistä vuoroa. Teknologiavoitto vaatii vähintään 5 teknologiakorttia, diplomaattivoitto vähintään 100 vaikutusvaltaa tai liiton vähintään kahden elossa olevan vihollisen kanssa, ja kulttuurivoitto vähintään 60 arvovaltaa Ihmeistä.',
+  content_en = 'At the end of the player turn, five victory paths are checked. Military victory comes from capturing every enemy capital or controlling at least 130 provinces. Economic victory requires at least 2000 gold, a majority of Silk Road trade nodes, and holding the gold threshold for at least five consecutive turns. Technology victory requires at least 5 technology cards, diplomatic victory at least 100 influence or an alliance with at least two surviving enemies, and cultural victory at least 60 prestige from Wonders.',
+  updated_at = now()
+WHERE id = 'rules-victory';

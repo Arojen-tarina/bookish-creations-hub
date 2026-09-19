@@ -197,6 +197,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'moose.placeholder': 'Kysy jotain pelistä...',
     'moose.send': 'Lähetä',
     'moose.fallback': 'Voin selittää vuoron vaiheet, voittotavat, fraktiot, taistelun, diplomatian, rakennukset ja kortit. Kysy esimerkiksi: “Miten voitan?” tai “Mitkä ovat vuoron vaiheet?”',
+    'moose.unavailable': 'En saanut yhteyttä etäavustajaan juuri nyt. Voin silti auttaa vuoron vaiheissa, voittotavoissa ja pelin tarinassa. Kokeile kysyä esimerkiksi: “Mitkä ovat vuoron vaiheet?” tai “Kuka on Handgai?”',
     'moose.openAria': 'Avaa Hirvi-avustaja',
 
     'save.title': 'Tallenna / Lataa peli',

@@ -29,9 +29,18 @@ npm run build
 
 ## Hirvi-avustaja
 
-Hirvi-avustaja vastaa pelikysymyksiin täysin paikallisella avainsanahaulla
-(`src/game/mooseFaq.ts`) — ei ulkoisia API-kutsuja eikä salaisuuksia
-tarvita.
+Hirvi-avustaja käyttää Supabase Edge Functionia ja OpenAI:n `gpt-4o-mini`-
+mallia. Aseta OpenAI-avaimesi Supabase-projektin salaisuudeksi ennen
+`moose-chat`-funktion julkaisemista:
+
+```sh
+npx supabase secrets set OPENAI_API_KEY=your_openai_api_key
+npx supabase functions deploy moose-chat
+```
+
+Älä lisää API-avainta selaimen ympäristömuuttujiin tai versionhallintaan.
+Jos etäavustaja ei ole saatavilla, selain käyttää paikallista sääntö- ja
+loretietoa sekä kirjaa yhteysvirheen kehityskonsoliin.
 
 ## Huomio
 

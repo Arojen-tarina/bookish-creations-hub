@@ -10,6 +10,8 @@ import { X, Send, GripHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { matchMooseFaq } from './mooseFaq.ts';
+import { matchMooseLocalKnowledge } from './mooseKnowledge.ts';
+import { supabase } from '@/integrations/supabase/client.ts';
 
 interface ChatMessage {
   id: string;
@@ -107,12 +109,47 @@ export const MooseAssistant = () => {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, thinking]);
 
-  const ask = useCallback((question: string) => {
-    const answer = matchMooseFaq(question, lang) ?? t('moose.fallback');
-    setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: answer }]);
-  }, [lang, t]);
+  const ask = useCallback(async (question: string) => {
+    const localAnswer = matchMooseFaq(question, lang);
+    if (localAnswer) {
+      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: localAnswer }]);
+      return;
+    }
+
+    const localKnowledgeAnswer = matchMooseLocalKnowledge(question, lang);
+    if (localKnowledgeAnswer) {
+      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: localKnowledgeAnswer }]);
+      return;
+    }
+
+    setThinking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('moose-chat', {
+        body: {
+          message: question,
+          lang,
+          history: messages.filter(message => message.id !== 'greeting').slice(-6).map(message => ({
+            role: message.role === 'moose' ? 'assistant' : 'user',
+            content: message.text,
+          })),
+        },
+      });
+      if (error || !data?.reply) throw error || new Error('no reply');
+      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: data.reply }]);
+    } catch (error) {
+      console.warn('[Moose] Remote assistant unavailable; using local fallback.', {
+        error,
+        question,
+        lang,
+        hint: 'Check Supabase DNS, CORS, function deployment, and OPENAI_API_KEY.',
+      });
+      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: t('moose.unavailable') }]);
+    } finally {
+      setThinking(false);
+    }
+  }, [lang, messages, t]);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
