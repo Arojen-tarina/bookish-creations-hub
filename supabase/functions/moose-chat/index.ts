@@ -4,7 +4,7 @@
  * Käytetään vain kun paikallinen avainsanahaku (mooseFaq.ts) ei löydä
  * riittävän hyvää vastausta. Julkinen funktio (ei kirjautumista vaadita) —
  * pelillä ei ole käyttäjätilejä. Käyttää OpenAI:n ChatGPT-mallia ja vaatii
- * palvelimeen asetetun LOVABLE_API_KEY-salaisuuden.
+ * palvelimeen asetetun OPENAI_API_KEY-salaisuuden.
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "AI assistant is not configured" }),
@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
   ${knowledge ? `\nAuthoritative knowledge from the game's rulebook and codex:\n${knowledge}` : ""}
   Use the authoritative knowledge when it answers the question. If it does not, say that you do not know and point the player to the Rulebook or Chronicle. Do not invent missing facts.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
