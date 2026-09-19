@@ -6,8 +6,6 @@
  * pelillä ei ole käyttäjätilejä. Käyttää OpenAI:n ChatGPT-mallia ja vaatii
  * palvelimeen asetetun OPENAI_API_KEY-salaisuuden.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -40,15 +38,21 @@ async function findKnowledge(message: string, lang: "fi" | "en"): Promise<string
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) return "";
 
-  const db = createClient(url, serviceKey);
-  const { data, error } = await db
-    .from("moose_knowledge")
-    .select("category, title_fi, title_en, content_fi, content_en, keywords")
-    .limit(100);
-  if (error) {
-    console.error("Moose knowledge lookup failed:", error.message);
+  const knowledgeUrl = new URL("/rest/v1/moose_knowledge", url);
+  knowledgeUrl.searchParams.set("select", "category,title_fi,title_en,content_fi,content_en,keywords");
+  knowledgeUrl.searchParams.set("limit", "100");
+  const response = await fetch(knowledgeUrl, {
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+    },
+  });
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    console.error("Moose knowledge lookup failed:", errorMessage);
     return "";
   }
+  const data = await response.json();
 
   const words = normalize(message).split(/[^a-z0-9]+/).filter(word => word.length >= 3);
   const ranked = ((data ?? []) as KnowledgeRow[]).map(row => {
@@ -155,7 +159,7 @@ Deno.serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", errorText);
+      console.error("OpenAI API error:", response.status, errorText);
       return new Response(
         JSON.stringify({ error: "AI assistant request failed" }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },

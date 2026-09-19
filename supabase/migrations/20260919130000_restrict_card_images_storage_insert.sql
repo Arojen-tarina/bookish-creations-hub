@@ -8,6 +8,7 @@
 -- entirely regardless of this policy, so denying all RLS-governed inserts
 -- does not break the legitimate upload path.
 DROP POLICY IF EXISTS "Service role can upload card images" ON storage.objects;
+DROP POLICY IF EXISTS "Deny public uploads to card images" ON storage.objects;
 
 CREATE POLICY "Deny public uploads to card images"
 ON storage.objects
