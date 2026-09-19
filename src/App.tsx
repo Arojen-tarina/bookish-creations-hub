@@ -26,15 +26,20 @@ import { AdMobBanner } from "@/components/ui/AdMobBanner.tsx";
 import { LanguageProvider } from "@/lib/i18n.tsx";
 import { DeviceModeProvider } from "@/lib/deviceMode.tsx";
 import { MooseAssistant } from "@/game/MooseAssistant.tsx";
+import { AnalyticsConsentBanner } from "@/game/AnalyticsConsentBanner.tsx";
+import { useAnalyticsSession } from "@/hooks/useAnalyticsSession.ts";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useAnalyticsSession();
+  return (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <DeviceModeProvider>
       <Toaster />
       <Sonner />
+      <AnalyticsConsentBanner />
       <div className="fixed bottom-0 left-0 right-0 z-40 p-3 pointer-events-auto flex justify-center">
         <div className="max-w-6xl w-full px-4">
           <AdMobBanner className="w-full" />
@@ -53,6 +58,7 @@ const App = () => (
       </DeviceModeProvider>
     </LanguageProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

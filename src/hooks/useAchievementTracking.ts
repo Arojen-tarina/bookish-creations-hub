@@ -20,6 +20,7 @@ import { PLAYER_STATS_UPDATED_EVENT } from '@/game/playerStats.ts';
 import type { PlayerStats } from '@/game/achievementTypes.ts';
 import { logSecurityEvent } from '@/lib/securityLog.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
+import { track, noteTurnCompleted } from '@/lib/analytics';
 
 // Generous per-tick ceilings for stat deltas — normal play never gets close to
 // these in a single render tick, so hitting one means a save was loaded with a
@@ -41,6 +42,7 @@ const clampDelta = (value: number, max: number, key: string): number => {
   return max;
 };
 import type { MVPGameState } from '@/hooks/useProvinceGameState.ts';
+import { BUILDING_INFO } from '@/hooks/useProvinceGameState.ts';
 import type { BattleResult } from '@/game/BattleDisplay.tsx';
 import type { FactionId } from '@/types/province.ts';
 
@@ -64,12 +66,17 @@ export const useAchievementTracking = (
   const gameOverHandledRef = useRef(false);
   const seenBattleKeysRef = useRef<Set<string>>(new Set());
   const dailyTickDoneRef = useRef(false);
+  const firstBuildingSeenRef = useRef(false);
 
   const checkAndUnlock = useCallback(async (stats: PlayerStats) => {
     for (const def of ACHIEVEMENT_DEFINITIONS) {
       if (!def.check(stats)) continue;
       const unlockedNow = await achievementManager.unlockAchievement(def.id);
       if (!unlockedNow) continue;
+      track('achievement_unlocked', {
+        id: def.id, category: def.category, difficulty: def.difficulty, points: def.points,
+        sessionsSinceFirstOpen: stats.distinctPlayDays,
+      });
       const rewardSuffix = def.reward ? ` · ${def.reward.icon} ${def.reward.name[lang]}` : '';
       toast.success(`${def.legendary ? '🏅' : '🏆'} ${def.name[lang]} (+${def.points})`, {
         description: `${def.description[lang]}${rewardSuffix}`,
@@ -175,6 +182,24 @@ export const useAchievementTracking = (
         const prevPlayerArmyIds = new Set(prev.armies.filter(a => a.ownerId === playerFaction).map(a => a.id));
         const newArmiesCount = [...playerArmyIds].filter(id => !prevPlayerArmyIds.has(id)).length;
         patch.unitsRecruited = current.unitsRecruited + clampDelta(newArmiesCount, MAX_PER_TICK.units, 'unitsRecruited');
+        for (const army of gameState.armies) {
+          if (army.ownerId !== playerFaction || prevPlayerArmyIds.has(army.id)) continue;
+          track('army_recruited', { type: army.cavalry > army.infantry ? 'cavalry' : 'infantry', turn: gameState.turn });
+        }
+
+        // Buildings constructed — per-province diff (aggregate stat above only tracks totals).
+        for (const province of ownedProvinces) {
+          const list = gameState.buildings[province.id] ?? [];
+          const prevList = prev.buildings[province.id] ?? [];
+          if (list.length <= prevList.length) continue;
+          for (const type of list.slice(prevList.length)) {
+            track('building_constructed', { type, turn: gameState.turn, goldCost: BUILDING_INFO[type]?.cost.gold ?? 0 });
+            if (!firstBuildingSeenRef.current) {
+              firstBuildingSeenRef.current = true;
+              track('onboarding_step', { step: 'first_building' });
+            }
+          }
+        }
 
         // A played card (any type) always lands in `discard`; it gets flushed
         // back to [] when a fresh hand is drawn. Catching that reset is the
@@ -190,6 +215,7 @@ export const useAchievementTracking = (
             if (card.type === 'technology') techCardsPlayedTotal += 1;
             if (card.rarity === 'legendary') legendaryCardsPlayed += 1;
             uniqueCardIdsPlayed = addUniqueToStat({ ...current, uniqueCardIdsPlayed }, 'uniqueCardIdsPlayed', card.id);
+            track('card_played', { cardId: card.id, cardType: card.type, rarity: card.rarity, turn: gameState.turn });
           }
           patch.cardsPlayedTotal = cardsPlayedTotal;
           patch.techCardsPlayedTotal = techCardsPlayedTotal;
@@ -204,21 +230,46 @@ export const useAchievementTracking = (
         let treatiesSigned = current.treatiesSigned;
         for (const relation of gameState.relations) {
           if (relation.factionA !== playerFaction && relation.factionB !== playerFaction) continue;
+          const targetFaction = relation.factionA === playerFaction ? relation.factionB : relation.factionA;
           const prevRelation = prev.relations.find(r =>
             (r.factionA === relation.factionA && r.factionB === relation.factionB) ||
             (r.factionA === relation.factionB && r.factionB === relation.factionA));
           const prevTypes = new Set(prevRelation?.treaties.map(t => t.type) ?? []);
+          const currentTypes = new Set(relation.treaties.map(t => t.type));
           const newTreatyCount = relation.treaties.length - (prevRelation?.treaties.length ?? 0);
           if (newTreatyCount > 0) treatiesSigned += clampDelta(newTreatyCount, MAX_PER_TICK.treaties, 'treatiesSigned');
           for (const treaty of relation.treaties) {
             if (prevTypes.has(treaty.type)) continue;
             if (treaty.type === 'alliance') alliancesFormed += 1;
-            if (treaty.type === 'war_surprise' || treaty.type === 'war_formal') warsDeclared += 1;
+            if (treaty.type === 'war_surprise' || treaty.type === 'war_formal') {
+              warsDeclared += 1;
+              track('war_declared', { targetFaction, turn: gameState.turn });
+            } else {
+              track('treaty_proposed', { targetFaction, treatyType: treaty.type, turn: gameState.turn });
+            }
+          }
+          for (const prevTreaty of prevRelation?.treaties ?? []) {
+            if (!currentTypes.has(prevTreaty.type)) {
+              track('treaty_broken', { targetFaction, treatyType: prevTreaty.type, turn: gameState.turn });
+            }
           }
         }
         patch.alliancesFormed = alliancesFormed;
         patch.warsDeclared = warsDeclared;
         patch.treatiesSigned = treatiesSigned;
+
+        // Normal turn-by-turn advance (not a save load/new game seam, see resync check above):
+        // sample a lightweight progression snapshot + fire onboarding funnel steps once.
+        if (gameState.turn === prev.turn + 1) {
+          noteTurnCompleted();
+          track('progression_snapshot', {
+            turn: gameState.turn, faction: playerFaction, difficulty: gameState.difficulty,
+            provincesOwned: ownedIds.size, treasury, armiesOwned: playerArmyIds.size,
+            buildingsOwned: ownedProvinces.reduce((sum, p) => sum + (gameState.buildings[p.id]?.length ?? 0), 0),
+          });
+          if (gameState.turn === 1) track('onboarding_step', { step: 'turn_1_completed' });
+          if (gameState.turn === 5) track('onboarding_step', { step: 'turn_5_completed' });
+        }
       }
 
       return patch;
@@ -249,6 +300,13 @@ export const useAchievementTracking = (
     const losses = isAttacker ? pendingBattle.attackerLosses : pendingBattle.defenderLosses;
     const isPerfect = won && losses.cavalry === 0 && losses.infantry === 0;
 
+    track('battle_outcome', {
+      faction: playerFaction, won, isAttacker, turn: gameState?.turn ?? 0,
+      attackerPower: pendingBattle.attackerPower ?? 0, defenderPower: pendingBattle.defenderPower ?? 0,
+      unitsLost: losses.cavalry + losses.infantry,
+    });
+    if (getPlayerStats().battlesWon + getPlayerStats().battlesLost === 0) track('onboarding_step', { step: 'first_battle' });
+
     updatePlayerStats(current => {
       if (!won) {
         return { battlesLost: current.battlesLost + 1, currentWinStreakBattles: 0 };
@@ -267,6 +325,12 @@ export const useAchievementTracking = (
   useEffect(() => {
     if (!gameState?.gameOver || gameOverHandledRef.current) return;
     gameOverHandledRef.current = true;
+
+    track('game_over', {
+      faction: playerFaction ?? '', won: gameState.winnerId === playerFaction,
+      winCondition: gameState.winCondition, turn: gameState.turn, year: gameState.year,
+      sessionTurns: gameState.turn,
+    });
 
     const playerWon = gameState.winnerId === playerFaction && !!playerFaction;
     updatePlayerStats(current => {

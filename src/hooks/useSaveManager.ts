@@ -7,6 +7,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { SaveData, SaveMetadata, ProvinceGameState, CURRENT_SAVE_VERSION, FactionId } from '@/types/province';
 import { readSecure, writeSecure } from '@/lib/secureStorage.ts';
+import { track } from '@/lib/analytics';
 
 const SAVE_KEY_PREFIX = 'mongol_empire_save_';
 const AUTOSAVE_KEY = 'mongol_empire_autosave';
@@ -166,6 +167,7 @@ export const useSaveManager = (): SaveManagerReturn => {
       updateSavesIndex(newSaves);
       
       console.log(`Game saved to slot ${slotNumber}`);
+      track('game_saved', { slot: slotNumber });
       return true;
     } catch (error) {
       console.error('Failed to save game:', error);
@@ -183,6 +185,7 @@ export const useSaveManager = (): SaveManagerReturn => {
     // Tamper is only logged (not blocked) for single-player saves — the
     // player may legitimately hand-edit an exported save via importSave.
     const migrated = migrateSaveData(result.data);
+    track('game_loaded', { slot: slotNumber });
     return migrated.state;
   }, []);
 
@@ -190,6 +193,7 @@ export const useSaveManager = (): SaveManagerReturn => {
     const result = readSecure(AUTOSAVE_KEY, validateSaveData);
     if (result.status !== 'ok') return null;
     const migrated = migrateSaveData(result.data);
+    track('game_loaded', { slot: 'auto' });
     return migrated.state;
   }, []);
 
@@ -218,6 +222,7 @@ export const useSaveManager = (): SaveManagerReturn => {
       setAutosave(metadata);
       
       console.log('Autosave completed');
+      track('game_saved', { slot: 'auto' });
       return true;
     } catch (error) {
       console.error('Failed to autosave:', error);

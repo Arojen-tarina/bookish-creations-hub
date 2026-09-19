@@ -42,6 +42,7 @@ import { SettingsMenu } from './SettingsMenu.tsx';
 import { SaveLoadMenu } from './SaveLoadMenu.tsx';
 import { useSaveManager } from '@/hooks/useSaveManager.ts';
 import { useAchievementTracking } from '@/hooks/useAchievementTracking.ts';
+import { track } from '@/lib/analytics';
 
 // Resurssikuvakkeet (sprite-assetit) HUD:iin
 import resGoldIcon from '@/assets/sprites/res_gold.png';
@@ -70,7 +71,7 @@ export const ProvinceGame = () => {
   const isMobileMode = deviceMode === 'mobile';
 
   useAchievementTracking(gameState, playerFaction, pendingBattle);
-  
+
   const [isFullscreen, setIsFullscreen] = useState(false);
   // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
   const [showSidebar, setShowSidebar] = useState(() => !isMobileMode);
@@ -205,6 +206,22 @@ export const ProvinceGame = () => {
     }
   }, [gameState?.turn, gameState?.aiActionLog]);
 
+  const handleRestart = useCallback(() => {
+    track('campaign_restart', {
+      faction: playerFaction,
+      turnAtRestart: gameState?.turn ?? 0,
+      midGame: !!gameState && !gameState.gameOver,
+    });
+    resetGame();
+  }, [gameState, playerFaction, resetGame]);
+
+  const factionSelectViewedRef = useRef(false);
+  useEffect(() => {
+    if (gameStarted || factionSelectViewedRef.current) return;
+    factionSelectViewedRef.current = true;
+    track('onboarding_step', { step: 'faction_select_viewed' });
+  }, [gameStarted]);
+
   // Province click handler
   const handleProvinceClick = useCallback((provinceId: string) => {
     if (!gameState) return;
@@ -224,7 +241,12 @@ export const ProvinceGame = () => {
     const continueMeta = autosaveMeta ?? (saves.length > 0 ? [...saves].sort((a, b) => b.timestamp - a.timestamp)[0] : null);
     return (
       <ProvinceFactionSelect
-        onSelect={(f, difficulty) => f && startGame(f, difficulty)}
+        onSelect={(f, difficulty) => {
+          if (!f) return;
+          track('game_start', { faction: f, difficulty: difficulty ?? 'normal', isContinue: false });
+          track('onboarding_step', { step: 'faction_chosen' });
+          startGame(f, difficulty);
+        }}
         continueSave={hasContinueGame ? continueMeta : null}
         onContinue={() => {
           const state = continueGame();
@@ -334,7 +356,7 @@ export const ProvinceGame = () => {
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
               variant="ghost" size="icon"
-              onClick={() => { setShowSidebar(true); setActiveTab('goals'); }}
+              onClick={() => { track('menu_interaction', { target: 'goals_trophy' }); setShowSidebar(true); setActiveTab('goals'); }}
               title={t('hud.goalsButton')}
               className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'h-11 w-11' : 'h-8 w-8'}`}
             >
@@ -363,7 +385,7 @@ export const ProvinceGame = () => {
             )}
             <Button
               variant="ghost" size="sm"
-              onClick={() => setShowSidebar(!showSidebar)}
+              onClick={() => { track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'show_sidebar' }); setShowSidebar(!showSidebar); }}
               className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'text-sm h-11 px-3' : 'text-xs h-8'}`}
             >
               {showSidebar ? t('hud.hide') : t('hud.menu')}
@@ -883,7 +905,7 @@ export const ProvinceGame = () => {
 
             {/* Reset button at bottom */}
             <div className="mt-4 pt-3 border-t border-slate-700/30">
-              <Button variant="destructive" size="sm" className="w-full text-xs" onClick={resetGame}>
+              <Button variant="destructive" size="sm" className="w-full text-xs" onClick={handleRestart}>
                 <RotateCcw className="w-3.5 h-3.5 mr-1" /> {t('sidebar.reset')}
               </Button>
             </div>
@@ -960,7 +982,7 @@ export const ProvinceGame = () => {
         winCondition={gameState.winCondition}
         turn={gameState.turn}
         year={gameState.year}
-        onRestart={resetGame}
+        onRestart={handleRestart}
       />
       
       <BattleDisplay

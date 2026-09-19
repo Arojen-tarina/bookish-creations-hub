@@ -232,6 +232,15 @@ export const translations: Record<Language, Record<string, string>> = {
     'achv.category.campaign': 'Kampanjat',
     'achv.category.daily_weekly': 'Päivittäiset/viikoittaiset',
     'achv.category.lifetime': 'Elinikäiset',
+
+    'analytics.consent.title': '🔒 Auta meitä parantamaan peliä?',
+    'analytics.consent.body': 'Voimme kerätä nimettömiä käyttötietoja (esim. pelisessioiden pituus, mitkä ominaisuudet ovat suosittuja) parantaaksemme peliä. Ei henkilötietoja, ei sijaintia. Voit muuttaa valintaasi milloin tahansa asetuksista.',
+    'analytics.consent.accept': 'Salli tilastot',
+    'analytics.consent.decline': 'Ei kiitos',
+    'analytics.settings.title': 'Käyttötilastot',
+    'analytics.settings.desc': 'Nimettömät käyttötilastot pelin parantamiseksi.',
+    'analytics.settings.on': 'Päällä',
+    'analytics.settings.off': 'Pois',
   },
   en: {
     'lang.switch': 'Language',
@@ -437,6 +446,15 @@ export const translations: Record<Language, Record<string, string>> = {
     'achv.category.campaign': 'Campaign',
     'achv.category.daily_weekly': 'Daily/Weekly',
     'achv.category.lifetime': 'Lifetime',
+
+    'analytics.consent.title': '🔒 Help us improve the game?',
+    'analytics.consent.body': 'We can collect anonymous usage data (e.g. session length, which features are popular) to improve the game. No personal data, no location. You can change this anytime in Settings.',
+    'analytics.consent.accept': 'Allow analytics',
+    'analytics.consent.decline': 'No thanks',
+    'analytics.settings.title': 'Usage analytics',
+    'analytics.settings.desc': 'Anonymous usage analytics to help improve the game.',
+    'analytics.settings.on': 'On',
+    'analytics.settings.off': 'Off',
   },
 };
 

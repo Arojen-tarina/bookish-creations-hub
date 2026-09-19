@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          app_version: string
+          client_id: string
+          created_at: string
+          event_name: string
+          id: string
+          payload: Json
+          session_id: string
+        }
+        Insert: {
+          app_version: string
+          client_id: string
+          created_at?: string
+          event_name: string
+          id?: string
+          payload: Json
+          session_id: string
+        }
+        Update: {
+          app_version?: string
+          client_id?: string
+          created_at?: string
+          event_name?: string
+          id?: string
+          payload?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
       generated_cards: {
         Row: {
           card_type: string

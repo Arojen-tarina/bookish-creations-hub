@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, Language } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
 import type { MusicTrackId } from '@/hooks/useAudioManager.ts';
+import { getAnalyticsConsent, setAnalyticsConsent, startSession, track } from '@/lib/analytics';
 
 interface SettingsMenuProps {
   className?: string;
@@ -23,7 +24,15 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
   const [open, setOpen] = useState(false);
+  const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
   const rootRef = useRef<HTMLDivElement>(null);
+
+  const toggleAnalytics = () => {
+    const next = !analyticsOn;
+    setAnalyticsConsent(next);
+    if (next) startSession();
+    setAnalyticsOn(next);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -60,7 +69,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             {languages.map(l => (
               <button
                 key={l.id}
-                onClick={() => setLang(l.id)}
+                onClick={() => { track('settings_changed', { setting: 'language', value: l.id }); setLang(l.id); }}
                 className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
                   lang === l.id
                     ? 'bg-amber-500 text-white border-amber-400'
@@ -76,7 +85,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             {modes.map(m => (
               <button
                 key={m.id}
-                onClick={() => setDeviceMode(m.id)}
+                onClick={() => { track('settings_changed', { setting: 'deviceMode', value: m.id }); setDeviceMode(m.id); }}
                 className={`w-full text-left rounded-lg px-2 py-1.5 border transition-colors ${
                   deviceMode === m.id
                     ? 'bg-amber-500/20 border-amber-500/60'
@@ -88,6 +97,18 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
               </button>
             ))}
           </div>
+          <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mt-3 mb-1.5">{t('analytics.settings.title')}</p>
+          <button
+            onClick={toggleAnalytics}
+            className={`w-full text-left rounded-lg px-2 py-1.5 border transition-colors ${
+              analyticsOn ? 'bg-amber-500/20 border-amber-500/60' : 'bg-slate-800/60 border-amber-700/20 hover:bg-slate-800'
+            }`}
+          >
+            <span className={`text-xs font-semibold block ${analyticsOn ? 'text-amber-100' : 'text-amber-200/70'}`}>
+              {analyticsOn ? t('analytics.settings.on') : t('analytics.settings.off')}
+            </span>
+            <span className="text-[10px] text-stone-400 block leading-snug">{t('analytics.settings.desc')}</span>
+          </button>
           {musicTracks && musicTracks.length > 0 && onSelectTrack && (
             <>
               <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mt-3 mb-1.5">{t('music.title')}</p>
