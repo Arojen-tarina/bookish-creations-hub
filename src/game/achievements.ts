@@ -1,65 +1,22 @@
 /**
- * achievements.ts — Saavutusjärjestelmä
+ * achievements.ts — Saavutusjärjestelmän AchievementManager
  *
- * Saavutusten määrittelyt (id, nimi, kuvaus) elävät täällä, koska käännökset
- * ja pelitapahtumat käsitellään jo TypeScript-puolella. Lukitustila ja
- * avausajankohta tallennetaan pysyvästi: Android-builderissa natiivin
- * AchievementManager-Capacitor-pluginin kautta (SharedPreferences),
- * selaimessa (dev/preview) localStorage-varmuuskopiolla.
+ * Saavutusten määrittelyt elävät achievementDefinitions.ts:ssä (data-vetoinen,
+ * helposti laajennettava taulukko: kategoria, vaikeus, pisteet, palkinto,
+ * unlock-ehto). Tämä tiedosto vastaa vain lukitustilan tallennuksesta ja
+ * pisteiden/tason/arvonimen laskennasta. Lukitustila ja avausajankohta
+ * tallennetaan pysyvästi: Android-builderissa natiivin AchievementManager-
+ * Capacitor-pluginin kautta (SharedPreferences), selaimessa (dev/preview)
+ * localStorage-varmuuskopiolla.
  */
 import { registerPlugin, Capacitor } from '@capacitor/core';
+import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_DEFINITIONS_BY_ID } from './achievementDefinitions.ts';
+import { getPlayerLevel, getRankTitle, pointsForLevel } from './achievementTypes.ts';
+import type { Achievement, AchievementDefinition } from './achievementTypes.ts';
 import type { Language } from '@/lib/i18n.tsx';
 
-export interface AchievementDefinition {
-  id: string;
-  name: Record<Language, string>;
-  description: Record<Language, string>;
-}
-
-export interface Achievement extends AchievementDefinition {
-  unlocked: boolean;
-  unlockedAt: number | null;
-}
-
-export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
-  {
-    id: 'first_province',
-    name: { fi: 'Ensimmäinen valloitus', en: 'First Conquest' },
-    description: { fi: 'Valtasi ensimmäisen provinssin.', en: 'Captured your first province.' },
-  },
-  {
-    id: 'first_battle_won',
-    name: { fi: 'Ensitaistelu', en: 'First Blood' },
-    description: { fi: 'Voitit ensimmäisen taistelusi.', en: 'Won your first battle.' },
-  },
-  {
-    id: 'military_victory',
-    name: { fi: 'Valloittaja', en: 'Conqueror' },
-    description: { fi: 'Saavutit sotilaallisen voiton.', en: 'Achieved a military victory.' },
-  },
-  {
-    id: 'economic_victory',
-    name: { fi: 'Kultainen valtakunta', en: 'Golden Empire' },
-    description: { fi: 'Saavutit taloudellisen voiton.', en: 'Achieved an economic victory.' },
-  },
-  {
-    id: 'technology_victory',
-    name: { fi: 'Tiedon mestari', en: 'Master of Science' },
-    description: { fi: 'Saavutit teknologisen voiton.', en: 'Achieved a technology victory.' },
-  },
-  {
-    id: 'diplomatic_victory',
-    name: { fi: 'Suurliitto', en: 'Grand Alliance' },
-    description: { fi: 'Saavutit diplomaattisen voiton.', en: 'Achieved a diplomatic victory.' },
-  },
-  {
-    id: 'cultural_victory',
-    name: { fi: 'Ihmeiden rakentaja', en: 'Wonder Builder' },
-    description: { fi: 'Saavutit kulttuurisen voiton.', en: 'Achieved a cultural victory.' },
-  },
-];
-
-const DEFINITIONS_BY_ID = new Map(ACHIEVEMENT_DEFINITIONS.map(def => [def.id, def]));
+export type { Achievement, AchievementDefinition };
+export { ACHIEVEMENT_DEFINITIONS };
 
 interface UnlockResult {
   alreadyUnlocked: boolean;
@@ -134,12 +91,13 @@ const AchievementNative = registerPlugin<AchievementNativeApi>('AchievementManag
 /**
  * Public API for gameplay code. Unlock state is persisted natively on Android
  * (SharedPreferences) and via localStorage on the web; achievement metadata
- * (name/description) always comes from ACHIEVEMENT_DEFINITIONS above.
+ * (name/description/category/reward/points) always comes from
+ * ACHIEVEMENT_DEFINITIONS in achievementDefinitions.ts.
  */
 class AchievementManager {
   /** Unlocks an achievement by id. No-ops if already unlocked or the id is unknown. */
   async unlockAchievement(id: string): Promise<boolean> {
-    if (!DEFINITIONS_BY_ID.has(id)) return false;
+    if (!ACHIEVEMENT_DEFINITIONS_BY_ID.has(id)) return false;
     const { alreadyUnlocked } = await AchievementNative.unlock({ id });
     if (!alreadyUnlocked) window.dispatchEvent(new Event(ACHIEVEMENTS_UPDATED_EVENT));
     return !alreadyUnlocked;
@@ -161,6 +119,17 @@ class AchievementManager {
       unlockedAt: unlockedById.get(def.id) ?? null,
     }));
   }
+
+  /** Total achievement points currently unlocked. */
+  async getTotalPoints(): Promise<number> {
+    const { items } = await AchievementNative.getAll();
+    const unlockedIds = new Set(items.map(item => item.id));
+    let total = 0;
+    for (const def of ACHIEVEMENT_DEFINITIONS) {
+      if (unlockedIds.has(def.id)) total += def.points;
+    }
+    return total;
+  }
 }
 
 export const achievementManager = new AchievementManager();
@@ -170,3 +139,16 @@ export const ACHIEVEMENTS_UPDATED_EVENT = 'achievements:updated';
 
 /** True on Android/iOS builds; false in the browser (web/dev/preview). */
 export const isNativeAchievementStorage = () => Capacitor.isNativePlatform();
+
+/** Player level derived from total achievement points, plus its rank title (fi/en). */
+export const getPlayerProgression = (totalPoints: number, lang: Language) => {
+  const level = getPlayerLevel(totalPoints);
+  const pointsForCurrent = pointsForLevel(level);
+  const pointsForNext = pointsForLevel(level + 1);
+  return {
+    level,
+    title: getRankTitle(level)[lang],
+    pointsIntoLevel: totalPoints - pointsForCurrent,
+    pointsForNextLevel: pointsForNext - pointsForCurrent,
+  };
+};

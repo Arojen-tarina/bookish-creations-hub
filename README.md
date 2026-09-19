@@ -27,18 +27,11 @@ Tuotantoversio luodaan komennolla:
 npm run build
 ```
 
-## Hirvi-avustajan ChatGPT-asetus
+## Hirvi-avustaja
 
-Hirvi-avustaja käyttää Supabase Edge Functionia ja OpenAI:n `gpt-4o-mini`-
-mallia. Aseta OpenAI-avaimesi Supabase-projektin salaisuudeksi ennen
-`moose-chat`-funktion julkaisemista:
-
-```sh
-supabase secrets set OPENAI_API_KEY=your_openai_api_key
-supabase functions deploy moose-chat
-```
-
-Älä lisää API-avainta selaimen ympäristömuuttujiin tai versionhallintaan.
+Hirvi-avustaja vastaa pelikysymyksiin täysin paikallisella avainsanahaulla
+(`src/game/mooseFaq.ts`) — ei ulkoisia API-kutsuja eikä salaisuuksia
+tarvita.
 
 ## Huomio
 
