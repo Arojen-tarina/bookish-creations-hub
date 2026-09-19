@@ -23,6 +23,7 @@ export const MooseAssistant = () => {
   const { lang, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [thinking, setThinking] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
