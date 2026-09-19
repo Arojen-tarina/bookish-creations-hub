@@ -18,7 +18,28 @@ import { ACHIEVEMENT_DEFINITIONS } from '@/game/achievementDefinitions.ts';
 import { getPlayerStats, updatePlayerStats, addUniqueToStat } from '@/game/playerStats.ts';
 import { PLAYER_STATS_UPDATED_EVENT } from '@/game/playerStats.ts';
 import type { PlayerStats } from '@/game/achievementTypes.ts';
+import { logSecurityEvent } from '@/lib/securityLog.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
+
+// Generous per-tick ceilings for stat deltas — normal play never gets close to
+// these in a single render tick, so hitting one means a save was loaded with a
+// huge jump, or live game state was edited via devtools/console. Clamping (and
+// logging) instead of trusting the raw delta keeps a single anomalous tick from
+// flooding lifetime stats and instant-unlocking achievements.
+const MAX_PER_TICK = {
+  provinces: 20,
+  gold: 500,
+  buildings: 5,
+  units: 5,
+  cards: 10,
+  treaties: 5,
+} as const;
+
+const clampDelta = (value: number, max: number, key: string): number => {
+  if (value <= max) return value;
+  logSecurityEvent('stat_anomaly', { key, value, max });
+  return max;
+};
 import type { MVPGameState } from '@/hooks/useProvinceGameState.ts';
 import type { BattleResult } from '@/game/BattleDisplay.tsx';
 import type { FactionId } from '@/types/province.ts';
@@ -85,9 +106,14 @@ export const useAchievementTracking = (
 
     const prev = prevStateRef.current;
 
-    // A turn counter that goes backwards means a new game started — resync
-    // the baseline instead of computing a (meaningless, likely negative) diff.
-    if (prev && gameState.turn < prev.turn) {
+    // A turn counter that jumps by more than one (backwards OR forwards) means
+    // a save was loaded or a new game started, not organic turn-by-turn play.
+    // Diffing across that seam would credit the player for the save's entire
+    // pre-existing progress in a single tick (a real exploit: edit/load a save
+    // with 100 provinces and 9999 gold to instant-unlock most achievements) —
+    // resync the baseline instead and skip this tick's diff entirely.
+    if (prev && Math.abs(gameState.turn - prev.turn) > 1) {
+      logSecurityEvent('save_resync', { fromTurn: prev.turn, toTurn: gameState.turn });
       prevStateRef.current = gameState;
       gameOverHandledRef.current = false;
       return;
@@ -124,40 +150,42 @@ export const useAchievementTracking = (
 
       if (prev) {
         const prevOwnedIds = new Set(prev.provinces.filter(p => p.ownerId === playerFaction).map(p => p.id));
-        const captured = [...ownedIds].filter(id => !prevOwnedIds.has(id));
-        const lost = [...prevOwnedIds].filter(id => !ownedIds.has(id));
-        patch.provincesCaptured = current.provincesCaptured + captured.length;
-        patch.provincesLost = current.provincesLost + lost.length;
+        const captured = clampDelta([...ownedIds].filter(id => !prevOwnedIds.has(id)).length, MAX_PER_TICK.provinces, 'provincesCaptured');
+        const lost = clampDelta([...prevOwnedIds].filter(id => !ownedIds.has(id)).length, MAX_PER_TICK.provinces, 'provincesLost');
+        patch.provincesCaptured = current.provincesCaptured + captured;
+        patch.provincesLost = current.provincesLost + lost;
 
         const ownCapitalId = faction?.capitalId;
-        const capitalsCapturedNow = captured.filter(id => {
+        const capitalsCapturedNow = [...ownedIds].filter(id => !prevOwnedIds.has(id)).filter(id => {
           const province = gameState.provinces.find(p => p.id === id);
           return province?.isCapital && id !== ownCapitalId;
         }).length;
-        if (capitalsCapturedNow > 0) patch.capitalsCaptured = current.capitalsCaptured + capitalsCapturedNow;
+        if (capitalsCapturedNow > 0) patch.capitalsCaptured = current.capitalsCaptured + clampDelta(capitalsCapturedNow, 4, 'capitalsCaptured');
 
         const prevTreasury = prev.factions.find(f => f.id === playerFaction)?.treasury ?? 0;
-        patch.goldEarnedTotal = current.goldEarnedTotal + Math.max(0, treasury - prevTreasury);
+        const goldDelta = clampDelta(Math.max(0, treasury - prevTreasury), MAX_PER_TICK.gold, 'goldEarnedTotal');
+        patch.goldEarnedTotal = current.goldEarnedTotal + goldDelta;
 
         const prevBuildingLists = Object.values(prev.buildings);
         const prevBuildingTotal = prevBuildingLists.reduce((sum, list) => sum + list.length, 0);
         const prevWonderTotal = prevBuildingLists.reduce((sum, list) => sum + list.filter(b => b === 'wonder').length, 0);
-        patch.buildingsBuilt = current.buildingsBuilt + Math.max(0, buildingTotal - prevBuildingTotal);
-        patch.wondersBuilt = current.wondersBuilt + Math.max(0, wonderTotal - prevWonderTotal);
+        patch.buildingsBuilt = current.buildingsBuilt + clampDelta(Math.max(0, buildingTotal - prevBuildingTotal), MAX_PER_TICK.buildings, 'buildingsBuilt');
+        patch.wondersBuilt = current.wondersBuilt + clampDelta(Math.max(0, wonderTotal - prevWonderTotal), MAX_PER_TICK.buildings, 'wondersBuilt');
 
         const prevPlayerArmyIds = new Set(prev.armies.filter(a => a.ownerId === playerFaction).map(a => a.id));
-        const newArmies = [...playerArmyIds].filter(id => !prevPlayerArmyIds.has(id));
-        patch.unitsRecruited = current.unitsRecruited + newArmies.length;
+        const newArmiesCount = [...playerArmyIds].filter(id => !prevPlayerArmyIds.has(id)).length;
+        patch.unitsRecruited = current.unitsRecruited + clampDelta(newArmiesCount, MAX_PER_TICK.units, 'unitsRecruited');
 
         // A played card (any type) always lands in `discard`; it gets flushed
         // back to [] when a fresh hand is drawn. Catching that reset is the
         // only place we can see the full list of what was actually played.
         if (gameState.discard.length < prev.discard.length && prev.discard.length > 0) {
+          const playedCards = prev.discard.slice(0, clampDelta(prev.discard.length, MAX_PER_TICK.cards, 'cardsPlayedTotal'));
           let uniqueCardIdsPlayed = current.uniqueCardIdsPlayed;
           let cardsPlayedTotal = current.cardsPlayedTotal;
           let techCardsPlayedTotal = current.techCardsPlayedTotal;
           let legendaryCardsPlayed = current.legendaryCardsPlayed;
-          for (const card of prev.discard) {
+          for (const card of playedCards) {
             cardsPlayedTotal += 1;
             if (card.type === 'technology') techCardsPlayedTotal += 1;
             if (card.rarity === 'legendary') legendaryCardsPlayed += 1;
@@ -181,7 +209,7 @@ export const useAchievementTracking = (
             (r.factionA === relation.factionB && r.factionB === relation.factionA));
           const prevTypes = new Set(prevRelation?.treaties.map(t => t.type) ?? []);
           const newTreatyCount = relation.treaties.length - (prevRelation?.treaties.length ?? 0);
-          if (newTreatyCount > 0) treatiesSigned += newTreatyCount;
+          if (newTreatyCount > 0) treatiesSigned += clampDelta(newTreatyCount, MAX_PER_TICK.treaties, 'treatiesSigned');
           for (const treaty of relation.treaties) {
             if (prevTypes.has(treaty.type)) continue;
             if (treaty.type === 'alliance') alliancesFormed += 1;

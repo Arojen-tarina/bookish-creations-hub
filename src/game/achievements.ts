@@ -13,6 +13,7 @@ import { registerPlugin, Capacitor } from '@capacitor/core';
 import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_DEFINITIONS_BY_ID } from './achievementDefinitions.ts';
 import { getPlayerLevel, getRankTitle, pointsForLevel } from './achievementTypes.ts';
 import type { Achievement, AchievementDefinition } from './achievementTypes.ts';
+import { readSecure, writeSecure } from '@/lib/secureStorage.ts';
 import type { Language } from '@/lib/i18n.tsx';
 
 export type { Achievement, AchievementDefinition };
@@ -40,24 +41,29 @@ interface AchievementNativeApi {
 }
 
 const WEB_STORAGE_KEY = 'arojen_tarinat_achievements';
+const ACHIEVEMENTS_VERSION = 1;
+
+const isUnlockedMapShape = (value: unknown): value is Record<string, number> => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  return Object.entries(value as Record<string, unknown>).every(
+    ([id, at]) => ACHIEVEMENT_DEFINITIONS_BY_ID.has(id) && typeof at === 'number' && at > 0 && at <= Date.now(),
+  );
+};
 
 /** localStorage-backed fallback used outside the native Android app (web/dev/preview). */
 class AchievementWebStore implements AchievementNativeApi {
   private read(): Record<string, number> {
-    try {
-      const raw = localStorage.getItem(WEB_STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
+    const result = readSecure(WEB_STORAGE_KEY, isUnlockedMapShape);
+    if (result.status === 'ok') return result.data;
+    if (result.status !== 'missing') {
+      // Tampered/corrupt/invalid (includes unknown ids or future-dated unlocks) — never trust it.
+      this.write({});
     }
+    return {};
   }
 
   private write(unlocked: Record<string, number>) {
-    try {
-      localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(unlocked));
-    } catch {
-      // Storage unavailable (e.g. private mode) — unlocks just won't persist.
-    }
+    writeSecure(WEB_STORAGE_KEY, ACHIEVEMENTS_VERSION, unlocked);
   }
 
   async unlock({ id }: { id: string }): Promise<UnlockResult> {

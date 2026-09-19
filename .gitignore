@@ -36,3 +36,11 @@ android/app/release/
 
 # Supabase CLI local cache
 supabase/.temp/
+
+# Environment files (.env is currently tracked in git history — run
+# `git rm --cached .env` once to stop tracking it going forward; the
+# VITE_SUPABASE_PUBLISHABLE_KEY in it is a public anon key by Supabase's own
+# design, but committed env files are still bad practice in general).
+.env
+.env.local
+.env.*.local
