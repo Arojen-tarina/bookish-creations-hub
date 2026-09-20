@@ -178,14 +178,23 @@ with snapshots as (
     payload->>'difficulty' as difficulty
   from public.analytics_events
   where event_name = 'progression_snapshot'
+), deltas as (
+  select
+    session_id,
+    faction,
+    difficulty,
+    turn,
+    treasury,
+    treasury - lag(treasury) over (partition by session_id order by turn) as treasury_delta
+  from snapshots
 )
 select
   faction,
   difficulty,
   turn,
   avg(treasury) as avg_treasury,
-  avg(treasury - lag(treasury) over (partition by session_id order by turn)) as avg_treasury_delta
-from snapshots
+  avg(treasury_delta) as avg_treasury_delta
+from deltas
 group by faction, difficulty, turn
 order by faction, difficulty, turn;
 
