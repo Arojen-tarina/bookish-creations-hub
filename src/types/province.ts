@@ -346,6 +346,22 @@ export const PROVINCE_TERRAIN_INFO: Record<ProvinceTerrain, {
   },
 };
 
+export interface ProvinceDefenseBreakdown {
+  terrain: number;
+  fortress: number;
+  additional: number;
+  total: number;
+}
+
+export const getProvinceDefenseBreakdown = (
+  province: Province,
+  additionalDefense = 0,
+): ProvinceDefenseBreakdown => {
+  const terrain = PROVINCE_TERRAIN_INFO[province.terrain].defenseBonus * 2;
+  const fortress = province.fortLevel * 3;
+  return { terrain, fortress, additional: additionalDefense, total: terrain + fortress + additionalDefense };
+};
+
 export const TRADE_GOODS_INFO: Record<TradeGood, {
   name: string;
   emoji: string;

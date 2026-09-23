@@ -5,7 +5,7 @@
  * interaktiivisina pelinappuloina laudan päälle.
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
-import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
+import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getProvinceDefenseBreakdown } from '@/types/province.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
@@ -418,10 +418,7 @@ const ProvinceTooltip = ({
   };
   
   // Calculate defense breakdown
-  const terrainDefense = Math.round(terrainInfo.defenseBonus * 0.2 * 100) / 100; // Convert to percentage for display
-  const fortDefense = Math.round(province.fortLevel * 0.35 * 100) / 100;
-  const cardDefense = defenseBonus;
-  const totalDefense = terrainDefense + fortDefense + cardDefense;
+  const defenseBreakdown = getProvinceDefenseBreakdown(province, defenseBonus);
   
   return (
     <div
@@ -449,12 +446,12 @@ const ProvinceTooltip = ({
         <div className="flex justify-between">
           <span>{lang === 'en' ? 'Defense:' : 'Puolustus:'}</span>
           <span className="text-green-400 font-bold">
-            🛡️ {totalDefense.toFixed(1)} 
-            {terrainDefense > 0 || fortDefense > 0 || cardDefense > 0 ? (
+            🛡️ {defenseBreakdown.total}
+            {defenseBreakdown.total > 0 ? (
               <span className="text-stone-400 text-[10px] ml-1">
-                ({terrainDefense > 0 ? `${terrainDefense.toFixed(1)}m` : ''}
-                {fortDefense > 0 ? `${terrainDefense > 0 ? '+' : ''}${fortDefense.toFixed(1)}l` : ''}
-                {cardDefense > 0 ? `${terrainDefense > 0 || fortDefense > 0 ? '+' : ''}${cardDefense.toFixed(1)}k` : ''})
+                ({defenseBreakdown.terrain > 0 ? `${defenseBreakdown.terrain}m` : ''}
+                {defenseBreakdown.fortress > 0 ? `${defenseBreakdown.terrain > 0 ? '+' : ''}${defenseBreakdown.fortress}l` : ''}
+                {defenseBreakdown.additional > 0 ? `${defenseBreakdown.terrain > 0 || defenseBreakdown.fortress > 0 ? '+' : ''}${defenseBreakdown.additional}k` : ''})
               </span>
             ) : null}
           </span>

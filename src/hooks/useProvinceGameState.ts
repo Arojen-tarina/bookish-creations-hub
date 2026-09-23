@@ -819,7 +819,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       // without a fight — no losses, buildings preserved.
       if (defender && !enemyArmies[0] && provinceGarrison) {
         const attackerStrength = (army.cavalry * 3 + army.infantry * 1.5 + army.siege * 2) * (1 + army.leaderBonus);
-        const defenderStrength = (defender.infantry * 2 + defender.cavalry * 2) * (1 + targetProvince.fortLevel * 0.35);
+        const defenderStrength = defender.infantry * 2 + defender.cavalry * 2 + targetProvince.fortLevel * 3;
         if (attackerStrength > defenderStrength * 3) {
           const pIdx = newProvinces.findIndex(p => p.id === targetProvinceId);
           if (pIdx !== -1) {

@@ -315,7 +315,7 @@ export function calculateAIActions(
       const enemyStrength = enemyArmiesHere.reduce((s, a) => s + armyStrength(a), 0);
       const myStr = armyStrength(army);
       const terrainInfo = PROVINCE_TERRAIN_INFO[neighbor.terrain];
-      const effectiveEnemyStr = enemyStrength * (1 + terrainInfo.defenseBonus * 0.2) * (1 + neighbor.fortLevel * 0.3);
+      const effectiveEnemyStr = enemyStrength + terrainInfo.defenseBonus * 2 + neighbor.fortLevel * 3;
 
       const ratio = myStr / Math.max(1, effectiveEnemyStr);
       if (ratio < weights.aggressionThreshold) continue;

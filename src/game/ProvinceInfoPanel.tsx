@@ -5,7 +5,7 @@
  * omistaja, maasto, verot, miesvoima, puolustus, linnoitus,
  * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
  */
-import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206 } from '@/types/province.ts';
+import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getProvinceDefenseBreakdown } from '@/types/province.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
@@ -57,9 +57,7 @@ export const ProvinceInfoPanel = ({
   const isPlayerOwned = province.ownerId === playerFaction;
   
   // Defense breakdown: terrain + fort + cards
-  const terrainDefenseBonus = Math.round(terrainInfo.defenseBonus * 0.2 * 100) / 100;
-  const fortDefenseBonus = Math.round(province.fortLevel * 0.35 * 100) / 100;
-  const totalDefenseBonus = terrainDefenseBonus + fortDefenseBonus + defenseBonus;
+  const defenseBreakdown = getProvinceDefenseBreakdown(province, defenseBonus);
   
   const playerArmies = armies.filter(a => a.ownerId === playerFaction);
   const enemyArmies = armies.filter(a => a.ownerId !== playerFaction);
@@ -126,11 +124,12 @@ export const ProvinceInfoPanel = ({
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Shield className="w-5 h-5 text-green-400 mx-auto mb-1" />
-            <div className="text-lg font-bold text-green-100">+{totalDefenseBonus}</div>
+            <div className="text-lg font-bold text-green-100">+{defenseBreakdown.total}</div>
             <div className="text-xs text-stone-400">{lang === 'en' ? 'Defense' : 'Puolustus'}</div>
             {province.fortLevel > 0 && (
               <div className="text-[10px] text-amber-300/80 mt-1">
-                {lang === 'en' ? 'terrain' : 'maasto'} {terrainInfo.defenseBonus} + {lang === 'en' ? 'fortress' : 'linnoitus'} {province.fortLevel * 3}
+                {lang === 'en' ? 'terrain' : 'maasto'} +{defenseBreakdown.terrain} + {lang === 'en' ? 'fortress' : 'linnoitus'} +{defenseBreakdown.fortress}
+                {defenseBreakdown.additional > 0 && ` + ${lang === 'en' ? 'effects' : 'vaikutukset'} +${defenseBreakdown.additional}`}
               </div>
             )}
           </div>
