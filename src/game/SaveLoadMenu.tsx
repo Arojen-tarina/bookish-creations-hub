@@ -6,6 +6,7 @@
  * (localStorage), joka oli aiemmin toteutettu mutta ei kytketty käyttöliittymään.
  */
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Save, FolderOpen, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { toast } from 'sonner';
@@ -26,14 +27,35 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
   const { saves, saveGame, loadGame, deleteGame } = useSaveManager();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+
+  const updateMenuPosition = () => {
+    const button = rootRef.current?.querySelector('button');
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    setMenuPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+  };
 
   useEffect(() => {
     if (!open) return;
     const onClickOutside = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (!rootRef.current?.contains(target) && !menuRef.current?.contains(target)) setOpen(false);
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    updateMenuPosition();
+    window.addEventListener('resize', updateMenuPosition);
+    window.addEventListener('scroll', updateMenuPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition);
+      window.removeEventListener('scroll', updateMenuPosition, true);
+    };
   }, [open]);
 
   const metaForSlot = (slot: number) => saves.find(s => s.slotNumber === slot) ?? null;
@@ -66,8 +88,12 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
       >
         <Save className="w-4 h-4" />
       </Button>
-      {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-72 rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3">
+      {open && createPortal(
+        <div
+          ref={menuRef}
+          className="fixed z-[10000] w-72 rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
+          style={{ top: menuPosition.top, right: menuPosition.right }}
+        >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('save.title')}</p>
           <div className="space-y-1.5 max-h-80 overflow-y-auto scrollbar-thin">
             {SLOTS.map(slot => {
@@ -111,7 +137,8 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
               );
             })}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
