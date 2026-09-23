@@ -85,23 +85,18 @@ export const ProvinceGame = () => {
   // sisältö osataan sijoittaa oikein riippumatta siitä montako riviä
   // yläpalkki tarvitsee (mobiilissa resurssit siirtyvät omalle rivilleen,
   // jotta ne eivät koskaan jää painikkeiden alle).
-  const hudRef = useRef<HTMLDivElement>(null);
-  const phaseBarWrapRef = useRef<HTMLDivElement>(null);
-  const [hudHeight, setHudHeight] = useState(48);
-  const [phaseBarWrapHeight, setPhaseBarWrapHeight] = useState(40);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(88);
   useEffect(() => {
-    const hudEl = hudRef.current;
-    const phaseEl = phaseBarWrapRef.current;
-    if (!hudEl || !phaseEl) return;
-    const roHud = new ResizeObserver(() => setHudHeight(hudEl.offsetHeight));
-    const roPhase = new ResizeObserver(() => setPhaseBarWrapHeight(phaseEl.offsetHeight));
-    roHud.observe(hudEl);
-    roPhase.observe(phaseEl);
-    setHudHeight(hudEl.offsetHeight);
-    setPhaseBarWrapHeight(phaseEl.offsetHeight);
-    return () => { roHud.disconnect(); roPhase.disconnect(); };
+    const headerEl = headerRef.current;
+    if (!headerEl) return;
+    const updateHeaderHeight = () => setHeaderHeight(headerEl.offsetHeight);
+    const resizeObserver = new ResizeObserver(updateHeaderHeight);
+    resizeObserver.observe(headerEl);
+    updateHeaderHeight();
+    return () => resizeObserver.disconnect();
   }, [isMobileMode]);
-  const headerTotalH = hudHeight + phaseBarWrapHeight;
+  const headerTotalH = headerHeight;
 
   // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
   const HAND_BASE_H = 168;
@@ -298,7 +293,8 @@ export const ProvinceGame = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
       
       {/* ============= TOP HUD ============= */}
-      <div ref={hudRef} className="fixed top-0 left-0 right-0 z-30">
+      <div ref={headerRef} className="fixed top-0 left-0 right-0 z-40">
+        <div className="relative z-30">
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
         <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5 min-h-[5rem]' : 'h-12 items-center justify-between'}`}>
           {/* Left: Faction + Year */}
@@ -392,17 +388,18 @@ export const ProvinceGame = () => {
             </Button>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* ============= PHASE BAR ============= */}
-      <div ref={phaseBarWrapRef} className="fixed left-0 right-0 z-40 px-3 py-1.5" style={{ top: hudHeight }}>
-        <PhaseBar
-          currentPhase={gameState.phase}
-          onNextPhase={nextPhase}
-          onEndTurn={endTurn}
-          disabled={showAIOverlay}
-          compact={!isMobileMode}
-        />
+        {/* Keep the phase bar in the HUD flow so its position is stable on first render. */}
+        <div className="relative z-40 px-3 py-1.5">
+          <PhaseBar
+            currentPhase={gameState.phase}
+            onNextPhase={nextPhase}
+            onEndTurn={endTurn}
+            disabled={showAIOverlay}
+            compact={!isMobileMode}
+          />
+        </div>
       </div>
 
 
