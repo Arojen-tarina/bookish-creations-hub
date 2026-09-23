@@ -27,8 +27,8 @@ export const MOOSE_FAQ: FaqEntry[] = [
     id: 'phases',
     keywords: { fi: ['vuoro', 'vaihe', 'vaiheet'], en: ['turn', 'phase', 'phases'] },
     answer: {
-      fi: 'Joka vuoro on 6 vaihetta järjestyksessä: 🪙 Resurssit → 🃏 Kortit → 🐴 Liike → ⚔️ Taistelu → 🏗️ Rakenna → 🏁 Lopeta. Paina "Seuraava" siirtyäksesi vaiheesta toiseen.',
-      en: 'Each turn has 6 phases in order: 🪙 Resources → 🃏 Cards → 🐴 Move → ⚔️ Battle → 🏗️ Build → 🏁 End. Press "Next" to move to the next phase.',
+      fi: 'Joka vuoro on 5 vaihetta järjestyksessä: 🪙 Resurssit → 🃏 Kortit → ⚔️ Hyökkäys → 🏗️ Rakenna → 🏁 Lopeta. Paina "Seuraava" siirtyäksesi vaiheesta toiseen.',
+      en: 'Each turn has 5 phases in order: 🪙 Resources → 🃏 Cards → ⚔️ Attack → 🏗️ Build → 🏁 End. Press "Next" to move to the next phase.',
     },
   },
   {
@@ -91,8 +91,8 @@ export const MOOSE_FAQ: FaqEntry[] = [
     id: 'combat',
     keywords: { fi: ['taistelu', 'hyökkää', 'hyökkäys', 'sota', 'armeija'], en: ['combat', 'battle', 'attack', 'war', 'army'] },
     answer: {
-      fi: 'Taistelu: liikuta armeija vihollisen alueelle Liike- tai Taistelu-vaiheessa. Voimat lasketaan ratsuväestä, jalkaväestä, piiritystykistä ja bonuksista, plus nopanheitto — suurempi tulos voittaa.',
-      en: 'Combat: move an army into an enemy province during the Move or Battle phase. Power is calculated from cavalry, infantry, siege, and bonuses, plus a dice roll — the higher score wins.',
+      fi: 'Hyökkäysvaiheessa liikuta armeijaa tai hyökkää vihollisen alueelle. Voimat lasketaan ratsuväestä, jalkaväestä, piiritystykistä ja bonuksista, plus nopanheitto — suurempi tulos voittaa.',
+      en: 'During the Attack phase, move an army or attack an enemy province. Power is calculated from cavalry, infantry, siege, and bonuses, plus a dice roll — the higher score wins.',
     },
   },
   {

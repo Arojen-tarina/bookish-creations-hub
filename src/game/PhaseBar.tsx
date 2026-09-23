@@ -11,13 +11,13 @@ import { Button } from '@/components/ui/button.tsx';
 import { ArrowRight, Check, ChevronDown, ChevronUp, Flag, GripHorizontal } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n.tsx';
 
-export type MVPPhase = 'resource' | 'cards' | 'move' | 'battle' | 'build' | 'end';
+export type MVPPhase = 'resource' | 'cards' | 'attack' | 'build' | 'end';
 
 const PHASE_EMOJI: Record<MVPPhase, string> = {
-  resource: '🪙', cards: '🃏', move: '🐴', battle: '⚔️', build: '🏗️', end: '🏁',
+  resource: '🪙', cards: '🃏', attack: '⚔️', build: '🏗️', end: '🏁',
 };
 
-const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
+const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'attack', 'build', 'end'];
 
 interface PhaseBarProps {
   currentPhase: MVPPhase;

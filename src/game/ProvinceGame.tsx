@@ -2,7 +2,7 @@
  * ProvinceGame.tsx — Pelattava MVP-strategiapeli
  *
  * Kokonainen vuoropohjainen pelilooppi:
- * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
+ * Resurssit → Kortit → Hyökkäys → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
@@ -221,7 +221,7 @@ export const ProvinceGame = () => {
   const handleProvinceClick = useCallback((provinceId: string) => {
     if (!gameState) return;
     
-    if (gameState.selectedArmyId && (gameState.phase === 'move' || gameState.phase === 'battle')) {
+    if (gameState.selectedArmyId && gameState.phase === 'attack') {
       if (canMoveTo(gameState.selectedArmyId, provinceId)) {
         moveArmy(gameState.selectedArmyId, provinceId);
         setAttackMode(false);
@@ -662,7 +662,7 @@ export const ProvinceGame = () => {
                     )}
                     
                     {/* Army selection */}
-                    {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && (gameState.phase === 'move' || gameState.phase === 'battle') && (
+                    {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).length > 0 && gameState.phase === 'attack' && (
                       <Card className="bg-green-900/30 border-green-700/30">
                         <CardContent className="p-3">
                           <h4 className="text-green-200 text-sm font-semibold mb-2 flex items-center gap-1">

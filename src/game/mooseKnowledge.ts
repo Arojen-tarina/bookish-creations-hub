@@ -23,8 +23,8 @@ const LOCAL_KNOWLEDGE: LocalKnowledgeEntry[] = [
   {
     keywords: { fi: ['vuoro', 'vaihe', 'vaiheet'], en: ['turn', 'phase', 'phases'] },
     answer: {
-      fi: 'Vuoron kuusi vaihetta ovat Resurssit, Kortit, Liike, Taistelu, Rakenna ja Lopeta.',
-      en: 'The six turn phases are Resources, Cards, Move, Battle, Build, and End.',
+      fi: 'Vuoron viisi vaihetta ovat Resurssit, Kortit, Hyökkäys, Rakenna ja Lopeta.',
+      en: 'The five turn phases are Resources, Cards, Attack, Build, and End.',
     },
   },
   {

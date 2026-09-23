@@ -122,10 +122,9 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
             {[
               { num: '1', icon: '🪙', title: t('faction.step1.title'), desc: t('faction.step1.desc'), color: 'border-amber-700/40 bg-amber-900/10' },
               { num: '2', icon: '🃏', title: t('faction.step2.title'), desc: t('faction.step2.desc'), color: 'border-purple-700/40 bg-purple-900/10' },
-              { num: '3', icon: '🐴', title: t('faction.step3.title'), desc: t('faction.step3.desc'), color: 'border-green-700/40 bg-green-900/10' },
-              { num: '4', icon: '⚔️', title: t('faction.step4.title'), desc: t('faction.step4.desc'), color: 'border-red-700/40 bg-red-900/10' },
-              { num: '5', icon: '🏗️', title: t('faction.step5.title'), desc: t('faction.step5.desc'), color: 'border-blue-700/40 bg-blue-900/10' },
-              { num: '6', icon: '🏁', title: t('faction.step6.title'), desc: t('faction.step6.desc'), color: 'border-stone-600/40 bg-stone-800/20' },
+              { num: '3', icon: '⚔️', title: t('faction.step3.title'), desc: t('faction.step3.desc'), color: 'border-red-700/40 bg-red-900/10' },
+              { num: '4', icon: '🏗️', title: t('faction.step4.title'), desc: t('faction.step4.desc'), color: 'border-blue-700/40 bg-blue-900/10' },
+              { num: '5', icon: '🏁', title: t('faction.step5.title'), desc: t('faction.step5.desc'), color: 'border-stone-600/40 bg-stone-800/20' },
             ].map(step => (
               <div key={step.num} className={`rounded-xl border p-3 ${step.color}`}>
                 <div className="flex items-center gap-2 mb-1.5">

@@ -25,7 +25,7 @@ const CHAPTERS: { id: string; num: string; label: Bi }[] = [
   { id: 'voitto',      num: 'III',   label: { fi: 'Voittoehdot — viisi tietä', en: 'Victory conditions — five paths' } },
   { id: 'fraktiot',    num: 'IV',    label: { fi: 'Fraktiot ja aloitusasetelma', en: 'Factions and starting setup' } },
   { id: 'kartta',      num: 'V',     label: { fi: 'Kartta, provinssit ja maasto', en: 'Map, provinces and terrain' } },
-  { id: 'vuoro',       num: 'VI',    label: { fi: 'Vuoron rakenne (6 vaihetta)', en: 'Turn structure (6 phases)' } },
+  { id: 'vuoro',       num: 'VI',    label: { fi: 'Vuoron rakenne (5 vaihetta)', en: 'Turn structure (5 phases)' } },
   { id: 'talous',      num: 'VII',   label: { fi: 'Resurssit ja talous', en: 'Resources and economy' } },
   { id: 'silkkitie',   num: 'VIII',  label: { fi: 'Silkkitie ja kauppasolmut', en: 'The Silk Road and trade nodes' } },
   { id: 'rakennukset', num: 'IX',    label: { fi: 'Rakennukset', en: 'Buildings' } },
@@ -159,8 +159,8 @@ const Ohjekirja = () => {
               en="Tales of the Steppe (Story of the Steppe) is a turn-based strategy game set in 1206 AD — the moment Temüjin was proclaimed Genghis Khan and the peoples of the steppe upended the world. The player leads one of four great powers and seeks victory along one of five different paths (Chapter III)."
             />
             <Para n="1.2"
-              fi="Peli on yhden pelaajan peli tekoälyvastustajia vastaan. Jokainen vuosi on yksi vuoro, joka jakautuu kuuteen vaiheeseen (Luku VI). Pelaaja hallitsee provinsseja (kyliä), kerää resursseja, rakentaa rakennuksia, rekrytoi armeijoita, pelaa kortteja, käy diplomatiaa ja sotaa."
-              en="It is a single-player game against AI opponents. Each year is one turn, divided into six phases (Chapter VI). The player controls provinces (villages), gathers resources, constructs buildings, recruits armies, plays cards, and conducts diplomacy and war."
+              fi="Peli on yhden pelaajan peli tekoälyvastustajia vastaan. Jokainen vuosi on yksi vuoro, joka jakautuu viiteen vaiheeseen (Luku VI). Pelaaja hallitsee provinsseja (kyliä), kerää resursseja, rakentaa rakennuksia, rekrytoi armeijoita, pelaa kortteja, käy diplomatiaa ja sotaa."
+              en="It is a single-player game against AI opponents. Each year is one turn, divided into five phases (Chapter VI). The player controls provinces (villages), gathers resources, constructs buildings, recruits armies, plays cards, and conducts diplomacy and war."
             />
             <Para n="1.3"
               fi="Tämä sääntökirja kuvaa pelin säännöt sellaisina kuin ne on toteutettu. Numeroarvot (kustannukset, bonukset, kynnykset) ovat sitovia ja vastaavat pelin logiikkaa. Ristiriitatilanteessa peli itse ratkaisee, mutta tavoite on, että tämä kirja ja peli ovat yhtäpitävät."
@@ -246,21 +246,19 @@ const Ohjekirja = () => {
               en="Farmland and grassland produce food; steppe and horse provinces produce horses; farmland and hills produce artisans (Chapter VII). Mountains and hills give the best defense but slow movement." />
           </Chapter>
 
-          <Chapter id="vuoro" num="VI" title={{ fi: 'Vuoron rakenne (6 vaihetta)', en: 'Turn structure (6 phases)' }}>
-            <Para n="6.1" fi='Jokainen vuoro (vuosi) etenee kuuden vaiheen läpi kiinteässä järjestyksessä. Vaiheesta toiseen siirrytään "Seuraava"-painikkeella.'
-              en='Each turn (year) proceeds through six phases in a fixed order. Move from one phase to the next with the "Next" button.' />
+          <Chapter id="vuoro" num="VI" title={{ fi: 'Vuoron rakenne (5 vaihetta)', en: 'Turn structure (5 phases)' }}>
+            <Para n="6.1" fi='Jokainen vuoro (vuosi) etenee viiden vaiheen läpi kiinteässä järjestyksessä. Vaiheesta toiseen siirrytään "Seuraava"-painikkeella.'
+              en='Each turn (year) proceeds through five phases in a fixed order. Move from one phase to the next with the "Next" button.' />
             <Para n="6.2" fi="**1. Resurssit:** kerää tulot hallituista provinsseista (kulta, miesvoima, ruoka, hevoset, käsityöläiset) sekä vaikutus- ja arvovalta. Tulot lasketaan Luvun VII kaavoilla."
               en="**1. Resources:** collect income from controlled provinces (gold, manpower, food, horses, artisans) plus influence and prestige. Income is calculated with the formulas in Chapter VII." />
             <Para n="6.3" fi="**2. Kortit:** nosta 1 kortti pakasta (aloituskäsi on 5) ja pelaa haluamasi kortit kädestäsi. Korttien vaikutukset Luvussa XIV."
               en="**2. Cards:** draw 1 card from the deck (the starting hand is 5) and play whichever cards you like from your hand. Card effects are in Chapter XIV." />
-            <Para n="6.4" fi="**3. Liike:** siirrä armeijoita naapuriprovinsseihin maaston liikekustannuksen mukaan."
-              en="**3. Move:** move armies into neighboring provinces according to the terrain's movement cost." />
-            <Para n="6.5" fi="**4. Taistelu:** ratkaise hyökkäykset vihollisen tai neutraalin hallitsemiin provinsseihin (Luku XI)."
-              en="**4. Battle:** resolve attacks against enemy- or neutral-controlled provinces (Chapter XI)." />
-            <Para n="6.6" fi="**5. Rakenna:** rakenna rakennuksia omiin provinsseihisi ja rekrytoi joukkoja (Luvut IX–X)."
-              en="**5. Build:** construct buildings in your own provinces and recruit troops (Chapters IX–X)." />
-            <Para n="6.7" fi="**6. Lopeta vuoro:** tekoälyvastustajat tekevät siirtonsa, piiritykset etenevät, pysyvät bonukset päivittyvät, voittoehdot tarkistetaan ja uusi vuosi alkaa."
-              en="**6. End turn:** the AI opponents make their moves, sieges advance, permanent bonuses update, victory conditions are checked, and a new year begins." />
+            <Para n="6.4" fi="**3. Hyökkäys:** siirrä armeijoita naapuriprovinsseihin tai ratkaise hyökkäykset vihollisen tai neutraalin hallitsemiin provinsseihin (Luku XI)."
+              en="**3. Attack:** move armies into neighboring provinces or resolve attacks against enemy- or neutral-controlled provinces (Chapter XI)." />
+            <Para n="6.5" fi="**4. Rakenna:** rakenna rakennuksia omiin provinsseihisi ja rekrytoi joukkoja (Luvut IX–X)."
+              en="**4. Build:** construct buildings in your own provinces and recruit troops (Chapters IX–X)." />
+            <Para n="6.6" fi="**5. Lopeta vuoro:** tekoälyvastustajat tekevät siirtonsa, piiritykset etenevät, pysyvät bonukset päivittyvät, voittoehdot tarkistetaan ja uusi vuosi alkaa."
+              en="**5. End turn:** the AI opponents make their moves, sieges advance, permanent bonuses update, victory conditions are checked, and a new year begins." />
           </Chapter>
 
           <Chapter id="talous" num="VII" title={{ fi: 'Resurssit ja talous', en: 'Resources and economy' }}>

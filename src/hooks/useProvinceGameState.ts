@@ -2,7 +2,7 @@
  * useProvinceGameState.ts — Pelattavan MVP:n tilan hallinta
  *
  * Kokonainen vuoropohjainen pelilooppi:
- * Resurssit → Kortit → Liike → Taistelu → Rakentaminen → Vuoron lopetus
+ * Resurssit → Kortit → Hyökkäys → Rakentaminen → Vuoron lopetus
  * Sisältää: korttikäsi, AI-vuorot, rakennukset, voitto/häviöehdot.
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -40,13 +40,22 @@ interface PersistedSession {
   gameState: MVPGameState | null;
 }
 
+const normalizePhase = (phase: unknown): MVPPhase => {
+  if (phase === 'move' || phase === 'battle') return 'attack';
+  if (phase === 'resource' || phase === 'cards' || phase === 'attack' || phase === 'build' || phase === 'end') return phase;
+  return 'resource';
+};
+
 const loadPersistedSession = (): PersistedSession | null => {
   try {
     const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PersistedSession;
     if (!parsed || typeof parsed !== 'object' || !parsed.gameState) return null;
-    return parsed;
+    return {
+      ...parsed,
+      gameState: { ...parsed.gameState, phase: normalizePhase(parsed.gameState.phase) },
+    };
   } catch {
     return null;
   }
@@ -100,7 +109,7 @@ export const VICTORY_TARGETS = {
   prestige: 60,
 };
 
-const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'move', 'battle', 'build', 'end'];
+const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'attack', 'build', 'end'];
 
 // ============= BUILDING TYPES =============
 export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable' | 'bridge' | 'wonder';
@@ -1877,7 +1886,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   const loadGameState = useCallback((state: MVPGameState) => {
     const loadedPlayerFaction = state.factions.find(f => f.isPlayer)?.id ?? state.currentPlayerId;
     setPlayerFaction(loadedPlayerFaction);
-    setGameState(state);
+    setGameState({ ...state, phase: normalizePhase(state.phase) });
     setGameStarted(true);
   }, []);
 
