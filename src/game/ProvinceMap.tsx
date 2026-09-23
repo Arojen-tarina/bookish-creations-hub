@@ -626,25 +626,6 @@ export const ProvinceMap = ({
     }, zoom));
   }, [zoom, clampPan]);
 
-  // All neighbor connections (deduplicated)
-  const neighborLines = useMemo(() => {
-    const lines: { x1: number; y1: number; x2: number; y2: number; isSilkRoad: boolean }[] = [];
-    for (const prov of provinces) {
-      for (const nId of prov.neighbors) {
-        if (prov.id < nId) {
-          const neighbor = provinces.find(p => p.id === nId);
-          if (neighbor) {
-            const from = projectPoint(prov.center.x, prov.center.y);
-            const to = projectPoint(neighbor.center.x, neighbor.center.y);
-            const isSilk = prov.hasSilkRoad && neighbor.hasSilkRoad;
-            lines.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, isSilkRoad: isSilk });
-          }
-        }
-      }
-    }
-    return lines;
-  }, [provinces]);
-
   return (
     <div
       ref={containerRef}
@@ -681,16 +662,6 @@ export const ProvinceMap = ({
 
         {/* Coordinate Grid */}
         <CoordinateGrid showGrid={showCoordinateGrid} />
-        {neighborLines.map((l, i) => (
-          <line
-            key={`conn-${i}`}
-            x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-            stroke={l.isSilkRoad ? '#c9342b' : '#8b3a3a'}
-            strokeWidth={l.isSilkRoad ? 0.5 * SCALE_FACTOR : 0.35 * SCALE_FACTOR}
-            strokeOpacity={l.isSilkRoad ? 0.7 : 0.5}
-            strokeDasharray={l.isSilkRoad ? '1.2,0.6' : '0.8,0.5'}
-          />
-        ))}
 
         {/* Province tokens */}
         {provinces.map(province => (
