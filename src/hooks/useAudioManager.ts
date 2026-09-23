@@ -472,6 +472,7 @@ export const useAudioManager = (): AudioManagerReturn => {
       musicIdxRef.current = MUSIC_TRACKS.findIndex(t => t.id === track.id);
       setCurrentTrack(track.id);
       el.src = track.src;
+      el.load();
     }
     el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
     if (settings.muted) return;
@@ -496,6 +497,7 @@ export const useAudioManager = (): AudioManagerReturn => {
     setCurrentTrack(id);
     const el = ensureMusicElement();
     el.src = MUSIC_TRACKS[idx].src;
+    el.load();
     el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
     if (!settings.muted) el.play().catch(() => {});
   }, [ensureMusicElement, getEffectiveVolume, settings.muted]);

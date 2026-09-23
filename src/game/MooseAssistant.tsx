@@ -85,22 +85,19 @@ export const MooseAssistant = () => {
       if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragRef.current.moved = true;
       setPos(clampToViewport(dragRef.current.origX + dx, dragRef.current.origY + dy));
     };
-    const onMouseMove = (e: MouseEvent) => move(e.clientX, e.clientY);
-    const onTouchMove = (e: TouchEvent) => { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); };
+    const onPointerMove = (e: PointerEvent) => move(e.clientX, e.clientY);
     const end = () => {
       // Klikkaus (ei raahausta) avaa/sulkee chatin; raahaus vain siirtää sitä.
       if (dragRef.current && !dragRef.current.moved) setOpen(v => !v);
       dragRef.current = null;
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', end);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', end);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
     };
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', end);
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    window.addEventListener('touchend', end);
-  }, [pos]);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+  }, [clampToViewport, pos]);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -211,8 +208,7 @@ export const MooseAssistant = () => {
         </div>
       )}
       <button
-        onMouseDown={(e) => { e.preventDefault(); onDragStart(e.clientX, e.clientY); }}
-        onTouchStart={(e) => { if (e.touches[0]) onDragStart(e.touches[0].clientX, e.touches[0].clientY); }}
+        onPointerDown={(e) => { e.preventDefault(); onDragStart(e.clientX, e.clientY); }}
         aria-label={t('moose.openAria')}
         title={t('moose.title')}
         className="relative h-14 w-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 shadow-2xl shadow-black/40 border-2 border-amber-300/50 flex items-center justify-center text-3xl hover:scale-105 active:scale-95 transition-transform cursor-grab active:cursor-grabbing touch-none select-none"
