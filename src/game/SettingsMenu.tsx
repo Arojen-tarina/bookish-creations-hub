@@ -5,6 +5,7 @@
  * (suomi/englanti) ja käyttöliittymän optimointi (tietokone/puhelin).
  */
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, Language } from '@/lib/i18n.tsx';
@@ -26,6 +27,15 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
   const [open, setOpen] = useState(false);
   const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+
+  const updateMenuPosition = () => {
+    const button = rootRef.current?.querySelector('button');
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    setMenuPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+  };
 
   const toggleAnalytics = () => {
     const next = !analyticsOn;
@@ -37,10 +47,22 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
   useEffect(() => {
     if (!open) return;
     const onClickOutside = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (!rootRef.current?.contains(target) && !menuRef.current?.contains(target)) setOpen(false);
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    updateMenuPosition();
+    window.addEventListener('resize', updateMenuPosition);
+    window.addEventListener('scroll', updateMenuPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition);
+      window.removeEventListener('scroll', updateMenuPosition, true);
+    };
   }, [open]);
 
   const languages: { id: Language; label: string }[] = [
@@ -62,8 +84,12 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
       >
         <Languages className="w-4 h-4" />
       </Button>
-      {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3">
+      {open && createPortal(
+        <div
+          ref={menuRef}
+          className="fixed z-[10000] w-64 rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
+          style={{ top: menuPosition.top, right: menuPosition.right }}
+        >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
           <div className="flex gap-1.5 mb-3">
             {languages.map(l => (
@@ -130,7 +156,8 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
               </div>
             </>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
