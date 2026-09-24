@@ -34,7 +34,11 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
     const button = rootRef.current?.querySelector('button');
     if (!button) return;
     const rect = button.getBoundingClientRect();
-    setMenuPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    const menuWidth = 288;
+    const preferredRight = window.innerWidth - rect.right;
+    const minimumRight = Math.max(8, window.innerWidth - menuWidth - 8);
+    const right = Math.max(minimumRight, Math.min(window.innerWidth - 8, preferredRight));
+    setMenuPosition({ top: rect.bottom + 8, right });
   };
 
   useEffect(() => {
@@ -91,7 +95,7 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
       {open && createPortal(
         <div
           ref={menuRef}
-          className="fixed z-[10000] w-72 rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
+          className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
           style={{ top: menuPosition.top, right: menuPosition.right }}
         >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('save.title')}</p>
