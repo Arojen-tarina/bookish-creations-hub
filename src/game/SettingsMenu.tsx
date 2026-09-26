@@ -24,6 +24,7 @@ interface SettingsMenuProps {
 export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
+  const isMobileViewport = deviceMode === 'mobile' || (typeof window !== 'undefined' && window.innerWidth < 768);
   const [open, setOpen] = useState(false);
   const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
   const rootRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
         <div
           ref={menuRef}
           className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-64 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={deviceMode === 'mobile'
+          style={isMobileViewport
             ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
             : { top: menuPosition.top, right: menuPosition.right }}
         >
