@@ -25,6 +25,7 @@ const SLOTS = [1, 2, 3, 4, 5];
 export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
   const { t } = useLanguage();
   const { saves, saveGame, loadGame, deleteGame } = useSaveManager();
+  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -96,7 +97,9 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
         <div
           ref={menuRef}
           className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={{ top: menuPosition.top, right: menuPosition.right }}
+          style={isMobileViewport
+            ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
+            : { top: menuPosition.top, right: menuPosition.right }}
         >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('save.title')}</p>
           <div className="space-y-1.5 max-h-80 overflow-y-auto scrollbar-thin">
