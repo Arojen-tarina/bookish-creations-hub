@@ -92,7 +92,9 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
         <div
           ref={menuRef}
           className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-64 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={{ top: menuPosition.top, right: menuPosition.right }}
+          style={deviceMode === 'mobile'
+            ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
+            : { top: menuPosition.top, right: menuPosition.right }}
         >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
           <div className="flex gap-1.5 mb-3">
