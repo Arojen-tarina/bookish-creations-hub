@@ -347,7 +347,7 @@ export const ProvinceGame = () => {
           )}
           
           {/* Right: Controls */}
-          <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-3 ml-auto' : ''}`}>
+          <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-3 w-full basis-full max-w-full justify-center flex-wrap' : ''}`}>
             <SettingsMenu musicTracks={musicTracks} currentTrack={currentTrack} onSelectTrack={selectTrack} />
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
