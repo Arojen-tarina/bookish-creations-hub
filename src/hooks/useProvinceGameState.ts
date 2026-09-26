@@ -19,6 +19,10 @@ import {
   TreatyType,
   FACTION_DATA_1206,
   PROVINCE_TERRAIN_INFO,
+  FORT_MAX_DURABILITY,
+  getFortDurability,
+  getProvinceDefenseBreakdown,
+  isFortDamaged,
 } from '@/types/province';
 import { getProvincesWithAdjacency } from '@/data/ProvinceData.ts';
 import { BattleResult } from '@/game/BattleDisplay.tsx';
@@ -593,7 +597,8 @@ const resolveCombat = (
   // effective fortification level in the battle resolution.
   const effectiveFortLevel = Math.max(0, terrain.fortLevel - attacker.siege * 0.5);
   const attackerScore = attackerPower + attackRoll;
-  const defenderScore = defenderPower + defenseRoll + terrainInfo.defenseBonus * 2 + effectiveFortLevel * 3;
+  const defenseBreakdown = getProvinceDefenseBreakdown(terrain, 0, effectiveFortLevel);
+  const defenderScore = defenderPower + defenseRoll + defenseBreakdown.terrain + defenseBreakdown.fortress;
   const attackerWins = attackerScore > defenderScore;
 
   const defenderDamage = attackerWins ? Math.max(0, attackerPower - defenseBonus) : 0;
@@ -884,10 +889,17 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         const pIdx = newProvinces.findIndex(p => p.id === targetProvinceId);
         const targetFortLevel = pIdx !== -1 ? newProvinces[pIdx].fortLevel : 0;
         if (targetFortLevel > 0) {
-          // Successful attacker reduces fort level instead of immediately capturing
-          const newFortLevel = Math.max(0, targetFortLevel - 1);
           if (pIdx !== -1) {
-            newProvinces[pIdx] = { ...newProvinces[pIdx], fortLevel: newFortLevel };
+            const targetProvinceState = newProvinces[pIdx];
+            const currentDurability = getFortDurability(targetProvinceState);
+            const fortWasExhausted = currentDurability <= 0;
+            newProvinces[pIdx] = fortWasExhausted
+              ? {
+                  ...targetProvinceState,
+                  fortLevel: Math.max(0, targetFortLevel - 1),
+                  fortDurability: targetFortLevel > 1 ? FORT_MAX_DURABILITY : 0,
+                }
+              : { ...targetProvinceState, fortDurability: 0 };
           }
           // Attacker still loses some units from the assault
           newArmies[armyIndex] = {
@@ -908,7 +920,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
               };
             }
           }
-          // Province not captured until fortLevel == 0
+          // Province not captured until all fort levels are exhausted.
         } else {
           // No fortifications: normal capture behaviour
           newArmies[armyIndex] = {
@@ -1014,19 +1026,20 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       if (!prev || !playerFaction) return prev;
       const province = prev.provinces.find(p => p.id === provinceId);
       if (!province || province.ownerId !== playerFaction) return prev;
-      if (province.fortLevel <= 0) return prev;
+      if (!isFortDamaged(province)) return prev;
 
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
 
       const goldCost = 10;
       const artisanCost = 1;
-      if (faction.treasury < goldCost) return prev;
-      if (useArtisan && prev.artisans < artisanCost) return prev;
+      if (useArtisan ? prev.artisans < artisanCost : faction.treasury < goldCost) return prev;
 
-      const newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - goldCost } : f);
+      const newFactions = useArtisan
+        ? prev.factions
+        : prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - goldCost } : f);
       const newArtisans = useArtisan ? prev.artisans - artisanCost : prev.artisans;
-      const newProvinces = prev.provinces.map(p => p.id === provinceId ? { ...p, fortLevel: Math.min(3, p.fortLevel + 1) } : p);
+      const newProvinces = prev.provinces.map(p => p.id === provinceId ? { ...p, fortDurability: FORT_MAX_DURABILITY } : p);
 
       return { ...prev, factions: newFactions, artisans: newArtisans, provinces: newProvinces };
     });
@@ -1130,6 +1143,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           ? {
               ...p,
               fortLevel: Math.min(3, p.fortLevel + 1),
+              fortDurability: FORT_MAX_DURABILITY,
               garrison: Math.max(p.garrison, 2 + Math.min(4, p.fortLevel + 1)),
             }
           : p,
@@ -1614,9 +1628,15 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
           // increase siege progress
           const cur = typeof p.siegeProgress === 'number' ? p.siegeProgress : 0;
           siegeProvinces[i].siegeProgress = cur + 1;
-          // If fort exists, reduce fortLevel first
+          // Siege exhausts fort durability before consuming a fort level.
           if (siegeProvinces[i].fortLevel && siegeProvinces[i].fortLevel > 0) {
-            siegeProvinces[i].fortLevel = Math.max(0, siegeProvinces[i].fortLevel - 1);
+            const currentDurability = getFortDurability(siegeProvinces[i]);
+            if (currentDurability > 0) {
+              siegeProvinces[i].fortDurability = 0;
+            } else {
+              siegeProvinces[i].fortLevel = Math.max(0, siegeProvinces[i].fortLevel - 1);
+              siegeProvinces[i].fortDurability = siegeProvinces[i].fortLevel > 0 ? FORT_MAX_DURABILITY : 0;
+            }
           } else {
             // Penalize owner's treasury slightly per turn under siege
             factionMap.set(p.ownerId, (factionMap.get(p.ownerId) || 0) + 5);

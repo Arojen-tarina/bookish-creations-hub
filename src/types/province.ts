@@ -30,6 +30,7 @@ export interface Province {
   // State
   unrest: number; // 0-100
   fortLevel: number; // 0-3
+  fortDurability?: number; // 0-100; omitted legacy values are treated as healthy
   developmentLevel: number; // 1-5
   buildings: ProvinceBuilding[];
   
@@ -353,12 +354,22 @@ export interface ProvinceDefenseBreakdown {
   total: number;
 }
 
+export const FORT_MAX_DURABILITY = 100;
+
+export const getFortDurability = (province: Province): number =>
+  province.fortLevel > 0 ? province.fortDurability ?? FORT_MAX_DURABILITY : 0;
+
+export const isFortDamaged = (province: Province): boolean =>
+  province.fortLevel > 0 && getFortDurability(province) < FORT_MAX_DURABILITY;
+
 export const getProvinceDefenseBreakdown = (
   province: Province,
   additionalDefense = 0,
+  effectiveFortLevel = province.fortLevel,
 ): ProvinceDefenseBreakdown => {
   const terrain = PROVINCE_TERRAIN_INFO[province.terrain].defenseBonus * 2;
-  const fortress = province.fortLevel * 3;
+  const durabilityRatio = getFortDurability(province) / FORT_MAX_DURABILITY;
+  const fortress = effectiveFortLevel * 3 * durabilityRatio;
   return { terrain, fortress, additional: additionalDefense, total: terrain + fortress + additionalDefense };
 };
 

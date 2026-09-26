@@ -5,7 +5,7 @@
  * omistaja, maasto, verot, miesvoima, puolustus, linnoitus,
  * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
  */
-import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getProvinceDefenseBreakdown } from '@/types/province.ts';
+import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getFortDurability, getProvinceDefenseBreakdown, isFortDamaged } from '@/types/province.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
@@ -130,6 +130,7 @@ export const ProvinceInfoPanel = ({
               <div className="text-[10px] text-amber-300/80 mt-1">
                 {lang === 'en' ? 'terrain' : 'maasto'} +{defenseBreakdown.terrain} + {lang === 'en' ? 'fortress' : 'linnoitus'} +{defenseBreakdown.fortress}
                 {defenseBreakdown.additional > 0 && ` + ${lang === 'en' ? 'effects' : 'vaikutukset'} +${defenseBreakdown.additional}`}
+                <span className="block">{lang === 'en' ? 'durability' : 'kestävyys'} {getFortDurability(province)}%</span>
               </div>
             )}
           </div>
@@ -261,7 +262,7 @@ export const ProvinceInfoPanel = ({
             </p>
 
             {/* Repair fort actions */}
-            {province.fortLevel > 0 && onRepairFort && (
+            {isFortDamaged(province) && onRepairFort && (
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <Button
                   size="sm"
