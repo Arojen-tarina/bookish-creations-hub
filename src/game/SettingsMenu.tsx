@@ -1,14 +1,13 @@
 /**
  * SettingsMenu.tsx — Kieli- ja laiteoptimointivalinta
  *
- * Pieni ponnahdusvalikko (ei ulkoista popover-riippuvuutta): kielivalinta
- * (suomi/englanti) ja käyttöliittymän optimointi (tietokone/puhelin).
+ * Pieni ponnahdusvalikko kieli- ja laitevalinnoille.
  */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
-import { useLanguage, Language } from '@/lib/i18n.tsx';
+import { useLanguage, LANGUAGE_OPTIONS } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
 import type { MusicTrackId } from '@/hooks/useAudioManager.ts';
 import { getAnalyticsConsent, setAnalyticsConsent, startSession, track } from '@/lib/analytics';
@@ -70,10 +69,6 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
     };
   }, [open]);
 
-  const languages: { id: Language; label: string }[] = [
-    { id: 'fi', label: t('lang.fi') },
-    { id: 'en', label: t('lang.en') },
-  ];
   const modes: { id: DeviceMode; label: string; desc: string }[] = [
     { id: 'desktop', label: t('device.desktop'), desc: t('device.desktopDesc') },
     { id: 'mobile', label: t('device.mobile'), desc: t('device.mobileDesc') },
@@ -98,21 +93,20 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             : { top: menuPosition.top, right: menuPosition.right }}
         >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
-          <div className="flex gap-1.5 mb-3">
-            {languages.map(l => (
-              <button
-                key={l.id}
-                onClick={() => { track('settings_changed', { setting: 'language', value: l.id }); setLang(l.id); }}
-                className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
-                  lang === l.id
-                    ? 'bg-amber-500 text-white border-amber-400'
-                    : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
-                }`}
-              >
-                {l.label}
-              </button>
+          <select
+            value={lang}
+            onChange={event => {
+              const next = event.target.value as typeof lang;
+              track('settings_changed', { setting: 'language', value: next });
+              setLang(next);
+            }}
+            aria-label={t('lang.switch')}
+            className="w-full mb-3 rounded-lg border border-amber-700/30 bg-slate-800 px-2 py-2 text-sm font-semibold text-amber-100 outline-none focus:border-amber-400"
+          >
+            {LANGUAGE_OPTIONS.map(language => (
+              <option key={language.id} value={language.id}>{language.label}</option>
             ))}
-          </div>
+          </select>
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('device.title')}</p>
           <div className="space-y-1.5">
             {modes.map(m => (

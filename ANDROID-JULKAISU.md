@@ -73,8 +73,9 @@ cd android
 
 ## 4. Google Play Console
 
-1. Luo sovellus Play Consolessa (https://play.google.com/console). Sovellus-ID on
-   jo asetettu: **`fi.koalabear101.arojen_tarinat`**.
+1. Avaa sovellus Play Consolessa (https://play.google.com/console). Sovelluksen
+  pakettitunnus on **`fi.bookish.creations.arojen.tarinat`**. Älä muuta sitä:
+  Play-listaus on jo julkaistu tällä tunnuksella.
 2. Ota käyttöön **Play App Signing** (suositus): lataa `app-release.aab`, ja Google
    hoitaa lopullisen allekirjoituksen; oma `arojen-upload-key.jks` on *upload-avaimesi*.
 3. Täytä pakolliset tiedot: kuvaus, kuvakaappaukset, ikäluokitus, tietosuojaseloste,
@@ -103,3 +104,53 @@ versionName "1.1"  // näkyvä versio
   steppe. This release includes the first signed Android App Bundle with stable
   package configuration and improved compatibility for Android devices. Enjoy the
   immersive narrative, strategic province control, and updated gameplay polish."
+
+## Google Play -kauppasivun hakutekstit
+
+Play Console -listaus on erillinen julkaisuasetuksista eikä päivity tätä repoa
+muuttamalla. Seuraavat tekstit voi lisätä Play Consolen kauppasivulle suomen- ja
+englanninkielisinä lokalisointeina. Ne kuvaavat pelin nykyisiä ominaisuuksia ja
+sisältävät pelin nimeä sekä luonnollisia strategiapeli-hakutermejä.
+
+### fi-FI
+- Nimi: Arojen Tarinat
+- Lyhyt kuvaus: Vuoropohjainen strategiapeli arojen valtakunnista vuonna 1206.
+- Täysi kuvaus:
+
+  Arojen Tarinat on vuoteen 1206 sijoittuva vuoropohjainen strategiapeli. Valitse
+  Mongolien valtakunta, Song-dynastia, Venäjän ruhtinaskunnat tai Khwarezmin
+  valtakunta ja johda sitä Euraasian kartalla.
+
+  Laajenna valtakuntaasi provinssi kerrallaan. Kerää kultaa, ruokaa ja hevosia,
+  värvää armeijoita, rakenna puolustusta ja pelaa taktiikkakortteja ratkaisevilla
+  hetkillä. Diplomatia ja Silkkitien kauppa voivat olla yhtä arvokkaita kuin voitto
+  taistelussa.
+
+  Kohtaa tekoälyn ohjaamat valtakunnat yksinpelissä. Valitse vaikeustaso ja tavoittele
+  voittoa viidellä tavalla: sotilaallisesti, talouden, teknologian, diplomatian tai
+  kulttuurin avulla.
+
+  Arojen Tarinat yhdistää karttapohjaisen strategian, vuoropohjaisen taistelun,
+  resurssienhallinnan, kortit ja diplomatian. Laajennatko rajojasi, vahvistatko
+  talouttasi vai solmitko liiton?
+
+### en-US
+- App name: Arojen Tarinat
+- Short description: Turn-based strategy across the steppe in 1206.
+- Full description:
+
+  Arojen Tarinat is a turn-based strategy game set in Eurasia in 1206. Choose the
+  Mongol Empire, Song Dynasty, Rus Principalities, or Khwarezmian Empire and lead
+  your realm across the map.
+
+  Expand province by province. Gather gold, food, and horses, recruit armies, build
+  defenses, and play tactical cards at decisive moments. Diplomacy and Silk Road
+  trade can be as valuable as victory in battle.
+
+  Face AI-controlled realms in a single-player game. Choose your difficulty and
+  pursue victory in five ways: military, economic, technological, diplomatic, or
+  cultural.
+
+  Arojen Tarinat combines map-based strategy, turn-based combat, resource
+  management, cards, and diplomacy. Will you expand your borders, strengthen your
+  economy, or negotiate an alliance?

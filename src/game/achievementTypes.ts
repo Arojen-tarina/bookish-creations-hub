@@ -5,8 +5,9 @@
  * UI:lle. Pitää järjestelmän datavetoisena: uusi saavutus = uusi rivi
  * ACHIEVEMENT_DEFINITIONS-taulukossa, ei uutta moottorikoodia.
  */
-import type { Language } from '@/lib/i18n.tsx';
 import type { FactionId } from '@/types/province.ts';
+
+type AchievementTextLanguage = 'fi' | 'en';
 
 export type AchievementCategory =
   | 'tutorial'
@@ -32,7 +33,7 @@ export interface AchievementReward {
   kind: RewardKind;
   /** Emoji or short icon token shown in the UI. */
   icon: string;
-  name: Record<Language, string>;
+  name: Record<AchievementTextLanguage, string>;
 }
 
 /**
@@ -157,8 +158,8 @@ export interface AchievementProgress {
 export interface AchievementDefinition {
   id: string;
   category: AchievementCategory;
-  name: Record<Language, string>;
-  description: Record<Language, string>;
+  name: Record<AchievementTextLanguage, string>;
+  description: Record<AchievementTextLanguage, string>;
   /** Shown instead of name/description while locked (category === 'hidden' or hidden: true). */
   hidden?: boolean;
   /** Small % of players expected to reach this — surfaced in the UI as a rarity cue. */
@@ -207,7 +208,7 @@ export const atLeastUnique = (
   progress: (s) => ({ current: Math.min((s[key] as string[]).length, target), target }),
 });
 
-export const RANK_TITLES: { level: number; title: Record<Language, string> }[] = [
+export const RANK_TITLES: { level: number; title: Record<AchievementTextLanguage, string> }[] = [
   { level: 1, title: { fi: 'Heimon poika', en: 'Tribesman' } },
   { level: 3, title: { fi: 'Ratsumies', en: 'Rider' } },
   { level: 5, title: { fi: 'Sotapäällikkö', en: 'Warlord' } },
@@ -228,7 +229,7 @@ export const getPlayerLevel = (totalPoints: number): number => {
   return level;
 };
 
-export const getRankTitle = (level: number): Record<Language, string> => {
+export const getRankTitle = (level: number): Record<AchievementTextLanguage, string> => {
   let title = RANK_TITLES[0].title;
   for (const rank of RANK_TITLES) {
     if (level >= rank.level) title = rank.title;

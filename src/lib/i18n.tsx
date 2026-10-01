@@ -1,32 +1,40 @@
 /**
- * i18n.tsx — Kevyt kaksikielinen käännösjärjestelmä (suomi / englanti)
+ * i18n.tsx — Kevyt monikielinen käännösjärjestelmä
  *
  * Ei ulkoista riippuvuutta — pelkkä Context + sanakirja + t()-funktio.
  * Kieli tallennetaan localStorageen ja säilyy istuntojen välillä.
  */
-import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
+import { localeTranslations } from './i18nLocales.ts';
 
-export type Language = 'fi' | 'en';
+export type Language = 'fi' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'ur' | 'id' | 'de' | 'ja';
+
+export const LANGUAGE_OPTIONS: { id: Language; label: string }[] = [
+  { id: 'fi', label: 'Suomi' }, { id: 'en', label: 'English' }, { id: 'zh', label: '中文' },
+  { id: 'hi', label: 'हिन्दी' }, { id: 'es', label: 'Español' }, { id: 'ar', label: 'العربية' },
+  { id: 'fr', label: 'Français' }, { id: 'bn', label: 'বাংলা' }, { id: 'pt', label: 'Português' },
+  { id: 'ru', label: 'Русский' }, { id: 'ur', label: 'اردو' }, { id: 'id', label: 'Bahasa Indonesia' },
+  { id: 'de', label: 'Deutsch' }, { id: 'ja', label: '日本語' },
+];
 
 const LANGUAGE_STORAGE_KEY = 'arojen_tarinat_language';
 
 const detectDefaultLanguage = (): Language => {
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored === 'fi' || stored === 'en') return stored;
+    if (LANGUAGE_OPTIONS.some(({ id }) => id === stored)) return stored as Language;
   } catch {
     // ignore
   }
-  if (typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('fi')) {
-    return 'fi';
-  }
+  const browserLanguage = typeof navigator !== 'undefined' ? navigator.language?.toLowerCase().split('-')[0] : '';
+  if (LANGUAGE_OPTIONS.some(({ id }) => id === browserLanguage)) return browserLanguage as Language;
   return 'en';
 };
 
 // Käännösavaimet: fi = alkuperäinen suomenkielinen teksti (oletus),
 // en = englanninkielinen vastine. Lisää uusia avaimia tähän sitä mukaa
 // kun komponentteja käännetään.
-export const translations: Record<Language, Record<string, string>> = {
+export const translations: Partial<Record<Language, Record<string, string>>> = {
   fi: {
     'lang.switch': 'Kieli',
     'lang.fi': 'Suomi',
@@ -461,6 +469,11 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [lang, setLangState] = useState<Language>(() => detectDefaultLanguage());
 
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' || lang === 'ur' ? 'rtl' : 'ltr';
+  }, [lang]);
+
   const setLang = useCallback((next: Language) => {
     setLangState(next);
     try {
@@ -471,8 +484,8 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const t = useCallback((key: string, vars?: Record<string, string | number>) => {
-    const dict = translations[lang] || translations.en;
-    let text = dict[key] ?? translations.en[key] ?? key;
+    const dict = lang === 'fi' || lang === 'en' ? translations[lang] : localeTranslations[lang];
+    let text = dict?.[key] ?? translations.en?.[key] ?? key;
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
         text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(v));

@@ -7,6 +7,7 @@
  * display text keyed by card id, looked up at render time only.
  */
 import { CardType } from '@/data/gameCards';
+import type { Language } from '@/lib/i18n.tsx';
 
 export interface CardTextEN {
   name: string;
@@ -214,28 +215,29 @@ export const RARITY_NAME_EN: Record<string, string> = {
   legendary: 'Legendary',
 };
 
-type Lang = 'fi' | 'en';
+/** Non-Finnish locales use the available English card copy until localized. */
+type Lang = Language;
 
-/** Returns a display copy of the card with English text when lang === 'en' (falls back to Finnish if untranslated). */
+/** Returns Finnish card text for Finnish, otherwise available English text. */
 export function localizeCard<T extends { id: string; name: string; description: string; effect: string; cost?: string }>(card: T, lang: Lang): T {
-  if (lang !== 'en') return card;
+  if (lang === 'fi') return card;
   const en = CARD_TEXT_EN[card.id];
   if (!en) return card;
   return { ...card, name: en.name, description: en.description, effect: en.effect, cost: en.cost ?? card.cost };
 }
 
-/** Returns the English parsedEffect.description for a card id (falls back to the given Finnish text). */
+/** Returns the English parsedEffect.description outside Finnish (falls back to the given text). */
 export function localizeEffectDescription(cardId: string, fallback: string, lang: Lang): string {
-  if (lang !== 'en') return fallback;
+  if (lang === 'fi') return fallback;
   return CARD_EFFECT_DESC_EN[cardId] ?? fallback;
 }
 
 export function localizeCardTypeName(type: CardType, fallback: string, lang: Lang): string {
-  if (lang !== 'en') return fallback;
+  if (lang === 'fi') return fallback;
   return CARD_TYPE_NAME_EN[type] ?? fallback;
 }
 
 export function localizeRarityName(rarity: string, fallback: string, lang: Lang): string {
-  if (lang !== 'en') return fallback;
+  if (lang === 'fi') return fallback;
   return RARITY_NAME_EN[rarity] ?? fallback;
 }

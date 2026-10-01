@@ -21,6 +21,7 @@ const CATEGORY_ORDER: AchievementCategory[] = [
 
 export const AchievementsPanel = () => {
   const { lang, t } = useLanguage();
+  const contentLanguage = lang === 'fi' ? 'fi' : 'en';
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [stats, setStats] = useState<PlayerStats>(() => getPlayerStats());
 
@@ -100,12 +101,12 @@ export const AchievementsPanel = () => {
                       {a.unlocked ? <Trophy className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" /> : <Lock className="w-3.5 h-3.5 text-slate-500 mt-0.5 flex-shrink-0" />}
                       <div className="min-w-0 flex-1">
                         <p className={`font-semibold ${a.unlocked ? 'text-amber-100' : 'text-slate-400'}`}>
-                          {isMysterious ? t('achv.hiddenName') : a.name[lang]}
+                          {isMysterious ? t('achv.hiddenName') : a.name[contentLanguage]}
                           <span className="ml-1.5 font-normal text-[10px] text-amber-400/70">+{a.points}</span>
                         </p>
-                        <p className="text-slate-400">{isMysterious ? t('achv.hiddenDesc') : a.description[lang]}</p>
+                        <p className="text-slate-400">{isMysterious ? t('achv.hiddenDesc') : a.description[contentLanguage]}</p>
                         {a.unlocked && a.reward && (
-                          <p className="text-amber-300/80 mt-0.5">{a.reward.icon} {a.reward.name[lang]}</p>
+                          <p className="text-amber-300/80 mt-0.5">{a.reward.icon} {a.reward.name[contentLanguage]}</p>
                         )}
                         {progress && (
                           <div className="mt-1 h-1 rounded-full bg-slate-800/80 overflow-hidden">
