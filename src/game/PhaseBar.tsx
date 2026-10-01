@@ -1,10 +1,9 @@
 /**
  * PhaseBar.tsx — Vuoron vaihepalkki
  * 
- * Isompi, selkeämpi vaihepalkki integroidulla Seuraava/Lopeta-napilla.
- * Raahattava kahva pienentää/suurentaa palkin — se pysyy aina yläpalkin
- * (resurssirivin) alapuolella eikä koskaan peitä sitä, koska kahva vain
- * pienentää palkin omaa korkeutta, ei siirrä sen yläreunaa.
+ * Aladockiin kiinnittyvä vuoron vaihepalkki integroidulla toimintonapilla.
+ * Oletuksena kompakti; kahvasta voi avata suuren, nykyistä vaihetta korostavan
+ * paneelin.
  */
 import { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
@@ -32,10 +31,8 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = fals
   const { t } = useLanguage();
   const currentIndex = PHASE_ORDER.indexOf(currentPhase);
   const isLastPhase = currentPhase === 'end';
-
-  // Raahattava kahva pienentää palkin pelkäksi vaihe+nappi-riviksi (ei koskaan
-  // liikuta palkin yläreunaa, joten se ei voi koskaan peittää yläpalkkia).
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+  const compactAction = collapsed && compact;
   const dragRef = useRef<{ startY: number; toggled: boolean } | null>(null);
   const onHandleDragStart = useCallback((clientY: number) => {
     dragRef.current = { startY: clientY, toggled: false };
@@ -62,8 +59,11 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = fals
   }, []);
 
   return (
-    <div className="bg-slate-900/95 backdrop-blur-xl border border-amber-600/30 rounded-2xl shadow-2xl shadow-black/40">
-      {/* Raahattava kahva: vedä alas pienentääksesi, ylös suurentaaksesi. Klikkaus togglaa. */}
+    <div
+      className={`flex flex-col overflow-hidden bg-slate-900/95 backdrop-blur-xl border border-amber-600/30 rounded-2xl shadow-2xl shadow-black/40 transition-[height] duration-300 ${collapsed ? '' : 'min-h-[168px]'}`}
+      style={{ height: collapsed ? undefined : 'min(42dvh, 360px)' }}
+    >
+      {/* Raahaa ylös laajentaaksesi ja alas pienentääksesi; myös klikkaus vaihtaa kokoa. */}
       <div
         className="group flex items-center justify-center gap-1 h-5 cursor-ns-resize touch-none select-none bg-amber-500/5 hover:bg-amber-500/15 rounded-t-2xl transition-colors"
         onMouseDown={(e) => { e.preventDefault(); onHandleDragStart(e.clientY); }}
@@ -103,23 +103,35 @@ export const PhaseBar = ({ currentPhase, onNextPhase, onEndTurn, disabled = fals
         </div>
       )}
 
-      {/* Hint + action row — hint text hidden when collapsed, button always visible */}
+      {!collapsed && (
+        <div className="flex min-h-0 flex-1 items-center justify-center px-5 py-4 text-center">
+          <div className="max-w-2xl">
+            <div className="mb-1 text-3xl">{PHASE_EMOJI[currentPhase]}</div>
+            <h3 className="text-amber-100 text-xl font-bold">
+              {t(`phase.${currentPhase}.label`)}
+              <span className="ml-2 text-sm font-medium text-amber-300/60">{currentIndex + 1}/5</span>
+            </h3>
+            <p className="mt-1 text-amber-100/75 text-sm">
+              {disabled ? t('phase.aiActing') : t(`phase.${currentPhase}.hint`)}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-3 pb-2.5 gap-3">
-        {!collapsed ? (
-          <p className="text-amber-200/90 text-sm font-medium flex-1">
-            <span className="text-base mr-1">{PHASE_EMOJI[currentPhase]}</span>
-            {disabled ? t('phase.aiActing') : t(`phase.${currentPhase}.hint`)}
-          </p>
-        ) : (
-          <span className="text-base flex-shrink-0" title={t(`phase.${currentPhase}.label`)}>{PHASE_EMOJI[currentPhase]}</span>
-        )}
+        {collapsed ? (
+          <span className="min-w-0 truncate text-amber-200/80 text-xs font-medium">
+            <span className="mr-1.5">{PHASE_EMOJI[currentPhase]}</span>
+            {t(`phase.${currentPhase}.label`)} · {currentIndex + 1}/5
+          </span>
+        ) : <span />}
         {isLastPhase ? (
-          <Button disabled={disabled} onClick={onEndTurn} className={`bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/40 flex-shrink-0 disabled:opacity-40 ${compact ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}>
+          <Button disabled={disabled} onClick={onEndTurn} className={`bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/40 flex-shrink-0 disabled:opacity-40 ${compactAction ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}>
             <Flag className="w-4 h-4 mr-1.5" />
             {t('phase.endTurn')}
           </Button>
         ) : (
-          <Button disabled={disabled} onClick={onNextPhase} className={`bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl shadow-lg shadow-amber-900/40 flex-shrink-0 disabled:opacity-40 ${compact ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}>
+          <Button disabled={disabled} onClick={onNextPhase} className={`bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl shadow-lg shadow-amber-900/40 flex-shrink-0 disabled:opacity-40 ${compactAction ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}>
             {t('phase.next')}
             <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>

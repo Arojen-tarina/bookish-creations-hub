@@ -390,16 +390,6 @@ export const ProvinceGame = () => {
         </div>
         </div>
 
-        {/* Keep the phase bar in the HUD flow so its position is stable on first render. */}
-        <div className="relative z-40 px-3 py-1.5">
-          <PhaseBar
-            currentPhase={gameState.phase}
-            onNextPhase={nextPhase}
-            onEndTurn={endTurn}
-            disabled={showAIOverlay}
-            compact={!isMobileMode}
-          />
-        </div>
       </div>
 
 
@@ -959,6 +949,15 @@ export const ProvinceGame = () => {
                 </div>
               )}
             </div>
+          </div>
+          <div className="px-2 pb-2">
+            <PhaseBar
+              currentPhase={gameState.phase}
+              onNextPhase={nextPhase}
+              onEndTurn={endTurn}
+              disabled={showAIOverlay}
+              compact={!isMobileMode}
+            />
           </div>
         </div>
       </div>
