@@ -52,6 +52,7 @@ interface CardHandProps {
 export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, discardSize }: CardHandProps) => {
   const { t, lang } = useLanguage();
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [failedArtIds, setFailedArtIds] = useState<Set<string>>(() => new Set());
 
   if (cards.length === 0) {
     return (
@@ -80,7 +81,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
           const rarity = rarityInfo[card.rarity || 'common'];
           const isSelected = selectedIdx === idx;
           const emoji = EFFECT_EMOJI[card.parsedEffect.type] || '✨';
-          const art = cardImage(card.id);
+          const art = failedArtIds.has(card.id) ? undefined : cardImage(card.id);
 
           return (
             <div
@@ -98,10 +99,15 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                   <img
                     src={art}
                     alt={card.name}
-                    loading="lazy"
+                    loading="eager"
                     draggable={false}
-                    className="block w-full h-auto select-none pointer-events-none"
+                    onError={() => setFailedArtIds(current => new Set(current).add(card.id))}
+                    className="block aspect-square w-full object-cover select-none pointer-events-none"
                   />
+                  <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/85 via-black/55 to-transparent px-1.5 pt-1.5 pb-5">
+                    <p className="text-white text-[10px] font-bold leading-tight break-words">{card.name}</p>
+                    <p className="text-amber-100/85 text-[9px] leading-tight mt-0.5 break-words">{card.description}</p>
+                  </div>
                   {/* harvinaisuusmerkki kulmaan */}
                   <span className={`absolute top-1 right-1 text-[9px] ${rarity.color} px-1 rounded text-white shadow`}>{rarity.symbol}</span>
                   {/* efekti + pelaa-nappi kuvan päälle alareunaan */}

@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://arojen-tarina.github.io/bookish-creations-hub/sitemap.xml
