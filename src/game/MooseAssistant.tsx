@@ -110,16 +110,18 @@ export const MooseAssistant = () => {
   }, [messages, thinking]);
 
   const ask = useCallback(async (question: string) => {
-    const localAnswer = matchMooseFaq(question, lang);
-    if (localAnswer) {
-      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: localAnswer }]);
-      return;
-    }
+    const addAnswer = (text: string) => setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text }]);
+    // Paikalliset vastaukset ovat vain suomeksi ja englanniksi, joten muilla kielillä
+    // kysymys menee ensin etäavustajalle, joka vastaa pelaajan valitsemalla kielellä.
+    const hasLocalContent = lang === 'fi' || lang === 'en';
+    const findLocalAnswer = () => matchMooseFaq(question, lang) ?? matchMooseLocalKnowledge(question, lang);
 
-    const localKnowledgeAnswer = matchMooseLocalKnowledge(question, lang);
-    if (localKnowledgeAnswer) {
-      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: localKnowledgeAnswer }]);
-      return;
+    if (hasLocalContent) {
+      const localAnswer = findLocalAnswer();
+      if (localAnswer) {
+        addAnswer(localAnswer);
+        return;
+      }
     }
 
     setThinking(true);
@@ -135,7 +137,7 @@ export const MooseAssistant = () => {
         },
       });
       if (error || !data?.reply) throw error || new Error('no reply');
-      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: data.reply }]);
+      addAnswer(data.reply);
     } catch (error) {
       console.warn('[Moose] Remote assistant unavailable; using local fallback.', {
         error,
@@ -143,7 +145,8 @@ export const MooseAssistant = () => {
         lang,
         hint: 'Check Supabase DNS, CORS, function deployment, and OPENAI_API_KEY.',
       });
-      setMessages(m => [...m, { id: `${Date.now()}-a`, role: 'moose', text: t('moose.unavailable') }]);
+      const localAnswer = hasLocalContent ? null : findLocalAnswer();
+      addAnswer(localAnswer ?? t('moose.unavailable'));
     } finally {
       setThinking(false);
     }

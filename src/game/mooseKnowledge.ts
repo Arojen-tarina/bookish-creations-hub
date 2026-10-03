@@ -39,16 +39,18 @@ const LOCAL_KNOWLEDGE: LocalKnowledgeEntry[] = [
 const normalize = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 export const matchMooseLocalKnowledge = (question: string, lang: Language): string | null => {
+  // Paikallinen sisältö on vain suomeksi ja englanniksi; muut kielet käyttävät englantia.
+  const contentLanguage = lang === 'fi' ? 'fi' : 'en';
   const words = normalize(question).split(/[^a-z0-9]+/).filter(word => word.length >= 3);
   let best: { entry: LocalKnowledgeEntry; score: number } | null = null;
 
   for (const entry of LOCAL_KNOWLEDGE) {
-    const score = entry.keywords[lang].reduce((total, keyword) => {
+    const score = entry.keywords[contentLanguage].reduce((total, keyword) => {
       const normalizedKeyword = normalize(keyword);
       return total + (words.some(word => word === normalizedKeyword || word.includes(normalizedKeyword) || normalizedKeyword.includes(word)) ? 1 : 0);
     }, 0);
     if (score > 0 && (!best || score > best.score)) best = { entry, score };
   }
 
-  return best ? best.entry.answer[lang] : null;
+  return best ? best.entry.answer[contentLanguage] : null;
 };

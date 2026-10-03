@@ -11,9 +11,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  fi: "Finnish", en: "English", zh: "Chinese (Simplified)", hi: "Hindi", es: "Spanish", ar: "Arabic",
+  fr: "French", bn: "Bengali", pt: "Portuguese", ru: "Russian", ur: "Urdu", id: "Indonesian",
+  de: "German", ja: "Japanese",
+};
+
 interface ChatRequest {
   message: string;
-  lang: "fi" | "en";
+  lang: string;
   history?: { role: "user" | "assistant"; content: string }[];
 }
 
@@ -33,7 +39,7 @@ interface KnowledgeRow {
 
 const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-async function findKnowledge(message: string, lang: "fi" | "en"): Promise<string> {
+async function findKnowledge(message: string, lang: string): Promise<string> {
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) return "";
@@ -54,7 +60,7 @@ async function findKnowledge(message: string, lang: "fi" | "en"): Promise<string
   }
   const data = await response.json();
 
-  const words = normalize(message).split(/[^a-z0-9]+/).filter(word => word.length >= 3);
+  const words = normalize(message).split(/[^\p{L}\p{N}]+/u).filter(word => word.length >= 3);
   const ranked = ((data ?? []) as KnowledgeRow[]).map(row => {
     const searchable = normalize(`${row[lang === "fi" ? "title_fi" : "title_en"]} ${row[lang === "fi" ? "content_fi" : "content_en"]} ${row.keywords.join(" ")}`);
     const score = words.reduce((total, word) => total + (searchable.includes(word) ? 1 : 0), 0);
@@ -118,7 +124,8 @@ Deno.serve(async (req) => {
       typeof message !== "string"
       || message.trim().length === 0
       || message.length > 500
-      || (lang !== "fi" && lang !== "en")
+      || typeof lang !== "string"
+      || !Object.hasOwn(LANGUAGE_NAMES, lang)
     ) {
       return new Response(
         JSON.stringify({ error: "Invalid message" }),
@@ -135,7 +142,10 @@ Deno.serve(async (req) => {
     }
 
     const knowledge = await findKnowledge(message, lang);
-    const systemPrompt = `${lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN}
+    const languageRule = lang === "fi" || lang === "en"
+      ? ""
+      : `\nIMPORTANT: Always reply in ${LANGUAGE_NAMES[lang]}, the language selected by the player, even if the facts above are written in English.`;
+    const systemPrompt = `${lang === "fi" ? SYSTEM_PROMPT_FI : SYSTEM_PROMPT_EN}${languageRule}
   ${knowledge ? `\nAuthoritative knowledge from the game's rulebook and codex:\n${knowledge}` : ""}
   Use the authoritative knowledge when it answers the question. If it does not, say that you do not know and point the player to the Rulebook or Chronicle. Do not invent missing facts.`;
 
