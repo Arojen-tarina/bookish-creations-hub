@@ -4,10 +4,13 @@
  * The card data in gameCards.ts / the effect descriptions in cards.ts are
  * Finnish-only (source of truth for game state, kept as-is so save games
  * and effect-matching by id keep working). This file provides English
- * display text keyed by card id, looked up at render time only.
+ * display text keyed by card id, looked up at render time only. Other
+ * languages live in cardLocales/<lang>.ts and are loaded on demand.
  */
 import { CardType } from '@/data/gameCards';
+import { useEffect, useState } from 'react';
 import type { Language } from '@/lib/i18n.tsx';
+import { cardLocaleLoaders, type CardLocale } from '@/data/cardLocales/index.ts';
 
 export interface CardTextEN {
   name: string;
@@ -215,21 +218,54 @@ export const RARITY_NAME_EN: Record<string, string> = {
   legendary: 'Legendary',
 };
 
-/** Non-Finnish locales use the available English card copy until localized. */
 type Lang = Language;
 
-/** Returns Finnish card text for Finnish, otherwise available English text. */
+const localeCache: Partial<Record<Language, CardLocale>> = {};
+const localeLoading: Partial<Record<Language, Promise<void>>> = {};
+
+/** Lataa kielen korttitekstit välimuistiin (fi/en eivät tarvitse latausta). */
+export function loadCardLocale(lang: Lang): Promise<void> {
+  const loader = cardLocaleLoaders[lang];
+  if (!loader || localeCache[lang]) return Promise.resolve();
+  localeLoading[lang] ??= loader()
+    .then(module => { localeCache[lang] = module.default; })
+    .catch(() => { /* puuttuva käännös palaa englantiin */ })
+    .finally(() => { delete localeLoading[lang]; });
+  return localeLoading[lang]!;
+}
+
+/** Varmistaa että valitun kielen korttitekstit on ladattu ja piirtää komponentin uudelleen kun ne valmistuvat. */
+export function useCardLocale(lang: Lang): void {
+  const [, setLoaded] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    loadCardLocale(lang).then(() => { if (!cancelled) setLoaded(n => n + 1); });
+    return () => { cancelled = true; };
+  }, [lang]);
+}
+
+/** Palauttaa kortin tekstit valitulla kielellä: fi alkuperäisenä, muut kielitiedostosta, puuttuva englantina. */
 export function localizeCard<T extends { id: string; name: string; description: string; effect: string; cost?: string }>(card: T, lang: Lang): T {
   if (lang === 'fi') return card;
+  const loc = lang === 'en' ? undefined : localeCache[lang]?.[card.id];
+  if (loc) return { ...card, name: loc.n, description: loc.d, effect: loc.e, cost: loc.c ?? card.cost };
   const en = CARD_TEXT_EN[card.id];
   if (!en) return card;
   return { ...card, name: en.name, description: en.description, effect: en.effect, cost: en.cost ?? card.cost };
 }
 
-/** Returns the English parsedEffect.description outside Finnish (falls back to the given text). */
+/** Alkuperäinen efektiteksti on muotoa "Nimi: efekti"; kortin alaosaan näytetään vain efekti. */
+const stripCardTitle = (text: string): string => {
+  const idx = text.indexOf(': ');
+  return idx >= 0 ? text.slice(idx + 2) : text;
+};
+
+/** Lyhyt kuvaus siitä mitä kortti tekee, ilman kortin nimeä (nimi näytetään kortin yläosassa). */
 export function localizeEffectDescription(cardId: string, fallback: string, lang: Lang): string {
-  if (lang === 'fi') return fallback;
-  return CARD_EFFECT_DESC_EN[cardId] ?? fallback;
+  if (lang === 'fi') return stripCardTitle(fallback);
+  const loc = lang === 'en' ? undefined : localeCache[lang]?.[cardId];
+  if (loc) return loc.s;
+  return stripCardTitle(CARD_EFFECT_DESC_EN[cardId] ?? fallback);
 }
 
 export function localizeCardTypeName(type: CardType, fallback: string, lang: Lang): string {

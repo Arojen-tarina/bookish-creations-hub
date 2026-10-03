@@ -5,7 +5,7 @@
  */
 import { PlayableCard } from '@/game/cards.ts';
 import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
-import { localizeCard, localizeEffectDescription } from '@/data/gameCardsTranslations.ts';
+import { localizeCard, localizeEffectDescription, useCardLocale } from '@/data/gameCardsTranslations.ts';
 import { MVPPhase } from './PhaseBar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
@@ -51,6 +51,7 @@ interface CardHandProps {
 
 export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, discardSize }: CardHandProps) => {
   const { t, lang } = useLanguage();
+  useCardLocale(lang);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [failedArtIds, setFailedArtIds] = useState<Set<string>>(() => new Set());
 
@@ -94,7 +95,7 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
               onClick={() => setSelectedIdx(isSelected ? null : idx)}
             >
               {art ? (
-                /* Koko korttikuva näkyvissä, peli-info tekstinä kuvan päällä */
+                /* Koko korttikuva näkyvissä: nimi ylhäällä, lyhyt efekti alhaalla */
                 <div className="relative">
                   <img
                     src={art}
@@ -104,16 +105,15 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                     onError={() => setFailedArtIds(current => new Set(current).add(card.id))}
                     className="block aspect-square w-full object-cover select-none pointer-events-none"
                   />
-                  <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/85 via-black/55 to-transparent px-1.5 pt-1.5 pb-5">
-                    <p className="text-white text-[10px] font-bold leading-tight break-words">{card.name}</p>
-                    <p className="text-amber-100/85 text-[9px] leading-tight mt-0.5 break-words">{card.description}</p>
+                  <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-1.5 pt-1 pb-3 pr-6">
+                    <p className="text-white text-[9px] font-bold leading-tight break-words">{card.name}</p>
                   </div>
                   {/* harvinaisuusmerkki kulmaan */}
                   <span className={`absolute top-1 right-1 text-[9px] ${rarity.color} px-1 rounded text-white shadow`}>{rarity.symbol}</span>
                   {/* efekti + pelaa-nappi kuvan päälle alareunaan */}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-1.5 pb-1.5 pt-5">
-                    <div className="rounded bg-amber-900/80 px-1.5 py-1 text-center backdrop-blur-sm ring-1 ring-amber-500/30">
-                      <span className="text-amber-100 text-[11px] font-bold leading-tight break-words">{emoji} {effectText}</span>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-1 pb-1 pt-3">
+                    <div className="rounded bg-amber-900/60 px-1 py-0.5 text-center">
+                      <span className="text-amber-100 text-[9px] font-semibold leading-tight break-words">{emoji} {effectText}</span>
                     </div>
                     {isSelected && canPlay && (
                       <Button
@@ -133,13 +133,12 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                 /* Ei kuvaa: tekstikortti */
                 <>
                   <div className={`${typeInfo.color} px-2 py-1 flex items-center justify-between gap-1`}>
-                    <span className="text-white text-[10px] font-bold break-words">{typeInfo.icon} {card.name}</span>
+                    <span className="text-white text-[9px] font-bold break-words">{typeInfo.icon} {card.name}</span>
                     <span className={`text-[9px] ${rarity.color} px-1 rounded text-white flex-shrink-0`}>{rarity.symbol}</span>
                   </div>
                   <div className="bg-slate-800 px-2 py-1.5">
-                    <p className="text-slate-300 text-[10px] leading-snug mb-1.5 break-words">{card.description}</p>
-                    <div className="bg-amber-900/40 rounded px-1.5 py-1 text-center">
-                      <span className="text-amber-200 text-[11px] font-bold leading-tight break-words">{emoji} {effectText}</span>
+                    <div className="bg-amber-900/40 rounded px-1 py-0.5 text-center">
+                      <span className="text-amber-200 text-[9px] font-semibold leading-tight break-words">{emoji} {effectText}</span>
                     </div>
                   </div>
                   {isSelected && canPlay && (
