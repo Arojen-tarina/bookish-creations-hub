@@ -6,6 +6,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { localeTranslations } from './i18nLocales.ts';
+import { gameUiTranslations } from './i18nGameUi.ts';
 
 export type Language = 'fi' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'ur' | 'id' | 'de' | 'ja';
 export type ContentLanguage = 'fi' | 'en';
@@ -488,7 +489,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const t = useCallback((key: string, vars?: Record<string, string | number>) => {
     const dict = lang === 'fi' || lang === 'en' ? translations[lang] : localeTranslations[lang];
-    let text = dict?.[key] ?? translations.en?.[key] ?? translations.fi?.[key] ?? key;
+    let text = dict?.[key] ?? gameUiTranslations[key]?.[lang] ?? translations.en?.[key] ?? translations.fi?.[key] ?? key;
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
         text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(v));

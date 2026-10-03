@@ -7,7 +7,8 @@
  */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getFortDurability, getProvinceDefenseBreakdown, isFortDamaged } from '@/types/province.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
-import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { localizedName } from '@/lib/i18nGameUi.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -50,8 +51,7 @@ export const ProvinceInfoPanel = ({
   defenseBonus = 0,
   onBuildFort, canBuildFort, onRepairFort, canRepairGold, canRepairArtisan,
 }: ProvinceInfoPanelProps) => {
-  const { lang: selectedLanguage } = useLanguage();
-  const lang = getContentLanguage(selectedLanguage);
+  const { t } = useLanguage();
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
@@ -62,20 +62,12 @@ export const ProvinceInfoPanel = ({
   
   const playerArmies = armies.filter(a => a.ownerId === playerFaction);
   const enemyArmies = armies.filter(a => a.ownerId !== playerFaction);
-  const terrainNames: Record<string, string> = {
-    steppe: 'Steppe', grassland: 'Grassland', forest: 'Forest', mountain: 'Mountain',
-    desert: 'Desert', taiga: 'Taiga', tundra: 'Tundra', farmland: 'Farmland',
-    hills: 'Hills', marsh: 'Marsh',
-  };
-  const tradeGoodNames: Record<string, string> = {
-    horses: 'Horses', silk: 'Silk', spices: 'Spices', gold: 'Gold', iron: 'Iron',
-    fur: 'Furs', grain: 'Grain', salt: 'Salt', livestock: 'Livestock', gems: 'Gems',
-  };
   const factionName = (factionId: FactionId) => factionId === playerFaction
-    ? (lang === 'en' ? 'You' : 'Sinä')
-    : lang === 'en' ? ({ mongol: 'Mongol Empire', song: 'Song Dynasty', rus: 'Rus Principalities', khwarezm: 'Khwarezmian Empire' } as Record<string, string>)[factionId] || owner?.name : owner?.name;
-  const terrainName = lang === 'en' ? terrainNames[province.terrain] : terrainInfo.name;
-  const tradeGoodName = tradeGood && (lang === 'en' ? tradeGoodNames[province.tradeGood!] : tradeGood.name);
+    ? t('ui.you')
+    : localizedName(t, `faction.name.${factionId}`, FACTION_DATA_1206[factionId].name);
+  const terrainName = localizedName(t, `terrain.${province.terrain}`, terrainInfo.name);
+  const tradeGoodName = tradeGood && localizedName(t, `good.${province.tradeGood}`, tradeGood.name);
+  const tradeGoodEffect = tradeGood && localizedName(t, `goodEffect.${province.tradeGood}`, tradeGood.effect);
   
   return (
     <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-stone-700/50">
@@ -83,13 +75,13 @@ export const ProvinceInfoPanel = ({
         <CardTitle className="text-amber-100 text-lg flex items-center gap-2">
           <span className="text-2xl">{terrainInfo.emoji}</span>
           {province.name}
-          {province.isCapital && <Badge className="bg-amber-600">{lang === 'en' ? 'Capital' : 'Pääkaupunki'}</Badge>}
+          {province.isCapital && <Badge className="bg-amber-600">{t('ui.capital')}</Badge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Owner */}
         <div className="flex items-center justify-between">
-          <span className="text-stone-400 text-sm">{lang === 'en' ? 'Owner' : 'Omistaja'}</span>
+          <span className="text-stone-400 text-sm">{t('ui.owner')}</span>
           <div className="flex items-center gap-2">
             {owner ? (
               <>
@@ -97,17 +89,17 @@ export const ProvinceInfoPanel = ({
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: owner.color }}
                 />
-                <span className="text-amber-100">{lang === 'en' ? factionName(province.ownerId!) : owner.name}</span>
+                <span className="text-amber-100">{factionName(province.ownerId!)}</span>
               </>
             ) : (
-              <span className="text-stone-500 italic">{lang === 'en' ? 'Neutral' : 'Neutraali'}</span>
+              <span className="text-stone-500 italic">{t('ui.neutral')}</span>
             )}
           </div>
         </div>
         
         {/* Terrain */}
         <div className="flex items-center justify-between">
-          <span className="text-stone-400 text-sm">{lang === 'en' ? 'Terrain' : 'Maasto'}</span>
+          <span className="text-stone-400 text-sm">{t('ui.terrain')}</span>
           <span className="text-stone-200">{terrainName}</span>
         </div>
         
@@ -116,29 +108,29 @@ export const ProvinceInfoPanel = ({
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Coins className="w-5 h-5 text-amber-400 mx-auto mb-1" />
             <div className="text-lg font-bold text-amber-100">{province.baseTax}</div>
-            <div className="text-xs text-stone-400">{lang === 'en' ? 'Taxes' : 'Verot'}</div>
+            <div className="text-xs text-stone-400">{t('ui.taxes')}</div>
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Users className="w-5 h-5 text-blue-400 mx-auto mb-1" />
             <div className="text-lg font-bold text-blue-100">{province.baseManpower}</div>
-            <div className="text-xs text-stone-400">{lang === 'en' ? 'Manpower' : 'Miesvoima'}</div>
+            <div className="text-xs text-stone-400">{t('ui.manpower')}</div>
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Shield className="w-5 h-5 text-green-400 mx-auto mb-1" />
             <div className="text-lg font-bold text-green-100">+{defenseBreakdown.total}</div>
-            <div className="text-xs text-stone-400">{lang === 'en' ? 'Defense' : 'Puolustus'}</div>
+            <div className="text-xs text-stone-400">{t('ui.defense')}</div>
             {province.fortLevel > 0 && (
               <div className="text-[10px] text-amber-300/80 mt-1">
-                {lang === 'en' ? 'terrain' : 'maasto'} +{defenseBreakdown.terrain} + {lang === 'en' ? 'fortress' : 'linnoitus'} +{defenseBreakdown.fortress}
-                {defenseBreakdown.additional > 0 && ` + ${lang === 'en' ? 'effects' : 'vaikutukset'} +${defenseBreakdown.additional}`}
-                <span className="block">{lang === 'en' ? 'durability' : 'kestävyys'} {getFortDurability(province)}%</span>
+                {t('ui.terrainShort')} +{defenseBreakdown.terrain} + {t('ui.fortressShort')} +{defenseBreakdown.fortress}
+                {defenseBreakdown.additional > 0 && ` + ${t('ui.effects')} +${defenseBreakdown.additional}`}
+                <span className="block">{t('ui.durability')} {getFortDurability(province)}%</span>
               </div>
             )}
           </div>
           <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <Home className="w-5 h-5 text-purple-400 mx-auto mb-1" />
             <div className="text-lg font-bold text-purple-100">{province.supply}</div>
-            <div className="text-xs text-stone-400">{lang === 'en' ? 'Supply' : 'Tarjonta'}</div>
+            <div className="text-xs text-stone-400">{t('ui.supply')}</div>
           </div>
         </div>
         
@@ -146,8 +138,8 @@ export const ProvinceInfoPanel = ({
         {province.fortLevel > 0 && (
           <div className="flex items-center gap-2 bg-stone-800/50 rounded-lg p-3">
             <Castle className="w-5 h-5 text-amber-400" />
-            <span className="text-stone-300">{lang === 'en' ? 'Fortress' : 'Linnoitus'}</span>
-            <span className="text-amber-100 font-bold ml-auto">{lang === 'en' ? 'Level' : 'Taso'} {province.fortLevel} (+{province.fortLevel * 3} {lang === 'en' ? 'defense' : 'puolustus'})</span>
+            <span className="text-stone-300">{t('ui.fortress')}</span>
+            <span className="text-amber-100 font-bold ml-auto">{t('ui.level')} {province.fortLevel} (+{province.fortLevel * 3} {t('ui.bonusDefense')})</span>
           </div>
         )}
         
@@ -156,7 +148,7 @@ export const ProvinceInfoPanel = ({
           <div className="flex items-center gap-2 bg-stone-800/50 rounded-lg p-3">
             <span className="text-lg">{tradeGood.emoji}</span>
             <span className="text-stone-300">{tradeGoodName}</span>
-            <span className="text-xs text-stone-400 ml-auto">{tradeGood.effect}</span>
+            <span className="text-xs text-stone-400 ml-auto">{tradeGoodEffect}</span>
           </div>
         )}
         
@@ -165,8 +157,8 @@ export const ProvinceInfoPanel = ({
           <div className="flex items-center gap-2 bg-amber-900/30 rounded-lg p-3 border border-amber-700/30">
             <TrendingUp className="w-5 h-5 text-amber-400" />
             <div>
-              <span className="text-amber-200">{lang === 'en' ? 'On the Silk Road' : 'Silkkitien varrella'}</span>
-              <span className="text-xs text-amber-300/70 ml-2">{lang === 'en' ? 'Extra income and chain bonuses' : 'Lisätuloja ja ketjun hallintabonuksia'}</span>
+              <span className="text-amber-200">{t('ui.onSilkRoad')}</span>
+              <span className="text-xs text-amber-300/70 ml-2">{t('ui.silkRoadBonus')}</span>
             </div>
           </div>
         )}
@@ -177,7 +169,7 @@ export const ProvinceInfoPanel = ({
             <div className="flex items-center justify-between text-sm">
               <span className="text-red-400 flex items-center gap-1">
                 <AlertTriangle className="w-4 h-4" />
-                {lang === 'en' ? 'Unrest' : 'Levottomuus'}
+                {t('ui.unrest')}
               </span>
               <span className="text-red-300">{province.unrest}%</span>
             </div>
@@ -190,7 +182,7 @@ export const ProvinceInfoPanel = ({
           <div className="pt-2 border-t border-stone-700">
             <h4 className="text-sm font-semibold text-stone-400 mb-2 flex items-center gap-2">
               <Sword className="w-4 h-4" />
-              {lang === 'en' ? 'Armies' : 'Armeijat'}
+              {t('ui.armies')}
             </h4>
             <div className="space-y-2">
               {armies.map(army => {
@@ -211,11 +203,11 @@ export const ProvinceInfoPanel = ({
                           style={{ backgroundColor: armyFaction.color }}
                         />
                         <span className={isPlayer ? 'text-green-200' : 'text-red-200'}>
-                          {lang === 'en' ? factionName(army.ownerId) : armyFaction.name}
+                          {factionName(army.ownerId)}
                         </span>
                       </div>
                       <Badge variant="outline" className={isPlayer ? 'border-green-500 text-green-200' : 'border-red-500 text-red-200'}>
-                        {army.cavalry + army.infantry} {lang === 'en' ? 'units' : 'yksikköä'}
+                        {army.cavalry + army.infantry} {t('ui.units')}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-xs text-stone-400">
@@ -224,7 +216,7 @@ export const ProvinceInfoPanel = ({
                       <div>🔥 {army.siege}</div>
                     </div>
                     <div className="mt-2 flex items-center gap-2 text-xs">
-                      <span className="text-stone-400">{lang === 'en' ? 'Morale:' : 'Moraali:'}</span>
+                      <span className="text-stone-400">{t('ui.morale')}:</span>
                       <Progress value={army.morale} className="h-1 flex-1" />
                       <span className="text-stone-300">{army.morale}%</span>
                     </div>
@@ -246,7 +238,7 @@ export const ProvinceInfoPanel = ({
                 className="w-full border-green-600 bg-green-900/30 text-green-200 hover:bg-green-900/50"
               >
                 <Sword className="w-4 h-4 mr-2" />
-                {lang === 'en' ? 'Recruit infantry' : 'Rekrytoi jalkaväki'}
+                {t('ui.recruitInfantry')}
               </Button>
               <Button
                 onClick={() => onRecruitArmy('cavalry')}
@@ -255,11 +247,11 @@ export const ProvinceInfoPanel = ({
                 className="w-full border-blue-600 bg-blue-900/30 text-blue-200 hover:bg-blue-900/50"
               >
                 <Wrench className="w-4 h-4 mr-2" />
-                {lang === 'en' ? 'Recruit cavalry' : 'Rekrytoi ratsuväki'}
+                {t('ui.recruitCavalry')}
               </Button>
             </div>
             <p className="text-xs text-amber-300/60 text-center">
-              ⚠️ {lang === 'en' ? 'Requires a camp or capital. Recruiting cavalry also consumes horses.' : 'Tarvitset leirin tai pääkaupungin, lisäksi ratsuväen rekrytointi kuluttaa hevosia.'}
+              ⚠️ {t('ui.recruitNote')}
             </p>
 
             {/* Repair fort actions */}
@@ -272,7 +264,7 @@ export const ProvinceInfoPanel = ({
                   onClick={() => onRepairFort(false)}
                   disabled={!canRepairGold}
                 >
-                  {lang === 'en' ? 'Repair (10 gold)' : 'Korjaa (kulta 10)'}
+                  {t('ui.repairGold')}
                 </Button>
                 <Button
                   size="sm"
@@ -281,7 +273,7 @@ export const ProvinceInfoPanel = ({
                   onClick={() => onRepairFort(true)}
                   disabled={!canRepairArtisan}
                 >
-                  {lang === 'en' ? 'Repair (1 artisan)' : 'Korjaa (1 käsityöläinen)'}
+                  {t('ui.repairArtisan')}
                 </Button>
               </div>
             )}

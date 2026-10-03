@@ -6,7 +6,8 @@
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getProvinceDefenseBreakdown } from '@/types/province.ts';
-import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { localizedName } from '@/lib/i18nGameUi.ts';
 import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 130;
@@ -402,21 +403,10 @@ const ProvinceTooltip = ({
   position: { x: number; y: number };
   defenseBonus?: number;
 }) => {
-  const { lang: selectedLanguage } = useLanguage();
-  const lang = getContentLanguage(selectedLanguage);
+  const { t } = useLanguage();
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;
-  const terrainNames: Record<string, string> = {
-    steppe: 'Steppe', grassland: 'Grassland', forest: 'Forest', mountain: 'Mountain',
-    desert: 'Desert', taiga: 'Taiga', tundra: 'Tundra', farmland: 'Farmland', hills: 'Hills', marsh: 'Marsh',
-  };
-  const tradeGoodNames: Record<string, string> = {
-    horses: 'Horses', silk: 'Silk', spices: 'Spices', gold: 'Gold', iron: 'Iron', fur: 'Furs', grain: 'Grain', salt: 'Salt', livestock: 'Livestock', gems: 'Gems',
-  };
-  const factionNames: Record<string, string> = {
-    mongol: 'Mongol Empire', song: 'Song Dynasty', rus: 'Rus Principalities', khwarezm: 'Khwarezmian Empire',
-  };
   
   // Calculate defense breakdown
   const defenseBreakdown = getProvinceDefenseBreakdown(province, defenseBonus);
@@ -437,15 +427,15 @@ const ProvinceTooltip = ({
       </div>
       <div className="space-y-1 text-xs text-stone-300">
         <div className="flex justify-between">
-          <span>{lang === 'en' ? 'Owner:' : 'Omistaja:'}</span>
-          <span style={{ color: owner?.color }}>{owner ? (lang === 'en' ? factionNames[owner.id] || owner.name : owner.name) : (lang === 'en' ? 'Neutral' : 'Neutraali')}</span>
+          <span>{t('ui.owner')}:</span>
+          <span style={{ color: owner?.color }}>{owner ? localizedName(t, `faction.name.${owner.id}`, owner.name) : t('ui.neutral')}</span>
         </div>
         <div className="flex justify-between">
-          <span>{lang === 'en' ? 'Terrain:' : 'Maasto:'}</span>
-          <span>{lang === 'en' ? terrainNames[province.terrain] : terrainInfo.name}</span>
+          <span>{t('ui.terrain')}:</span>
+          <span>{localizedName(t, `terrain.${province.terrain}`, terrainInfo.name)}</span>
         </div>
         <div className="flex justify-between">
-          <span>{lang === 'en' ? 'Defense:' : 'Puolustus:'}</span>
+          <span>{t('ui.defense')}:</span>
           <span className="text-green-400 font-bold">
             🛡️ {defenseBreakdown.total}
             {defenseBreakdown.total > 0 ? (
@@ -458,30 +448,30 @@ const ProvinceTooltip = ({
           </span>
         </div>
         <div className="flex justify-between">
-          <span>{lang === 'en' ? 'Taxes:' : 'Verot:'}</span>
+          <span>{t('ui.taxes')}:</span>
           <span>💰 {province.baseTax}</span>
         </div>
         <div className="flex justify-between">
-          <span>{lang === 'en' ? 'Manpower:' : 'Miesvoima:'}</span>
+          <span>{t('ui.manpower')}:</span>
           <span>👥 {province.baseManpower}</span>
         </div>
         {province.fortLevel > 0 && (
           <div className="flex justify-between">
-            <span>{lang === 'en' ? 'Fortress:' : 'Linnoitus:'}</span>
-            <span>🏯 {lang === 'en' ? 'Level' : 'Taso'} {province.fortLevel}</span>
+            <span>{t('ui.fortress')}:</span>
+            <span>🏯 {t('ui.level')} {province.fortLevel}</span>
           </div>
         )}
         {tradeGood && (
           <div className="flex justify-between">
-            <span>{lang === 'en' ? 'Trade good:' : 'Kauppatavara:'}</span>
-            <span>{tradeGood.emoji} {lang === 'en' ? tradeGoodNames[province.tradeGood!] : tradeGood.name}</span>
+            <span>{t('ui.tradeGood')}:</span>
+            <span>{tradeGood.emoji} {localizedName(t, `good.${province.tradeGood}`, tradeGood.name)}</span>
           </div>
         )}
         {province.hasSilkRoad && (
-          <div className="text-amber-400 text-xs mt-1">🛤️ {lang === 'en' ? 'On the Silk Road (+2 💰/turn)' : 'Silkkitien varrella (+2 💰/vuoro)'}</div>
+          <div className="text-amber-400 text-xs mt-1">🛤️ {t('ui.silkRoadMap')}</div>
         )}
         {province.unrest > 0 && (
-          <div className="text-red-400 text-xs mt-1">⚠️ {lang === 'en' ? 'Unrest' : 'Levottomuus'}: {province.unrest}%</div>
+          <div className="text-red-400 text-xs mt-1">⚠️ {t('ui.unrest')}: {province.unrest}%</div>
         )}
       </div>
     </div>

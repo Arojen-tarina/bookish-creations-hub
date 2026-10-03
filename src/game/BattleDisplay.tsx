@@ -9,6 +9,8 @@ import { Army, FactionId, FACTION_DATA_1206 } from '@/types/province.ts';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Sword, Shield, Trophy, Skull, Flame, Zap } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { localizedName } from '@/lib/i18nGameUi.ts';
 
 export interface BattleResult {
   attacker: Army;
@@ -181,6 +183,7 @@ const ExplosionEffect = ({ active }: { active: boolean }) => {
 type BattlePhaseType = 'intro' | 'clash' | 'rolling' | 'power' | 'losses' | 'result';
 
 export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayProps) => {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState<BattlePhaseType>('intro');
   const [rollingAttack, setRollingAttack] = useState(1);
   const [rollingDefense, setRollingDefense] = useState(1);
@@ -259,6 +262,8 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
 
   const attackerFaction = FACTION_DATA_1206[battle.attackerFaction];
   const defenderFaction = FACTION_DATA_1206[battle.defenderFaction];
+  const attackerName = localizedName(t, `faction.name.${battle.attackerFaction}`, attackerFaction.name);
+  const defenderName = localizedName(t, `faction.name.${battle.defenderFaction}`, defenderFaction.name);
 
   const attackRoll = phase === 'rolling' ? rollingAttack : (battle.attackRoll || 3);
   const defenseRoll = phase === 'rolling' ? rollingDefense : (battle.defenseRoll || 3);
@@ -300,11 +305,11 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
           <DialogHeader className="p-5 pb-2">
             <DialogTitle className="text-2xl text-center text-red-100 flex items-center justify-center gap-2">
               <Sword className="w-6 h-6" />
-              Taistelu: {battle.provinceName}
+              {t('battle.title', { province: battle.provinceName })}
               <Sword className="w-6 h-6" style={{ transform: 'scaleX(-1)' }} />
             </DialogTitle>
             <DialogDescription className="text-center text-red-200/70 text-sm">
-              {attackerFaction.name} hyökkää — {defenderFaction.name} puolustaa
+              {t('battle.versus', { attacker: attackerName, defender: defenderName })}
             </DialogDescription>
           </DialogHeader>
 
@@ -317,7 +322,7 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                   <Zap className="w-10 h-10 text-amber-400 animate-pulse" />
                   <div className="text-5xl slide-in-right">🛡️</div>
                 </div>
-                <p className="text-red-200 text-lg font-bold mt-4 animate-pulse">Armeijat törmäävät!</p>
+                <p className="text-red-200 text-lg font-bold mt-4 animate-pulse">{t('battle.clash')}</p>
               </div>
             )}
 
@@ -328,8 +333,8 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                 <div className={`rounded-xl p-3 border transition-all duration-300 ${showLosses ? 'border-red-500/60' : ''}`}
                   style={{ backgroundColor: `${attackerFaction.color}15`, borderColor: showLosses ? undefined : `${attackerFaction.color}40` }}>
                   <div className="text-center mb-2">
-                    <span className="font-bold text-base" style={{ color: attackerFaction.color }}>{attackerFaction.name}</span>
-                    <span className="block text-xs text-stone-400">⚔️ Hyökkääjä</span>
+                    <span className="font-bold text-base" style={{ color: attackerFaction.color }}>{attackerName}</span>
+                    <span className="block text-xs text-stone-400">⚔️ {t('battle.attacker')}</span>
                   </div>
                   <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between items-center">
@@ -374,8 +379,8 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                 <div className={`rounded-xl p-3 border transition-all duration-300 ${showLosses ? 'border-blue-500/60' : ''}`}
                   style={{ backgroundColor: `${defenderFaction.color}15`, borderColor: showLosses ? undefined : `${defenderFaction.color}40` }}>
                   <div className="text-center mb-2">
-                    <span className="font-bold text-base" style={{ color: defenderFaction.color }}>{defenderFaction.name}</span>
-                    <span className="block text-xs text-stone-400">🛡️ Puolustaja</span>
+                    <span className="font-bold text-base" style={{ color: defenderFaction.color }}>{defenderName}</span>
+                    <span className="block text-xs text-stone-400">🛡️ {t('battle.defender')}</span>
                   </div>
                   <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between items-center">
@@ -412,16 +417,16 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
             {/* === DICE === */}
             {showDice && (
               <div className="bg-stone-800/70 rounded-xl p-3 animate-fade-in">
-                <h4 className="text-center text-stone-400 text-xs uppercase tracking-wider mb-2">🎲 Nopanheitto</h4>
+                    <h4 className="text-center text-stone-400 text-xs uppercase tracking-wider mb-2">🎲 {t('battle.dice')}</h4>
                 <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="text-[10px] text-red-300 font-semibold">Hyökkäys</span>
+                    <span className="text-[10px] text-red-300 font-semibold">{t('battle.attackLabel')}</span>
                     <DiceFace value={attackRoll} color="#ef4444" rolling={diceRolling} />
                     {!diceRolling && <span className="text-xl font-black text-red-400">{attackRoll}</span>}
                   </div>
                   <div className="text-stone-600 text-lg">⚡</div>
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="text-[10px] text-blue-300 font-semibold">Puolustus</span>
+                    <span className="text-[10px] text-blue-300 font-semibold">{t('ui.defense')}</span>
                     <DiceFace value={defenseRoll} color="#3b82f6" rolling={diceRolling} />
                     {!diceRolling && <span className="text-xl font-black text-blue-400">{defenseRoll}</span>}
                   </div>
@@ -432,7 +437,7 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
             {/* === POWER === */}
             {showPower && (
               <div className="bg-stone-800/50 rounded-xl p-3 animate-fade-in">
-                <h4 className="text-center text-stone-400 text-xs uppercase tracking-wider mb-2">⚖️ Kokonaisvoima</h4>
+                <h4 className="text-center text-stone-400 text-xs uppercase tracking-wider mb-2">⚖️ {t('battle.totalPower')}</h4>
                 <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
                   <div className="text-center">
                     <div className="text-3xl font-black text-red-400">
@@ -450,7 +455,7 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                       <AnimatedNumber target={totalDefense} />
                     </div>
                     <p className="text-[10px] text-stone-500 mt-1">
-                      {hasRealScores ? `${Math.round(rawDefensePower)} + 🎲${defenseRoll} + maasto/linnoitus` : `${Math.round(rawDefensePower)} + ${defenseRoll}×2`}
+                      {hasRealScores ? `${Math.round(rawDefensePower)} + 🎲${defenseRoll} + ${t('battle.terrainFort')}` : `${Math.round(rawDefensePower)} + ${defenseRoll}×2`}
                     </p>
                   </div>
                 </div>
@@ -472,15 +477,15 @@ export const BattleDisplay = ({ battle, onClose, onPlaySound }: BattleDisplayPro
                     }
                   </div>
                   <h3 className="text-xl font-black" style={{ color: battle.winner === 'attacker' ? attackerFaction.color : defenderFaction.color }}>
-                    {battle.winner === 'attacker' ? `${attackerFaction.name} voittaa!` : `${defenderFaction.name} puolustautuu!`}
+                    {battle.winner === 'attacker' ? t('battle.attackerWins', { name: attackerName }) : t('battle.defenderHolds', { name: defenderName })}
                   </h3>
                   <p className="text-stone-400 text-sm">
-                    {battle.winner === 'attacker' ? 'Provinssi vallattu!' : 'Hyökkäys torjuttu!'}
+                    {battle.winner === 'attacker' ? t('battle.provinceTaken') : t('battle.attackRepelled')}
                   </p>
                 </div>
 
                 <Button onClick={onClose} className="w-full bg-red-700 hover:bg-red-600 font-bold h-10">
-                  Jatka peliä
+                  {t('faction.continueButton')}
                 </Button>
               </div>
             )}

@@ -36,6 +36,7 @@ import {
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
+import { localizedName } from '@/lib/i18nGameUi.ts';
 import { localizeCard, localizeEffectDescription } from '@/data/gameCardsTranslations.ts';
 import { useDeviceMode } from '@/lib/deviceMode.tsx';
 import { SettingsMenu } from './SettingsMenu.tsx';
@@ -520,7 +521,7 @@ export const ProvinceGame = () => {
                       <Card className="bg-gradient-to-b from-amber-950/40 to-slate-800/50 border-amber-600/40">
                         <CardContent className="p-4">
                           <h4 className="text-amber-100 font-bold text-base mb-3 flex items-center gap-2">
-                            🏗️ {lang === 'en' ? 'Build' : 'Rakenna'} — {selectedProvince.name}
+                            🏗️ {t('ui.buildHeading', { province: selectedProvince.name })}
                           </h4>
                           
                           <div className="space-y-2.5">
@@ -571,10 +572,10 @@ export const ProvinceGame = () => {
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2">
-                                        <span className="text-amber-100 font-bold text-sm">{info.name}</span>
+                                        <span className="text-amber-100 font-bold text-sm">{t(`building.${type}.name`)}</span>
                                         {isFortress && fortLevel > 0 && (
                                           <span className="text-[10px] bg-amber-700/50 text-amber-200 px-1.5 py-0.5 rounded-full">
-                                            Taso {fortLevel}{fortMaxed ? ' (MAX)' : ''}
+                                            {t('ui.level')} {fortLevel}{fortMaxed ? ' (MAX)' : ''}
                                           </span>
                                         )}
                                         {isWonder && wonderCount > 0 && (
@@ -583,13 +584,13 @@ export const ProvinceGame = () => {
                                           </span>
                                         )}
                                         {!isFortress && !isWonder && alreadyBuilt && (
-                                          <span className="text-[10px] bg-green-700/50 text-green-200 px-1.5 py-0.5 rounded-full">✓ Rakennettu</span>
+                                          <span className="text-[10px] bg-green-700/50 text-green-200 px-1.5 py-0.5 rounded-full">{t('ui.builtBadge')}</span>
                                         )}
                                       </div>
                                       <p className="text-amber-200/60 text-xs mt-0.5">
                                         {isFortress
-                                          ? `+${Math.min(3, (fortLevel + 1))} puolustus (taso ${Math.min(3, fortLevel + 1)}), garnisooni, +${Math.round(Math.min(3, (fortLevel + 1)) * 35)}% puolustusvoima`
-                                          : info.effect}
+                                          ? t('ui.fortressNextEffect', { lvl: Math.min(3, fortLevel + 1), pct: Math.round(Math.min(3, fortLevel + 1) * 35) })
+                                          : t(`building.${type}.effect`)}
                                       </p>
                                       
                                       {/* Cost */}
@@ -604,7 +605,7 @@ export const ProvinceGame = () => {
                                             </span>
                                           )}
                                           {!canAfford && (
-                                            <span className="text-red-400/70 text-[10px]">— {lang === 'en' ? 'not enough resources' : 'resurssit eivät riitä'}</span>
+                                            <span className="text-red-400/70 text-[10px]">— {t('ui.notEnough')}</span>
                                           )}
                                         </div>
                                       )}
@@ -617,13 +618,13 @@ export const ProvinceGame = () => {
                                         disabled={!canAfford}
                                         onClick={() => {
                                           buildStructure(selectedProvince.id, type);
-                                          toast.success(`${info.emoji} ${info.name} ${isFortress && fortLevel > 0 ? (lang === 'en' ? 'upgraded' : 'päivitetty') : (lang === 'en' ? 'built' : 'rakennettu')}!`, { 
-                                            description: isFortress ? `Linnoitustaso ${Math.min(3, fortLevel + 1)} — +${Math.round(Math.min(3, fortLevel + 1) * 35)}% puolustus` : info.effect 
+                                          toast.success(`${info.emoji} ${t(isFortress && fortLevel > 0 ? 'ui.toastUpgraded' : 'ui.toastBuilt', { name: t(`building.${type}.name`) })}`, { 
+                                            description: isFortress ? t('ui.fortressToastDesc', { lvl: Math.min(3, fortLevel + 1), pct: Math.round(Math.min(3, fortLevel + 1) * 35) }) : t(`building.${type}.effect`) 
                                           });
                                         }}
                                         className="bg-amber-600 hover:bg-amber-500 text-white font-bold h-9 px-4 rounded-lg flex-shrink-0 disabled:opacity-30"
                                       >
-                                        {isFortress && fortLevel > 0 ? (lang === 'en' ? 'Upgrade' : 'Päivitä') : (lang === 'en' ? 'Build' : 'Rakenna')}
+                                        {isFortress && fortLevel > 0 ? t('ui.upgrade') : t('ui.build')}
                                       </Button>
                                     )}
                                   </div>
@@ -635,7 +636,7 @@ export const ProvinceGame = () => {
                           {/* Player resources summary */}
                           {playerFactionData && (
                             <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center gap-3 text-xs text-amber-200/60">
-                              <span>Sinulla: 🪙 {playerFactionData.treasury}</span>
+                              <span>{t('ui.youHave')} 🪙 {playerFactionData.treasury}</span>
                               <span>🔧 {gameState.artisans}</span>
                             </div>
                           )}
@@ -647,7 +648,7 @@ export const ProvinceGame = () => {
                     {selectedProvince.ownerId === playerFaction && gameState.phase !== 'build' && (gameState.buildings[selectedProvince.id] || []).length > 0 && (
                       <div className="flex gap-1.5 flex-wrap px-1">
                         {(gameState.buildings[selectedProvince.id] || []).map(b => (
-                          <Badge key={b} className="text-xs bg-slate-800/60 border-amber-700/30">{BUILDING_INFO[b].emoji} {BUILDING_INFO[b].name}</Badge>
+                          <Badge key={b} className="text-xs bg-slate-800/60 border-amber-700/30">{BUILDING_INFO[b].emoji} {t(`building.${b}.name`)}</Badge>
                         ))}
                       </div>
                     )}
@@ -657,7 +658,7 @@ export const ProvinceGame = () => {
                       <Card className="bg-green-900/30 border-green-700/30">
                         <CardContent className="p-3">
                           <h4 className="text-green-200 text-sm font-semibold mb-2 flex items-center gap-1">
-                            <Sword className="w-3.5 h-3.5" /> {lang === 'en' ? 'Armies' : 'Armeijat'}
+                            <Sword className="w-3.5 h-3.5" /> {t('ui.armies')}
                           </h4>
                           <div className="space-y-1.5">
                             {selectedProvinceArmies.filter(a => a.ownerId === playerFaction).map(army => {
@@ -706,10 +707,10 @@ export const ProvinceGame = () => {
                           {gameState.selectedArmyId && (
                             <div className="mt-2 pt-2 border-t border-green-700/30 flex gap-3 text-[10px]">
                               {availableMoves.length > 0 && (
-                                <span className="text-green-300">🟢 {lang === 'en' ? 'Move' : 'Liiku'} ({availableMoves.length})</span>
+                                <span className="text-green-300">🟢 {t('ui.move')} ({availableMoves.length})</span>
                               )}
                               {attackableProvinces.length > 0 && (
-                                <span className="text-red-300">🔴 {lang === 'en' ? 'Attack' : 'Hyökkää'} ({attackableProvinces.length})</span>
+                                <span className="text-red-300">🔴 {t('ui.attack')} ({attackableProvinces.length})</span>
                               )}
                             </div>
                           )}
@@ -724,7 +725,7 @@ export const ProvinceGame = () => {
                                 if (others[0]) mergeArmies(gameState.selectedArmyId!, others[0].id);
                               }}
                             >
-                              🔗 {lang === 'en' ? 'Merge armies' : 'Yhdistä armeijat'}
+                              🔗 {t('ui.mergeArmies')}
                             </Button>
                           )}
                         </CardContent>
@@ -735,7 +736,7 @@ export const ProvinceGame = () => {
                   <Card className="bg-stone-800/50 border-stone-700/50">
                     <CardContent className="p-6 text-center text-stone-400">
                       <Map className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">{lang === 'en' ? 'Select a province on the map' : 'Valitse provinssi kartalta'}</p>
+                      <p className="text-sm">{t('ui.selectProvince')}</p>
                     </CardContent>
                   </Card>
                 )}
@@ -781,7 +782,7 @@ export const ProvinceGame = () => {
                 {/* Valtakuntien tilanne — läpinäkyvyys siitä miten lähellä kukin on voittoa */}
                 <Card className="bg-slate-800/50 border-amber-700/30">
                   <CardContent className="p-3">
-                    <h4 className="text-amber-100 text-xs font-bold mb-2">👑 Valtakuntien tilanne</h4>
+                    <h4 className="text-amber-100 text-xs font-bold mb-2">👑 {t('ui.realmStatus')}</h4>
                     <div className="space-y-1.5">
                       {(() => {
                         const totalSilkHubs = gameState.provinces.filter(p => p.hasSilkRoad).length;
@@ -797,15 +798,13 @@ export const ProvinceGame = () => {
                             <div key={f.id} className="flex items-center gap-2 text-xs bg-slate-900/40 rounded-lg px-2 py-1.5">
                               <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: f.color }} />
                               <span className={`font-semibold flex-shrink-0 ${f.id === playerFaction ? 'text-amber-200' : 'text-slate-300'}`}>
-                                {lang === 'en'
-                                  ? ({ mongol: 'Mongol Empire', song: 'Song Dynasty', rus: 'Rus Principalities', khwarezm: 'Khwarezmian Empire' } as Record<string, string>)[f.id]
-                                  : f.name}{f.id === playerFaction ? (lang === 'en' ? ' (you)' : ' (sinä)') : ''}
+                                {localizedName(t, `faction.name.${f.id}`, f.name)}{f.id === playerFaction ? ` ${t('ui.youSuffix')}` : ''}
                               </span>
                               <span className="text-slate-400 ml-auto">🗺️ {provinceCount}/{VICTORY_TARGETS.provinces}</span>
                               <span className="text-amber-300">💰 {f.treasury}/{VICTORY_TARGETS.gold}</span>
                               <span className={hasSilkMajority ? 'text-orange-300' : 'text-slate-500'}>🛤️ {silkOwned}/{totalSilkHubs}</span>
                               {nearEconomicVictory && (
-                                <span className="text-red-300 font-bold" title={lang === 'en' ? 'Economic victory conditions met - streak active' : 'Talousvoiton ehdot täyttyvät — streak käynnissä'}>
+                                <span className="text-red-300 font-bold" title={t('ui.streakTitle')}>
                                   ⏳ {streak}/{VICTORY_TARGETS.treasuryStreak}
                                 </span>
                               )}
@@ -820,10 +819,10 @@ export const ProvinceGame = () => {
                 {(gameState.attackBonus > 0 || gameState.defenseBonus > 0 || gameState.movementBonus > 0) && (
                   <Card className="bg-purple-900/30 border-purple-700/30">
                     <CardContent className="p-3">
-                      <h4 className="text-purple-200 text-xs font-bold mb-1">✨ Aktiiviset bonukset</h4>
-                      {gameState.attackBonus > 0 && <p className="text-xs text-red-300">⚔️ +{gameState.attackBonus} {lang === 'en' ? 'attack' : 'hyökkäys'}</p>}
-                      {gameState.defenseBonus > 0 && <p className="text-xs text-blue-300">🛡️ +{gameState.defenseBonus} {lang === 'en' ? 'defense' : 'puolustus'}</p>}
-                      {gameState.movementBonus > 0 && <p className="text-xs text-green-300">🐴 +{gameState.movementBonus} {lang === 'en' ? 'movement' : 'liike'}</p>}
+                      <h4 className="text-purple-200 text-xs font-bold mb-1">✨ {t('ui.activeBonuses')}</h4>
+                      {gameState.attackBonus > 0 && <p className="text-xs text-red-300">⚔️ +{gameState.attackBonus} {t('ui.bonusAttack')}</p>}
+                      {gameState.defenseBonus > 0 && <p className="text-xs text-blue-300">🛡️ +{gameState.defenseBonus} {t('ui.bonusDefense')}</p>}
+                      {gameState.movementBonus > 0 && <p className="text-xs text-green-300">🐴 +{gameState.movementBonus} {t('ui.bonusMovement')}</p>}
                     </CardContent>
                   </Card>
                 )}
@@ -832,7 +831,7 @@ export const ProvinceGame = () => {
                 {(gameState.playedTechCards?.length || 0) > 0 && (
                   <Card className="bg-green-900/30 border-green-700/30">
                     <CardContent className="p-3">
-                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 Teknologiat ({gameState.playedTechCards.length})</h4>
+                      <h4 className="text-green-200 text-xs font-bold mb-1">🔬 {t('ui.technologies', { n: gameState.playedTechCards.length })}</h4>
                       {gameState.playedTechCards.map(c => {
                         const localized = localizeCard(c, lang);
                         const effectText = localizeEffectDescription(c.id, c.parsedEffect.description, lang);
@@ -845,11 +844,11 @@ export const ProvinceGame = () => {
                 {/* Game stats */}
                 <Card className="bg-slate-800/50 border-slate-700/30">
                   <CardContent className="p-3 space-y-1">
-                    <h4 className="text-amber-100 text-xs font-bold">📊 {lang === 'en' ? 'Statistics' : 'Tilastot'}</h4>
-                    <p className="text-xs text-slate-300">{lang === 'en' ? 'Provinces' : 'Alueet'}: {gameState.provinces.filter(p => p.ownerId === playerFaction).length}/{gameState.provinces.length}</p>
-                    <p className="text-xs text-slate-300">{lang === 'en' ? 'Armies' : 'Armeijat'}: {gameState.armies.filter(a => a.ownerId === playerFaction).length}</p>
-                    <p className="text-xs text-slate-300">{lang === 'en' ? 'Cards in hand' : 'Kortit kädessä'}: {gameState.hand?.length || 0}</p>
-                    <p className="text-xs text-slate-300">{lang === 'en' ? 'Buildings' : 'Rakennukset'}: {Object.values(gameState.buildings).flat().length}</p>
+                    <h4 className="text-amber-100 text-xs font-bold">📊 {t('ui.statistics')}</h4>
+                    <p className="text-xs text-slate-300">{t('ui.statProvinces')}: {gameState.provinces.filter(p => p.ownerId === playerFaction).length}/{gameState.provinces.length}</p>
+                    <p className="text-xs text-slate-300">{t('ui.armies')}: {gameState.armies.filter(a => a.ownerId === playerFaction).length}</p>
+                    <p className="text-xs text-slate-300">{t('ui.statCards')}: {gameState.hand?.length || 0}</p>
+                    <p className="text-xs text-slate-300">{t('ui.statBuildings')}: {Object.values(gameState.buildings).flat().length}</p>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -860,7 +859,7 @@ export const ProvinceGame = () => {
                   <CardContent className="p-3">
                     <h4 className="text-amber-100 text-sm font-semibold mb-2 flex items-center gap-2">
                       <ScrollText className="w-4 h-4 text-amber-400" />
-                      {lang === 'en' ? 'AI event log' : 'AI-tapahtumaloki'}
+                      {t('ui.aiLog')}
                     </h4>
                     <ScrollArea className="h-[400px]">
                       {gameState.aiLog && gameState.aiLog.length > 0 ? (
@@ -870,7 +869,7 @@ export const ProvinceGame = () => {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-slate-500">{lang === 'en' ? 'No events yet. End your turn to see AI actions.' : 'Ei tapahtumia vielä. Lopeta vuoro nähdäksesi AI:n toiminnot.'}</p>
+                        <p className="text-xs text-slate-500">{t('ui.noEvents')}</p>
                       )}
                     </ScrollArea>
                   </CardContent>

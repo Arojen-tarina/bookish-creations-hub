@@ -1,6 +1,9 @@
 import type { Language } from './i18n.tsx';
+import { localeExtraA } from './i18nLocalesExtraA.ts';
+import { localeExtraB } from './i18nLocalesExtraB.ts';
+import { localeExtraC } from './i18nLocalesExtraC.ts';
 
-export const localeTranslations: Partial<Record<Language, Record<string, string>>> = {
+const baseLocaleTranslations: Partial<Record<Language, Record<string, string>>> = {
   zh: {
     'lang.switch': '语言', 'common.back': '返回', 'common.close': '关闭',
     'faction.title': '草原传奇', 'faction.subtitle': '1206年 — 选择你的王国', 'faction.select': '选择',
@@ -482,3 +485,10 @@ export const localeTranslations: Partial<Record<Language, Record<string, string>
     'ability.rus': '❄️ 防御 +10%、森林ボーナス', 'ability.khwarezm': '🛤️ シルクロード収入 +20%',
   },
 };
+
+export const localeTranslations: Partial<Record<Language, Record<string, string>>> = Object.fromEntries(
+  (Object.keys(baseLocaleTranslations) as Language[]).map(lang => [
+    lang,
+    { ...baseLocaleTranslations[lang], ...localeExtraA[lang], ...localeExtraB[lang], ...localeExtraC[lang] },
+  ]),
+);
