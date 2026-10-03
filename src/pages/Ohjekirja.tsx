@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ScrollText, Printer } from 'lucide-react';
-import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
+import { useLanguage } from '@/lib/i18n.tsx';
+import { loadRulebookTranslations, type RulebookDict } from '@/lib/rulebook/index.ts';
 
 /**
  * Ohjekirja.tsx — Arojen Tarinat / Story of the Steppe (1206)
  *
  * Pelin virallinen sääntökirja, kirjoitettu lakikirjan tapaan pykälittäin (§).
  * Jokainen luku vastaa pelin osajärjestelmää ja pykälät kuvaavat säännöt
- * tarkasti niin kuin ne on koodissa toteutettu. Kaksikielinen (fi/en) — ks. i18n.tsx.
+ * tarkasti niin kuin ne on koodissa toteutettu. Sisältö on kirjoitettu suomeksi ja englanniksi
+ * tässä tiedostossa; muut kielet ladataan avaimella (src/lib/rulebook/<kieli>.ts), ja puuttuva
+ * käännös palaa englantiin.
  *
  * HUOM navigaatiosta: käytämme onClick + scrollIntoView -menetelmää emmekä
  * href="#id"-ankkureita, koska yksitiedostoversio (HashRouter) käyttää
@@ -19,7 +22,11 @@ import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 
 type Bi = { fi: string; en: string };
 
-const localizeBi = (text: Bi, lang: 'fi' | 'en') => text[lang];
+// tr(avain, fi, en): palauttaa tekstin valitulla kielellä. fi/en tulevat suoraan JSX:stä,
+// muut kielet haetaan käännöstaulusta ja puuttuva käännös palaa englantiin.
+type Translate = <T extends string | number>(key: string, fi: T, en: T) => T | string;
+const TranslateContext = createContext<Translate>((_key, _fi, en) => en);
+const useTr = () => useContext(TranslateContext);
 
 const CHAPTERS: { id: string; num: string; label: Bi }[] = [
   { id: 'johdanto',    num: 'I',     label: { fi: 'Johdanto ja pelin idea', en: 'Introduction and game concept' } },
@@ -59,12 +66,11 @@ const formatBold = (text: string) =>
   );
 
 const Chapter = ({ id, num, title, children }: { id: string; num: string; title: Bi; children: React.ReactNode }) => {
-  const { lang } = useLanguage();
-  const contentLanguage = getContentLanguage(lang);
+  const tr = useTr();
   return (
     <section id={id} className="scroll-mt-24 border-t border-amber-800/30 pt-8 mt-10 first:mt-0 first:border-t-0 first:pt-0">
       <h2 className="text-2xl sm:text-3xl font-semibold text-amber-200 mb-1">
-        <span className="text-amber-500/70 mr-2 font-serif">{lang === 'fi' ? 'Luku' : 'Chapter'} {num}.</span>{localizeBi(title, contentLanguage)}
+        <span className="text-amber-500/70 mr-2 font-serif">{tr('ui.chapter', 'Luku', 'Chapter')} {num}.</span>{tr(`ch.${id}`, title.fi, title.en)}
       </h2>
       <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-300">{children}</div>
     </section>
@@ -72,28 +78,27 @@ const Chapter = ({ id, num, title, children }: { id: string; num: string; title:
 };
 
 const Para = ({ n, fi, en }: { n: string; fi: string; en: string }) => {
-  const { lang } = useLanguage();
+  const tr = useTr();
   return (
     <p className="pl-12 -indent-12">
       <span className="inline-block w-10 text-amber-400/90 font-semibold font-serif tabular-nums mr-2">§ {n}</span>
-      {formatBold(lang === 'fi' ? fi : en)}
+      {formatBold(String(tr(`p.${n}`, fi, en)))}
     </p>
   );
 };
 
-const Table = ({ head, rows }: { head: Bi[]; rows: { fi: (string | number)[]; en: (string | number)[] }[] }) => {
-  const { lang } = useLanguage();
-  const contentLanguage = getContentLanguage(lang);
+const Table = ({ id, head, rows }: { id: number; head: Bi[]; rows: { fi: (string | number)[]; en: (string | number)[] }[] }) => {
+  const tr = useTr();
   return (
     <div className="overflow-x-auto my-4 rounded-lg border border-slate-700/60">
       <table className="w-full text-sm">
         <thead className="bg-slate-800/80 text-amber-200">
-          <tr>{head.map((h, i) => <th key={i} className="text-left font-semibold px-3 py-2 whitespace-nowrap">{localizeBi(h, contentLanguage)}</th>)}</tr>
+          <tr>{head.map((h, i) => <th key={i} className="text-left font-semibold px-3 py-2 whitespace-nowrap">{tr(`t${id}.h.${i}`, h.fi, h.en)}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i} className={i % 2 ? 'bg-slate-900/40' : 'bg-slate-950/40'}>
-              {r[lang === 'fi' ? 'fi' : 'en'].map((c, j) => <td key={j} className="px-3 py-2 align-top border-t border-slate-800/60">{c}</td>)}
+              {r.en.map((c, j) => <td key={j} className="px-3 py-2 align-top border-t border-slate-800/60">{tr(`t${id}.r.${i}.${j}`, r.fi[j], c)}</td>)}
             </tr>
           ))}
         </tbody>
@@ -104,11 +109,26 @@ const Table = ({ head, rows }: { head: Bi[]; rows: { fi: (string | number)[]; en
 
 const Ohjekirja = () => {
   const { lang } = useLanguage();
-  const contentLanguage = getContentLanguage(lang);
+  const [dict, setDict] = useState<{ lang: string; entries: RulebookDict | null }>({ lang: '', entries: null });
   const [q, setQ] = useState('');
-  const filtered = CHAPTERS.filter(c => localizeBi(c.label, contentLanguage).toLowerCase().includes(q.toLowerCase()));
+
+  useEffect(() => {
+    let cancelled = false;
+    loadRulebookTranslations(lang)
+      .then(entries => { if (!cancelled) setDict({ lang, entries }); })
+      .catch(() => { if (!cancelled) setDict({ lang, entries: null }); });
+    return () => { cancelled = true; };
+  }, [lang]);
+
+  const tr: Translate = (key, fi, en) => {
+    if (lang === 'fi') return fi;
+    if (lang === 'en') return en;
+    return (dict.lang === lang ? dict.entries?.[key] : undefined) ?? en;
+  };
+  const filtered = CHAPTERS.filter(c => String(tr(`ch.${c.id}`, c.label.fi, c.label.en)).toLowerCase().includes(q.toLowerCase()));
 
   return (
+    <TranslateContext.Provider value={tr}>
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* Yläpalkki */}
       <header className="sticky top-0 z-20 border-b border-amber-800/30 bg-slate-950/95 backdrop-blur">
@@ -116,16 +136,16 @@ const Ohjekirja = () => {
           <div className="flex items-center gap-3">
             <ScrollText className="w-6 h-6 text-amber-300" />
             <div>
-              <h1 className="text-lg sm:text-xl font-semibold text-amber-200 leading-tight">{lang === 'fi' ? 'Arojen Tarinat — Sääntökirja' : 'Tales of the Steppe — Rulebook'}</h1>
-              <p className="text-[11px] text-slate-400 leading-tight">{lang === 'fi' ? 'Story of the Steppe · vuosi 1206 · pykälittäin' : 'Story of the Steppe · year 1206 · by article'}</p>
+              <h1 className="text-lg sm:text-xl font-semibold text-amber-200 leading-tight">{tr('ui.title', 'Arojen Tarinat — Sääntökirja', 'Tales of the Steppe — Rulebook')}</h1>
+              <p className="text-[11px] text-slate-400 leading-tight">{tr('ui.subtitle', 'Story of the Steppe · vuosi 1206 · pykälittäin', 'Story of the Steppe · year 1206 · by article')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" onClick={() => window.print()} className="hidden sm:inline-flex">
-              <Printer className="w-4 h-4 mr-1" /> {lang === 'fi' ? 'Tulosta' : 'Print'}
+              <Printer className="w-4 h-4 mr-1" /> {tr('ui.print', 'Tulosta', 'Print')}
             </Button>
             <Link to="/">
-              <Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> {lang === 'fi' ? 'Peliin' : 'To game'}</Button>
+              <Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> {tr('ui.toGame', 'Peliin', 'To game')}</Button>
             </Link>
           </div>
         </div>
@@ -138,7 +158,7 @@ const Ohjekirja = () => {
             <input
               value={q}
               onChange={e => setQ(e.target.value)}
-              placeholder={lang === 'fi' ? 'Etsi lukua…' : 'Search chapters…'}
+              placeholder={tr('ui.search', 'Etsi lukua…', 'Search chapters…')}
               className="w-full mb-3 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
             />
             <nav className="space-y-1 max-h-[70vh] overflow-y-auto pr-1">
@@ -148,7 +168,7 @@ const Ohjekirja = () => {
                   onClick={() => goTo(c.id)}
                   className="w-full text-left text-sm px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-amber-200 transition-colors"
                 >
-                  <span className="text-amber-500/70 font-serif mr-2">{c.num}.</span>{localizeBi(c.label, contentLanguage)}
+                  <span className="text-amber-500/70 font-serif mr-2">{c.num}.</span>{tr(`ch.${c.id}`, c.label.fi, c.label.en)}
                 </button>
               ))}
             </nav>
@@ -213,6 +233,7 @@ const Ohjekirja = () => {
             <Para n="4.2" fi="Jokainen fraktio aloittaa 12 provinssilla, pääkaupungilla ja yhdellä perustaja-armeijalla, jota johtaa Heimopäällikkö (Luku XIII). Aloitusresurssit ja erikoisbonukset alla."
               en="Each faction starts with 12 provinces, a capital, and one founder army led by the Tribal Chief (Chapter XIII). Starting resources and special bonuses are listed below." />
             <Table
+              id={1}
               head={[{ fi: 'Fraktio', en: 'Faction' }, { fi: 'Väri', en: 'Color' }, { fi: 'Hallitsija', en: 'Ruler' }, { fi: 'Pääkaupunki', en: 'Capital' }, { fi: 'Kulta', en: 'Gold' }, { fi: 'Miesvoima', en: 'Manpower' }, { fi: 'Hevoset', en: 'Horses' }, { fi: 'Erikoisbonukset', en: 'Special bonuses' }]}
               rows={[
                 { fi: ['Mongolien valtakunta', '🟡 keltainen', 'Tšingis-kaani', 'Karakorum', 50, 80, 100, 'Ratsuväki +30 %, piiritys +20 % · aggressiivinen'], en: ['Mongol Empire', '🟡 yellow', 'Genghis Khan', 'Karakorum', 50, 80, 100, 'Cavalry +30%, siege +20% · aggressive'] },
@@ -233,6 +254,7 @@ const Ohjekirja = () => {
             <Para n="5.2" fi="Maasto vaikuttaa liikkumisen hintaan, puolustukseen, tarjontarajaan ja verotukseen. Liikekustannus riippuu yksikkötyypistä (jalka/ratsu/piiritys). Puolustusbonus lisätään puolustajan taisteluvoimaan (Luku XI)."
               en="Terrain affects movement cost, defense, supply limit, and taxation. Movement cost depends on unit type (infantry/cavalry/siege). The defense bonus is added to the defender's combat power (Chapter XI)." />
             <Table
+              id={2}
               head={[{ fi: 'Maasto', en: 'Terrain' }, { fi: 'Jalka', en: 'Infantry' }, { fi: 'Ratsu', en: 'Cavalry' }, { fi: 'Piiritys', en: 'Siege' }, { fi: 'Puolustus', en: 'Defense' }, { fi: 'Tarjonta', en: 'Supply' }, { fi: 'Verokerroin', en: 'Tax multiplier' }]}
               rows={[
                 { fi: ['🌾 Steppi', 1, 1, 2, 0, 3, '0.8×'], en: ['🌾 Steppe', 1, 1, 2, 0, 3, '0.8×'] },
@@ -298,6 +320,7 @@ const Ohjekirja = () => {
             <Para n="9.1" fi="Rakennukset pystytetään Rakenna-vaiheessa omiin provinsseihin. Ne maksavat kultaa ja usein käsityöläisiä. Jokainen rakennus antaa pysyvän edun."
               en="Buildings are constructed during the Build phase in your own provinces. They cost gold and often artisans. Each building grants a permanent benefit." />
             <Table
+              id={3}
               head={[{ fi: 'Rakennus', en: 'Building' }, { fi: 'Kulta', en: 'Gold' }, { fi: 'Käsityöl.', en: 'Artisans' }, { fi: 'Vaikutus', en: 'Effect' }]}
               rows={[
                 { fi: ['⛺ Leiri', 15, '—', '+2 ruokaa/vuoro; jalkaväen rekrytointipiste'], en: ['⛺ Camp', 15, '—', '+2 food/turn; infantry recruitment point'] },
@@ -393,6 +416,7 @@ const Ohjekirja = () => {
             <Para n="16.1" fi="Osa provinsseista tuottaa kauppatavaraa, joka antaa pysyvän edun sen omistajalle. Arvo (value) kuvaa tavaran suhteellista arvokkuutta kaupassa."
               en="Some provinces produce a trade good, which grants a permanent benefit to its owner. Value describes the good's relative worth in trade." />
             <Table
+              id={4}
               head={[{ fi: 'Tavara', en: 'Good' }, { fi: 'Arvo', en: 'Value' }, { fi: 'Vaikutus', en: 'Effect' }]}
               rows={[
                 { fi: ['🪙 Kulta', 6, '+3 kultaa/vuoro'], en: ['🪙 Gold', 6, '+3 gold/turn'] },
@@ -434,17 +458,18 @@ const Ohjekirja = () => {
           </Chapter>
 
           <footer className="mt-14 pt-6 border-t border-amber-800/30 text-center text-sm text-slate-500">
-            <p>{lang === 'fi' ? 'Arojen Tarinat — Story of the Steppe · Sääntökirja · vuosi 1206' : 'Tales of the Steppe — Story of the Steppe · Rulebook · year 1206'}</p>
+            <p>{tr('ui.footer', 'Arojen Tarinat — Story of the Steppe · Sääntökirja · vuosi 1206', 'Tales of the Steppe — Story of the Steppe · Rulebook · year 1206')}</p>
             <div className="mt-3 flex justify-center gap-2">
-              <button onClick={() => goTo('johdanto')} className="text-amber-300 hover:text-amber-100 text-sm">{lang === 'fi' ? '↑ Takaisin alkuun' : '↑ Back to top'}</button>
+              <button onClick={() => goTo('johdanto')} className="text-amber-300 hover:text-amber-100 text-sm">{tr('ui.backToTop', '↑ Takaisin alkuun', '↑ Back to top')}</button>
               <span className="text-slate-600">·</span>
-              <Link to="/" className="text-amber-300 hover:text-amber-100 text-sm">{lang === 'fi' ? 'Palaa peliin' : 'Return to game'}</Link>
+              <Link to="/" className="text-amber-300 hover:text-amber-100 text-sm">{tr('ui.returnToGame', 'Palaa peliin', 'Return to game')}</Link>
             </div>
           </footer>
 
         </main>
       </div>
     </div>
+    </TranslateContext.Provider>
   );
 };
 
