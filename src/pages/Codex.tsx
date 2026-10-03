@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, BookOpen, Feather } from 'lucide-react';
 import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
+import { loadCodexTranslations, type CodexDict } from '@/lib/codex/index.ts';
 
 interface Chapter {
   id: string;
@@ -233,7 +234,22 @@ const englishLoreChapters = [
   ['XVIII', 'Afterword', 'The stories that bind us', 'No army is invincible and no dynasty lasts forever. People are tribal and violent, but also social, political, empathetic, and capable of surpassing themselves. What binds us is not victory or defeat, but the stories we share.'],
 ];
 
+// Muut kielet kuin fi/en: englanninkielinen tiivistelmä, jonka tekstit haetaan avaimella
+// kielikohtaisesta tiedostosta (src/lib/codex/<kieli>.ts). Puuttuva käännös palaa englantiin.
 const EnglishCodex = () => {
+  const { lang } = useLanguage();
+  const [dict, setDict] = useState<{ lang: string; entries: CodexDict | null }>({ lang: '', entries: null });
+
+  useEffect(() => {
+    let cancelled = false;
+    loadCodexTranslations(lang)
+      .then(entries => { if (!cancelled) setDict({ lang, entries }); })
+      .catch(() => { if (!cancelled) setDict({ lang, entries: null }); });
+    return () => { cancelled = true; };
+  }, [lang]);
+
+  const tr = (key: string, en: string) => (dict.lang === lang ? dict.entries?.[key] : undefined) ?? en;
+
   const rules = [
     ['Sustainable hunting', 'Take from nature without destroying it, or Handgai will turn away.'],
     ['Animal-fat protection', 'Clothing and armor are sealed against the killing cold, wind, and moisture.'],
@@ -259,28 +275,33 @@ const EnglishCodex = () => {
     ['🐉', 'The Heavenly Emperor', 'The southern ruler', 'A proud ruler with an immense army and impregnable walls, defeated in open ground.'],
   ];
 
+  const rulesT = rules.map(([t, x], i) => [tr(`rule.${i}.t`, t), tr(`rule.${i}.x`, x)]);
+  const pantheonT = pantheonEnglish.map(([icon, n, x], i) => [icon, tr(`pan.${i}.n`, n), tr(`pan.${i}.x`, x)]);
+  const charactersT = charactersEnglish.map(([icon, n, r, x], i) => [icon, tr(`char.${i}.n`, n), tr(`char.${i}.r`, r), tr(`char.${i}.x`, x)]);
+  const backToGame = tr('ui.back', 'Back to game');
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a1206] via-slate-950 to-black text-amber-50 font-body">
       <div className="relative mx-auto max-w-6xl px-4 py-8 lg:py-14">
         <div className="mb-8 flex items-center justify-between">
-          <Link to="/"><Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4" /> Back to game</Button></Link>
-          <Link to="/ohjekirja"><Button variant="secondary" size="sm"><BookOpen className="w-4 h-4" /> Rulebook</Button></Link>
+          <Link to="/"><Button variant="secondary" size="sm"><ArrowLeft className="w-4 h-4" /> {backToGame}</Button></Link>
+          <Link to="/ohjekirja"><Button variant="secondary" size="sm"><BookOpen className="w-4 h-4" /> {tr('ui.rulebook', 'Rulebook')}</Button></Link>
         </div>
         <header className="relative mb-14 overflow-hidden rounded-3xl border border-amber-800/40 bg-gradient-to-b from-amber-950/40 to-slate-950/70 px-6 py-14 text-center shadow-2xl">
           <Feather className="mx-auto mb-4 h-12 w-12 text-amber-300" />
-          <p className="font-display text-xs uppercase tracking-[0.5em] text-amber-500/70">Tales of the Steppe</p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-wide text-amber-100 sm:text-5xl">The Borderlands Chronicle</h1>
-          <p className="mt-2 font-display text-lg text-amber-300/80">Worldbook &amp; Player Codex</p>
-          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-amber-100/70 italic">Everything you need to know about the world, its gods, peoples, heroes, and harsh laws of survival.</p>
+          <p className="font-display text-xs uppercase tracking-[0.5em] text-amber-500/70">{tr('ui.eyebrow', 'Tales of the Steppe')}</p>
+          <h1 className="mt-3 font-display text-4xl font-bold tracking-wide text-amber-100 sm:text-5xl">{tr('ui.title', 'The Borderlands Chronicle')}</h1>
+          <p className="mt-2 font-display text-lg text-amber-300/80">{tr('ui.subtitle', 'Worldbook & Player Codex')}</p>
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-amber-100/70 italic">{tr('ui.tagline', 'Everything you need to know about the world, its gods, peoples, heroes, and harsh laws of survival.')}</p>
         </header>
         <main className="space-y-16">
           <section className="grid gap-4 sm:grid-cols-2">
-            {pantheonEnglish.map(([icon, name, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="mb-2 flex items-center gap-3"><span className="text-3xl">{icon}</span><h3 className="font-display text-base font-semibold text-amber-200">{name}</h3></div><p className="text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}
+            {pantheonT.map(([icon, name, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="mb-2 flex items-center gap-3"><span className="text-3xl">{icon}</span><h3 className="font-display text-base font-semibold text-amber-200">{name}</h3></div><p className="text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}
           </section>
-          <section className="grid gap-4 sm:grid-cols-2">{rules.map(([title, text]) => <article key={title} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><h3 className="font-display text-base font-semibold text-amber-200">{title}</h3><p className="mt-2 text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}</section>
-          {englishLoreChapters.map(([numeral, title, subtitle, text]) => <section key={numeral} id={`english-${numeral}`}><div className="flex items-center gap-4"><span className="font-display text-5xl font-bold text-amber-500/30">{numeral}</span><div className="flex-1"><div className="h-px w-full bg-gradient-to-r from-amber-600/50 to-transparent" /><h2 className="mt-2 font-display text-2xl font-bold text-amber-100">{title}</h2><p className="text-xs uppercase tracking-[0.2em] text-amber-500/60">{subtitle}</p></div></div><p className="mt-5 text-[15px] leading-relaxed text-amber-100/85">{text}</p></section>)}
-          <section><h2 className="font-display text-3xl font-bold text-amber-100">People of the Chronicle</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{charactersEnglish.map(([icon, name, role, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="flex items-center gap-3"><span className="text-3xl">{icon}</span><div><h3 className="font-display font-semibold text-amber-200">{name}</h3><p className="text-[11px] uppercase tracking-[0.2em] text-amber-500/70">{role}</p></div></div><p className="mt-3 text-sm leading-relaxed text-amber-100/80">{text}</p></article>)}</div></section>
-          <div className="border-t border-amber-800/30 pt-8 text-center"><p className="font-display italic text-amber-300/70">“The Great Stag sang this world into being — now its fate is sung with steel, gold, and alliances.”</p><Link to="/" className="mt-6 inline-flex"><Button className="bg-amber-600 hover:bg-amber-500 text-white font-bold"><ArrowLeft className="w-4 h-4" /> Back to game</Button></Link></div>
+          <section className="grid gap-4 sm:grid-cols-2">{rulesT.map(([title, text]) => <article key={title} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><h3 className="font-display text-base font-semibold text-amber-200">{title}</h3><p className="mt-2 text-sm leading-relaxed text-amber-100/75">{text}</p></article>)}</section>
+          {englishLoreChapters.map(([numeral, title, subtitle, text]) => <section key={numeral} id={`english-${numeral}`}><div className="flex items-center gap-4"><span className="font-display text-5xl font-bold text-amber-500/30">{numeral}</span><div className="flex-1"><div className="h-px w-full bg-gradient-to-r from-amber-600/50 to-transparent" /><h2 className="mt-2 font-display text-2xl font-bold text-amber-100">{tr(`lore.${numeral}.t`, title)}</h2><p className="text-xs uppercase tracking-[0.2em] text-amber-500/60">{tr(`lore.${numeral}.s`, subtitle)}</p></div></div><p className="mt-5 text-[15px] leading-relaxed text-amber-100/85">{tr(`lore.${numeral}.x`, text)}</p></section>)}
+          <section><h2 className="font-display text-3xl font-bold text-amber-100">{tr('ui.people', 'People of the Chronicle')}</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{charactersT.map(([icon, name, role, text]) => <article key={name} className="rounded-2xl border border-amber-800/30 bg-slate-950/60 p-5"><div className="flex items-center gap-3"><span className="text-3xl">{icon}</span><div><h3 className="font-display font-semibold text-amber-200">{name}</h3><p className="text-[11px] uppercase tracking-[0.2em] text-amber-500/70">{role}</p></div></div><p className="mt-3 text-sm leading-relaxed text-amber-100/80">{text}</p></article>)}</div></section>
+          <div className="border-t border-amber-800/30 pt-8 text-center"><p className="font-display italic text-amber-300/70">{tr('ui.quote', '“The Great Stag sang this world into being — now its fate is sung with steel, gold, and alliances.”')}</p><Link to="/" className="mt-6 inline-flex"><Button className="bg-amber-600 hover:bg-amber-500 text-white font-bold"><ArrowLeft className="w-4 h-4" /> {backToGame}</Button></Link></div>
         </main>
       </div>
     </div>
