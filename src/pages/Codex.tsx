@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, BookOpen, Feather } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 
 interface Chapter {
   id: string;
@@ -291,9 +291,8 @@ const Codex = () => {
   const { lang } = useLanguage();
   const [active, setActive] = useState(chapters[0].id);
 
-  if (lang === 'en') return <EnglishCodex />;
-
   useEffect(() => {
+    if (getContentLanguage(lang) !== 'fi') return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -307,7 +306,9 @@ const Codex = () => {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [lang]);
+
+  if (getContentLanguage(lang) !== 'fi') return <EnglishCodex />;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a1206] via-slate-950 to-black text-amber-50 font-body">

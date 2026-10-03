@@ -7,7 +7,7 @@
  */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getFortDurability, getProvinceDefenseBreakdown, isFortDamaged } from '@/types/province.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -50,7 +50,8 @@ export const ProvinceInfoPanel = ({
   defenseBonus = 0,
   onBuildFort, canBuildFort, onRepairFort, canRepairGold, canRepairArtisan,
 }: ProvinceInfoPanelProps) => {
-  const { lang } = useLanguage();
+  const { lang: selectedLanguage } = useLanguage();
+  const lang = getContentLanguage(selectedLanguage);
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;

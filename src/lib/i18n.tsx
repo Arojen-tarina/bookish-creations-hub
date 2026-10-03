@@ -8,6 +8,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, R
 import { localeTranslations } from './i18nLocales.ts';
 
 export type Language = 'fi' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'ur' | 'id' | 'de' | 'ja';
+export type ContentLanguage = 'fi' | 'en';
+
+export const getContentLanguage = (lang: Language): ContentLanguage => lang === 'fi' ? 'fi' : 'en';
 
 export const LANGUAGE_OPTIONS: { id: Language; label: string }[] = [
   { id: 'fi', label: 'Suomi' }, { id: 'en', label: 'English' }, { id: 'zh', label: '中文' },
@@ -485,7 +488,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const t = useCallback((key: string, vars?: Record<string, string | number>) => {
     const dict = lang === 'fi' || lang === 'en' ? translations[lang] : localeTranslations[lang];
-    let text = dict?.[key] ?? translations.en?.[key] ?? key;
+    let text = dict?.[key] ?? translations.en?.[key] ?? translations.fi?.[key] ?? key;
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
         text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(v));

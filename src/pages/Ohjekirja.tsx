@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { ArrowLeft, ScrollText, Printer } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 
 /**
  * Ohjekirja.tsx — Arojen Tarinat / Story of the Steppe (1206)
@@ -18,6 +18,8 @@ import { useLanguage } from '@/lib/i18n.tsx';
  */
 
 type Bi = { fi: string; en: string };
+
+const localizeBi = (text: Bi, lang: 'fi' | 'en') => text[lang];
 
 const CHAPTERS: { id: string; num: string; label: Bi }[] = [
   { id: 'johdanto',    num: 'I',     label: { fi: 'Johdanto ja pelin idea', en: 'Introduction and game concept' } },
@@ -58,10 +60,11 @@ const formatBold = (text: string) =>
 
 const Chapter = ({ id, num, title, children }: { id: string; num: string; title: Bi; children: React.ReactNode }) => {
   const { lang } = useLanguage();
+  const contentLanguage = getContentLanguage(lang);
   return (
     <section id={id} className="scroll-mt-24 border-t border-amber-800/30 pt-8 mt-10 first:mt-0 first:border-t-0 first:pt-0">
       <h2 className="text-2xl sm:text-3xl font-semibold text-amber-200 mb-1">
-        <span className="text-amber-500/70 mr-2 font-serif">{lang === 'fi' ? 'Luku' : 'Chapter'} {num}.</span>{title[lang]}
+        <span className="text-amber-500/70 mr-2 font-serif">{lang === 'fi' ? 'Luku' : 'Chapter'} {num}.</span>{localizeBi(title, contentLanguage)}
       </h2>
       <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-300">{children}</div>
     </section>
@@ -80,16 +83,17 @@ const Para = ({ n, fi, en }: { n: string; fi: string; en: string }) => {
 
 const Table = ({ head, rows }: { head: Bi[]; rows: { fi: (string | number)[]; en: (string | number)[] }[] }) => {
   const { lang } = useLanguage();
+  const contentLanguage = getContentLanguage(lang);
   return (
     <div className="overflow-x-auto my-4 rounded-lg border border-slate-700/60">
       <table className="w-full text-sm">
         <thead className="bg-slate-800/80 text-amber-200">
-          <tr>{head.map((h, i) => <th key={i} className="text-left font-semibold px-3 py-2 whitespace-nowrap">{h[lang]}</th>)}</tr>
+          <tr>{head.map((h, i) => <th key={i} className="text-left font-semibold px-3 py-2 whitespace-nowrap">{localizeBi(h, contentLanguage)}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i} className={i % 2 ? 'bg-slate-900/40' : 'bg-slate-950/40'}>
-              {r[lang].map((c, j) => <td key={j} className="px-3 py-2 align-top border-t border-slate-800/60">{c}</td>)}
+              {r[lang === 'fi' ? 'fi' : 'en'].map((c, j) => <td key={j} className="px-3 py-2 align-top border-t border-slate-800/60">{c}</td>)}
             </tr>
           ))}
         </tbody>
@@ -100,8 +104,9 @@ const Table = ({ head, rows }: { head: Bi[]; rows: { fi: (string | number)[]; en
 
 const Ohjekirja = () => {
   const { lang } = useLanguage();
+  const contentLanguage = getContentLanguage(lang);
   const [q, setQ] = useState('');
-  const filtered = CHAPTERS.filter(c => c.label[lang].toLowerCase().includes(q.toLowerCase()));
+  const filtered = CHAPTERS.filter(c => localizeBi(c.label, contentLanguage).toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -143,7 +148,7 @@ const Ohjekirja = () => {
                   onClick={() => goTo(c.id)}
                   className="w-full text-left text-sm px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-amber-200 transition-colors"
                 >
-                  <span className="text-amber-500/70 font-serif mr-2">{c.num}.</span>{c.label[lang]}
+                  <span className="text-amber-500/70 font-serif mr-2">{c.num}.</span>{localizeBi(c.label, contentLanguage)}
                 </button>
               ))}
             </nav>

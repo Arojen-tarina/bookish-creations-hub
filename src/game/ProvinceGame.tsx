@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 import { localizeCard, localizeEffectDescription } from '@/data/gameCardsTranslations.ts';
 import { useDeviceMode } from '@/lib/deviceMode.tsx';
 import { SettingsMenu } from './SettingsMenu.tsx';
@@ -52,7 +52,8 @@ import resHorseIcon from '@/assets/sprites/res_horse.png';
 
 
 export const ProvinceGame = () => {
-  const { t, lang } = useLanguage();
+  const { t, lang: selectedLanguage } = useLanguage();
+  const lang = getContentLanguage(selectedLanguage);
   const {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,

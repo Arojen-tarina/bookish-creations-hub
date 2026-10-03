@@ -6,7 +6,7 @@
  */
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { Province, FactionId, Army, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getProvinceDefenseBreakdown } from '@/types/province.ts';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 import gameBoardImg from '@/assets/game-board.jpg';
 
 const BOARD_SIZE = 130;
@@ -402,7 +402,8 @@ const ProvinceTooltip = ({
   position: { x: number; y: number };
   defenseBonus?: number;
 }) => {
-  const { lang } = useLanguage();
+  const { lang: selectedLanguage } = useLanguage();
+  const lang = getContentLanguage(selectedLanguage);
   const terrainInfo = PROVINCE_TERRAIN_INFO[province.terrain];
   const tradeGood = province.tradeGood ? TRADE_GOODS_INFO[province.tradeGood] : null;
   const owner = province.ownerId ? FACTION_DATA_1206[province.ownerId] : null;

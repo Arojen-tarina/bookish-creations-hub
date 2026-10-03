@@ -5,7 +5,7 @@
  * voimassa olevat sopimukset ja mahdollistaa uusien ehdottamisen/purkamisen.
  */
 import { useState } from 'react';
-import { useLanguage } from '@/lib/i18n.tsx';
+import { getContentLanguage, useLanguage } from '@/lib/i18n.tsx';
 import { FactionId, Faction, DiplomaticRelation, TreatyType, FACTION_DATA_1206 } from '@/types/province.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -130,7 +130,8 @@ const FactionRelationCard = ({
   onBreakTreaty: (treatyType: TreatyType) => void;
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { lang } = useLanguage();
+  const { lang: selectedLanguage } = useLanguage();
+  const lang = getContentLanguage(selectedLanguage);
   const treatyName = (type: TreatyType) => lang === 'en' ? TREATY_NAMES_EN[type] : TREATY_INFO[type].name;
   const treatyDescription = (type: TreatyType) => lang === 'en' ? TREATY_DESCRIPTIONS_EN[type] : TREATY_INFO[type].description;
   
@@ -301,7 +302,8 @@ export const DiplomacyPanel = ({
   onProposeTreaty,
   onBreakTreaty,
 }: DiplomacyPanelProps) => {
-  const { lang } = useLanguage();
+  const { lang: selectedLanguage } = useLanguage();
+  const lang = getContentLanguage(selectedLanguage);
   const otherFactions = factions.filter(f => f.id !== playerFaction);
   
   const getRelationWith = (factionId: FactionId): DiplomaticRelation | null => {
