@@ -13,7 +13,13 @@ import { useCallback, useRef, useEffect, useState } from 'react';
 import musicTrack1 from '@/assets/music/track1.mp3';
 // Pelaajan uusin nauhoite (Nauhoite peliä varten 1). Upotetaan single-fileen,
 // jotta se soi myös offline-versiossa; muut pitkät raidat ladataan erikseen.
+import musicTrack2 from '@/assets/music/track2.mp3';
+import musicTrack3 from '@/assets/music/track3.mp3';
 import musicTrack4 from '@/assets/music/track4.mp3';
+import musicSong from '@/assets/music/song.mp3';
+import pianoConcerto1 from '@/assets/music/piano-concerto-1.mp3';
+import pianoConcerto2 from '@/assets/music/piano-concerto-2.mp3';
+import pianoConcerto3 from '@/assets/music/piano-concerto-3.mp3';
 
 // Kappaleiden tunnisteet (käytetään käännöksissä ja raitavalitsimessa, ks. i18n 'music.*')
 export type MusicTrackId =
@@ -36,14 +42,14 @@ const MUSIC_TRACKS: MusicTrackDef[] = import.meta.env.VITE_SINGLEFILE
     ]
   : [
       // Kurkkulaulu soi VAIN valikossa/introssa — ei osa peliaikaisen kierron listaa.
-      { id: 'song', src: `${import.meta.env.BASE_URL}music/song.mp3`, category: 'menu' },
+      { id: 'song', src: musicSong, category: 'menu' },
       { id: 'track1', src: musicTrack1, category: 'gameplay' },
-      { id: 'track2', src: `${import.meta.env.BASE_URL}music/track2.mp3`, category: 'gameplay' },
-      { id: 'track3', src: `${import.meta.env.BASE_URL}music/track3.mp3`, category: 'gameplay' },
-      { id: 'track4', src: `${import.meta.env.BASE_URL}music/track4.mp3`, category: 'gameplay' },
-      { id: 'pianoConcerto1', src: `${import.meta.env.BASE_URL}music/piano-concerto-1.mp3`, category: 'gameplay' },
-      { id: 'pianoConcerto2', src: `${import.meta.env.BASE_URL}music/piano-concerto-2.mp3`, category: 'gameplay' },
-      { id: 'pianoConcerto3', src: `${import.meta.env.BASE_URL}music/piano-concerto-3.mp3`, category: 'gameplay' },
+      { id: 'track2', src: musicTrack2, category: 'gameplay' },
+      { id: 'track3', src: musicTrack3, category: 'gameplay' },
+      { id: 'track4', src: musicTrack4, category: 'gameplay' },
+      { id: 'pianoConcerto1', src: pianoConcerto1, category: 'gameplay' },
+      { id: 'pianoConcerto2', src: pianoConcerto2, category: 'gameplay' },
+      { id: 'pianoConcerto3', src: pianoConcerto3, category: 'gameplay' },
     ];
 
 const tracksInCategory = (category: MusicCategory): MusicTrackDef[] => {
