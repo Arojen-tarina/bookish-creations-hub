@@ -25,6 +25,7 @@ interface SettingsMenuProps {
 export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack, musicVolume, onMusicVolumeChange }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
   const getMusicTrackLabel = (id: MusicTrackId) => {
     const key = `music.${id}`;
     const translated = t(key);
@@ -37,17 +38,18 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
   const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, width: 256 });
 
   const updateMenuPosition = () => {
     const button = rootRef.current?.querySelector('button');
     if (!button) return;
     const rect = button.getBoundingClientRect();
-    const menuWidth = 256;
-    const preferredRight = window.innerWidth - rect.right;
-    const minimumRight = Math.max(8, window.innerWidth - menuWidth - 8);
-    const right = Math.max(minimumRight, Math.min(window.innerWidth - 8, preferredRight));
-    setMenuPosition({ top: rect.bottom + 8, right });
+    const margin = 12;
+    const menuWidth = Math.min(280, window.innerWidth - margin * 2);
+    const menuHeight = menuRef.current?.offsetHeight ?? 440;
+    const left = clamp(rect.left + rect.width / 2 - menuWidth / 2, margin, Math.max(margin, window.innerWidth - menuWidth - margin));
+    const top = clamp(rect.bottom + 8, margin, Math.max(margin, window.innerHeight - menuHeight - margin));
+    setMenuPosition({ top, left, width: menuWidth });
   };
 
   const toggleAnalytics = () => {
@@ -70,9 +72,11 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
   useEffect(() => {
     if (!open) return;
     updateMenuPosition();
+    const frame = requestAnimationFrame(updateMenuPosition);
     window.addEventListener('resize', updateMenuPosition);
     window.addEventListener('scroll', updateMenuPosition, true);
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener('resize', updateMenuPosition);
       window.removeEventListener('scroll', updateMenuPosition, true);
     };
@@ -97,10 +101,14 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
       {open && createPortal(
         <div
           ref={menuRef}
-          className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-64 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={isMobileViewport
-            ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
-            : { top: menuPosition.top, right: menuPosition.right }}
+          className="fixed z-[10000] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+            width: menuPosition.width,
+            maxWidth: `calc(100vw - ${24}px)`,
+            maxHeight: `calc(100dvh - ${24}px)`,
+          }}
         >
           <p className="text-sm font-bold text-amber-100 mb-3">{t('settings.title')}</p>
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
