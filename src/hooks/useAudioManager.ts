@@ -28,11 +28,11 @@ const MUSIC_TRACKS: MusicTrackDef[] = Object.entries(MUSIC_FILES)
     src,
     category: 'gameplay',
   }));
+const DEFAULT_MUSIC_TRACKS = MUSIC_TRACKS.filter(track => track.id !== 'combat');
 
 const tracksInCategory = (category: MusicCategory): MusicTrackDef[] => {
-  const inCat = MUSIC_TRACKS.filter(track => track.category === category);
-  // Fallback (esim. single-file-build ilman 'menu'-raitoja) — älä jää tyhjäksi.
-  return inCat.length > 0 ? inCat : MUSIC_TRACKS;
+  const inCat = DEFAULT_MUSIC_TRACKS.filter(track => track.category === category);
+  return inCat.length > 0 ? inCat : DEFAULT_MUSIC_TRACKS;
 };
 
 interface AudioSettings {
@@ -59,6 +59,8 @@ interface AudioManagerReturn {
   playProvinceCapture: () => void;
   playAmbient: () => void;
   playCategory: (category: MusicCategory) => void;
+  playCombatMusic: () => void;
+  resumeDefaultMusic: () => void;
   stopAmbient: () => void;
   musicTracks: MusicTrackId[];
   currentTrack: MusicTrackId;
@@ -193,11 +195,17 @@ export const useAudioManager = (): AudioManagerReturn => {
   const ambientSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const ambientTrackRef = useRef<number>(0);
   const musicElRef = useRef<HTMLAudioElement | null>(null);
-  const musicIdxRef = useRef<number>(0);
+  const activeTrackRef = useRef<MusicTrackId | null>(null);
+  const switchingToTrackRef = useRef<MusicTrackId | null>(null);
+  const trackPositionsRef = useRef(new Map<MusicTrackId, number>());
+  const fadeIntervalRef = useRef<number | null>(null);
+  const switchTrackRef = useRef<(track: MusicTrackDef) => void>(() => {});
+  const advanceTrackRef = useRef<() => void>(() => {});
+  const defaultTrackIdRef = useRef<MusicTrackId | null>(DEFAULT_MUSIC_TRACKS[0]?.id ?? null);
   // Mitä kategoriaa (menu/gameplay) soittolista juuri nyt kiertää.
-  const categoryRef = useRef<MusicCategory>(MUSIC_TRACKS[0]?.category ?? 'gameplay');
+  const categoryRef = useRef<MusicCategory>(DEFAULT_MUSIC_TRACKS[0]?.category ?? 'gameplay');
   const ambientTimeoutRef = useRef<number | null>(null);
-  const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(MUSIC_TRACKS[0]?.id ?? '');
+  const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(DEFAULT_MUSIC_TRACKS[0]?.id ?? '');
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_KEY);
@@ -206,6 +214,8 @@ export const useAudioManager = (): AudioManagerReturn => {
       return defaultSettings;
     }
   });
+  const mutedRef = useRef(settings.muted);
+  mutedRef.current = settings.muted;
 
   // Initialize audio context on first user interaction
   const getAudioContext = useCallback((): AudioContext => {
@@ -421,53 +431,135 @@ export const useAudioManager = (): AudioManagerReturn => {
       el.preload = 'auto';
       el.setAttribute('data-game-music', '1');
       if (typeof document !== 'undefined') document.body.appendChild(el);
-      // Kun kappale loppuu, siirry SEURAAVAAN samassa kategoriassa (esim. kurkkulaulu
-      // valikossa ei koskaan sekoitu peliaikaiseen soittolistaan tai päinvastoin).
-      const advance = () => {
-        const catTracks = tracksInCategory(categoryRef.current);
-        if (catTracks.length === 0) return;
-        const currentId = MUSIC_TRACKS[musicIdxRef.current]?.id;
-        const posInCat = Math.max(0, catTracks.findIndex(t => t.id === currentId));
-        const next = catTracks[(posInCat + 1) % catTracks.length];
-        musicIdxRef.current = MUSIC_TRACKS.findIndex(t => t.id === next.id);
-        setCurrentTrack(next.id);
-        const nextEl = musicElRef.current;
-        if (nextEl) {
-          nextEl.src = next.src;
-          nextEl.play().catch(() => {});
-        }
-      };
+      const advance = () => advanceTrackRef.current();
       el.addEventListener('ended', advance);
-      // Jos jokin kappale ei lataudu (esim. offline-versiossa), siirry seuraavaan
       el.addEventListener('error', () => { if (MUSIC_TRACKS.length > 1) advance(); });
       musicElRef.current = el;
     }
     return el;
   }, []);
 
+  const fadeToVolume = useCallback((el: HTMLAudioElement, target: number, duration: number, onComplete?: () => void) => {
+    if (fadeIntervalRef.current !== null) window.clearInterval(fadeIntervalRef.current);
+    const startVolume = el.volume;
+    const startTime = performance.now();
+    if (duration <= 0 || startVolume === target) {
+      el.volume = target;
+      fadeIntervalRef.current = null;
+      onComplete?.();
+      return;
+    }
+    fadeIntervalRef.current = window.setInterval(() => {
+      const progress = Math.min(1, (performance.now() - startTime) / duration);
+      el.volume = startVolume + (target - startVolume) * progress;
+      if (progress >= 1) {
+        if (fadeIntervalRef.current !== null) window.clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+        onComplete?.();
+      }
+    }, 16);
+  }, []);
+
+  const switchToTrack = useCallback((track: MusicTrackDef) => {
+    const el = ensureMusicElement();
+    if (activeTrackRef.current === track.id && el.src) {
+      switchingToTrackRef.current = null;
+      setCurrentTrack(track.id);
+      if (fadeIntervalRef.current !== null) window.clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+      if (mutedRef.current) {
+        el.volume = 0;
+      } else if (el.paused) {
+        el.volume = 0;
+        el.play().then(() => fadeToVolume(el, Math.min(1, getEffectiveVolume('music') * 0.6), 500)).catch(() => {});
+      } else {
+        fadeToVolume(el, Math.min(1, getEffectiveVolume('music') * 0.6), 350);
+      }
+      return;
+    }
+    if (switchingToTrackRef.current === track.id) return;
+    switchingToTrackRef.current = track.id;
+    setCurrentTrack(track.id);
+
+    const activateTrack = () => {
+      const previousId = activeTrackRef.current;
+      if (previousId && el.src) {
+        trackPositionsRef.current.set(previousId, el.ended ? 0 : el.currentTime);
+      }
+      el.pause();
+      activeTrackRef.current = track.id;
+      switchingToTrackRef.current = null;
+      el.loop = track.id === 'combat';
+      el.src = track.src;
+      el.load();
+      const savedPosition = trackPositionsRef.current.get(track.id) ?? 0;
+      if (savedPosition > 0) {
+        try {
+          el.currentTime = savedPosition;
+        } catch {
+          // Metadata may not be available until playback starts.
+        }
+      }
+      el.volume = 0;
+      if (mutedRef.current) return;
+      el.play()
+        .then(() => fadeToVolume(el, Math.min(1, getEffectiveVolume('music') * 0.6), 500))
+        .catch(() => { el.volume = Math.min(1, getEffectiveVolume('music') * 0.6); });
+    };
+
+    if (el.src && !el.paused && !mutedRef.current) {
+      fadeToVolume(el, 0, 350, activateTrack);
+    } else {
+      fadeToVolume(el, 0, 0, activateTrack);
+    }
+  }, [ensureMusicElement, fadeToVolume, getEffectiveVolume]);
+
+  switchTrackRef.current = switchToTrack;
+  advanceTrackRef.current = () => {
+    const tracks = tracksInCategory(categoryRef.current);
+    if (tracks.length === 0) return;
+    const currentId = activeTrackRef.current;
+    const currentPosition = tracks.findIndex(track => track.id === currentId);
+    const next = tracks[(currentPosition + 1) % tracks.length];
+    if (currentId) trackPositionsRef.current.set(currentId, 0);
+    defaultTrackIdRef.current = next.id;
+    switchTrackRef.current(next);
+  };
+
   // Soita tietyn kategorian (menu/gameplay) soittolistaa. Jos jo soimassa samaa
   // kategoriaa, jatketaan samasta kappaleesta sen sijaan että aloitetaan alusta.
   const playCategory = useCallback((category: MusicCategory) => {
-    if (MUSIC_TRACKS.length === 0) {
-      musicElRef.current?.pause();
+    const tracks = tracksInCategory(category);
+    categoryRef.current = category;
+    if (tracks.length === 0) {
+      const el = musicElRef.current;
+      if (el && !el.paused) fadeToVolume(el, 0, 350, () => el.pause());
       return;
     }
-    const el = ensureMusicElement();
-    const wasAlreadyInCategory = categoryRef.current === category && !!el.src;
-    categoryRef.current = category;
-    if (!wasAlreadyInCategory) {
-      const track = tracksInCategory(category)[0];
-      musicIdxRef.current = MUSIC_TRACKS.findIndex(t => t.id === track.id);
-      setCurrentTrack(track.id);
-      el.src = track.src;
-      el.load();
+    if (activeTrackRef.current === 'combat' && category === 'gameplay') return;
+    const track = tracks.find(candidate => candidate.id === defaultTrackIdRef.current) ?? tracks[0];
+    defaultTrackIdRef.current = track.id;
+    switchToTrack(track);
+  }, [fadeToVolume, switchToTrack]);
+
+  const playCombatMusic = useCallback(() => {
+    const combatTrack = MUSIC_TRACKS.find(track => track.id === 'combat');
+    if (!combatTrack) return;
+    categoryRef.current = 'gameplay';
+    switchToTrack(combatTrack);
+  }, [switchToTrack]);
+
+  const resumeDefaultMusic = useCallback(() => {
+    const tracks = tracksInCategory(categoryRef.current);
+    if (tracks.length === 0) {
+      const el = musicElRef.current;
+      if (el && !el.paused) fadeToVolume(el, 0, 350, () => el.pause());
+      return;
     }
-    el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
-    if (settings.muted) return;
-    el.play().catch(() => {
-      // Selain saattaa estaa automaattitoiston ennen kayttajan vuorovaikutusta
-    });
-  }, [settings.muted, getEffectiveVolume, ensureMusicElement]);
+    const track = tracks.find(candidate => candidate.id === defaultTrackIdRef.current) ?? tracks[0];
+    defaultTrackIdRef.current = track.id;
+    switchToTrack(track);
+  }, [fadeToVolume, switchToTrack]);
 
   // Jatka nykyistä (tai oletus-)kategoriaa — käytetään mm. käyttäjän ensimmäisen
   // vuorovaikutuksen jälkeiseen autoplay-uudelleenyritykseen.
@@ -478,17 +570,13 @@ export const useAudioManager = (): AudioManagerReturn => {
   // Anna pelaajan valita kappale suoraan (esim. kurkkulaulu) sen sijaan, että
   // sitä pitäisi odottaa koko soittolistan läpi.
   const selectTrack = useCallback((id: MusicTrackId) => {
-    const idx = MUSIC_TRACKS.findIndex(track => track.id === id);
-    if (idx === -1) return;
-    musicIdxRef.current = idx;
-    categoryRef.current = MUSIC_TRACKS[idx].category;
-    setCurrentTrack(id);
-    const el = ensureMusicElement();
-    el.src = MUSIC_TRACKS[idx].src;
-    el.load();
-    el.volume = Math.min(1, getEffectiveVolume('music') * 0.6);
-    if (!settings.muted) el.play().catch(() => {});
-  }, [ensureMusicElement, getEffectiveVolume, settings.muted]);
+    const track = DEFAULT_MUSIC_TRACKS.find(candidate => candidate.id === id);
+    if (!track) return;
+    defaultTrackIdRef.current = id;
+    categoryRef.current = track.category;
+    if (activeTrackRef.current === 'combat') return;
+    switchToTrack(track);
+  }, [switchToTrack]);
 
   const stopAmbient = useCallback(() => {
     if (musicElRef.current) {
@@ -514,6 +602,9 @@ export const useAudioManager = (): AudioManagerReturn => {
       if (ambientSourceRef.current) {
         ambientSourceRef.current.stop();
       }
+      if (fadeIntervalRef.current !== null) {
+        window.clearInterval(fadeIntervalRef.current);
+      }
       clearAmbientTimeout();
       if (audioContextRef.current) {
         audioContextRef.current.close();
@@ -538,8 +629,10 @@ export const useAudioManager = (): AudioManagerReturn => {
     playProvinceCapture,
     playAmbient,
     playCategory,
+    playCombatMusic,
+    resumeDefaultMusic,
     stopAmbient,
-    musicTracks: MUSIC_TRACKS.map(track => track.id),
+    musicTracks: DEFAULT_MUSIC_TRACKS.map(track => track.id),
     currentTrack,
     selectTrack,
   };

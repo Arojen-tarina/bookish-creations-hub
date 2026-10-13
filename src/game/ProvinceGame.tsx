@@ -68,7 +68,7 @@ export const ProvinceGame = () => {
     collectResources,
   } = useProvinceGameState();
 
-  const { playCategory, settings: audioSettings, setMusicVolume, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
+  const { playCategory, playCombatMusic, resumeDefaultMusic, settings: audioSettings, setMusicVolume, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
@@ -176,6 +176,10 @@ export const ProvinceGame = () => {
       document.removeEventListener('keydown', resumeMusic);
     };
   }, [gameStarted, playCategory]);
+
+  useEffect(() => {
+    if (pendingBattle?.attackerFaction === playerFaction) playCombatMusic();
+  }, [pendingBattle, playerFaction, playCombatMusic]);
 
   // Auto-collect resources when entering resource phase
   useEffect(() => {
@@ -961,7 +965,7 @@ export const ProvinceGame = () => {
             <PhaseBar
               currentPhase={gameState.phase}
               onNextPhase={nextPhase}
-              onEndTurn={endTurn}
+              onEndTurn={() => { endTurn(); resumeDefaultMusic(); }}
               disabled={showAIOverlay}
               compact={!isMobileMode}
             />
