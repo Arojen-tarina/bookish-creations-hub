@@ -40,11 +40,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <AnalyticsConsentBanner />
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-3 pointer-events-auto flex justify-center">
-        <div className="max-w-6xl w-full px-4">
-          <AdMobBanner className="w-full" />
-        </div>
-      </div>
+      <AdMobBanner />
       <AppRouter {...appRouterProps}>
         <Routes>
           <Route path="/" element={<Digipeli />} />

@@ -295,7 +295,11 @@ export const ProvinceGame = () => {
   const isDefeat = gameState.gameOver && gameState.winnerId !== playerFaction;
 
   return (
-    <div ref={containerRef} className="fixed inset-0 w-screen min-h-[100dvh] overflow-hidden bg-slate-950" style={{ height: '100dvh' }}>
+    <div
+      ref={containerRef}
+      className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${isMobileMode ? 'min-h-0' : 'min-h-[100dvh]'}`}
+      style={{ height: isMobileMode ? 'calc(100dvh - 50px)' : '100dvh' }}
+    >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
       
@@ -480,7 +484,7 @@ export const ProvinceGame = () => {
         <div
           className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
             isMobileMode
-              ? `left-0 right-0 bottom-0 top-auto h-[78vh] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
+              ? `left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
               : `right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
           }`}
           style={!isMobileMode ? { top: headerTotalH } : undefined}
@@ -912,7 +916,7 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      <div className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
+      <div className={`fixed ${isMobileMode ? 'bottom-[50px]' : 'bottom-0'} left-0 z-40 transition-all right-0 ${
         !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
       }`}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
