@@ -1,11 +1,11 @@
 /**
- * SettingsMenu.tsx — Kieli- ja laiteoptimointivalinta
+ * SettingsMenu.tsx — Peli- ja ääniasetukset
  *
- * Pieni ponnahdusvalikko kieli- ja laitevalinnoille.
+ * Pieni ponnahdusvalikko peli-, ääni- ja kieliasetuksille.
  */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Languages } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, LANGUAGE_OPTIONS } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
@@ -18,9 +18,11 @@ interface SettingsMenuProps {
   musicTracks?: MusicTrackId[];
   currentTrack?: MusicTrackId;
   onSelectTrack?: (id: MusicTrackId) => void;
+  musicVolume?: number;
+  onMusicVolumeChange?: (volume: number) => void;
 }
 
-export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack }: SettingsMenuProps) => {
+export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack, musicVolume, onMusicVolumeChange }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
   const getMusicTrackLabel = (id: MusicTrackId) => {
@@ -86,10 +88,11 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
       <Button
         variant="ghost" size="icon"
         onClick={() => setOpen(v => !v)}
-        title={t('lang.switch')}
+        title={t('settings.title')}
+        aria-label={t('settings.title')}
         className={buttonClassName || 'text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8'}
       >
-        <Languages className="w-4 h-4" />
+        <Settings className="w-4 h-4" />
       </Button>
       {open && createPortal(
         <div
@@ -99,6 +102,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
             : { top: menuPosition.top, right: menuPosition.right }}
         >
+          <p className="text-sm font-bold text-amber-100 mb-3">{t('settings.title')}</p>
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
           <select
             value={lang}
@@ -143,25 +147,45 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             </span>
             <span className="text-[10px] text-stone-400 block leading-snug">{t('analytics.settings.desc')}</span>
           </button>
-          {musicTracks && musicTracks.length > 0 && onSelectTrack && (
+          {(onMusicVolumeChange || (musicTracks && musicTracks.length > 0 && onSelectTrack)) && (
             <>
               <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mt-3 mb-1.5">{t('music.title')}</p>
-              <div className="space-y-1.5">
-                {musicTracks.map(id => (
-                  <button
-                    key={id}
-                    onClick={() => onSelectTrack(id)}
-                    className={`w-full text-left rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
-                      currentTrack === id
-                        ? 'bg-amber-500/20 border-amber-500/60 text-amber-100'
-                        : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
-                    }`}
-                  >
-                    {getMusicTrackLabel(id)}
-                    {currentTrack === id && <span className="ml-1.5 text-[10px] text-amber-400/80">· {t('music.nowPlaying')}</span>}
-                  </button>
-                ))}
-              </div>
+              {musicVolume !== undefined && onMusicVolumeChange && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <label htmlFor="music-volume" className="text-xs text-amber-100/80">{t('music.volume')}</label>
+                    <span className="text-xs tabular-nums text-amber-200/60">{Math.round(musicVolume * 100)}%</span>
+                  </div>
+                  <input
+                    id="music-volume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={musicVolume}
+                    onChange={event => onMusicVolumeChange(Number(event.target.value))}
+                    className="w-full h-2 accent-amber-400 cursor-pointer"
+                  />
+                </div>
+              )}
+              {musicTracks && musicTracks.length > 0 && onSelectTrack && (
+                <div className="space-y-1.5">
+                  {musicTracks.map(id => (
+                    <button
+                      key={id}
+                      onClick={() => onSelectTrack(id)}
+                      className={`w-full text-left rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
+                        currentTrack === id
+                          ? 'bg-amber-500/20 border-amber-500/60 text-amber-100'
+                          : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
+                      }`}
+                    >
+                      {getMusicTrackLabel(id)}
+                      {currentTrack === id && <span className="ml-1.5 text-[10px] text-amber-400/80">· {t('music.nowPlaying')}</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>,

@@ -195,9 +195,9 @@ export const useAudioManager = (): AudioManagerReturn => {
   const musicElRef = useRef<HTMLAudioElement | null>(null);
   const musicIdxRef = useRef<number>(0);
   // Mitä kategoriaa (menu/gameplay) soittolista juuri nyt kiertää.
-  const categoryRef = useRef<MusicCategory>(MUSIC_TRACKS[0].category);
+  const categoryRef = useRef<MusicCategory>(MUSIC_TRACKS[0]?.category ?? 'gameplay');
   const ambientTimeoutRef = useRef<number | null>(null);
-  const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(MUSIC_TRACKS[0].id);
+  const [currentTrack, setCurrentTrack] = useState<MusicTrackId>(MUSIC_TRACKS[0]?.id ?? '');
   const [settings, setSettings] = useState<AudioSettings>(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_KEY);
@@ -425,6 +425,7 @@ export const useAudioManager = (): AudioManagerReturn => {
       // valikossa ei koskaan sekoitu peliaikaiseen soittolistaan tai päinvastoin).
       const advance = () => {
         const catTracks = tracksInCategory(categoryRef.current);
+        if (catTracks.length === 0) return;
         const currentId = MUSIC_TRACKS[musicIdxRef.current]?.id;
         const posInCat = Math.max(0, catTracks.findIndex(t => t.id === currentId));
         const next = catTracks[(posInCat + 1) % catTracks.length];
@@ -447,6 +448,10 @@ export const useAudioManager = (): AudioManagerReturn => {
   // Soita tietyn kategorian (menu/gameplay) soittolistaa. Jos jo soimassa samaa
   // kategoriaa, jatketaan samasta kappaleesta sen sijaan että aloitetaan alusta.
   const playCategory = useCallback((category: MusicCategory) => {
+    if (MUSIC_TRACKS.length === 0) {
+      musicElRef.current?.pause();
+      return;
+    }
     const el = ensureMusicElement();
     const wasAlreadyInCategory = categoryRef.current === category && !!el.src;
     categoryRef.current = category;

@@ -189,7 +189,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'device.mobile': 'Puhelin',
     'device.mobileDesc': 'Suuremmat kosketuspainikkeet, alavalikko, yksinkertaistettu näkymä.',
 
+    'settings.title': 'Asetukset',
     'music.title': 'Musiikkiraita',
+    'music.volume': 'Äänenvoimakkuus',
     'music.track1': 'Teema I',
     'music.track2': 'Teema II',
     'music.track3': 'Teema III',
@@ -400,7 +402,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'device.mobile': 'Mobile',
     'device.mobileDesc': 'Larger touch buttons, bottom menu, simplified view.',
 
+    'settings.title': 'Settings',
     'music.title': 'Soundtrack',
+    'music.volume': 'Volume',
     'music.track1': 'Theme I',
     'music.track2': 'Theme II',
     'music.track3': 'Theme III',
