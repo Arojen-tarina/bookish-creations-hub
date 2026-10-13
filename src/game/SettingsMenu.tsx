@@ -23,6 +23,13 @@ interface SettingsMenuProps {
 export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
+  const getMusicTrackLabel = (id: MusicTrackId) => {
+    const key = `music.${id}`;
+    const translated = t(key);
+    return translated === key
+      ? id.replace(/[-_]+/g, ' ').replace(/\b[a-z]/g, letter => letter.toUpperCase())
+      : translated;
+  };
   const isMobileViewport = deviceMode === 'mobile' || (typeof window !== 'undefined' && window.innerWidth < 768);
   const [open, setOpen] = useState(false);
   const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
@@ -150,7 +157,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
                         : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
                     }`}
                   >
-                    {t(`music.${id}`)}
+                    {getMusicTrackLabel(id)}
                     {currentTrack === id && <span className="ml-1.5 text-[10px] text-amber-400/80">· {t('music.nowPlaying')}</span>}
                   </button>
                 ))}

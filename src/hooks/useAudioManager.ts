@@ -6,25 +6,13 @@
  * Tukee master/musiikki/SFX -äänenvoimakkuuksia ja mykistystä.
  */
 import { useCallback, useRef, useEffect, useState } from 'react';
-// Pelin soundtrack (pelaajan omat nauhoitteet) — soitetaan taustamusiikkina.
-// Lyhyt pääteema upotetaan (toimii myös yhden tiedoston offline-versiossa).
-// Pidemmät kappaleet ladataan erillisinä tiedostoina normaali-/Pages-buildissa,
-// jottei single-file paisu liian isoksi.
-import musicTrack1 from '@/assets/music/track1.mp3';
-// Pelaajan uusin nauhoite (Nauhoite peliä varten 1). Upotetaan single-fileen,
-// jotta se soi myös offline-versiossa; muut pitkät raidat ladataan erikseen.
-import musicTrack2 from '@/assets/music/track2.mp3';
-import musicTrack3 from '@/assets/music/track3.mp3';
-import musicTrack4 from '@/assets/music/track4.mp3';
-import musicSong from '@/assets/music/song.mp3';
-import pianoConcerto1 from '@/assets/music/piano-concerto-1.mp3';
-import pianoConcerto2 from '@/assets/music/piano-concerto-2.mp3';
-import pianoConcerto3 from '@/assets/music/piano-concerto-3.mp3';
+const MUSIC_FILES = import.meta.glob('@/assets/music/*.{mp3,ogg,wav,m4a,aac,flac}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
 
-// Kappaleiden tunnisteet (käytetään käännöksissä ja raitavalitsimessa, ks. i18n 'music.*')
-export type MusicTrackId =
-  | 'track1' | 'track2' | 'track3' | 'track4' | 'song'
-  | 'pianoConcerto1' | 'pianoConcerto2' | 'pianoConcerto3';
+export type MusicTrackId = string;
 
 // Musiikkikategoriat: mikä kappale soi missäkin tilanteessa.
 // 'menu'     — aloitusruutu / valtakunnanvalinta (intro & käyttöliittymä)
@@ -33,24 +21,13 @@ export type MusicCategory = 'menu' | 'gameplay';
 
 interface MusicTrackDef { id: MusicTrackId; src: string; category: MusicCategory }
 
-const MUSIC_TRACKS: MusicTrackDef[] = import.meta.env.VITE_SINGLEFILE
-  ? [
-      // Single-file/offline-buildissa ei ole tilaa isoille lisäraidoille —
-      // molemmat upotetut raidat toimivat sekä valikossa että pelissä.
-      { id: 'track1', src: musicTrack1, category: 'gameplay' },
-      { id: 'track4', src: musicTrack4, category: 'gameplay' },
-    ]
-  : [
-      // Kurkkulaulu soi VAIN valikossa/introssa — ei osa peliaikaisen kierron listaa.
-      { id: 'song', src: musicSong, category: 'menu' },
-      { id: 'track1', src: musicTrack1, category: 'gameplay' },
-      { id: 'track2', src: musicTrack2, category: 'gameplay' },
-      { id: 'track3', src: musicTrack3, category: 'gameplay' },
-      { id: 'track4', src: musicTrack4, category: 'gameplay' },
-      { id: 'pianoConcerto1', src: pianoConcerto1, category: 'gameplay' },
-      { id: 'pianoConcerto2', src: pianoConcerto2, category: 'gameplay' },
-      { id: 'pianoConcerto3', src: pianoConcerto3, category: 'gameplay' },
-    ];
+const MUSIC_TRACKS: MusicTrackDef[] = Object.entries(MUSIC_FILES)
+  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+  .map(([path, src]) => ({
+    id: path.split('/').pop()!.replace(/\.[^.]+$/, ''),
+    src,
+    category: 'gameplay',
+  }));
 
 const tracksInCategory = (category: MusicCategory): MusicTrackDef[] => {
   const inCat = MUSIC_TRACKS.filter(track => track.category === category);
