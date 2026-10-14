@@ -76,8 +76,8 @@ export const ProvinceGame = () => {
   useAchievementTracking(gameState, playerFaction, pendingBattle);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
-  const [showSidebar, setShowSidebar] = useState(() => !isMobileMode);
+  // The sidebar (including its tab buttons) opens only when requested.
+  const [showSidebar, setShowSidebar] = useState(false);
   const [activeTab, setActiveTab] = useState('province');
   const [attackMode, setAttackMode] = useState(false);
   const [showAIOverlay, setShowAIOverlay] = useState(false);
@@ -369,7 +369,15 @@ export const ProvinceGame = () => {
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
             <Button
               variant="ghost" size="icon"
-              onClick={() => { track('menu_interaction', { target: 'goals_trophy' }); setShowSidebar(true); setActiveTab('goals'); }}
+              onClick={() => {
+                track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'goals_trophy' });
+                if (showSidebar) {
+                  setShowSidebar(false);
+                } else {
+                  setActiveTab('goals');
+                  setShowSidebar(true);
+                }
+              }}
               title={t('hud.goalsButton')}
               className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'h-11 w-11' : 'h-8 w-8'}`}
             >
