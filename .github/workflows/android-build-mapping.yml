@@ -40,7 +40,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify AdMob banner configuration
+        env:
+          VITE_ADMOB_BANNER_ID: ${{ vars.VITE_ADMOB_BANNER_ID }}
+        run: |
+          if [ -z "$VITE_ADMOB_BANNER_ID" ]; then
+            echo "::error::Set the VITE_ADMOB_BANNER_ID repository variable to the AdMob banner ad unit ID."
+            exit 1
+          fi
+
       - name: Build web assets
+        env:
+          VITE_ADMOB_BANNER_ID: ${{ vars.VITE_ADMOB_BANNER_ID }}
         run: npm run build --if-present
 
       - name: Sync Capacitor Android
