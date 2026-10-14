@@ -44,11 +44,22 @@ graph LR
   yhdelle kehittäjälle): `analytics_daily_active_users`, `analytics_session_lengths`,
   `analytics_retention_cohorts`, `analytics_achievement_unlock_rates`,
   `analytics_campaign_outcomes`, `analytics_battle_balance`,
-  `analytics_feature_usage`, `analytics_economy_health` — kaikki
+  `analytics_feature_usage`, `analytics_economy_health`,
+  `analytics_daily_active_users_by_platform`,
+  `analytics_session_lengths_by_platform` — kaikki
   `security_invoker = true` ja ilman anon/authenticated-oikeuksia, joten ne
   näkyvät vain Supabase Studion SQL-editorissa (service-rooli/omistaja).
   Katsele niitä siellä säännöllisesti sen sijaan että rakentaisit oman
   dashboard-UI:n.
+- **Alusta** tallennetaan joka tapahtumariville (`web`, `android`, `ios`,
+  `other` tai `unknown`). Supabase Table Editorin
+  `analytics_events.platform`-sarakkeesta voi suodattaa Android-rivit;
+  SQL-näkymät näyttävät päivittäiset käyttäjät ja istunnot alustoittain.
+  Aiemmat rivit säilyvät `unknown`-arvolla, koska niiden lähdettä ei voida
+  päätellä luotettavasti jälkikäteen.
+- Android-version lähettämä alustatieto on clientin ilmoittama analytiikka-
+  dimensio, ei varmennettu jakelukanava. Se tunnistaa natiivin Android-sovelluksen,
+  ei sitä asennettiinko se Play Kaupasta vai muualta.
 
 ## Tapahtumasuunnitelma (event tracking plan)
 
