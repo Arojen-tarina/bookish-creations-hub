@@ -404,13 +404,6 @@ export const ProvinceGame = () => {
                 </Button>
               </>
             )}
-            <Button
-              variant="ghost" size="sm"
-              onClick={() => { track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'show_sidebar' }); setShowSidebar(!showSidebar); }}
-              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'text-sm h-11 px-3' : 'text-xs h-8'}`}
-            >
-              {showSidebar ? t('hud.hide') : t('hud.menu')}
-            </Button>
           </div>
         </div>
         </div>
@@ -489,11 +482,11 @@ export const ProvinceGame = () => {
         </div>
         
         {/* ============= SIDEBAR (side panel on desktop, bottom sheet on mobile) ============= */}
-        <div
-          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
+        {showSidebar && <div
+          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl overflow-hidden ${
             isMobileMode
-              ? `left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
-              : `right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
+              ? 'left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50'
+              : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20'
           }`}
           style={!isMobileMode ? { top: headerTotalH } : undefined}
         >
@@ -920,7 +913,7 @@ export const ProvinceGame = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
