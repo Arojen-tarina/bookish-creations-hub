@@ -72,6 +72,7 @@ export const ProvinceGame = () => {
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
+  const mobileAdOffset = 'calc(50px + env(safe-area-inset-bottom, 0px))';
 
   useAchievementTracking(gameState, playerFaction, pendingBattle);
 
@@ -298,7 +299,7 @@ export const ProvinceGame = () => {
     <div
       ref={containerRef}
       className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${isMobileMode ? 'min-h-0' : 'min-h-[100dvh]'}`}
-      style={{ height: isMobileMode ? 'calc(100dvh - 50px)' : '100dvh' }}
+      style={{ height: isMobileMode ? `calc(100dvh - ${mobileAdOffset})` : '100dvh' }}
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
@@ -485,10 +486,12 @@ export const ProvinceGame = () => {
         {showSidebar && <div
           className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl overflow-hidden ${
             isMobileMode
-              ? 'left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50'
+              ? 'left-0 right-0 bottom-0 top-auto rounded-t-3xl border-t border-amber-700/30 z-50'
               : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20'
           }`}
-          style={!isMobileMode ? { top: headerTotalH } : undefined}
+          style={isMobileMode
+            ? { bottom: mobileAdOffset, height: `calc(78dvh - ${mobileAdOffset})` }
+            : { top: headerTotalH }}
         >
           <div className="h-full overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -917,9 +920,9 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      <div className={`fixed ${isMobileMode ? 'bottom-[50px]' : 'bottom-0'} left-0 z-40 transition-all right-0 ${
+      <div className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
         !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
-      }`}>
+      }`} style={isMobileMode ? { bottom: mobileAdOffset } : undefined}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
           {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
           <div
@@ -1005,7 +1008,8 @@ export const ProvinceGame = () => {
       {/* Back link */}
       <Link 
         to="/"
-        className="fixed bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group"
+        className={`fixed ${isMobileMode ? 'left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group' : 'bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group'}`}
+        style={isMobileMode ? { bottom: `calc(${mobileAdOffset} + 8px)` } : undefined}
       >
         <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
         <span className="opacity-0 group-hover:opacity-100 transition-opacity">{t('hud.backToHome')}</span>
