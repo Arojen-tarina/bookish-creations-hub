@@ -34,8 +34,10 @@ export function AdMobBanner({ className, style }: AdMobBannerProps) {
         }
         await AdMob.showBanner({
           adId: bannerId,
+          // BANNER is the smallest standard AdMob size (320x50 dp).
           adSize: BannerAdSize.BANNER,
           position: BannerAdPosition.BOTTOM_CENTER,
+          margin: 0,
         });
         if (!mounted) {
           await AdMob.removeBanner();
