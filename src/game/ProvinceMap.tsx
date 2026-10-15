@@ -785,6 +785,14 @@ export const ProvinceMap = ({
                       ×{armyGroup.length}
                     </text>
                   )}
+
+                  <circle
+                    cx={bx}
+                    cy={by}
+                    r={Math.max(spriteW, spriteH) * 0.65}
+                    fill="transparent"
+                    pointerEvents="all"
+                  />
                 </g>,
               );
             };
