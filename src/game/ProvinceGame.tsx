@@ -238,8 +238,18 @@ export const ProvinceGame = () => {
         return;
       }
     }
+    if (gameState.phase === 'attack') {
+      const army = gameState.armies.find(
+        a => a.provinceId === provinceId && a.ownerId === playerFaction && a.movementLeft > 0,
+      );
+      if (army) {
+        selectArmy(army.id);
+        setAttackMode(false);
+        return;
+      }
+    }
     selectProvince(provinceId);
-  }, [gameState, canMoveTo, moveArmy, selectProvince]);
+  }, [gameState, playerFaction, canMoveTo, moveArmy, selectArmy, selectProvince]);
 
   // Faction select
   if (!gameStarted || !playerFaction) {
