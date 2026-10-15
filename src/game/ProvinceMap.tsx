@@ -617,48 +617,6 @@ export const ProvinceMap = ({
     }, zoom));
   }, [zoom, clampPan]);
 
-  const handleArmyClickCapture = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    if (isMinimap || !onArmyClick || armies.length === 0) return;
-    const screenMatrix = e.currentTarget.getScreenCTM();
-    if (!screenMatrix) return;
-    const clickPoint = e.currentTarget.createSVGPoint();
-    clickPoint.x = e.clientX;
-    clickPoint.y = e.clientY;
-    const boardPoint = clickPoint.matrixTransform(screenMatrix.inverse());
-    const armiesByProvince = new Map<string, Army[]>();
-
-    armies.filter(army => army.ownerId === playerFaction).forEach(army => {
-      const group = armiesByProvince.get(army.provinceId) ?? [];
-      group.push(army);
-      armiesByProvince.set(army.provinceId, group);
-    });
-
-    let nearest: { group: Army[]; distance: number } | null = null;
-    armiesByProvince.forEach((group, provinceId) => {
-      const province = provinces.find(p => p.id === provinceId);
-      if (!province) return;
-      const hasChief = group.some(army => army.id === `army-${army.ownerId}-main`);
-      const spriteWidth = (hasChief ? 4.6 : 5.4) * SCALE_FACTOR;
-      const spriteHeight = (hasChief ? 4.2 : 3.9) * SCALE_FACTOR;
-      const provinceRadius = TOKEN_RADIUS + (province.isCapital ? 0.5 : 0);
-      const markerDistance = provinceRadius + spriteHeight * 0.5 + 0.2 * SCALE_FACTOR;
-      const markerX = province.center.x + Math.cos((315 * Math.PI) / 180) * markerDistance;
-      const markerY = province.center.y + Math.sin((315 * Math.PI) / 180) * markerDistance;
-      const distance = Math.hypot(boardPoint.x - markerX, boardPoint.y - markerY);
-
-      if (distance <= Math.max(spriteWidth, spriteHeight) * 0.65 && (!nearest || distance < nearest.distance)) {
-        nearest = { group, distance };
-      }
-    });
-
-    if (!nearest) return;
-    e.stopPropagation();
-    const group = nearest.group;
-    const currentIndex = group.findIndex(army => army.id === selectedArmyId);
-    const nextArmy = group[(currentIndex + 1) % group.length];
-    if (nextArmy && nextArmy.id !== selectedArmyId) onArmyClick(nextArmy.id);
-  }, [armies, isMinimap, onArmyClick, playerFaction, provinces, selectedArmyId, viewBox]);
-
   return (
     <div
       ref={containerRef}
@@ -684,7 +642,6 @@ export const ProvinceMap = ({
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
         className="w-full h-full"
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-        onClickCapture={handleArmyClickCapture}
       >
         {/* Board image */}
         <image
@@ -776,6 +733,14 @@ export const ProvinceMap = ({
               badges.push(
                 <g
                   key={`badge-${provinceId}-${isPlayer ? 'p' : 'e'}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onArmyClick) {
+                      const currentIdx = armyGroup.findIndex(a => a.id === selectedArmyId);
+                      const nextIdx = (currentIdx + 1) % armyGroup.length;
+                      onArmyClick(armyGroup[nextIdx].id);
+                    }
+                  }}
                   className="cursor-pointer"
                 >
                   {/* Faktiovärinen tausta-aura kontrastia varten */}
@@ -821,6 +786,13 @@ export const ProvinceMap = ({
                     </text>
                   )}
 
+                  <circle
+                    cx={bx}
+                    cy={by}
+                    r={Math.max(spriteW, spriteH) * 0.65}
+                    fill="transparent"
+                    pointerEvents="all"
+                  />
                 </g>,
               );
             };

@@ -108,6 +108,18 @@ export const ProvinceGame = () => {
   const HAND_BASE_H = 168;
   const [handHeight, setHandHeight] = useState<number>(HAND_BASE_H);
   const handDragRef = useRef<{ startY: number; startH: number } | null>(null);
+  // Alapaneeli peittää kartan alareunan, joten kartta rajataan sen yläpuolelle
+  const [bottomPanelH, setBottomPanelH] = useState(0);
+  const bottomPanelObserverRef = useRef<ResizeObserver | null>(null);
+  const bottomPanelRef = useCallback((el: HTMLDivElement | null) => {
+    bottomPanelObserverRef.current?.disconnect();
+    bottomPanelObserverRef.current = null;
+    if (!el) return;
+    setBottomPanelH(el.offsetHeight);
+    const observer = new ResizeObserver(() => setBottomPanelH(el.offsetHeight));
+    observer.observe(el);
+    bottomPanelObserverRef.current = observer;
+  }, []);
   const onHandResizeStart = useCallback((clientY: number) => {
     handDragRef.current = { startY: clientY, startH: handHeight };
     const move = (y: number) => {
@@ -238,18 +250,8 @@ export const ProvinceGame = () => {
         return;
       }
     }
-    if (gameState.phase === 'attack') {
-      const army = gameState.armies.find(
-        a => a.provinceId === provinceId && a.ownerId === playerFaction && a.movementLeft > 0,
-      );
-      if (army) {
-        selectArmy(army.id);
-        setAttackMode(false);
-        return;
-      }
-    }
     selectProvince(provinceId);
-  }, [gameState, playerFaction, canMoveTo, moveArmy, selectArmy, selectProvince]);
+  }, [gameState, canMoveTo, moveArmy, selectProvince]);
 
   // Faction select
   if (!gameStarted || !playerFaction) {
@@ -469,8 +471,12 @@ export const ProvinceGame = () => {
       <div className="relative h-full flex" style={{ paddingTop: headerTotalH }}>
         {/* Map */}
         <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode && showSidebar ? 'lg:mr-[380px]' : ''}`}>
-          <div className="absolute inset-0 p-1">
+          <div
+            className="absolute inset-0 p-1"
+            style={{ bottom: hasBottomBanner ? `calc(${bottomBannerOffset} + ${bottomPanelH}px)` : bottomPanelH }}
+          >
             <ProvinceMap
+
               provinces={gameState.provinces}
               armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
@@ -933,7 +939,7 @@ export const ProvinceGame = () => {
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      <div className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
+      <div ref={bottomPanelRef} className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
         !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
       }`} style={hasBottomBanner ? { bottom: bottomBannerOffset } : undefined}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
