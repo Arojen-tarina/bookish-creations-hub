@@ -6,7 +6,6 @@
 import { PlayableCard } from '@/game/cards.ts';
 import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
 import { localizeCard, localizeEffectDescription, useCardLocale } from '@/data/gameCardsTranslations.ts';
-import { MVPPhase } from './PhaseBar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n.tsx';
@@ -44,16 +43,18 @@ interface CardHandProps {
   cards: PlayableCard[];
   onPlayCard: (card: PlayableCard) => void;
   canPlay: boolean;
-  currentPhase: MVPPhase;
+  textScale: number;
   deckSize: number;
   discardSize: number;
 }
 
-export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, discardSize }: CardHandProps) => {
+export const CardHand = ({ cards, onPlayCard, canPlay, textScale, deckSize, discardSize }: CardHandProps) => {
   const { t, lang } = useLanguage();
   useCardLocale(lang);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [failedArtIds, setFailedArtIds] = useState<Set<string>>(() => new Set());
+  const titleFontSize = `${10 + Math.max(0, textScale - 1) * 4}px`;
+  const effectFontSize = `${10 + Math.max(0, textScale - 1) * 3}px`;
 
   if (cards.length === 0) {
     return (
@@ -87,10 +88,10 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
           return (
             <div
               key={`${card.id}-${idx}`}
-              className={`relative flex-shrink-0 w-36 self-start rounded-lg overflow-hidden transition-all duration-200 cursor-pointer
+              className={`relative flex-shrink-0 w-36 self-start rounded-lg overflow-hidden transition-shadow duration-200 cursor-pointer
                 ${isSelected
-                  ? 'ring-2 ring-green-400 -translate-y-2 shadow-xl shadow-green-500/20'
-                  : 'ring-1 ring-slate-600/50 hover:-translate-y-1 hover:ring-amber-500/50'
+                  ? 'ring-2 ring-green-400 shadow-xl shadow-green-500/20'
+                  : 'ring-1 ring-slate-600/50 hover:ring-amber-500/50'
                 }`}
               onClick={() => setSelectedIdx(isSelected ? null : idx)}
             >
@@ -106,14 +107,14 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                     className="block aspect-square w-full object-cover select-none pointer-events-none"
                   />
                   <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-1.5 pt-1 pb-3 pr-6">
-                    <p className="text-white text-[9px] font-bold leading-tight break-words">{card.name}</p>
+                    <p className="text-white font-bold leading-tight break-words" style={{ fontSize: titleFontSize }}>{card.name}</p>
                   </div>
                   {/* harvinaisuusmerkki kulmaan */}
                   <span className={`absolute top-1 right-1 text-[9px] ${rarity.color} px-1 rounded text-white shadow`}>{rarity.symbol}</span>
                   {/* efekti + pelaa-nappi kuvan päälle alareunaan */}
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-1 pb-1 pt-3">
                     <div className="rounded bg-amber-900/60 px-1 py-0.5 text-center">
-                      <span className="text-amber-100 text-[9px] font-semibold leading-tight break-words">{emoji} {effectText}</span>
+                      <span className="text-amber-100 font-semibold leading-tight break-words" style={{ fontSize: effectFontSize }}>{emoji} {effectText}</span>
                     </div>
                     {isSelected && canPlay && (
                       <Button
@@ -133,12 +134,12 @@ export const CardHand = ({ cards, onPlayCard, canPlay, currentPhase, deckSize, d
                 /* Ei kuvaa: tekstikortti */
                 <>
                   <div className={`${typeInfo.color} px-2 py-1 flex items-center justify-between gap-1`}>
-                    <span className="text-white text-[9px] font-bold break-words">{typeInfo.icon} {card.name}</span>
+                    <span className="text-white font-bold break-words" style={{ fontSize: titleFontSize }}>{typeInfo.icon} {card.name}</span>
                     <span className={`text-[9px] ${rarity.color} px-1 rounded text-white flex-shrink-0`}>{rarity.symbol}</span>
                   </div>
                   <div className="bg-slate-800 px-2 py-1.5">
                     <div className="bg-amber-900/40 rounded px-1 py-0.5 text-center">
-                      <span className="text-amber-200 text-[9px] font-semibold leading-tight break-words">{emoji} {effectText}</span>
+                      <span className="text-amber-200 font-semibold leading-tight break-words" style={{ fontSize: effectFontSize }}>{emoji} {effectText}</span>
                     </div>
                   </div>
                   {isSelected && canPlay && (
