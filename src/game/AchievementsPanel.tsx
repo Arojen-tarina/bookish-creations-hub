@@ -1,5 +1,5 @@
 /**
- * AchievementsPanel.tsx — Saavutusten lista (Tavoitteet-välilehti)
+ * AchievementsPanel.tsx — Achievements list
  *
  * Näyttää pelaajan tason/arvonimen, kokonaispisteet ja kaikki saavutukset
  * kategorioittain (piilotetut näkyvät "???"-tekstillä ennen avaamista).
@@ -75,7 +75,7 @@ export const AchievementsPanel = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
         {byCategory.map(({ category, items }) => {
           const unlockedInCategory = items.filter(a => a.unlocked).length;
           return (

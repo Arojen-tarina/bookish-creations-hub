@@ -7,7 +7,7 @@ import { PlayableCard } from '@/game/cards.ts';
 import { cardTypeInfo, rarityInfo } from '@/data/gameCards.ts';
 import { localizeCard, localizeEffectDescription, useCardLocale } from '@/data/gameCardsTranslations.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/lib/i18n.tsx';
 
 // Korttikuvat: bundlataan importteina (hajautetut tiedostot normaalibuildissa,
@@ -39,6 +39,10 @@ const EFFECT_EMOJI: Record<string, string> = {
   recruit_free: '👥',
 };
 
+const MIN_CARD_WIDTH = 88;
+const MAX_CARD_WIDTH = 144;
+const CARD_GAP = 12;
+
 interface CardHandProps {
   cards: PlayableCard[];
   onPlayCard: (card: PlayableCard) => void;
@@ -53,8 +57,30 @@ export const CardHand = ({ cards, onPlayCard, canPlay, textScale, deckSize, disc
   useCardLocale(lang);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [failedArtIds, setFailedArtIds] = useState<Set<string>>(() => new Set());
+  const cardRowRef = useRef<HTMLDivElement>(null);
+  const [cardRowWidth, setCardRowWidth] = useState(0);
   const titleFontSize = `${10 + Math.max(0, textScale - 1) * 4}px`;
   const effectFontSize = `${10 + Math.max(0, textScale - 1) * 3}px`;
+
+  useEffect(() => {
+    const row = cardRowRef.current;
+    if (!row) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) setCardRowWidth(Math.round(entry.contentRect.width));
+    });
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [cards.length]);
+
+  const visibleCardCount = Math.max(
+    1,
+    Math.floor((cardRowWidth + CARD_GAP) / (MIN_CARD_WIDTH + CARD_GAP)),
+  );
+  const cardsToFit = Math.min(cards.length, visibleCardCount);
+  const cardWidth = cardRowWidth > 0
+    ? Math.min(MAX_CARD_WIDTH, (cardRowWidth - CARD_GAP * (cardsToFit - 1)) / cardsToFit)
+    : MAX_CARD_WIDTH;
 
   if (cards.length === 0) {
     return (
@@ -66,16 +92,16 @@ export const CardHand = ({ cards, onPlayCard, canPlay, textScale, deckSize, disc
   }
 
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex w-full min-w-0 items-end gap-3">
       {/* Info */}
-      <div className="flex flex-col gap-1 text-xs text-amber-200/50 min-w-[60px]">
+      <div className="flex shrink-0 flex-col gap-1 text-xs text-amber-200/50 min-w-[60px]">
         <span>📦 {deckSize}</span>
         <span>🗑️ {discardSize}</span>
         <span className="text-amber-300 font-bold">🃏 {cards.length}</span>
       </div>
 
       {/* Cards row */}
-      <div className="flex gap-3 overflow-x-auto pb-1">
+      <div ref={cardRowRef} className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1">
         {cards.map((rawCard, idx) => {
           const card = localizeCard(rawCard, lang);
           const effectText = localizeEffectDescription(card.id, card.parsedEffect.description, lang);
@@ -88,7 +114,8 @@ export const CardHand = ({ cards, onPlayCard, canPlay, textScale, deckSize, disc
           return (
             <div
               key={`${card.id}-${idx}`}
-              className={`relative flex-shrink-0 w-36 self-start rounded-lg overflow-hidden transition-shadow duration-200 cursor-pointer
+              style={{ width: cardWidth }}
+              className={`relative flex-shrink-0 self-start rounded-lg overflow-hidden transition-shadow duration-200 cursor-pointer
                 ${isSelected
                   ? 'ring-2 ring-green-400 shadow-xl shadow-green-500/20'
                   : 'ring-1 ring-slate-600/50 hover:ring-amber-500/50'

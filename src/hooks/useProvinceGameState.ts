@@ -28,7 +28,6 @@ import { getProvincesWithAdjacency } from '@/data/ProvinceData.ts';
 import { BattleResult } from '@/game/BattleDisplay.tsx';
 import { PlayableCard, createPlayableDeck, drawCards, shuffleDeck } from '@/game/cards';
 import { calculateAIActions } from '@/game/ai';
-import { MVPPhase } from '@/game/PhaseBar.tsx';
 import { toast } from 'sonner';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -44,11 +43,7 @@ interface PersistedSession {
   gameState: MVPGameState | null;
 }
 
-const normalizePhase = (phase: unknown): MVPPhase => {
-  if (phase === 'move' || phase === 'battle') return 'attack';
-  if (phase === 'resource' || phase === 'cards' || phase === 'attack' || phase === 'build' || phase === 'end') return phase;
-  return 'resource';
-};
+const normalizePhase = (_phase: unknown): 'attack' => 'attack';
 
 const loadPersistedSession = (): PersistedSession | null => {
   try {
@@ -113,8 +108,6 @@ export const VICTORY_TARGETS = {
   prestige: 60,
 };
 
-const PHASE_ORDER: MVPPhase[] = ['resource', 'cards', 'attack', 'build', 'end'];
-
 // ============= BUILDING TYPES =============
 export type MVPBuildingType = 'camp' | 'market' | 'fortress' | 'workshop' | 'stable' | 'bridge' | 'wonder';
 
@@ -157,13 +150,6 @@ export interface ResourceIncome {
   manpowerPerTurn: number;
 }
 
-export interface AIActionLog {
-  factionName: string;
-  factionColor: string;
-  description: string;
-  targetProvinceId?: string;
-}
-
 interface ActiveCardEffect {
   cardId: string;
   type: PlayableCard['parsedEffect']['type'];
@@ -173,7 +159,7 @@ interface ActiveCardEffect {
 }
 
 export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
-  phase: MVPPhase;
+  phase: 'attack';
   
   // Cards
   deck: PlayableCard[];
@@ -196,7 +182,6 @@ export interface MVPGameState extends Omit<ProvinceGameState, 'phase'> {
   
   // AI log
   aiLog: string[];
-  aiActionLog: AIActionLog[]; // structured AI action log for animation
   
   // Resource collection
   resourcesCollected: boolean;
@@ -507,6 +492,30 @@ const calculateResourceCollection = (state: MVPGameState, factionId: FactionId):
   };
 };
 
+const applyResourceCollection = (
+  state: MVPGameState,
+  factionId: FactionId,
+  collection: ResourceCollectionResult,
+): MVPGameState => ({
+  ...state,
+  factions: state.factions.map(f =>
+    f.id === factionId
+      ? {
+          ...f,
+          treasury: f.treasury + collection.taxIncome,
+          manpower: f.manpower + collection.manpowerGain,
+          horses: f.horses + collection.horsesGain,
+        }
+      : f,
+  ),
+  food: Math.max(0, state.food + collection.foodChange),
+  artisans: state.artisans + collection.artisansGain,
+  influence: state.influence + collection.influenceGain,
+  prestige: state.prestige + collection.prestigeGain,
+  resourcesCollected: true,
+  lastCollection: collection,
+});
+
 // ============= COMBAT =============
 const createProvinceGarrison = (province: Province): Army | null => {
   if (!province.ownerId) return null;
@@ -634,7 +643,6 @@ export interface UseProvinceGameStateReturn {
   selectArmy: (armyId: string) => void;
   moveArmy: (armyId: string, targetProvinceId: string) => void;
   mergeArmies: (armyId: string, mergeIntoId: string) => void;
-  nextPhase: () => void;
   endTurn: () => void;
   resetGame: () => void;
   playCard: (card: PlayableCard) => void;
@@ -650,7 +658,6 @@ export interface UseProvinceGameStateReturn {
   getPlayerFaction: () => Faction | null;
   getArmiesInProvince: (provinceId: string) => Army[];
   canMoveTo: (armyId: string, targetProvinceId: string) => boolean;
-  endPhase: () => void;
   collectResources: () => void;
 }
 
@@ -697,7 +704,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       turn: 1,
       year: 1206,
       currentPlayerId: selectedFaction,
-      phase: 'resource',
+      phase: 'attack',
       provinces,
       factions: visibleFactions,
       relations,
@@ -734,7 +741,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
 
       // AI
       aiLog: [],
-      aiActionLog: [],
       resourcesCollected: false,
       lastCollection: null,
       winCondition: null,
@@ -747,8 +753,9 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       },
     };
     
+    const initialCollection = calculateResourceCollection(initialState, selectedFaction);
     setPlayerFaction(selectedFaction);
-    setGameState(initialState);
+    setGameState(applyResourceCollection(initialState, selectedFaction, initialCollection));
     setGameStarted(true);
   }, []);
 
@@ -1110,7 +1117,7 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
   // ============= BUILD STRUCTURE =============
   const buildStructure = useCallback((provinceId: string, type: MVPBuildingType) => {
     setGameState(prev => {
-      if (!prev || !playerFaction || prev.phase !== 'build') return prev;
+      if (!prev || !playerFaction || prev.phase !== 'attack') return prev;
       const province = prev.provinces.find(p => p.id === provinceId);
       if (!province || province.ownerId !== playerFaction) return prev;
       
@@ -1285,69 +1292,8 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     setGameState(prev => {
       if (!prev || !playerFaction || prev.resourcesCollected) return prev;
       
-      const faction = prev.factions.find(f => f.id === playerFaction);
-      if (!faction) return prev;
-
       const collection = calculateResourceCollection(prev, playerFaction);
-      const newFactions = prev.factions.map(f =>
-        f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
-      );
-      
-      return {
-        ...prev,
-        factions: newFactions,
-        food: Math.max(0, prev.food + collection.foodChange),
-        artisans: prev.artisans + collection.artisansGain,
-        influence: prev.influence + collection.influenceGain,
-        prestige: prev.prestige + collection.prestigeGain,
-        resourcesCollected: true,
-        lastCollection: collection,
-      };
-    });
-  }, [playerFaction]);
-
-  const nextPhase = useCallback(() => {
-    setGameState(prev => {
-      if (!prev) return null;
-      
-      // Auto-collect resources if skipping resource phase
-      let state = { ...prev };
-      if (state.phase === 'resource' && !state.resourcesCollected && playerFaction) {
-        const faction = state.factions.find(f => f.id === playerFaction);
-        if (faction) {
-          const collection = calculateResourceCollection(state, playerFaction);
-          state = {
-            ...state,
-            factions: state.factions.map(f =>
-              f.id === playerFaction ? { ...f, treasury: f.treasury + collection.taxIncome, manpower: f.manpower + collection.manpowerGain, horses: f.horses + collection.horsesGain } : f
-            ),
-            food: Math.max(0, state.food + collection.foodChange),
-            artisans: state.artisans + collection.artisansGain,
-            resourcesCollected: true,
-            lastCollection: collection,
-          };
-        }
-      }
-
-      const currentIndex = PHASE_ORDER.indexOf(state.phase);
-      if (currentIndex < PHASE_ORDER.length - 1) {
-        const next = PHASE_ORDER[currentIndex + 1];
-        
-        // Auto-actions per phase
-        if (next === 'cards') {
-          if (state.deck.length > 0) {
-            const { drawn, remaining } = drawCards(state.deck, 1);
-            return { ...state, phase: next, hand: [...state.hand, ...drawn], deck: remaining };
-          } else if (state.discard.length > 0) {
-            const newDeck = shuffleDeck(state.discard);
-            const { drawn, remaining } = drawCards(newDeck, 1);
-            return { ...state, phase: next, hand: [...state.hand, ...drawn], deck: remaining, discard: [] };
-          }
-        }
-        
-        return { ...state, phase: next };
-      }
-      return state;
+      return applyResourceCollection(prev, playerFaction, collection);
     });
   }, [playerFaction]);
 
@@ -1362,7 +1308,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       const bonusTotals = getBonusesFromEffects(expiringEffects);
       const newState = { ...prev, activeEffects: expiringEffects, attackBonus: bonusTotals.attackBonus, defenseBonus: bonusTotals.defenseBonus, movementBonus: bonusTotals.movementBonus };
       const aiLog: string[] = [];
-      const aiActionLog: AIActionLog[] = [];
       
       // 1. Collect resources for AI factions only (player collects in resource phase)
       const aiIncomeMultiplier = DIFFICULTY_AI_INCOME_MULTIPLIER[newState.difficulty as Difficulty] ?? 1;
@@ -1511,22 +1456,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
               aiLog.push(`${faction.name}: Rekrytoi armeijan`);
             }
           }
-        }
-      }
-      
-      // Build structured AI action log from aiLog strings
-      // Parse "FactionName: description" format
-      for (const msg of aiLog) {
-        const colonIdx = msg.indexOf(':');
-        if (colonIdx > 0) {
-          const fName = msg.substring(0, colonIdx).trim();
-          const desc = msg.substring(colonIdx + 1).trim();
-          const fData = newFactions.find(f => f.name === fName);
-          aiActionLog.push({
-            factionName: fName,
-            factionColor: fData?.color || '#888',
-            description: `${fName}: ${desc}`,
-          });
         }
       }
       
@@ -1774,15 +1703,26 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         }
       }
       
-      return activatePendingWars({
+      let turnStartDeck = newState.deck;
+      let turnStartDiscard = newState.discard;
+      if (turnStartDeck.length === 0 && turnStartDiscard.length > 0) {
+        turnStartDeck = shuffleDeck(turnStartDiscard);
+        turnStartDiscard = [];
+      }
+      const { drawn: turnStartCards, remaining: remainingDeck } = drawCards(turnStartDeck, 1);
+
+      const turnStartState = activatePendingWars({
         ...newState,
         turn: newState.turn + 1,
         year: newState.year + 1,
-        phase: 'resource' as MVPPhase,
+        phase: 'attack',
         factions: newFactions,
         armies: newArmies,
         provinces: newProvinces,
         food: Math.max(0, newFood),
+        deck: remainingDeck,
+        discard: turnStartDiscard,
+        hand: [...newState.hand, ...turnStartCards],
         gameOver,
         winnerId,
         winCondition,
@@ -1790,7 +1730,6 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         treasuryStreak: newTreasuryStreak,
         aiTreasuryStreaks: newAiTreasuryStreaks,
         aiLog,
-        aiActionLog,
         resourcesCollected: false,
         lastCollection: null,
         attackBonus: 0,
@@ -1799,6 +1738,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
         selectedArmyId: null,
         selectedProvinceId: null,
       });
+      return applyResourceCollection(
+        turnStartState,
+        playerFaction,
+        calculateResourceCollection(turnStartState, playerFaction),
+      );
     });
   }, [playerFaction]);
 
@@ -1930,18 +1874,15 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
     return gameState.armies.filter(a => a.provinceId === provinceId);
   }, [gameState]);
 
-  // endPhase is alias for nextPhase (backward compat)
-  const endPhase = nextPhase;
-
   return {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
     startGame, loadGameState, selectProvince, selectArmy, moveArmy, mergeArmies,
-    nextPhase, endTurn, resetGame,
+    endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty, buildFort, resolveEvent,
     declareWar, repairFort,
     getRelation, getPlayerFaction, getArmiesInProvince, canMoveTo,
-    endPhase, collectResources,
+    collectResources,
   };
 };

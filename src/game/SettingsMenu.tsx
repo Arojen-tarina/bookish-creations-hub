@@ -5,34 +5,24 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Settings } from 'lucide-react';
+import { RotateCcw, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, LANGUAGE_OPTIONS } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
-import type { MusicTrackId } from '@/hooks/useAudioManager.ts';
 import { getAnalyticsConsent, setAnalyticsConsent, startSession, track } from '@/lib/analytics';
 
 interface SettingsMenuProps {
   className?: string;
   buttonClassName?: string;
-  musicTracks?: MusicTrackId[];
-  currentTrack?: MusicTrackId;
-  onSelectTrack?: (id: MusicTrackId) => void;
   musicVolume?: number;
   onMusicVolumeChange?: (volume: number) => void;
+  onRestart?: () => void;
 }
 
-export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks, currentTrack, onSelectTrack, musicVolume, onMusicVolumeChange }: SettingsMenuProps) => {
+export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume, onMusicVolumeChange, onRestart }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-  const getMusicTrackLabel = (id: MusicTrackId) => {
-    const key = `music.${id}`;
-    const translated = t(key);
-    return translated === key
-      ? id.replace(/[-_]+/g, ' ').replace(/\b[a-z]/g, letter => letter.toUpperCase())
-      : translated;
-  };
   const isMobileViewport = deviceMode === 'mobile' || (typeof window !== 'undefined' && window.innerWidth < 768);
   const [open, setOpen] = useState(false);
   const [analyticsOn, setAnalyticsOn] = useState(() => getAnalyticsConsent() === 'granted');
@@ -155,49 +145,43 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicTracks
             </span>
             <span className="text-[10px] text-stone-400 block leading-snug">{t('analytics.settings.desc')}</span>
           </button>
-          {(onMusicVolumeChange || (musicTracks && musicTracks.length > 0 && onSelectTrack)) && (
+          {onMusicVolumeChange && musicVolume !== undefined && (
             <>
               <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mt-3 mb-1.5">{t('music.title')}</p>
-              {musicVolume !== undefined && onMusicVolumeChange && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <label htmlFor="music-volume" className="text-xs text-amber-100/80">{t('music.volume')}</label>
-                    <span className="text-xs tabular-nums text-amber-200/60">{Math.round(musicVolume * 100)}%</span>
-                  </div>
-                  <input
-                    id="music-volume"
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={musicVolume}
-                    onChange={event => onMusicVolumeChange(Number(event.target.value))}
-                    className="w-full h-2 accent-amber-400 cursor-pointer"
-                  />
+              <div className="mb-3">
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="music-volume" className="text-xs text-amber-100/80">{t('music.volume')}</label>
+                  <span className="text-xs tabular-nums text-amber-200/60">{Math.round(musicVolume * 100)}%</span>
                 </div>
-              )}
-              {musicTracks && musicTracks.length > 0 && onSelectTrack && (
-                <div className="space-y-1.5">
-                  {musicTracks.map(id => (
-                    <button
-                      key={id}
-                      onClick={() => onSelectTrack(id)}
-                      className={`w-full text-left rounded-lg px-2 py-1.5 text-xs font-semibold border transition-colors ${
-                        currentTrack === id
-                          ? 'bg-amber-500/20 border-amber-500/60 text-amber-100'
-                          : 'bg-slate-800/60 text-amber-200/70 border-amber-700/20 hover:bg-slate-800'
-                      }`}
-                    >
-                      {getMusicTrackLabel(id)}
-                      {currentTrack === id && <span className="ml-1.5 text-[10px] text-amber-400/80">· {t('music.nowPlaying')}</span>}
-                    </button>
-                  ))}
-                </div>
-              )}
+                <input
+                  id="music-volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={musicVolume}
+                  onChange={event => onMusicVolumeChange(Number(event.target.value))}
+                  className="w-full h-2 accent-amber-400 cursor-pointer"
+                />
+              </div>
             </>
           )}
+          {onRestart && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="mt-2 w-full"
+              onClick={() => {
+                setOpen(false);
+                onRestart();
+              }}
+            >
+              <RotateCcw className="mr-1 h-3.5 w-3.5" />
+              {t('sidebar.reset')}
+            </Button>
+          )}
         </div>,
-        document.body,
+        document.fullscreenElement ?? document.body,
       )}
     </div>
   );

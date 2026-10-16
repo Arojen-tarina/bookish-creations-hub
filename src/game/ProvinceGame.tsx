@@ -8,7 +8,6 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS, WONDER_MAX } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType, MVPGameState } from '@/hooks/useProvinceGameState.ts';
-import { AITurnOverlay } from './AITurnOverlay.tsx';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel.tsx';
@@ -30,7 +29,7 @@ import { Card, CardContent } from '@/components/ui/card.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
   Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
-  Clock, Users, Sword, RotateCcw, Trophy, ScrollText,
+  Clock, Users, Sword, ScrollText,
   Target, Crosshair, Wrench, HelpCircle, Volume2, VolumeX, X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -60,7 +59,7 @@ export const ProvinceGame = () => {
     gameStarted, playerFaction, gameState,
     pendingBattle, clearBattle,
     startGame, loadGameState, selectProvince, selectArmy, moveArmy, mergeArmies,
-    nextPhase, endTurn, resetGame,
+    endTurn, resetGame,
     playCard, buildStructure, recruitArmy,
     proposeTreaty, breakTreaty,
     declareWar, repairFort,
@@ -68,7 +67,7 @@ export const ProvinceGame = () => {
     collectResources,
   } = useProvinceGameState();
 
-  const { playCategory, playCombatMusic, resumeDefaultMusic, settings: audioSettings, setMusicVolume, toggleMute, musicTracks, currentTrack, selectTrack } = useAudioManager();
+  const { playCategory, playCombatMusic, resumeDefaultMusic, settings: audioSettings, setMusicVolume, toggleMute } = useAudioManager();
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
@@ -79,9 +78,12 @@ export const ProvinceGame = () => {
   // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
   const [showSidebar, setShowSidebar] = useState(() => !isMobileMode);
   const [activeTab, setActiveTab] = useState('province');
+  const [showAchievements, setShowAchievements] = useState(false);
   const [attackMode, setAttackMode] = useState(false);
-  const [showAIOverlay, setShowAIOverlay] = useState(false);
+  const [isAITurn, setIsAITurn] = useState(false);
+  const aiTurnInProgressRef = useRef(false);
   const [resourceNoticeDismissed, setResourceNoticeDismissed] = useState(false);
+  const [resourceNoticeFadingOut, setResourceNoticeFadingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mittaa yläpalkin ja vaihepalkin todellinen korkeus, jotta alla oleva
@@ -104,6 +106,7 @@ export const ProvinceGame = () => {
   // Korttipaneelin raahattava korkeus (pienennä/laajenna hiirellä)
   const HAND_BASE_H = 168;
   const [handHeight, setHandHeight] = useState<number>(HAND_BASE_H);
+  const [showCardHand, setShowCardHand] = useState(true);
   const handDragRef = useRef<{ startY: number; startH: number } | null>(null);
   const onHandResizeStart = useCallback((clientY: number) => {
     handDragRef.current = { startY: clientY, startH: handHeight };
@@ -181,9 +184,9 @@ export const ProvinceGame = () => {
     if (pendingBattle?.attackerFaction === playerFaction) playCombatMusic();
   }, [pendingBattle, playerFaction, playCombatMusic]);
 
-  // Auto-collect resources when entering resource phase
+  // Collect once for older saves that were persisted before turn-start collection.
   useEffect(() => {
-    if (gameState?.phase === 'resource' && !gameState.resourcesCollected) {
+    if (gameState?.phase === 'attack' && !gameState.resourcesCollected) {
       collectResources();
     }
   }, [gameState?.phase, gameState?.resourcesCollected, collectResources]);
@@ -199,14 +202,30 @@ export const ProvinceGame = () => {
   // Reset the dismissible resource-collection notice each time a new one appears
   useEffect(() => {
     setResourceNoticeDismissed(false);
+    setResourceNoticeFadingOut(false);
   }, [gameState?.turn, gameState?.resourcesCollected]);
 
-  // Show AI overlay after turn end
   useEffect(() => {
-    if (gameState?.aiActionLog && gameState.aiActionLog.length > 0) {
-      setShowAIOverlay(true);
-    }
-  }, [gameState?.turn, gameState?.aiActionLog]);
+    if (
+      gameState?.phase !== 'attack' ||
+      !gameState.resourcesCollected ||
+      !gameState.lastCollection ||
+      resourceNoticeDismissed
+    ) return;
+
+    const fadeTimer = window.setTimeout(() => setResourceNoticeFadingOut(true), 4000);
+    const dismissTimer = window.setTimeout(() => setResourceNoticeDismissed(true), 5000);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(dismissTimer);
+    };
+  }, [
+    gameState?.phase,
+    gameState?.resourcesCollected,
+    Boolean(gameState?.lastCollection),
+    resourceNoticeDismissed,
+    gameState?.turn,
+  ]);
 
   const handleRestart = useCallback(() => {
     track('campaign_restart', {
@@ -216,6 +235,23 @@ export const ProvinceGame = () => {
     });
     resetGame();
   }, [gameState, playerFaction, resetGame]);
+
+  const handleEndTurn = useCallback(() => {
+    if (aiTurnInProgressRef.current) return;
+    aiTurnInProgressRef.current = true;
+    setIsAITurn(true);
+    containerRef.current?.toggleAttribute('inert', true);
+    try {
+      endTurn();
+      resumeDefaultMusic();
+    } finally {
+      window.requestAnimationFrame(() => {
+        aiTurnInProgressRef.current = false;
+        containerRef.current?.toggleAttribute('inert', false);
+        setIsAITurn(false);
+      });
+    }
+  }, [endTurn, resumeDefaultMusic]);
 
   const factionSelectViewedRef = useRef(false);
   useEffect(() => {
@@ -297,6 +333,7 @@ export const ProvinceGame = () => {
   return (
     <div
       ref={containerRef}
+      aria-busy={isAITurn}
       className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${isMobileMode ? 'min-h-0' : 'min-h-[100dvh]'}`}
       style={{ height: isMobileMode ? 'calc(100dvh - 50px)' : '100dvh' }}
     >
@@ -360,21 +397,11 @@ export const ProvinceGame = () => {
           {/* Right: Controls */}
           <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-3 w-full basis-full max-w-full justify-center flex-wrap' : ''}`}>
             <SettingsMenu
-              musicTracks={musicTracks}
-              currentTrack={currentTrack}
-              onSelectTrack={selectTrack}
               musicVolume={audioSettings.musicVolume}
               onMusicVolumeChange={setMusicVolume}
+              onRestart={handleRestart}
             />
             <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
-            <Button
-              variant="ghost" size="icon"
-              onClick={() => { track('menu_interaction', { target: 'goals_trophy' }); setShowSidebar(true); setActiveTab('goals'); }}
-              title={t('hud.goalsButton')}
-              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'h-11 w-11' : 'h-8 w-8'}`}
-            >
-              <Trophy className={isMobileMode ? 'w-5 h-5' : 'w-4 h-4'} />
-            </Button>
             <Button
               variant="ghost" size="icon"
               onClick={toggleMute}
@@ -396,13 +423,15 @@ export const ProvinceGame = () => {
                 </Button>
               </>
             )}
-            <Button
-              variant="ghost" size="sm"
-              onClick={() => { track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'show_sidebar' }); setShowSidebar(!showSidebar); }}
-              className={`text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 ${isMobileMode ? 'text-sm h-11 px-3' : 'text-xs h-8'}`}
-            >
-              {showSidebar ? t('hud.hide') : t('hud.menu')}
-            </Button>
+            {isMobileMode && (
+              <Button
+                variant="ghost" size="sm"
+                onClick={() => { track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'show_sidebar' }); setShowSidebar(!showSidebar); }}
+                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 text-sm h-11 px-3"
+              >
+                {showSidebar ? t('hud.hide') : t('hud.menu')}
+              </Button>
+            )}
           </div>
         </div>
         </div>
@@ -411,8 +440,13 @@ export const ProvinceGame = () => {
 
 
       {/* ============= RESOURCE COLLECTION RESULT ============= */}
-      {gameState.phase === 'resource' && gameState.resourcesCollected && gameState.lastCollection && !resourceNoticeDismissed && (
-        <div className="fixed left-1/2 -translate-x-1/2 z-10" style={{ top: headerTotalH + 20 }}>
+      {gameState.resourcesCollected && gameState.lastCollection && !resourceNoticeDismissed && (
+        <div
+          className={`fixed left-1/2 -translate-x-1/2 z-10 transition-opacity duration-1000 ease-out ${
+            resourceNoticeFadingOut ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ top: headerTotalH + 20 }}
+        >
           <Card className="relative bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
             <button
               type="button"
@@ -454,7 +488,7 @@ export const ProvinceGame = () => {
 
       <div className="relative h-full flex" style={{ paddingTop: headerTotalH }}>
         {/* Map */}
-        <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode && showSidebar ? 'lg:mr-[380px]' : ''}`}>
+        <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode ? 'lg:mr-[380px]' : ''}`}>
           <div className="absolute inset-0 p-1">
             <ProvinceMap
               provinces={gameState.provinces}
@@ -469,6 +503,27 @@ export const ProvinceGame = () => {
               buildingsMap={gameState.buildings || {}}
             />
           </div>
+
+          {showAchievements && (
+            <Card className="absolute inset-2 z-30 overflow-hidden border-amber-600/50 bg-slate-950/95 shadow-2xl">
+              <div className="h-full overflow-y-auto p-3 scrollbar-thin">
+                <div className="mb-2 flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAchievements(false)}
+                    aria-label={t('achv.close')}
+                    title={t('achv.close')}
+                    className="h-8 w-8 text-amber-200/70 hover:bg-amber-900/40 hover:text-amber-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <AchievementsPanel />
+              </div>
+            </Card>
+          )}
           
           {/* Army indicators on map */}
           {gameState.armies.filter(a => a.ownerId === playerFaction).length > 0 && selectedArmy && (
@@ -485,18 +540,19 @@ export const ProvinceGame = () => {
           className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
             isMobileMode
               ? `left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
-              : `right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 ${showSidebar ? 'translate-x-0' : 'translate-x-full'}`
+              : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 translate-x-0'
           }`}
           style={!isMobileMode ? { top: headerTotalH } : undefined}
         >
-          <div className="h-full overflow-y-auto p-3 scrollbar-thin">
+          <div className="flex h-full min-h-0 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className={`w-full bg-slate-800/50 mb-3 grid grid-cols-4 ${isMobileMode ? 'h-12' : ''}`}>
                 <TabsTrigger value="province" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
                   <Map className="w-3 h-3 mr-1" />{t('sidebar.tab.province')}
                 </TabsTrigger>
-                <TabsTrigger value="goals" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
-                  <Trophy className="w-3 h-3 mr-1" />{t('sidebar.tab.goals')}
+                <TabsTrigger value="status" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
+                  <Target className="w-3 h-3 mr-1" />{t('ui.realmStatus')}
                 </TabsTrigger>
                 <TabsTrigger value="log" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
                   <ScrollText className="w-3 h-3 mr-1" />{t('sidebar.tab.log')}
@@ -519,7 +575,7 @@ export const ProvinceGame = () => {
                       onRepairFort={(useArtisan?: boolean) => repairFort(selectedProvince.id, !!useArtisan)}
                       canRepairGold={!!playerFactionData && playerFactionData.treasury >= 10}
                       canRepairArtisan={gameState.artisans >= 1}
-                      canBuildFort={!!playerFactionData && gameState.phase === 'build' && playerFactionData.treasury >= 50 && gameState.artisans >= 2}
+                      canBuildFort={!!playerFactionData && gameState.phase === 'attack' && playerFactionData.treasury >= 50 && gameState.artisans >= 2}
                       canRecruit={(() => {
                         if (!playerFactionData || !selectedProvince || selectedProvince.ownerId !== playerFaction) return false;
                         if (playerFactionData.treasury < 20 || playerFactionData.manpower < 5) return false;
@@ -532,7 +588,7 @@ export const ProvinceGame = () => {
                     />
                     
                     {/* Buildings */}
-                    {selectedProvince.ownerId === playerFaction && gameState.phase === 'build' && (
+                    {selectedProvince.ownerId === playerFaction && gameState.phase === 'attack' && (
                       <Card className="bg-gradient-to-b from-amber-950/40 to-slate-800/50 border-amber-600/40">
                         <CardContent className="p-4">
                           <h4 className="text-amber-100 font-bold text-base mb-3 flex items-center gap-2">
@@ -660,7 +716,7 @@ export const ProvinceGame = () => {
                     )}
 
                     {/* Existing buildings (outside build phase) */}
-                    {selectedProvince.ownerId === playerFaction && gameState.phase !== 'build' && (gameState.buildings[selectedProvince.id] || []).length > 0 && (
+                    {selectedProvince.ownerId === playerFaction && gameState.phase !== 'attack' && (gameState.buildings[selectedProvince.id] || []).length > 0 && (
                       <div className="flex gap-1.5 flex-wrap px-1">
                         {(gameState.buildings[selectedProvince.id] || []).map(b => (
                           <Badge key={b} className="text-xs bg-slate-800/60 border-amber-700/30">{BUILDING_INFO[b].emoji} {t(`building.${b}.name`)}</Badge>
@@ -757,8 +813,8 @@ export const ProvinceGame = () => {
                 )}
               </TabsContent>
               
-              {/* ============= GOALS TAB ============= */}
-              <TabsContent value="goals" className="space-y-3">
+              {/* ============= REALM STATUS TAB ============= */}
+              <TabsContent value="status" className="space-y-3">
                 <Card className="bg-slate-800/50 border-amber-700/30">
                   <CardContent className="p-3">
                     <VictoryGoals
@@ -785,12 +841,6 @@ export const ProvinceGame = () => {
                       prestige={gameState.prestige ?? 0}
                       targetPrestige={VICTORY_TARGETS.prestige}
                     />
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-slate-800/50 border-amber-700/30">
-                  <CardContent className="p-3">
-                    <AchievementsPanel />
                   </CardContent>
                 </Card>
 
@@ -905,32 +955,42 @@ export const ProvinceGame = () => {
             </Tabs>
             
 
-            {/* Reset button at bottom */}
-            <div className="mt-4 pt-3 border-t border-slate-700/30">
-              <Button variant="destructive" size="sm" className="w-full text-xs" onClick={handleRestart}>
-                <RotateCcw className="w-3.5 h-3.5 mr-1" /> {t('sidebar.reset')}
-              </Button>
+          </div>
+          {!isMobileMode && (
+            <div className="w-full min-w-0 flex-shrink-0 border-t border-amber-700/20 p-3">
+              <PhaseBar
+                onEndTurn={handleEndTurn}
+                showCardHand={showCardHand}
+                onToggleCardHand={() => setShowCardHand(visible => !visible)}
+                showAchievements={showAchievements}
+                onToggleAchievements={() => setShowAchievements(visible => !visible)}
+                disabled={isAITurn}
+                compact
+              />
             </div>
+          )}
           </div>
         </div>
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      <div className={`fixed ${isMobileMode ? 'bottom-[50px]' : 'bottom-0'} left-0 z-40 transition-all right-0 ${
-        !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
+      {(isMobileMode || showCardHand) && <div className={`fixed ${isMobileMode ? 'bottom-[50px]' : 'bottom-0'} left-0 z-40 transition-all right-0 ${
+        !isMobileMode ? 'sm:right-[380px]' : ''
       }`}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
           {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
-          <div
-            className={`group relative cursor-ns-resize flex items-center justify-center touch-none select-none ${isMobileMode ? 'h-6' : 'h-3'}`}
-            onMouseDown={(e) => { e.preventDefault(); onHandResizeStart(e.clientY); }}
-            onTouchStart={(e) => { if (e.touches[0]) onHandResizeStart(e.touches[0].clientY); }}
-            onDoubleClick={() => setHandHeight(HAND_BASE_H)}
-            title={t('cards.dragHint')}
-          >
-            <div className="w-16 h-1 rounded-full bg-amber-500/40 group-hover:bg-amber-400/80 transition-colors" />
-          </div>
-          <div className="flex items-stretch" style={{ height: handHeight }}>
+          {showCardHand && (
+            <>
+              <div
+                className={`group relative cursor-ns-resize flex items-center justify-center touch-none select-none ${isMobileMode ? 'h-6' : 'h-3'}`}
+                onMouseDown={(e) => { e.preventDefault(); onHandResizeStart(e.clientY); }}
+                onTouchStart={(e) => { if (e.touches[0]) onHandResizeStart(e.touches[0].clientY); }}
+                onDoubleClick={() => setHandHeight(HAND_BASE_H)}
+                title={t('cards.dragHint')}
+              >
+                <div className="w-16 h-1 rounded-full bg-amber-500/40 group-hover:bg-amber-400/80 transition-colors" />
+              </div>
+              <div className="flex items-stretch" style={{ height: handHeight }}>
             {/* Cards — skaalautuu raahatun korkeuden mukaan, aina kokonaan näkyvissä */}
             <div className="flex-1 overflow-hidden">
               {gameState.hand && gameState.hand.length > 0 ? (
@@ -952,8 +1012,8 @@ export const ProvinceGame = () => {
                       const effectText = localizeEffectDescription(card.id, eff.description, selectedLanguage);
                       toast.success(`🃏 ${localized.name}`, { description: effectText });
                     }}
-                    canPlay={gameState.phase !== 'end'}
-                    currentPhase={gameState.phase}
+                    canPlay
+                    textScale={handScale}
                     deckSize={gameState.deck?.length || 0}
                     discardSize={gameState.discard?.length || 0}
                   />
@@ -964,29 +1024,27 @@ export const ProvinceGame = () => {
                 </div>
               )}
             </div>
-          </div>
-          <div className="px-2 pb-2">
+              </div>
+            </>
+          )}
+          {isMobileMode && <div className="px-2 pb-2">
             <PhaseBar
-              currentPhase={gameState.phase}
-              onNextPhase={nextPhase}
-              onEndTurn={() => { endTurn(); resumeDefaultMusic(); }}
-              disabled={showAIOverlay}
+              onEndTurn={handleEndTurn}
+              showCardHand={showCardHand}
+              onToggleCardHand={() => setShowCardHand(visible => !visible)}
+              showAchievements={showAchievements}
+              onToggleAchievements={() => setShowAchievements(visible => !visible)}
+              disabled={isAITurn}
               compact={!isMobileMode}
             />
-          </div>
+          </div>}
         </div>
-      </div>
+      </div>}
 
       {/* ============= ENGAGEMENT (juice) ============= */}
       <EngagementLayer gameState={gameState} playerFaction={playerFaction} />
 
       {/* ============= OVERLAYS ============= */}
-      <AITurnOverlay
-        actions={gameState.aiActionLog || []}
-        isVisible={showAIOverlay}
-        onComplete={() => setShowAIOverlay(false)}
-      />
-
       <GameOverScreen
         isOpen={gameState.gameOver}
         isVictory={isVictory}

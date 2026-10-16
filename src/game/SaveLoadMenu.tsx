@@ -145,7 +145,7 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
             })}
           </div>
         </div>,
-        document.body,
+        document.fullscreenElement ?? document.body,
       )}
     </div>
   );

@@ -15,8 +15,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cinzel", "serif"],
-        body: ["Lora", "serif"],
+        sans: ["Open Sans", "Arial", "sans-serif"],
+        display: ["Open Sans", "Arial", "sans-serif"],
+        body: ["Open Sans", "Arial", "sans-serif"],
+        serif: ["Open Sans", "Arial", "sans-serif"],
+        mono: ["Open Sans", "Arial", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

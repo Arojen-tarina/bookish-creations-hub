@@ -10,7 +10,10 @@ import { useLanguage } from '@/lib/i18n.tsx';
 import { localizedName } from '@/lib/i18nGameUi.ts';
 import gameBoardImg from '@/assets/game-board.jpg';
 
-const BOARD_SIZE = 130;
+const BOARD_WIDTH = 130;
+const BOARD_TOP = 20;
+const BOARD_HEIGHT = 90;
+const BOARD_CENTER_Y = BOARD_TOP + BOARD_HEIGHT / 2;
 const SCALE_FACTOR = 1.15; // 15% larger board
 
 export interface ProvinceMapProps {
@@ -29,8 +32,7 @@ export interface ProvinceMapProps {
 }
 
 const TOKEN_RADIUS = 1.45 * SCALE_FACTOR; // pienempi tiheämmälle 17x13-ruudukolle
-// Provinssien keskipisteet generoidaan nyt suoraan LAUTA-avaruudessa
-// (0..BOARD_SIZE), heksavyöhykkeen kokonaisten heksien keskelle, joten
+// Provinssien keskipisteet generoidaan suoraan laudan koordinaatistoon, joten
 // projektio on identiteetti — ei enää kaksinkertaista muunnosta.
 const projectPoint = (x: number, y: number) => ({ x, y });
 
@@ -131,11 +133,11 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   const gridLines: JSX.Element[] = [];
   
   // Vertical lines (X axis)
-  for (let x = 0; x <= BOARD_SIZE; x += gridInterval) {
+  for (let x = 0; x <= BOARD_WIDTH; x += gridInterval) {
     gridLines.push(
       <line
         key={`vline-${x}`}
-        x1={x} y1={0} x2={x} y2={BOARD_SIZE}
+        x1={x} y1={BOARD_TOP} x2={x} y2={BOARD_TOP + BOARD_HEIGHT}
         stroke="#4a5568"
         strokeWidth={0.15 * SCALE_FACTOR}
         opacity={x % 20 === 0 ? 0.4 : 0.25}
@@ -145,11 +147,11 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   }
 
   // Horizontal lines (Y axis)
-  for (let y = 0; y <= BOARD_SIZE; y += gridInterval) {
+  for (let y = BOARD_TOP; y <= BOARD_TOP + BOARD_HEIGHT; y += gridInterval) {
     gridLines.push(
       <line
         key={`hline-${y}`}
-        x1={0} y1={y} x2={BOARD_SIZE} y2={y}
+        x1={0} y1={y} x2={BOARD_WIDTH} y2={y}
         stroke="#4a5568"
         strokeWidth={0.15 * SCALE_FACTOR}
         opacity={y % 20 === 0 ? 0.4 : 0.25}
@@ -159,11 +161,11 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   }
 
   // X axis labels (bottom)
-  for (let x = 0; x <= BOARD_SIZE; x += 20) {
+  for (let x = 0; x <= BOARD_WIDTH; x += 20) {
     gridLines.push(
       <text
         key={`xlabel-${x}`}
-        x={x} y={BOARD_SIZE + 2}
+        x={x} y={BOARD_TOP + BOARD_HEIGHT + 2}
         textAnchor="middle"
         fontSize={1.8 * SCALE_FACTOR}
         fill="#c9a227"
@@ -178,7 +180,7 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   }
 
   // Y axis labels (left)
-  for (let y = 0; y <= BOARD_SIZE; y += 20) {
+  for (let y = BOARD_TOP; y <= BOARD_TOP + BOARD_HEIGHT; y += 20) {
     gridLines.push(
       <text
         key={`ylabel-${y}`}
@@ -200,7 +202,7 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   gridLines.push(
     <line
       key="x-axis"
-      x1={0} y1={BOARD_SIZE} x2={BOARD_SIZE} y2={BOARD_SIZE}
+      x1={0} y1={BOARD_TOP + BOARD_HEIGHT} x2={BOARD_WIDTH} y2={BOARD_TOP + BOARD_HEIGHT}
       stroke="#8b6914"
       strokeWidth={0.3 * SCALE_FACTOR}
       opacity={0.6}
@@ -210,7 +212,7 @@ const CoordinateGrid = ({ showGrid }: { showGrid: boolean }) => {
   gridLines.push(
     <line
       key="y-axis"
-      x1={0} y1={0} x2={0} y2={BOARD_SIZE}
+      x1={0} y1={BOARD_TOP} x2={0} y2={BOARD_TOP + BOARD_HEIGHT}
       stroke="#8b6914"
       strokeWidth={0.3 * SCALE_FACTOR}
       opacity={0.6}
@@ -504,20 +506,20 @@ export const ProvinceMap = ({
   const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null);
 
   const viewBox = useMemo(() => {
-    const w = BOARD_SIZE / zoom;
-    const h = BOARD_SIZE / zoom;
-    const x = (BOARD_SIZE - w) / 2 - pan.x / zoom;
-    const y = (BOARD_SIZE - h) / 2 - pan.y / zoom;
+    const w = BOARD_WIDTH / zoom;
+    const h = BOARD_HEIGHT / zoom;
+    const x = (BOARD_WIDTH - w) / 2 - pan.x / zoom;
+    const y = BOARD_CENTER_Y - h / 2 - pan.y / zoom;
     return { x, y, width: w, height: h };
   }, [zoom, pan]);
 
-  // Keep the view from drifting off the board entirely — clamp pan so the
-  // viewBox always stays within [0, BOARD_SIZE] on both axes.
+  // Keep the view from drifting off the board entirely.
   const clampPan = useCallback((p: { x: number; y: number }, z: number) => {
-    const maxOffset = Math.max(0, (BOARD_SIZE / 2) * (z - 1));
+    const maxOffsetX = Math.max(0, (BOARD_WIDTH / 2) * (z - 1));
+    const maxOffsetY = Math.max(0, (BOARD_HEIGHT / 2) * (z - 1));
     return {
-      x: Math.max(-maxOffset, Math.min(maxOffset, p.x)),
-      y: Math.max(-maxOffset, Math.min(maxOffset, p.y)),
+      x: Math.max(-maxOffsetX, Math.min(maxOffsetX, p.x)),
+      y: Math.max(-maxOffsetY, Math.min(maxOffsetY, p.y)),
     };
   }, []);
 
@@ -612,8 +614,8 @@ export const ProvinceMap = ({
 
   const handleMinimapNavigate = useCallback((x: number, y: number) => {
     setPan(clampPan({
-      x: (BOARD_SIZE / 2 - x) * zoom,
-      y: (BOARD_SIZE / 2 - y) * zoom,
+      x: (BOARD_WIDTH / 2 - x) * zoom,
+      y: (BOARD_CENTER_Y - y) * zoom,
     }, zoom));
   }, [zoom, clampPan]);
 
@@ -647,7 +649,7 @@ export const ProvinceMap = ({
         <image
           href={gameBoardImg}
           x={0} y={0}
-          width={BOARD_SIZE} height={BOARD_SIZE}
+          width={BOARD_WIDTH} height={BOARD_WIDTH}
           preserveAspectRatio="xMidYMid slice"
         />
 

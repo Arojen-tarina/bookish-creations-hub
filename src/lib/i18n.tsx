@@ -154,6 +154,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'cards.deckLabel': 'pakassa',
     'cards.play': '▶ Pelaa',
     'cards.dragHint': 'Raahaa muuttaaksesi korttien kokoa — kaksoisklikkaa palauttaaksesi',
+    'cards.hideHand': 'Piilota kortit',
+    'cards.showHand': 'Näytä kortit',
+    'achv.close': 'Sulje saavutukset',
 
     'gameOver.victory': 'Voitto!',
     'gameOver.defeat': 'Tappio!',
@@ -367,6 +370,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'cards.deckLabel': 'in deck',
     'cards.play': '▶ Play',
     'cards.dragHint': 'Drag to resize the card view — double-click to reset',
+    'cards.hideHand': 'Hide cards',
+    'cards.showHand': 'Show cards',
+    'achv.close': 'Close achievements',
 
     'gameOver.victory': 'Victory!',
     'gameOver.defeat': 'Defeat!',
