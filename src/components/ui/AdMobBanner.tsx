@@ -6,7 +6,8 @@ import { X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { useDeviceMode } from '@/lib/deviceMode.tsx';
 const bannerId = import.meta.env.VITE_ADMOB_BANNER_ID ?? '';
-const canUseNativeAdMob = Capacitor.getPlatform() === 'android' && bannerId && bannerId !== 'ca-app-pub-0000000000000000/0000000000';
+const isAndroid = Capacitor.getPlatform() === 'android';
+const canUseNativeAdMob = isAndroid && Boolean(bannerId) && bannerId !== 'ca-app-pub-0000000000000000/0000000000';
 
 interface AdMobBannerProps {
   className?: string;
@@ -20,7 +21,7 @@ export function AdMobBanner({ className, style }: AdMobBannerProps) {
   const isMobileMode = deviceMode === 'mobile';
 
   useEffect(() => {
-    if (!canUseNativeAdMob || dismissed || !isMobileMode) {
+    if (!canUseNativeAdMob || dismissed) {
       return;
     }
 
@@ -33,8 +34,10 @@ export function AdMobBanner({ className, style }: AdMobBannerProps) {
         }
         await AdMob.showBanner({
           adId: bannerId,
+          // BANNER is the smallest standard AdMob size (320x50 dp).
           adSize: BannerAdSize.BANNER,
           position: BannerAdPosition.BOTTOM_CENTER,
+          margin: 0,
         });
         if (!mounted) {
           await AdMob.removeBanner();
@@ -50,9 +53,9 @@ export function AdMobBanner({ className, style }: AdMobBannerProps) {
       mounted = false;
       AdMob.removeBanner().catch(() => undefined);
     };
-  }, [dismissed, isMobileMode]);
+  }, [dismissed]);
 
-  if (!isMobileMode) return null;
+  if (!isAndroid && !isMobileMode) return null;
 
   return (
     <div className={`pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex h-[50px] w-full items-center justify-center ${className ?? ''}`} style={style}>

@@ -22,6 +22,7 @@ export type Database = {
           event_name: string
           id: string
           payload: Json
+          platform: string
           session_id: string
         }
         Insert: {
@@ -31,6 +32,7 @@ export type Database = {
           event_name: string
           id?: string
           payload: Json
+          platform: string
           session_id: string
         }
         Update: {
@@ -40,6 +42,7 @@ export type Database = {
           event_name?: string
           id?: string
           payload?: Json
+          platform?: string
           session_id?: string
         }
         Relationships: []

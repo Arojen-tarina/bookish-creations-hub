@@ -5,6 +5,7 @@
  * Resurssit → Kortit → Hyökkäys → Rakentaminen → Vuoron lopetus
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS, WONDER_MAX } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType, MVPGameState } from '@/hooks/useProvinceGameState.ts';
@@ -71,12 +72,14 @@ export const ProvinceGame = () => {
   const { autoSave, hasContinueGame, autosave: autosaveMeta, continueGame, saves } = useSaveManager();
   const { deviceMode } = useDeviceMode();
   const isMobileMode = deviceMode === 'mobile';
+  const hasBottomBanner = isMobileMode || Capacitor.getPlatform() === 'android';
+  const bottomBannerOffset = 'calc(50px + env(safe-area-inset-bottom, 0px))';
 
   useAchievementTracking(gameState, playerFaction, pendingBattle);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // Mobile mode opens as a bottom sheet on demand — desktop keeps the sidebar open by default.
-  const [showSidebar, setShowSidebar] = useState(() => !isMobileMode);
+  // The sidebar (including its tab buttons) opens only when requested.
+  const [showSidebar, setShowSidebar] = useState(false);
   const [activeTab, setActiveTab] = useState('province');
   const [showAchievements, setShowAchievements] = useState(false);
   const [attackMode, setAttackMode] = useState(false);
@@ -108,6 +111,18 @@ export const ProvinceGame = () => {
   const [handHeight, setHandHeight] = useState<number>(HAND_BASE_H);
   const [showCardHand, setShowCardHand] = useState(true);
   const handDragRef = useRef<{ startY: number; startH: number } | null>(null);
+  // Alapaneeli peittää kartan alareunan, joten kartta rajataan sen yläpuolelle
+  const [bottomPanelH, setBottomPanelH] = useState(0);
+  const bottomPanelObserverRef = useRef<ResizeObserver | null>(null);
+  const bottomPanelRef = useCallback((el: HTMLDivElement | null) => {
+    bottomPanelObserverRef.current?.disconnect();
+    bottomPanelObserverRef.current = null;
+    if (!el) return;
+    setBottomPanelH(el.offsetHeight);
+    const observer = new ResizeObserver(() => setBottomPanelH(el.offsetHeight));
+    observer.observe(el);
+    bottomPanelObserverRef.current = observer;
+  }, []);
   const onHandResizeStart = useCallback((clientY: number) => {
     handDragRef.current = { startY: clientY, startH: handHeight };
     const move = (y: number) => {
@@ -334,8 +349,8 @@ export const ProvinceGame = () => {
     <div
       ref={containerRef}
       aria-busy={isAITurn}
-      className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${isMobileMode ? 'min-h-0' : 'min-h-[100dvh]'}`}
-      style={{ height: isMobileMode ? 'calc(100dvh - 50px)' : '100dvh' }}
+      className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${hasBottomBanner ? 'min-h-0' : 'min-h-[100dvh]'}`}
+      style={{ height: hasBottomBanner ? `calc(100dvh - ${bottomBannerOffset})` : '100dvh' }}
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
@@ -401,7 +416,7 @@ export const ProvinceGame = () => {
               onMusicVolumeChange={setMusicVolume}
               onRestart={handleRestart}
             />
-            <SaveLoadMenu gameState={gameState} onLoad={loadGameState} />
+            <SaveLoadMenu gameState={gameState} onLoad={loadGameState}             />
             <Button
               variant="ghost" size="icon"
               onClick={toggleMute}
@@ -488,9 +503,13 @@ export const ProvinceGame = () => {
 
       <div className="relative h-full flex" style={{ paddingTop: headerTotalH }}>
         {/* Map */}
-        <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode ? 'lg:mr-[380px]' : ''}`}>
-          <div className="absolute inset-0 p-1">
+        <div className={`flex-1 relative transition-all duration-300 ${!isMobileMode && showSidebar ? 'lg:mr-[380px]' : ''}`}>
+          <div
+            className="absolute inset-0 p-1"
+            style={{ bottom: hasBottomBanner ? `calc(${bottomBannerOffset} + ${bottomPanelH}px)` : bottomPanelH }}
+          >
             <ProvinceMap
+
               provinces={gameState.provinces}
               armies={gameState.armies}
               selectedProvinceId={gameState.selectedProvinceId}
@@ -536,13 +555,16 @@ export const ProvinceGame = () => {
         </div>
         
         {/* ============= SIDEBAR (side panel on desktop, bottom sheet on mobile) ============= */}
-        <div
-          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 overflow-hidden ${
+        {showSidebar && <div
+          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl overflow-hidden ${
             isMobileMode
-              ? `left-0 right-0 bottom-[50px] top-auto h-[calc(78vh-50px)] rounded-t-3xl border-t border-amber-700/30 z-50 ${showSidebar ? 'translate-y-0' : 'translate-y-full'}`
-              : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20 translate-x-0'
+              ? 'left-0 right-0 bottom-0 top-auto rounded-t-3xl border-t border-amber-700/30 z-50'
+              : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20'
           }`}
-          style={!isMobileMode ? { top: headerTotalH } : undefined}
+          style={{
+            ...(isMobileMode ? { height: `calc(78dvh - ${bottomBannerOffset})` } : { top: headerTotalH }),
+            ...(hasBottomBanner ? { bottom: bottomBannerOffset } : {}),
+          }}
         >
           <div className="flex h-full min-h-0 flex-col">
           <div className="min-h-0 flex-1 overflow-y-auto p-3 scrollbar-thin">
@@ -970,13 +992,13 @@ export const ProvinceGame = () => {
             </div>
           )}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* ============= BOTTOM PANEL: Cards + Minimap ============= */}
-      {(isMobileMode || showCardHand) && <div className={`fixed ${isMobileMode ? 'bottom-[50px]' : 'bottom-0'} left-0 z-40 transition-all right-0 ${
-        !isMobileMode ? 'sm:right-[380px]' : ''
-      }`}>
+      {(isMobileMode || showCardHand) && <div ref={bottomPanelRef} className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
+        !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
+      }`} style={hasBottomBanner ? { bottom: bottomBannerOffset } : undefined}>
         <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
           {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
           {showCardHand && (
@@ -1062,7 +1084,8 @@ export const ProvinceGame = () => {
       {/* Back link */}
       <Link 
         to="/"
-        className="fixed bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group"
+        className={`fixed ${hasBottomBanner ? 'left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group' : 'bottom-2 left-2 z-30 flex items-center gap-1.5 text-amber-200/40 hover:text-amber-200 transition-colors text-xs group'}`}
+        style={hasBottomBanner ? { bottom: `calc(${bottomBannerOffset} + 8px)` } : undefined}
       >
         <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
         <span className="opacity-0 group-hover:opacity-100 transition-opacity">{t('hud.backToHome')}</span>

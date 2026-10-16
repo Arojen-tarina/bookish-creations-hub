@@ -25,21 +25,19 @@ const SLOTS = [1, 2, 3, 4, 5];
 export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
   const { t } = useLanguage();
   const { saves, saveGame, loadGame, deleteGame } = useSaveManager();
-  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   const updateMenuPosition = () => {
     const button = rootRef.current?.querySelector('button');
     if (!button) return;
     const rect = button.getBoundingClientRect();
     const menuWidth = 288;
-    const preferredRight = window.innerWidth - rect.right;
-    const minimumRight = Math.max(8, window.innerWidth - menuWidth - 8);
-    const right = Math.max(minimumRight, Math.min(window.innerWidth - 8, preferredRight));
-    setMenuPosition({ top: rect.bottom + 8, right });
+    const maximumLeft = Math.max(8, window.innerWidth - menuWidth - 8);
+    const left = Math.max(8, Math.min(maximumLeft, rect.left));
+    setMenuPosition({ top: rect.bottom + 8, left });
   };
 
   useEffect(() => {
@@ -97,9 +95,7 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
         <div
           ref={menuRef}
           className="fixed z-[10000] max-h-[calc(100dvh-1rem)] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={isMobileViewport
-            ? { top: '50%', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)' }
-            : { top: menuPosition.top, right: menuPosition.right }}
+          style={{ top: menuPosition.top, left: menuPosition.left }}
         >
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('save.title')}</p>
           <div className="space-y-1.5 max-h-80 overflow-y-auto scrollbar-thin">

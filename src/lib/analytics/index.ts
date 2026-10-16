@@ -11,3 +11,4 @@ export { getRetentionSummary, estimateChurnRisk } from './retention.ts';
 export type { RetentionSummary, ChurnEstimate } from './retention.ts';
 export { assignVariant, useExperiment } from './experiments.ts';
 export type { AnalyticsEventName, AnalyticsEventPayloadMap, StoredAnalyticsEvent } from './types.ts';
+export type { AnalyticsPlatform } from './types.ts';

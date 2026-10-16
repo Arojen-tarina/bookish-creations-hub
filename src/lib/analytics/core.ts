@@ -17,8 +17,9 @@
  * eikä vaadi erillistä analytiikka-SaaSia tai omaa palvelininfraa.
  */
 import { supabase } from '@/integrations/supabase/client.ts';
+import { Capacitor } from '@capacitor/core';
 import { getAnalyticsConsent, getOrCreateClientId } from './consent.ts';
-import type { AnalyticsEventName, AnalyticsEventPayloadMap, StoredAnalyticsEvent } from './types.ts';
+import type { AnalyticsEventName, AnalyticsEventPayloadMap, StoredAnalyticsEvent, AnalyticsPlatform } from './types.ts';
 import { recordAppOpenDay } from './retention.ts';
 
 const APP_VERSION = '0.1.0'; // keep roughly in sync with package.json "version"
@@ -26,6 +27,12 @@ const BUFFER_KEY = 'arojen_tarinat_analytics_buffer_v1';
 const MAX_BUFFERED_EVENTS = 300;
 const FLUSH_BATCH_SIZE = 25;
 const FLUSH_INTERVAL_MS = 20_000;
+
+const getAnalyticsPlatform = (): AnalyticsPlatform => {
+  const platform = Capacitor.getPlatform();
+  if (platform === 'web' || platform === 'android' || platform === 'ios') return platform;
+  return 'other';
+};
 
 let sessionId: string | null = null;
 let sessionStartedAt = 0;
@@ -57,7 +64,13 @@ export const track = <K extends AnalyticsEventName>(name: K, payload: AnalyticsE
   if (!sessionId) startSession();
 
   const event: StoredAnalyticsEvent<K> = {
-    name, payload, clientId: getOrCreateClientId(), sessionId: sessionId!, at: Date.now(), appVersion: APP_VERSION,
+    name,
+    payload,
+    clientId: getOrCreateClientId(),
+    sessionId: sessionId!,
+    platform: getAnalyticsPlatform(),
+    at: Date.now(),
+    appVersion: APP_VERSION,
   };
   const buffer = readBuffer();
   buffer.push(event);
@@ -108,6 +121,7 @@ export const flush = async (useBeacon = false): Promise<void> => {
     session_id: e.sessionId,
     event_name: e.name,
     payload: e.payload,
+    platform: e.platform ?? 'unknown',
     app_version: e.appVersion,
     created_at: new Date(e.at).toISOString(),
   }));

@@ -246,7 +246,7 @@ const createStartingArmies = (factions: Faction[], provinces: Province[]): Army[
       provinceId: capital.id,
       cavalry: faction.id === 'mongol' ? 12 : 5,
       infantry: faction.id === 'song' ? 15 : 8,
-      siege: 1,
+      siege: faction.id === 'khwarezm' ? 0 : 1,
       morale: 80,
       supply: 30,
       movementLeft: 3,

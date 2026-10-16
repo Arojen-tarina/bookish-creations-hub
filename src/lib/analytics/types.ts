@@ -25,6 +25,7 @@
  */
 
 export type Difficulty = 'easy' | 'normal' | 'hard';
+export type AnalyticsPlatform = 'web' | 'android' | 'ios' | 'other' | 'unknown';
 
 export interface AnalyticsEventPayloadMap {
   // ---- Session & retention ----
@@ -83,6 +84,7 @@ export interface StoredAnalyticsEvent<K extends AnalyticsEventName = AnalyticsEv
   payload: AnalyticsEventPayloadMap[K];
   clientId: string;
   sessionId: string;
+  platform: AnalyticsPlatform;
   at: number; // epoch ms
   appVersion: string;
 }
