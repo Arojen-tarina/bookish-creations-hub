@@ -1,0 +1,78 @@
+- vuoropalkki vittuun pohjalta pc ui:ssa
+
+- vuoron alussa resurssit ja kortit samaan vaiheeseen ja ehkä vähän vähemmän inputtia pelaajalta
+	-> resurssimäärä jotenkin vittuun ajan myötä näkymästä
+	
+--- (äijiä ei pitäs pystyä valitsemaan kun niitä ei voi siirtää) **
+
+
+
+- korteista pois alaotsikko ja korttien tekstiä trimmata + fonttia isommaksi
+
+- ai pelaajien vuoro vitusti nopeemmaksi
+	-> kato värit tässä näkymässä
+
+- kato tarkalleen miten ruoankulutuksen kaava toimii
+
+- vihree armeijajuttu ruudun pohjalla esiin
+ -> armeijaruutu näkyviin erilleen kaupunkinäkymästä
+
+- RAKENNUKSIEN PYSTYTTÄMINEN !!!!!
+
+- saavutuksista harvinaisempia JA jotain pelimekaniikkaa niille
+	-> Niistä voisi saada rahaa tai kulttuuria tai diplomatiapisteitä
+	-> mahdollinen kulttuuri/diplomatiavoitto?
+
+
+- reworkkaa luonnonvaroja ja laita silkkitie bonus näkyviin kaupunkiin
+- SELVENNÄ TARJONTAA!!!
+
+-- LOKALISAATIO "!!!!! crack the whip ja laita der gpt kääntämään KAIKKI pelin tekstit mille tahansa kielelle
+	-> Nyt pelissä on suomea ja enkkua ja valittua kieltä sekasin
+
+
+-- MORAALI ei nyt tee mitään niin keksi sille jotain :-)
+
+-- HEIMOPÄÄLLIKÖLLE voi laittaa jnk vaikutusalueen. Sellaisen mikä näkyy ruudulla 
+	-> selvennä mitä moraali tekee tai keksi sille jotain uutta
+
+- Next painike avaa suuremmaksi sen vuoronäkymän (joka ei tee mitää desktopilla)
+
+- Korttinäkymään joku tapa piilottaa se kokonaan ja myös ehkä pakkatekstiä (discard pile yms) suuremmaksi
+
+- Kaupunkien nimet jotenkin järkevämmin
+
+- Rus pitää olla vähemmän harmaa
+
+
+- silkkitie jotenkin kartalle selkeäksi
+
+
+- Joku civ-tyylinen tapa siirtää yksiköitä 
+	-> varmistaa että pelaaja ei unohda siirtää yms
+	-> voi laittaa menemään mihin vaan heksiin useamman vuoron myötä
+
+
+
+
+
+
+Game Design täällä vvvvvvvvvv
+
+- ehkä jotain kartassa olevia leirejä ja rakennuksia jotka ovat npc leirien omistuksessa
+
+- Luonnonvarat harvinaisempia !!
+	-> pakotetaan pelaaja menee niiden luokse
+	-> vois tehdä niistä vähän randomeja että pelit muuttuu
+	-> tästä myös että pelaajan alkupaikasta vois tehdä myös randomin
+
+
+
+- leirejä ja kaikkea pitää tuunata että ne on balanced
+
+- joku järkevä systeemi siihen että miten paljon armeijat kuluttavat rahaa yms
+
+
+
+
+
