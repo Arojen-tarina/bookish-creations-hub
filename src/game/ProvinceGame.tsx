@@ -939,7 +939,7 @@ export const ProvinceGame = () => {
                   style={{
                     transform: `scale(${handScale})`,
                     transformOrigin: 'left top',
-                    width: `${100 / handScale}%`,
+                    width: '100%',
                   }}
                   className="p-3"
                 >
