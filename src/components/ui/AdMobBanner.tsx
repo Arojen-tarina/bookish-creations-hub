@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { AdMob, BannerAdPosition, BannerAdSize } from '@capacitor-community/admob';
+import { AdMob, AdmobConsentStatus, BannerAdPosition, BannerAdSize } from '@capacitor-community/admob';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { useDeviceMode } from '@/lib/deviceMode.tsx';
@@ -28,6 +28,18 @@ export function AdMobBanner({ className, style }: AdMobBannerProps) {
     let mounted = true;
     const showNativeBanner = async () => {
       try {
+        // UMP consent must be resolved before any ad is requested (GDPR, EEA/UK/CH).
+        let consentInfo = await AdMob.requestConsentInfo();
+        if (
+          consentInfo.isConsentFormAvailable &&
+          consentInfo.status === AdmobConsentStatus.REQUIRED
+        ) {
+          consentInfo = await AdMob.showConsentForm();
+        }
+        // Fail closed: no consent resolution means no ads.
+        if (!consentInfo.canRequestAds || !mounted) {
+          return;
+        }
         await AdMob.initialize();
         if (!mounted) {
           return;

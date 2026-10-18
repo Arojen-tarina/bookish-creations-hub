@@ -9,6 +9,11 @@ import { RotateCcw, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, LANGUAGE_OPTIONS } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
+<<<<<<< HEAD
+=======
+import type { MusicTrackId } from '@/hooks/useAudioManager.ts';
+import { DevComplianceTools } from '@/game/DevComplianceTools.tsx';
+>>>>>>> 592ed94 (pricacy policy)
 import { getAnalyticsConsent, setAnalyticsConsent, startSession, track } from '@/lib/analytics';
 
 interface SettingsMenuProps {
@@ -166,6 +171,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume
               </div>
             </>
           )}
+<<<<<<< HEAD
           {onRestart && (
             <Button
               variant="destructive"
@@ -180,6 +186,9 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume
               {t('sidebar.reset')}
             </Button>
           )}
+=======
+          {import.meta.env.DEV && <DevComplianceTools />}
+>>>>>>> 592ed94 (pricacy policy)
         </div>,
         document.fullscreenElement ?? document.body,
       )}
