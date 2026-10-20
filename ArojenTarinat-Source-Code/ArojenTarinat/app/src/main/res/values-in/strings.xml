@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Indonesian (Android keeps the legacy "in" folder name) -->
+<resources>
+    <string name="splash_subtitle">Kisah Padang Rumput · Tahun 1206</string>
+    <string name="splash_tagline">Rusa Besar menyanyikan dunia ini hingga tercipta — kini takdirnya dinyanyikan dengan baja, emas, dan persekutuan.</string>
+
+    <string name="menu_continue">Lanjutkan</string>
+    <string name="menu_new_game">Permainan baru</string>
+    <string name="menu_load_game">Muat permainan</string>
+    <string name="menu_achievements">Pencapaian</string>
+    <string name="menu_codex">Kronik dunia</string>
+    <string name="menu_rulebook">Buku aturan</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="menu_version">Versi %1$s</string>
+
+    <string name="faction_select_title">Pilih kerajaanmu</string>
+    <string name="faction_name_jin">Dinasti Jin</string>
+    <string name="faction_name_xixia">Xia Barat</string>
+    <string name="faction_name_kipchak">Kipchak</string>
+    <string name="neutral_land">Netral</string>
+
+    <string name="map_zoom_in">Perbesar</string>
+    <string name="map_zoom_out">Perkecil</string>
+    <string name="map_show_all">Tampilkan seluruh peta</string>
+    <string name="province_surrendered">%1$s menyerah tanpa perlawanan</string>
+
+    <string name="log_merged_armies">%1$s menggabungkan pasukannya</string>
+    <string name="log_defend_border">%1$s bergerak mempertahankan %2$s</string>
+    <string name="log_capture">%1$s merebut %2$s</string>
+    <string name="log_advance">%1$s bergerak maju ke %2$s</string>
+    <string name="log_won_battle">%1$s memenangkan pertempuran di %2$s</string>
+    <string name="log_attack_failed">%1$s gagal merebut %2$s</string>
+    <string name="log_conquered">%1$s menaklukkan %2$s</string>
+    <string name="log_fortify">%1$s memperkuat %2$s</string>
+    <string name="log_fortify_capital">%1$s memperkuat ibu kotanya, %2$s</string>
+    <string name="log_build_market">%1$s membangun pasar di %2$s</string>
+    <string name="log_recruited">%1$s membentuk pasukan di %2$s</string>
+    <string name="log_player_chief_fell">Kepala sukumu gugur! Rakyat berduka: −30 emas, −15 pengaruh, dan semangat pasukanmu runtuh.</string>
+    <string name="log_turn_header">Giliran %1$d · %2$d</string>
+    <string name="block_not_owned">Kamu tidak menguasai provinsi ini</string>
+    <string name="block_no_gold">Emas tidak cukup</string>
+    <string name="block_no_artisans">Pengrajin tidak cukup</string>
+    <string name="block_no_food">Makanan tidak cukup</string>
+    <string name="block_no_horses">Kuda tidak cukup</string>
+    <string name="block_capital_only">Keajaiban hanya bisa dibangun di ibu kotamu</string>
+    <string name="block_max_level">Sudah di tingkat tertinggi</string>
+    <string name="block_already_built">Sudah dibangun di sini</string>
+    <string name="block_capital_lost">Perekrutan dihentikan selama ibu kotamu diduduki</string>
+    <string name="block_needs_camp">Infanteri butuh kemah di sini (atau ibu kotamu)</string>
+    <string name="block_needs_stable">Kavaleri butuh kandang kuda di sini (atau ibu kotamu)</string>
+    <string name="block_not_damaged">Tembok masih utuh</string>
+    <string name="toast_recruited">Pasukan baru dibentuk di %1$s</string>
+    <string name="toast_repaired">Tembok %1$s diperbaiki</string>
+    <string name="toast_merged">Pasukan digabungkan</string>
+    <string name="toast_card_played">%1$s dimainkan</string>
+    <string name="treaty_accepted">%1$s setuju: %2$s</string>
+    <string name="treaty_rejected">%1$s menolak usulanmu</string>
+    <string name="treaty_war_declared">Perang dinyatakan terhadap %1$s</string>
+    <string name="treaty_broken">Perjanjian dilanggar: %1$s</string>
+    <string name="treaty_proposal_used">Kamu sudah mengirim usulan ke kerajaan ini pada giliran ini</string>
+    <string name="cards_hand_count">Kartu · %1$d</string>
+    <string name="cards_deck_discard">Dek %1$d · Buangan %2$d</string>
+    <string name="card_type_strategy">Strategi</string>
+    <string name="card_type_diplomacy">Diplomasi</string>
+    <string name="card_type_technology">Teknologi</string>
+    <string name="card_type_resource">Sumber daya</string>
+    <string name="rarity_common">Biasa</string>
+    <string name="rarity_uncommon">Tidak biasa</string>
+    <string name="rarity_rare">Langka</string>
+    <string name="rarity_legendary">Legendaris</string>
+    <string name="card_cost">Biaya: %1$s</string>
+    <string name="card_effect_now">Saat dimainkan</string>
+    <string name="hud_per_turn">%1$s per giliran</string>
+    <string name="panel_close">Tutup panel</string>
+    <string name="ui_victory_goals">Tujuan kemenangan</string>
+    <string name="goal_progress">%1$d / %2$d</string>
+    <string name="goal_diplomatic_progress">%1$d / %2$d pengaruh · %3$d / %4$d persekutuan</string>
+    <string name="realm_streak">Rentetan emas %1$d / %2$d</string>
+    <plurals name="army_moves_left">
+        <item quantity="other">Sisa %1$d langkah</item>
+    </plurals>
+    <string name="army_exhausted">Tidak ada langkah tersisa</string>
+    <string name="army_banner_hint">Ketuk provinsi hijau untuk bergerak atau merah untuk menyerang</string>
+    <string name="army_chief">Kepala suku</string>
+    <string name="wonder_count">%1$d / %2$d</string>
+    <string name="dipl_ruled_by">Dipimpin oleh %1$s</string>
+    <string name="battle_continue">Lanjutkan</string>
+    <string name="battle_skip">Ketuk untuk melewati</string>
+    <string name="game_over_main_menu">Menu utama</string>
+    <string name="pause_title">Kampanye dijeda</string>
+    <string name="pause_resume">Lanjutkan</string>
+    <string name="pause_exit">Keluar ke menu utama</string>
+    <string name="pause_exit_confirm_title">Tinggalkan kampanye ini?</string>
+    <string name="pause_exit_confirm_body">Kampanyemu tersimpan otomatis. Lanjutkan dari menu utama.</string>
+    <string name="pause_exit_confirm_yes">Tinggalkan</string>
+    <string name="pause_exit_confirm_no">Tetap</string>
+    <string name="streak_label">Rentetan %1$d giliran</string>
+    <string name="milestone_first_province">Penaklukan pertama!</string>
+    <string name="milestone_first_province_desc">Kamu merebut provinsi keduamu</string>
+    <string name="milestone_five_provinces">Sang Khan bangkit</string>
+    <string name="milestone_five_provinces_desc">5 provinsi di bawah kekuasaanmu</string>
+    <string name="milestone_ten_provinces">Kekaisaran tumbuh</string>
+    <string name="milestone_ten_provinces_desc">10 provinsi di bawah kekuasaanmu</string>
+    <string name="milestone_twenty_provinces">Khan Agung</string>
+    <string name="milestone_twenty_provinces_desc">20 provinsi — kemenangan sudah dekat!</string>
+    <string name="milestone_hundred_gold">Saudagar kaya</string>
+    <string name="milestone_hundred_gold_desc">100 emas di perbendaharaan</string>
+    <string name="milestone_three_hundred_gold">Takhta emas</string>
+    <string name="milestone_three_hundred_gold_desc">300 emas di perbendaharaan</string>
+    <string name="milestone_streak5">Rentetan 5 giliran!</string>
+    <string name="milestone_streak5_desc">Lima giliran tanpa kerugian</string>
+    <string name="milestone_streak10">Rentetan 10 giliran!</string>
+    <string name="milestone_streak10_desc">Rentetan hebat berlanjut</string>
+    <string name="milestone_streak20">20 giliran — LEGENDA</string>
+    <string name="milestone_streak20_desc">Gerak maju yang tak terbendung</string>
+
+    <string name="province_none_selected_title">Belum ada provinsi dipilih</string>
+
+    <string name="battle_walls_hold">Tembok rusak, tetapi masih bertahan</string>
+    <string name="game_over_defeat_by">%1$s meraih kemenangan.</string>
+    <string name="pause_settings">Pengaturan</string>
+    <string name="pause_rulebook">Buku aturan</string>
+
+    <string name="how_to_play_hint">Setiap giliran: kumpulkan pendapatan, mainkan kartu, bergerak dan bertempur, membangun — lalu akhiri giliran dan kerajaan saingan bergerak.</string>
+    <string name="how_to_play_turn">Giliranmu</string>
+    <string name="how_to_play_goals">Lima cara menang</string>
+    <string name="faction_challenge">Tantangan: %1$s</string>
+    <string name="faction_starting">Perbendaharaan awal</string>
+    <string name="faction_select_hint">Pilih kerajaan dan tingkat kesulitan, lalu pimpin ke tahun 1206.</string>
+
+    <string name="save_autosave">Simpan otomatis</string>
+    <string name="save_overwrite_title">Timpa slot %1$d?</string>
+    <string name="save_overwrite_body">Permainan yang tersimpan di sana akan diganti.</string>
+    <string name="save_overwrite_yes">Timpa</string>
+    <string name="save_cancel">Batal</string>
+    <string name="save_meta_line">Giliran %1$d · %2$d · %3$s</string>
+    <plurals name="save_meta_provinces">
+        <item quantity="other">%1$d provinsi</item>
+    </plurals>
+    <string name="save_load_failed">Simpanan ini tidak dapat dibaca.</string>
+    <string name="save_choose_slot">Pilih slot</string>
+    <string name="load_title">Muat permainan</string>
+    <string name="pause_save">Simpan permainan</string>
+    <string name="pause_load">Muat permainan</string>
+    <string name="menu_continue_desc">Giliran %1$d · %2$s</string>
+
+    <string name="settings_language_system">Bahasa ponsel</string>
+    <string name="settings_sound">Suara</string>
+    <string name="settings_mute">Bisukan musik</string>
+    <string name="settings_privacy">Privasi</string>
+    <string name="settings_about">Tentang</string>
+    <string name="settings_version">Versi %1$s</string>
+    <string name="settings_credits">Kisah Padang Rumput — edisi Android asli.</string>
+
+    <string name="achv_summary">%1$d / %2$d terbuka</string>
+    <string name="achv_level_line">Level %1$d · %2$s</string>
+    <string name="achv_points_line">%1$d poin</string>
+    <string name="achv_next_level">%1$d poin lagi ke level %2$d</string>
+    <string name="achv_all">Semua</string>
+    <string name="achv_points_badge">+%1$d</string>
+    <string name="achv_reward_line">Hadiah: %1$s</string>
+    <string name="achv_unlocked_on">Terbuka %1$s</string>
+    <string name="achv_banner_title">Pencapaian terbuka</string>
+    <string name="achv_legendary">Legendaris</string>
+    <!-- Books (codex & rulebook) -->
+    <string name="book_previous">Sebelumnya</string>
+    <string name="book_next">Berikutnya</string>
+    <string name="book_search_clear">Hapus pencarian</string>
+    <string name="book_no_matches">Tidak ada bab yang cocok dengan pencarianmu.</string>
+    <!-- Moose guide -->
+    <string name="moose_answer_turn">Giliran tidak punya fase tetap: bangun, rekrut, bergerak dan menyerang, mainkan kartu, dan berdiplomasi dalam urutan apa pun. Jika sudah siap, ketuk “Akhiri giliran”. Lalu kerajaan lain bergerak, kamu mengambil satu kartu, dan pendapatanmu terkumpul.</string>
+    <string name="moose_answer_combat">Ketuk salah satu pasukanmu, lalu provinsi yang menyala: provinsi tetangga yang kosong untuk pindah ke sana, provinsi musuh untuk menyerangnya. Kekuatan tempur berasal dari kavaleri, infanteri, unit pengepungan, medan, benteng, dan bonus, ditambah lemparan dadu; total yang lebih tinggi menang.</string>
+    <string name="moose_answer_cards">Kamu mulai dengan 5 kartu dan mengambil satu lagi di akhir setiap giliran. Buka “Kartu” di kiri bawah dan mainkan kartu kapan saja selama giliranmu untuk mendapatkan bonusnya (emas, makanan, serangan, pertahanan, dan lainnya).</string>
+    <string name="moose_answer_language">Ganti bahasa di Pengaturan, yang ada di menu utama dan menu jeda. Permainan bisa mengikuti bahasa ponselmu atau memakai salah satu dari 14 bahasanya.</string>
+    <string name="moose_answer_save">Permainan tersimpan otomatis setelah setiap giliran dan setiap kali kamu keluar dari aplikasi; “Lanjutkan” di menu utama melanjutkan dari tempat kamu berhenti. Kamu juga bisa menyimpan ke lima slot dari menu jeda dan memuatnya dari “Muat permainan”.</string>
+    <string name="moose_topic_win">Bagaimana cara menang?</string>
+    <string name="moose_topic_turn">Bagaimana giliran berjalan?</string>
+    <string name="moose_topic_combat">Bergerak dan bertempur</string>
+    <string name="moose_topic_buildings">Bangunan</string>
+    <string name="moose_topic_cards">Kartu</string>
+    <string name="moose_topic_treaties">Perjanjian</string>
+    <string name="moose_topic_handgai">Siapa Handgai?</string>
+    <string name="moose_topic_save">Menyimpan</string>
+    <string name="moose_thinking">Moose sedang berpikir…</string>
+
+    <!-- Silk Road tribute (opt-in rewarded ad) -->
+    <string name="tribute_button">Upeti Jalur Sutra</string>
+    <string name="tribute_title">Upeti Jalur Sutra</string>
+    <string name="tribute_body">Para saudagar Jalur Sutra akan membayarmu upeti jika kamu menonton iklan singkat. Sekali per giliran; menolak tidak membuatmu rugi apa pun.</string>
+    <string name="tribute_gold">+%1$d emas</string>
+    <string name="tribute_card">Ambil satu kartu</string>
+    <string name="tribute_decline">Tidak, terima kasih</string>
+    <string name="tribute_unavailable">Belum ada iklan tersedia. Coba lagi nanti.</string>
+    <string name="tribute_received_gold">Upeti diterima: +%1$s emas</string>
+    <string name="tribute_received_card">Upeti diterima: satu kartu baru</string>
+
+    <!-- Second chance (opt-in rewarded ad after a defeat) and new campaign -->
+    <string name="second_chance_title">Kesempatan kedua</string>
+    <string name="second_chance_body">Tonton iklan singkat untuk mengulang giliran terakhirmu dari awal. Sekali per kampanye.</string>
+    <string name="second_chance_taken">Kesempatan kedua: giliran %1$s dimulai lagi.</string>
+    <string name="new_game_replace_title">Mulai kampanye baru?</string>
+    <string name="new_game_replace_body">Ini akan menggantikan kampanyemu saat ini (%1$s). Agar tidak hilang, simpan dulu ke salah satu slot dari menu jeda.</string>
+    <string name="new_game_replace_yes">Mulai baru</string>
+
+    <!-- Ads, updates -->
+    <string name="settings_ad_privacy">Pilihan privasi iklan</string>
+    <string name="update_ready">Versi baru sudah siap</string>
+    <string name="update_restart">Mulai ulang</string>
+
+    <string name="settings_title">Pengaturan</string>
+    <string name="music_volume">Volume</string>
+    <string name="cards_hide_hand">Sembunyikan kartu</string>
+</resources>

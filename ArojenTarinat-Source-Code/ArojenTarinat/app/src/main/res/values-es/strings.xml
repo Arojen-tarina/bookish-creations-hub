@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish -->
+<resources>
+    <string name="splash_subtitle">Cuentos de la Estepa · Año 1206</string>
+    <string name="splash_tagline">El Gran Alce cantó este mundo a la existencia; ahora su destino se canta con acero, oro y alianzas.</string>
+
+    <string name="menu_continue">Continuar</string>
+    <string name="menu_new_game">Nueva partida</string>
+    <string name="menu_load_game">Cargar partida</string>
+    <string name="menu_achievements">Logros</string>
+    <string name="menu_codex">Crónica del mundo</string>
+    <string name="menu_rulebook">Reglamento</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="menu_version">Versión %1$s</string>
+
+    <string name="faction_select_title">Elige tu reino</string>
+    <string name="faction_name_jin">Dinastía Jin</string>
+    <string name="faction_name_xixia">Xia Occidental</string>
+    <string name="faction_name_kipchak">Kipchakos</string>
+    <string name="neutral_land">Neutral</string>
+
+    <string name="map_zoom_in">Acercar</string>
+    <string name="map_zoom_out">Alejar</string>
+    <string name="map_show_all">Ver todo el mapa</string>
+    <string name="province_surrendered">%1$s se rindió sin luchar</string>
+
+    <string name="log_merged_armies">%1$s unió sus ejércitos</string>
+    <string name="log_defend_border">%1$s acude a defender %2$s</string>
+    <string name="log_capture">%1$s toma %2$s</string>
+    <string name="log_advance">%1$s avanza sobre %2$s</string>
+    <string name="log_won_battle">%1$s ganó una batalla en %2$s</string>
+    <string name="log_attack_failed">%1$s no logró tomar %2$s</string>
+    <string name="log_conquered">%1$s conquistó %2$s</string>
+    <string name="log_fortify">%1$s fortifica %2$s</string>
+    <string name="log_fortify_capital">%1$s fortifica su capital, %2$s</string>
+    <string name="log_build_market">%1$s construye un mercado en %2$s</string>
+    <string name="log_recruited">%1$s recluta un ejército en %2$s</string>
+    <string name="log_player_chief_fell">¡Tu jefe tribal ha caído! El pueblo está de luto: −30 de oro, −15 de influencia, y tus tropas pierden el ánimo.</string>
+    <string name="log_turn_header">Turno %1$d · %2$d</string>
+    <string name="block_not_owned">No controlas esta provincia</string>
+    <string name="block_no_gold">No hay suficiente oro</string>
+    <string name="block_no_artisans">No hay suficientes artesanos</string>
+    <string name="block_no_food">No hay suficiente comida</string>
+    <string name="block_no_horses">No hay suficientes caballos</string>
+    <string name="block_capital_only">Las maravillas solo se pueden levantar en tu capital</string>
+    <string name="block_max_level">Ya está al máximo</string>
+    <string name="block_already_built">Ya construido aquí</string>
+    <string name="block_capital_lost">El reclutamiento está suspendido mientras tu capital esté ocupada</string>
+    <string name="block_needs_camp">La infantería necesita un campamento aquí (o tu capital)</string>
+    <string name="block_needs_stable">La caballería necesita un establo aquí (o tu capital)</string>
+    <string name="block_not_damaged">Las murallas están intactas</string>
+    <string name="toast_recruited">Nuevo ejército reclutado en %1$s</string>
+    <string name="toast_repaired">Murallas de %1$s reparadas</string>
+    <string name="toast_merged">Ejércitos unidos</string>
+    <string name="toast_card_played">%1$s jugada</string>
+    <string name="treaty_accepted">%1$s aceptó: %2$s</string>
+    <string name="treaty_rejected">%1$s rechazó tu propuesta</string>
+    <string name="treaty_war_declared">Guerra declarada a %1$s</string>
+    <string name="treaty_broken">Tratado roto: %1$s</string>
+    <string name="treaty_proposal_used">Ya enviaste una propuesta a este reino este turno</string>
+    <string name="cards_hand_count">Cartas · %1$d</string>
+    <string name="cards_deck_discard">Mazo %1$d · Descarte %2$d</string>
+    <string name="card_type_strategy">Estrategia</string>
+    <string name="card_type_diplomacy">Diplomacia</string>
+    <string name="card_type_technology">Tecnología</string>
+    <string name="card_type_resource">Recurso</string>
+    <string name="rarity_common">Común</string>
+    <string name="rarity_uncommon">Poco común</string>
+    <string name="rarity_rare">Rara</string>
+    <string name="rarity_legendary">Legendaria</string>
+    <string name="card_cost">Coste: %1$s</string>
+    <string name="card_effect_now">Al jugarla</string>
+    <string name="hud_per_turn">%1$s por turno</string>
+    <string name="panel_close">Cerrar panel</string>
+    <string name="ui_victory_goals">Objetivos de victoria</string>
+    <string name="goal_progress">%1$d / %2$d</string>
+    <string name="goal_diplomatic_progress">%1$d / %2$d de influencia · %3$d / %4$d alianzas</string>
+    <string name="realm_streak">Racha de oro %1$d / %2$d</string>
+    <plurals name="army_moves_left">
+        <item quantity="one">Queda %1$d movimiento</item>
+        <item quantity="many">Quedan %1$d movimientos</item>
+        <item quantity="other">Quedan %1$d movimientos</item>
+    </plurals>
+    <string name="army_exhausted">Sin movimientos</string>
+    <string name="army_banner_hint">Toca una provincia verde para marchar o una roja para atacar</string>
+    <string name="army_chief">Jefe tribal</string>
+    <string name="wonder_count">%1$d / %2$d</string>
+    <string name="dipl_ruled_by">Gobernado por %1$s</string>
+    <string name="battle_continue">Continuar</string>
+    <string name="battle_skip">Toca para saltar</string>
+    <string name="game_over_main_menu">Menú principal</string>
+    <string name="pause_title">Campaña en pausa</string>
+    <string name="pause_resume">Reanudar</string>
+    <string name="pause_exit">Salir al menú principal</string>
+    <string name="pause_exit_confirm_title">¿Abandonar esta campaña?</string>
+    <string name="pause_exit_confirm_body">Tu campaña se guarda automáticamente. Continúala desde el menú principal.</string>
+    <string name="pause_exit_confirm_yes">Abandonar</string>
+    <string name="pause_exit_confirm_no">Quedarse</string>
+    <string name="streak_label">Racha de %1$d turnos</string>
+    <string name="milestone_first_province">¡Primera conquista!</string>
+    <string name="milestone_first_province_desc">Has tomado tu segunda provincia</string>
+    <string name="milestone_five_provinces">El Kan se alza</string>
+    <string name="milestone_five_provinces_desc">5 provincias bajo tu mando</string>
+    <string name="milestone_ten_provinces">El imperio crece</string>
+    <string name="milestone_ten_provinces_desc">10 provincias bajo tu mando</string>
+    <string name="milestone_twenty_provinces">Gran Kan</string>
+    <string name="milestone_twenty_provinces_desc">20 provincias: ¡la victoria está cerca!</string>
+    <string name="milestone_hundred_gold">Mercader rico</string>
+    <string name="milestone_hundred_gold_desc">100 de oro en el tesoro</string>
+    <string name="milestone_three_hundred_gold">Trono de oro</string>
+    <string name="milestone_three_hundred_gold_desc">300 de oro en el tesoro</string>
+    <string name="milestone_streak5">¡Racha de 5 turnos!</string>
+    <string name="milestone_streak5_desc">Cinco turnos sin pérdidas</string>
+    <string name="milestone_streak10">¡Racha de 10 turnos!</string>
+    <string name="milestone_streak10_desc">Una racha imponente continúa</string>
+    <string name="milestone_streak20">20 turnos: LEYENDA</string>
+    <string name="milestone_streak20_desc">Una marcha imparable</string>
+
+    <string name="province_none_selected_title">Ninguna provincia seleccionada</string>
+
+    <string name="battle_walls_hold">Las murallas están maltrechas, pero resisten</string>
+    <string name="game_over_defeat_by">%1$s se alzó con la victoria.</string>
+    <string name="pause_settings">Ajustes</string>
+    <string name="pause_rulebook">Reglamento</string>
+
+    <string name="how_to_play_hint">Cada turno: cobra tus ingresos, juega cartas, marcha y combate, construye; luego termina el turno y los reinos rivales se mueven.</string>
+    <string name="how_to_play_turn">Tu turno</string>
+    <string name="how_to_play_goals">Cinco formas de ganar</string>
+    <string name="faction_challenge">Desafío: %1$s</string>
+    <string name="faction_starting">Tesoro inicial</string>
+    <string name="faction_select_hint">Elige un reino y la dificultad, y llévalo al año 1206.</string>
+
+    <string name="save_autosave">Autoguardado</string>
+    <string name="save_overwrite_title">¿Sobrescribir el espacio %1$d?</string>
+    <string name="save_overwrite_body">Se reemplazará la partida guardada ahí.</string>
+    <string name="save_overwrite_yes">Sobrescribir</string>
+    <string name="save_cancel">Cancelar</string>
+    <string name="save_meta_line">Turno %1$d · %2$d · %3$s</string>
+    <plurals name="save_meta_provinces">
+        <item quantity="one">%1$d provincia</item>
+        <item quantity="many">%1$d provincias</item>
+        <item quantity="other">%1$d provincias</item>
+    </plurals>
+    <string name="save_load_failed">No se pudo leer esta partida guardada.</string>
+    <string name="save_choose_slot">Elige un espacio</string>
+    <string name="load_title">Cargar partida</string>
+    <string name="pause_save">Guardar partida</string>
+    <string name="pause_load">Cargar partida</string>
+    <string name="menu_continue_desc">Turno %1$d · %2$s</string>
+
+    <string name="settings_language_system">Idioma del teléfono</string>
+    <string name="settings_sound">Sonido</string>
+    <string name="settings_mute">Silenciar música</string>
+    <string name="settings_privacy">Privacidad</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_version">Versión %1$s</string>
+    <string name="settings_credits">Cuentos de la Estepa: edición nativa para Android.</string>
+
+    <string name="achv_summary">%1$d / %2$d desbloqueados</string>
+    <string name="achv_level_line">Nivel %1$d · %2$s</string>
+    <string name="achv_points_line">%1$d puntos</string>
+    <string name="achv_next_level">%1$d puntos para el nivel %2$d</string>
+    <string name="achv_all">Todos</string>
+    <string name="achv_points_badge">+%1$d</string>
+    <string name="achv_reward_line">Recompensa: %1$s</string>
+    <string name="achv_unlocked_on">Desbloqueado el %1$s</string>
+    <string name="achv_banner_title">Logro desbloqueado</string>
+    <string name="achv_legendary">Legendario</string>
+    <!-- Books (codex & rulebook) -->
+    <string name="book_previous">Anterior</string>
+    <string name="book_next">Siguiente</string>
+    <string name="book_search_clear">Borrar búsqueda</string>
+    <string name="book_no_matches">Ningún capítulo coincide con tu búsqueda.</string>
+    <!-- Moose guide -->
+    <string name="moose_answer_turn">Un turno no tiene fases fijas: construye, recluta, muévete y ataca, juega cartas y haz diplomacia en el orden que quieras. Cuando estés listo, pulsa «Terminar turno». Entonces se mueven los demás reinos, robas una carta y cobras tus ingresos.</string>
+    <string name="moose_answer_combat">Toca uno de tus ejércitos y luego una provincia resaltada: una provincia vecina libre para ir allí, una enemiga para atacarla. La fuerza en batalla sale de la caballería, la infantería, las unidades de asedio, el terreno, los fuertes y las bonificaciones, más una tirada de dado; gana el total más alto.</string>
+    <string name="moose_answer_cards">Empiezas con 5 cartas y robas una más al final de cada turno. Abre «Cartas» abajo a la izquierda y juega una carta cuando quieras durante tu turno para obtener su bonificación (oro, comida, ataque, defensa y más).</string>
+    <string name="moose_answer_language">Cambia el idioma en Ajustes, que está en el menú principal y en el menú de pausa. El juego puede seguir el idioma de tu teléfono o usar cualquiera de sus 14 idiomas.</string>
+    <string name="moose_answer_save">El juego se guarda solo después de cada turno y cuando sales de la aplicación; «Continuar» en el menú principal retoma donde lo dejaste. También puedes guardar en cinco espacios desde el menú de pausa y cargarlos desde «Cargar partida».</string>
+    <string name="moose_topic_win">¿Cómo gano?</string>
+    <string name="moose_topic_turn">¿Cómo funciona un turno?</string>
+    <string name="moose_topic_combat">Moverse y combatir</string>
+    <string name="moose_topic_buildings">Edificios</string>
+    <string name="moose_topic_cards">Cartas</string>
+    <string name="moose_topic_treaties">Tratados</string>
+    <string name="moose_topic_handgai">¿Quién es Handgai?</string>
+    <string name="moose_topic_save">Guardar</string>
+    <string name="moose_thinking">Alce está pensando…</string>
+
+    <!-- Silk Road tribute (opt-in rewarded ad) -->
+    <string name="tribute_button">Tributo de la Ruta de la Seda</string>
+    <string name="tribute_title">Tributo de la Ruta de la Seda</string>
+    <string name="tribute_body">Los mercaderes de la Ruta de la Seda te pagarán un tributo si ves un anuncio corto. Una vez por turno; si lo rechazas, no pierdes nada.</string>
+    <string name="tribute_gold">+%1$d de oro</string>
+    <string name="tribute_card">Robar una carta</string>
+    <string name="tribute_decline">No, gracias</string>
+    <string name="tribute_unavailable">No hay anuncios disponibles ahora. Inténtalo más tarde.</string>
+    <string name="tribute_received_gold">Tributo recibido: +%1$s de oro</string>
+    <string name="tribute_received_card">Tributo recibido: una carta nueva</string>
+
+    <!-- Second chance (opt-in rewarded ad after a defeat) and new campaign -->
+    <string name="second_chance_title">Segunda oportunidad</string>
+    <string name="second_chance_body">Mira un anuncio corto para volver a jugar tu último turno desde el principio. Una vez por campaña.</string>
+    <string name="second_chance_taken">Segunda oportunidad: el turno %1$s comienza de nuevo.</string>
+    <string name="new_game_replace_title">¿Empezar una nueva campaña?</string>
+    <string name="new_game_replace_body">Esto reemplaza tu campaña actual (%1$s). Si quieres conservarla, guárdala antes en una ranura desde el menú de pausa.</string>
+    <string name="new_game_replace_yes">Empezar nueva</string>
+
+    <!-- Ads, updates -->
+    <string name="settings_ad_privacy">Opciones de privacidad de anuncios</string>
+    <string name="update_ready">Hay una nueva versión lista</string>
+    <string name="update_restart">Reiniciar</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="music_volume">Volumen</string>
+    <string name="cards_hide_hand">Ocultar cartas</string>
+</resources>

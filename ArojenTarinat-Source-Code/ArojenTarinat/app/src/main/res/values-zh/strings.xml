@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chinese (Simplified) -->
+<resources>
+    <string name="splash_subtitle">草原传奇 · 1206年</string>
+    <string name="splash_tagline">伟大的麋鹿歌唱着创造了这个世界——如今，它的命运将由钢铁、黄金与盟约谱写。</string>
+
+    <string name="menu_continue">继续</string>
+    <string name="menu_new_game">新游戏</string>
+    <string name="menu_load_game">载入游戏</string>
+    <string name="menu_achievements">成就</string>
+    <string name="menu_codex">世界编年史</string>
+    <string name="menu_rulebook">规则手册</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_version">版本 %1$s</string>
+
+    <string name="faction_select_title">选择你的王国</string>
+    <string name="faction_name_jin">金朝</string>
+    <string name="faction_name_xixia">西夏</string>
+    <string name="faction_name_kipchak">钦察人</string>
+    <string name="neutral_land">中立</string>
+
+    <string name="map_zoom_in">放大</string>
+    <string name="map_zoom_out">缩小</string>
+    <string name="map_show_all">显示整张地图</string>
+    <string name="province_surrendered">%1$s不战而降</string>
+
+    <string name="log_merged_armies">%1$s合并了军队</string>
+    <string name="log_defend_border">%1$s前往防守%2$s</string>
+    <string name="log_capture">%1$s夺取了%2$s</string>
+    <string name="log_advance">%1$s向%2$s进军</string>
+    <string name="log_won_battle">%1$s在%2$s赢得一场战斗</string>
+    <string name="log_attack_failed">%1$s未能攻下%2$s</string>
+    <string name="log_conquered">%1$s征服了%2$s</string>
+    <string name="log_fortify">%1$s加固了%2$s</string>
+    <string name="log_fortify_capital">%1$s加固了首都%2$s</string>
+    <string name="log_build_market">%1$s在%2$s建造了市场</string>
+    <string name="log_recruited">%1$s在%2$s招募了军队</string>
+    <string name="log_player_chief_fell">你的部落首领阵亡了！举国哀悼：金币 −30，影响力 −15，军队士气低落。</string>
+    <string name="log_turn_header">第%1$d回合 · %2$d年</string>
+    <string name="block_not_owned">你没有控制这个省份</string>
+    <string name="block_no_gold">金币不足</string>
+    <string name="block_no_artisans">工匠不足</string>
+    <string name="block_no_food">食物不足</string>
+    <string name="block_no_horses">马匹不足</string>
+    <string name="block_capital_only">奇观只能建在首都</string>
+    <string name="block_max_level">已达最高等级</string>
+    <string name="block_already_built">此处已经建造</string>
+    <string name="block_capital_lost">首都被占领期间暂停招募</string>
+    <string name="block_needs_camp">步兵需要此处有营地（或在首都）</string>
+    <string name="block_needs_stable">骑兵需要此处有马厩（或在首都）</string>
+    <string name="block_not_damaged">城墙完好无损</string>
+    <string name="toast_recruited">在%1$s组建了新军队</string>
+    <string name="toast_repaired">%1$s的城墙已修复</string>
+    <string name="toast_merged">军队已合并</string>
+    <string name="toast_card_played">已打出%1$s</string>
+    <string name="treaty_accepted">%1$s同意：%2$s</string>
+    <string name="treaty_rejected">%1$s拒绝了你的提议</string>
+    <string name="treaty_war_declared">已向%1$s宣战</string>
+    <string name="treaty_broken">条约已撕毁：%1$s</string>
+    <string name="treaty_proposal_used">本回合你已向这个王国提过议</string>
+    <string name="cards_hand_count">卡牌 · %1$d</string>
+    <string name="cards_deck_discard">牌堆 %1$d · 弃牌 %2$d</string>
+    <string name="card_type_strategy">策略</string>
+    <string name="card_type_diplomacy">外交</string>
+    <string name="card_type_technology">科技</string>
+    <string name="card_type_resource">资源</string>
+    <string name="rarity_common">普通</string>
+    <string name="rarity_uncommon">罕见</string>
+    <string name="rarity_rare">稀有</string>
+    <string name="rarity_legendary">传说</string>
+    <string name="card_cost">花费：%1$s</string>
+    <string name="card_effect_now">打出时</string>
+    <string name="hud_per_turn">每回合 %1$s</string>
+    <string name="panel_close">关闭面板</string>
+    <string name="ui_victory_goals">胜利目标</string>
+    <string name="goal_progress">%1$d / %2$d</string>
+    <string name="goal_diplomatic_progress">影响力 %1$d / %2$d · 同盟 %3$d / %4$d</string>
+    <string name="realm_streak">金币连续 %1$d / %2$d</string>
+    <plurals name="army_moves_left">
+        <item quantity="other">剩余 %1$d 步</item>
+    </plurals>
+    <string name="army_exhausted">无剩余行动</string>
+    <string name="army_banner_hint">点击绿色省份行军，点击红色省份进攻</string>
+    <string name="army_chief">部落首领</string>
+    <string name="wonder_count">%1$d / %2$d</string>
+    <string name="dipl_ruled_by">统治者：%1$s</string>
+    <string name="battle_continue">继续</string>
+    <string name="battle_skip">点击跳过</string>
+    <string name="game_over_main_menu">主菜单</string>
+    <string name="pause_title">战役已暂停</string>
+    <string name="pause_resume">继续</string>
+    <string name="pause_exit">退出到主菜单</string>
+    <string name="pause_exit_confirm_title">离开这场战役？</string>
+    <string name="pause_exit_confirm_body">你的战役会自动保存，可在主菜单中继续。</string>
+    <string name="pause_exit_confirm_yes">离开</string>
+    <string name="pause_exit_confirm_no">留下</string>
+    <string name="streak_label">连续 %1$d 回合</string>
+    <string name="milestone_first_province">首次征服！</string>
+    <string name="milestone_first_province_desc">你夺得了第二个省份</string>
+    <string name="milestone_five_provinces">可汗崛起</string>
+    <string name="milestone_five_provinces_desc">统治 5 个省份</string>
+    <string name="milestone_ten_provinces">帝国壮大</string>
+    <string name="milestone_ten_provinces_desc">统治 10 个省份</string>
+    <string name="milestone_twenty_provinces">大汗</string>
+    <string name="milestone_twenty_provinces_desc">20 个省份——胜利在望！</string>
+    <string name="milestone_hundred_gold">富商</string>
+    <string name="milestone_hundred_gold_desc">国库中有 100 金币</string>
+    <string name="milestone_three_hundred_gold">黄金王座</string>
+    <string name="milestone_three_hundred_gold_desc">国库中有 300 金币</string>
+    <string name="milestone_streak5">连续 5 回合！</string>
+    <string name="milestone_streak5_desc">五回合无损失</string>
+    <string name="milestone_streak10">连续 10 回合！</string>
+    <string name="milestone_streak10_desc">强势连胜仍在继续</string>
+    <string name="milestone_streak20">20 回合——传奇</string>
+    <string name="milestone_streak20_desc">势不可挡的进军</string>
+
+    <string name="province_none_selected_title">未选择省份</string>
+
+    <string name="battle_walls_hold">城墙受损，但仍屹立不倒</string>
+    <string name="game_over_defeat_by">%1$s取得了胜利。</string>
+    <string name="pause_settings">设置</string>
+    <string name="pause_rulebook">规则手册</string>
+
+    <string name="how_to_play_hint">每回合：收取收入、打出卡牌、行军作战、建造——然后结束回合，敌对王国开始行动。</string>
+    <string name="how_to_play_turn">你的回合</string>
+    <string name="how_to_play_goals">五种胜利方式</string>
+    <string name="faction_challenge">挑战：%1$s</string>
+    <string name="faction_starting">初始国库</string>
+    <string name="faction_select_hint">选择一个王国和难度，然后率领它走进1206年。</string>
+
+    <string name="save_autosave">自动存档</string>
+    <string name="save_overwrite_title">覆盖存档位 %1$d？</string>
+    <string name="save_overwrite_body">那里的存档将被替换。</string>
+    <string name="save_overwrite_yes">覆盖</string>
+    <string name="save_cancel">取消</string>
+    <string name="save_meta_line">第%1$d回合 · %2$d年 · %3$s</string>
+    <plurals name="save_meta_provinces">
+        <item quantity="other">%1$d个省份</item>
+    </plurals>
+    <string name="save_load_failed">无法读取此存档。</string>
+    <string name="save_choose_slot">选择存档位</string>
+    <string name="load_title">载入游戏</string>
+    <string name="pause_save">保存游戏</string>
+    <string name="pause_load">载入游戏</string>
+    <string name="menu_continue_desc">第%1$d回合 · %2$s</string>
+
+    <string name="settings_language_system">跟随手机</string>
+    <string name="settings_sound">声音</string>
+    <string name="settings_mute">音乐静音</string>
+    <string name="settings_privacy">隐私</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本 %1$s</string>
+    <string name="settings_credits">草原传奇——安卓原生版。</string>
+
+    <string name="achv_summary">已解锁 %1$d / %2$d</string>
+    <string name="achv_level_line">等级 %1$d · %2$s</string>
+    <string name="achv_points_line">%1$d 点</string>
+    <string name="achv_next_level">距离等级 %2$d 还差 %1$d 点</string>
+    <string name="achv_all">全部</string>
+    <string name="achv_points_badge">+%1$d</string>
+    <string name="achv_reward_line">奖励：%1$s</string>
+    <string name="achv_unlocked_on">解锁于 %1$s</string>
+    <string name="achv_banner_title">成就解锁</string>
+    <string name="achv_legendary">传说</string>
+    <!-- Books (codex & rulebook) -->
+    <string name="book_previous">上一章</string>
+    <string name="book_next">下一章</string>
+    <string name="book_search_clear">清除搜索</string>
+    <string name="book_no_matches">没有章节符合你的搜索。</string>
+    <!-- Moose guide -->
+    <string name="moose_answer_turn">回合没有固定阶段：建造、招募、行军进攻、打出卡牌和外交，顺序随你。准备好后点击“结束回合”。随后其他王国行动，你抽一张牌，并收取收入。</string>
+    <string name="moose_answer_combat">点击你的一支军队，再点击一个高亮省份：空的相邻省份是移动，敌方省份是进攻。战力来自骑兵、步兵、攻城单位、地形、要塞和加成，再加上一次掷骰；总数高者获胜。</string>
+    <string name="moose_answer_cards">开局有 5 张牌，每回合结束时再抽一张。打开左下角的“卡牌”，在你的回合中随时打出卡牌，获得它的加成（金币、食物、进攻、防御等）。</string>
+    <string name="moose_answer_language">在设置中更换语言，主菜单和暂停菜单里都有设置。游戏可以跟随手机语言，也可以使用它的 14 种语言中的任意一种。</string>
+    <string name="moose_answer_save">游戏会在每回合结束后以及离开应用时自动保存；主菜单的“继续”会从你离开的地方接着玩。你也可以在暂停菜单中保存到五个存档位，并在“载入游戏”中读取。</string>
+    <string name="moose_topic_win">我怎样才能获胜？</string>
+    <string name="moose_topic_turn">回合怎么进行？</string>
+    <string name="moose_topic_combat">行军与战斗</string>
+    <string name="moose_topic_buildings">建筑</string>
+    <string name="moose_topic_cards">卡牌</string>
+    <string name="moose_topic_treaties">条约</string>
+    <string name="moose_topic_handgai">汉德盖是谁？</string>
+    <string name="moose_topic_save">存档</string>
+    <string name="moose_thinking">驼鹿正在思考…</string>
+
+    <!-- Silk Road tribute (opt-in rewarded ad) -->
+    <string name="tribute_button">丝绸之路贡赋</string>
+    <string name="tribute_title">丝绸之路贡赋</string>
+    <string name="tribute_body">观看一段简短广告，丝绸之路的商人就会向你进贡。每回合一次；拒绝也不会有任何损失。</string>
+    <string name="tribute_gold">+%1$d 金币</string>
+    <string name="tribute_card">抽一张牌</string>
+    <string name="tribute_decline">不用了，谢谢</string>
+    <string name="tribute_unavailable">暂时没有可用的广告，请稍后再试。</string>
+    <string name="tribute_received_gold">收到贡赋：+%1$s 金币</string>
+    <string name="tribute_received_card">收到贡赋：一张新卡牌</string>
+
+    <!-- Second chance (opt-in rewarded ad after a defeat) and new campaign -->
+    <string name="second_chance_title">第二次机会</string>
+    <string name="second_chance_body">观看一段简短广告，即可从头重玩你的上一回合。每场战役一次。</string>
+    <string name="second_chance_taken">第二次机会：第%1$s回合重新开始。</string>
+    <string name="new_game_replace_title">开始新战役？</string>
+    <string name="new_game_replace_body">这将替换你当前的战役（%1$s）。若想保留，请先在暂停菜单中将其保存到存档位。</string>
+    <string name="new_game_replace_yes">开始新战役</string>
+
+    <!-- Ads, updates -->
+    <string name="settings_ad_privacy">广告隐私选项</string>
+    <string name="update_ready">新版本已就绪</string>
+    <string name="update_restart">重新启动</string>
+
+    <string name="settings_title">设置</string>
+    <string name="music_volume">音量</string>
+    <string name="cards_hide_hand">隐藏卡牌</string>
+</resources>
