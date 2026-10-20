@@ -1,0 +1,214 @@
+<resources>
+
+    <string name="splash_subtitle">Vuosi 1206</string>
+    <string name="splash_tagline">Suuri Hirvas lauloi tämän maailman olemaan — nyt sen kohtalo lauletaan teräksellä, kullalla ja liitoilla.</string>
+
+    <string name="menu_continue">Jatka peliä</string>
+    <string name="menu_new_game">Uusi peli</string>
+    <string name="menu_load_game">Lataa peli</string>
+    <string name="menu_achievements">Saavutukset</string>
+    <string name="menu_codex">Maailman kronikka</string>
+    <string name="menu_rulebook">Sääntökirja</string>
+    <string name="menu_settings">Asetukset</string>
+    <string name="menu_version">Versio %1$s</string>
+
+    <string name="faction_select_title">Valitse valtakuntasi</string>
+    <string name="faction_name_jin">Jin-dynastia</string>
+    <string name="faction_name_xixia">Länsi-Xia</string>
+    <string name="faction_name_kipchak">Kipčakit</string>
+    <string name="neutral_land">Neutraali</string>
+
+    <string name="map_zoom_in">Lähennä</string>
+    <string name="map_zoom_out">Loitonna</string>
+    <string name="map_show_all">Näytä koko kartta</string>
+    <string name="province_surrendered">%1$s antautui ilman taistelua</string>
+
+    <string name="log_merged_armies">%1$s: yhdisti armeijat</string>
+    <string name="log_defend_border">%1$s puolustaa rajaa: %2$s</string>
+    <string name="log_capture">%1$s valtasi: %2$s</string>
+    <string name="log_advance">%1$s etenee: %2$s</string>
+    <string name="log_won_battle">%1$s voitti taistelun: %2$s</string>
+    <string name="log_attack_failed">%1$s: hyökkäys epäonnistui – %2$s</string>
+    <string name="log_conquered">%1$s valloitti: %2$s</string>
+    <string name="log_fortify">%1$s linnoittaa: %2$s</string>
+    <string name="log_fortify_capital">%1$s linnoittaa pääkaupungin: %2$s</string>
+    <string name="log_build_market">%1$s rakentaa markkinan: %2$s</string>
+    <string name="log_recruited">%1$s rekrytoi armeijan: %2$s</string>
+    <string name="log_player_chief_fell">Heimopäällikkösi on kaatunut! Kansa suree: −30 kultaa, −15 vaikutusvaltaa, joukkojen moraali laskee.</string>
+    <string name="log_turn_header">Vuoro %1$d · %2$d</string>
+    <string name="block_not_owned">Et hallitse tätä provinssia</string>
+    <string name="block_no_gold">Kulta ei riitä</string>
+    <string name="block_no_artisans">Käsityöläiset eivät riitä</string>
+    <string name="block_no_food">Ruoka ei riitä</string>
+    <string name="block_no_horses">Hevoset eivät riitä</string>
+    <string name="block_capital_only">Ihmeitä voi rakentaa vain pääkaupunkiin</string>
+    <string name="block_max_level">Enimmäistaso saavutettu</string>
+    <string name="block_already_built">Jo rakennettu tänne</string>
+    <string name="block_capital_lost">Rekrytointi on keskeytetty, kunnes pääkaupunki vapautetaan</string>
+    <string name="block_needs_camp">Jalkaväki vaatii leirin (tai pääkaupungin)</string>
+    <string name="block_needs_stable">Ratsuväki vaatii hevostallin (tai pääkaupungin)</string>
+    <string name="block_not_damaged">Muurit ovat ehjät</string>
+    <string name="toast_recruited">Uusi armeija rekrytoitu: %1$s</string>
+    <string name="toast_repaired">%1$s: muurit korjattu</string>
+    <string name="toast_merged">Armeijat yhdistetty</string>
+    <string name="toast_card_played">%1$s pelattu</string>
+    <string name="treaty_accepted">%1$s hyväksyi: %2$s</string>
+    <string name="treaty_rejected">%1$s hylkäsi ehdotuksesi</string>
+    <string name="treaty_war_declared">Sota julistettu: %1$s</string>
+    <string name="treaty_broken">Sopimus purettu: %1$s</string>
+    <string name="treaty_proposal_used">Olet jo tehnyt ehdotuksen tälle valtakunnalle tällä vuorolla</string>
+    <string name="cards_hand_count">Kortit · %1$d</string>
+    <string name="cards_deck_discard">Pakka %1$d · Poistopakka %2$d</string>
+    <string name="card_type_strategy">Strategia</string>
+    <string name="card_type_diplomacy">Diplomatia</string>
+    <string name="card_type_technology">Teknologia</string>
+    <string name="card_type_resource">Resurssi</string>
+    <string name="rarity_common">Yleinen</string>
+    <string name="rarity_uncommon">Epätavallinen</string>
+    <string name="rarity_rare">Harvinainen</string>
+    <string name="rarity_legendary">Legendaarinen</string>
+    <string name="card_cost">Hinta: %1$s</string>
+    <string name="card_effect_now">Pelattaessa</string>
+    <string name="hud_per_turn">%1$s / vuoro</string>
+    <string name="panel_close">Sulje paneeli</string>
+    <string name="ui_victory_goals">Voittotavoitteet</string>
+    <string name="goal_progress">%1$d / %2$d</string>
+    <string name="goal_diplomatic_progress">%1$d / %2$d vaikutusvaltaa · %3$d / %4$d liittoa</string>
+    <string name="realm_streak">Kultaputki %1$d / %2$d</string>
+    <plurals name="army_moves_left">
+        <item quantity="one">%1$d liike jäljellä</item>
+        <item quantity="other">%1$d liikettä jäljellä</item>
+    </plurals>
+    <string name="army_exhausted">Ei liikettä jäljellä</string>
+    <string name="army_banner_hint">Napauta vihreää provinssia marssiaksesi tai punaista hyökätäksesi</string>
+    <string name="army_chief">Heimopäällikkö</string>
+    <string name="wonder_count">%1$d / %2$d</string>
+    <string name="dipl_ruled_by">Hallitsija: %1$s</string>
+    <string name="battle_continue">Jatka</string>
+    <string name="battle_skip">Napauta ohittaaksesi</string>
+    <string name="game_over_main_menu">Päävalikko</string>
+    <string name="pause_title">Peli tauolla</string>
+    <string name="pause_resume">Jatka</string>
+    <string name="pause_exit">Poistu päävalikkoon</string>
+    <string name="pause_exit_confirm_title">Poistutaanko pelistä?</string>
+    <string name="pause_exit_confirm_body">Kampanjasi tallentuu automaattisesti. Jatka sitä päävalikosta.</string>
+    <string name="pause_exit_confirm_yes">Poistu</string>
+    <string name="pause_exit_confirm_no">Jää</string>
+    <string name="streak_label">%1$d vuoron putki</string>
+    <string name="milestone_first_province">Ensimmäinen valloitus!</string>
+    <string name="milestone_first_province_desc">Sait toisen provinssin haltuusi</string>
+    <string name="milestone_five_provinces">Khaani nousee</string>
+    <string name="milestone_five_provinces_desc">5 provinssia hallinnassasi</string>
+    <string name="milestone_ten_provinces">Imperiumi laajenee</string>
+    <string name="milestone_ten_provinces_desc">10 provinssia hallinnassasi</string>
+    <string name="milestone_twenty_provinces">Suurkhaani</string>
+    <string name="milestone_twenty_provinces_desc">20 provinssia — voitto lähellä!</string>
+    <string name="milestone_hundred_gold">Vauras kauppias</string>
+    <string name="milestone_hundred_gold_desc">100 kultaa kassassa</string>
+    <string name="milestone_three_hundred_gold">Kultainen valtaistuin</string>
+    <string name="milestone_three_hundred_gold_desc">300 kultaa kassassa</string>
+    <string name="milestone_streak5">5 vuoron putki!</string>
+    <string name="milestone_streak5_desc">Ei menetyksiä viiteen vuoroon</string>
+    <string name="milestone_streak10">10 vuoron putki!</string>
+    <string name="milestone_streak10_desc">Mahtava sarja jatkuu</string>
+    <string name="milestone_streak20">20 vuoron LEGENDA</string>
+    <string name="milestone_streak20_desc">Pysäyttämätön voittokulku</string>
+
+    <string name="province_none_selected_title">Ei valittua provinssia</string>
+
+    <string name="battle_walls_hold">Muurit murtuivat, mutta kestävät yhä</string>
+    <string name="game_over_defeat_by">%1$s saavutti voiton.</string>
+    <string name="pause_settings">Asetukset</string>
+    <string name="pause_rulebook">Sääntökirja</string>
+
+    <string name="how_to_play_hint">Joka vuoro: kerää tulot, pelaa kortteja, marssi ja taistele, rakenna — lopeta sitten vuoro, jolloin vastustajat liikkuvat.</string>
+    <string name="how_to_play_turn">Vuorosi</string>
+    <string name="how_to_play_goals">Viisi tapaa voittaa</string>
+    <string name="faction_challenge">Haaste: %1$s</string>
+    <string name="faction_starting">Aloitusvarat</string>
+    <string name="faction_select_hint">Valitse valtakunta ja vaikeustaso, ja johda se vuoteen 1206.</string>
+
+    <string name="save_autosave">Automaattitallennus</string>
+    <string name="save_overwrite_title">Korvataanko paikka %1$d?</string>
+    <string name="save_overwrite_body">Sinne tallennettu peli korvataan.</string>
+    <string name="save_overwrite_yes">Korvaa</string>
+    <string name="save_cancel">Peruuta</string>
+    <string name="save_meta_line">Vuoro %1$d · %2$d · %3$s</string>
+    <plurals name="save_meta_provinces">
+        <item quantity="one">%1$d provinssi</item>
+        <item quantity="other">%1$d provinssia</item>
+    </plurals>
+    <string name="save_load_failed">Tätä tallennusta ei voitu lukea.</string>
+    <string name="save_choose_slot">Valitse tallennuspaikka</string>
+    <string name="load_title">Lataa peli</string>
+    <string name="pause_save">Tallenna peli</string>
+    <string name="pause_load">Lataa peli</string>
+    <string name="menu_continue_desc">Vuoro %1$d · %2$s</string>
+
+    <string name="settings_language_system">Puhelimen oletus</string>
+    <string name="settings_sound">Ääni</string>
+    <string name="settings_mute">Mykistä musiikki</string>
+    <string name="settings_privacy">Tietosuoja</string>
+    <string name="settings_about">Tietoja</string>
+    <string name="settings_version">Versio %1$s</string>
+    <string name="settings_credits">Arojen Tarinat — natiivi Android-versio.</string>
+
+    <string name="achv_summary">%1$d / %2$d avattu</string>
+    <string name="achv_level_line">Taso %1$d · %2$s</string>
+    <string name="achv_points_line">%1$d pistettä</string>
+    <string name="achv_next_level">%1$d pistettä tasolle %2$d</string>
+    <string name="achv_all">Kaikki</string>
+    <string name="achv_points_badge">+%1$d</string>
+    <string name="achv_reward_line">Palkinto: %1$s</string>
+    <string name="achv_unlocked_on">Avattu %1$s</string>
+    <string name="achv_banner_title">Saavutus avattu</string>
+    <string name="achv_legendary">Legendaarinen</string>
+    <!-- Kirjat (kronikka ja sääntökirja) -->
+    <string name="book_previous">Edellinen</string>
+    <string name="book_next">Seuraava</string>
+    <string name="book_search_clear">Tyhjennä haku</string>
+    <string name="book_no_matches">Mikään luku ei vastaa hakua.</string>
+    <!-- Hirvi-avustaja: natiivivastaukset aiheisiin, jotka alkuperäinen kuvasi verkkoversion mukaan -->
+    <string name="moose_answer_turn">Vuorossa ei ole kiinteitä vaiheita: rakenna, rekrytoi, liiku ja hyökkää, pelaa kortteja ja käy diplomatiaa missä järjestyksessä tahansa. Paina Lopeta vuoro, kun olet valmis. Sen jälkeen muut valtakunnat liikkuvat, nostat kortin ja tulosi kerätään.</string>
+    <string name="moose_answer_combat">Napauta omaa armeijaasi ja sitten korostettua provinssia: vapaata naapuriprovinssia siirtyäksesi sinne tai vihollisen provinssia hyökätäksesi. Taisteluvoima tulee ratsuväestä, jalkaväestä, piiritysyksiköistä, maastosta, linnoituksista ja bonuksista sekä nopanheitosta; suurempi tulos voittaa.</string>
+    <string name="moose_answer_cards">Aloitat viidellä kortilla ja nostat uuden jokaisen vuoron lopussa. Avaa Kortit vasemmasta alakulmasta ja pelaa kortti milloin tahansa vuorosi aikana sen bonuksen saamiseksi (kulta, ruoka, hyökkäys, puolustus ja muut).</string>
+    <string name="moose_answer_language">Vaihda kieli Asetuksista, jotka löytyvät päävalikosta ja taukovalikosta. Peli voi seurata puhelimesi kieltä tai käyttää mitä tahansa sen 14 kielestä.</string>
+    <string name="moose_answer_save">Peli tallentuu itsestään jokaisen vuoron jälkeen ja aina kun poistut sovelluksesta; päävalikon Jatka peliä palaa siihen, mihin jäit. Voit myös tallentaa viiteen paikkaan taukovalikosta ja ladata ne kohdasta Lataa peli.</string>
+    <string name="moose_topic_win">Miten voitan?</string>
+    <string name="moose_topic_turn">Miten vuoro etenee?</string>
+    <string name="moose_topic_combat">Liike ja taistelu</string>
+    <string name="moose_topic_buildings">Rakennukset</string>
+    <string name="moose_topic_cards">Kortit</string>
+    <string name="moose_topic_treaties">Sopimukset</string>
+    <string name="moose_topic_handgai">Kuka on Handgai?</string>
+    <string name="moose_topic_save">Tallennus</string>
+    <string name="moose_thinking">Hirvi miettii…</string>
+
+    <!-- Silkkitien tribuutti (vapaaehtoinen palkintomainos) -->
+    <string name="tribute_button">Silkkitien tribuutti</string>
+    <string name="tribute_title">Silkkitien tribuutti</string>
+    <string name="tribute_body">Silkkitien kauppiaat maksavat sinulle tribuuttia, jos katsot lyhyen mainoksen. Kerran vuorossa; kieltäytymällä et menetä mitään.</string>
+    <string name="tribute_gold">+%1$d kultaa</string>
+    <string name="tribute_card">Nosta kortti</string>
+    <string name="tribute_decline">Ei kiitos</string>
+    <string name="tribute_unavailable">Mainosta ei ole juuri nyt saatavilla. Yritä myöhemmin uudelleen.</string>
+    <string name="tribute_received_gold">Tribuutti saatu: +%1$s kultaa</string>
+    <string name="tribute_received_card">Tribuutti saatu: uusi kortti</string>
+
+    <!-- Second chance (opt-in rewarded ad after a defeat) and new campaign -->
+    <string name="second_chance_title">Toinen mahdollisuus</string>
+    <string name="second_chance_body">Katso lyhyt mainos ja pelaa viimeisin vuorosi uudelleen alusta. Kerran kampanjaa kohden.</string>
+    <string name="second_chance_taken">Toinen mahdollisuus: vuoro %1$s alkaa uudelleen.</string>
+    <string name="new_game_replace_title">Aloitetaanko uusi kampanja?</string>
+    <string name="new_game_replace_body">Tämä korvaa nykyisen kampanjasi (%1$s). Jos haluat säilyttää sen, tallenna se ensin paikkaan taukovalikosta.</string>
+    <string name="new_game_replace_yes">Aloita uusi</string>
+
+    <!-- Mainokset, päivitykset -->
+    <string name="settings_ad_privacy">Mainosten tietosuojavalinnat</string>
+    <string name="update_ready">Uusi versio on valmis</string>
+    <string name="update_restart">Käynnistä uudelleen</string>
+
+    <string name="settings_title">Asetukset</string>
+    <string name="music_volume">Äänenvoimakkuus</string>
+    <string name="cards_hide_hand">Piilota kortit</string>
+</resources>

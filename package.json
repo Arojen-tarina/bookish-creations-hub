@@ -12,8 +12,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "cap:sync": "npx cap sync",
-    "build:android": "npm run build && npx cap sync android",
-    "bundle:android": "npm run build && npx cap sync android && cd android && ./gradlew bundleRelease",
+    "build:android": "cd android-native && ./gradlew assembleDebug",
+    "bundle:android": "cd android-native && ./gradlew bundleRelease",
+    "test:android": "cd android-native && ./gradlew testDebugUnitTest",
+    "build:android:capacitor": "npm run build && npx cap sync android",
+    "bundle:android:capacitor": "npm run build && npx cap sync android && cd android && ./gradlew bundleRelease",
     "open:android": "npx cap open android"
   },
   "dependencies": {

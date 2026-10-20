@@ -1,5 +1,10 @@
 # Arojen Tarinat — Android-julkaisu (APK, allekirjoitettu APK, AAB)
 
+> **Aktiivinen Android-sovellus on nyt natiivi Kotlin/Compose-projekti.**
+> Avaa [android-native/BUILD.md](./android-native/BUILD.md) build-, testi- ja
+> julkaisuoheita varten. Alla olevat ohjeet koskevat säilytettyä vanhaa
+> Capacitor-versiota.
+
 Peli on Capacitor-projekti, ja Android-julkaisut rakennetaan **omalla koneellasi**
 (pilviympäristössä ei ole Android SDK:ta eikä pääsyä Googlen/Mavenin palvelimiin,
 joten APK/AAB:ia ei voi koota siellä). Projekti on jo synkattu build-valmiiksi.
@@ -13,7 +18,7 @@ joten APK/AAB:ia ei voi koota siellä). Projekti on jo synkattu build-valmiiksi.
     - Windows (PowerShell): `setx ANDROID_HOME "$env:LOCALAPPDATA\Android\Sdk"`
     - Linux/mac: `export ANDROID_HOME="$HOME/Android/Sdk"`
 
-## 2. Nopein tapa: valmis skripti
+## 2. Aktiivinen natiivi-Android-versio
 
 Projektin juuressa (`bookish-creations-hub`):
 
@@ -21,12 +26,18 @@ Projektin juuressa (`bookish-creations-hub`):
 bash build-android.sh
 ```
 
-Skripti rakentaa web-buildin, synkkaa Capacitorin, tekee **debug-APK:n**, ja
-ensimmäisellä ajolla luo sinulle **upload-keystoren** sekä pyytää tekemään
-`android/keystore.properties`-tiedoston. Kun se on tehty, aja skripti uudelleen —
-se tuottaa **allekirjoitetun release-APK:n** ja **AAB:n**.
+Skripti ajaa natiivin Kotlin-sovelluksen yksikkötestit ja rakentaa debug- sekä
+preview-APK:t. Lisätiedot: [android-native/BUILD.md](./android-native/BUILD.md).
 
-## 3. Käsin, vaihe vaiheelta
+## 3. Vanhan Capacitor-version rakentaminen
+
+Jos tarvitset säilytettyä Capacitor/WebView-versiota, synkronoi web-sovellus:
+
+```bash
+npm run build:android:capacitor
+```
+
+## 4. Capacitor manuaalisesti
 
 ```bash
 npm install
@@ -71,7 +82,7 @@ cd android
 # -> android/app/build/outputs/bundle/release/app-release.aab
 ```
 
-## 4. Google Play Console
+## 5. Google Play Console
 
 1. Avaa sovellus Play Consolessa (https://play.google.com/console). Sovelluksen
   pakettitunnus on **`fi.bookish.creations.arojen.tarinat`**. Älä muuta sitä:

@@ -27,6 +27,35 @@ Tuotantoversio luodaan komennolla:
 npm run build
 ```
 
+Web-sovellus pysyy GitHub Pages -julkaisun ja selaimessa pelaamisen lähteenä.
+Sama React/TypeScript-koodi toimii myös mobiiliselaimissa.
+
+## Natiivi Android-sovellus
+
+Natiivi Kotlin- ja Jetpack Compose -sovellus on hakemistossa `android-native/`.
+Android-versio käyttää tätä projektia; React-sovelluksen GitHub Pages -julkaisu
+ja vanha Capacitor-projekti säilyvät erillisinä.
+
+```sh
+npm run test:android
+npm run build:android
+npm run bundle:android
+```
+
+Android Studio -kehitystä ja asetuksia varten katso
+[android-native/BUILD.md](./android-native/BUILD.md). Web-sovellus on yhteisen
+pelidatan ja pelisääntöjen lähde. Natiivin datan, käyttöliittymätekstien ja
+pariteettitestausten päivittäminen onnistuu natiiviprojektin hakemistosta:
+
+```sh
+bash tools/parity/regenerate.sh .. data
+bash tools/parity/regenerate.sh .. goldens
+```
+
+Valinnaiset Supabase-asetukset voi lisätä käyttäjäkohtaiseen tiedostoon
+`~/.gradle/gradle.properties` ominaisuuksina `arojen.supabase.url` ja
+`arojen.supabase.key`; niitä ei tallenneta versionhallintaan.
+
 ## Hirvi-avustaja
 
 Hirvi-avustaja käyttää Supabase Edge Functionia ja OpenAI:n `gpt-4o-mini`-

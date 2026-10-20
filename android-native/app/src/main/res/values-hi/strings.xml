@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hindi -->
+<resources>
+    <string name="splash_subtitle">स्टेपी की कहानियाँ · वर्ष 1206</string>
+    <string name="splash_tagline">महान हिरन ने इस संसार को गीत से जन्म दिया — अब इसका भाग्य इस्पात, सोने और गठबंधनों से लिखा जाता है।</string>
+
+    <string name="menu_continue">जारी रखें</string>
+    <string name="menu_new_game">नया खेल</string>
+    <string name="menu_load_game">खेल लोड करें</string>
+    <string name="menu_achievements">उपलब्धियाँ</string>
+    <string name="menu_codex">विश्व इतिहास</string>
+    <string name="menu_rulebook">नियम पुस्तिका</string>
+    <string name="menu_settings">सेटिंग्स</string>
+    <string name="menu_version">संस्करण %1$s</string>
+
+    <string name="faction_select_title">अपना राज्य चुनें</string>
+    <string name="faction_name_jin">जिन राजवंश</string>
+    <string name="faction_name_xixia">पश्चिमी शिया</string>
+    <string name="faction_name_kipchak">किपचाक</string>
+    <string name="neutral_land">तटस्थ</string>
+
+    <string name="map_zoom_in">ज़ूम इन</string>
+    <string name="map_zoom_out">ज़ूम आउट</string>
+    <string name="map_show_all">पूरा नक्शा दिखाएँ</string>
+    <string name="province_surrendered">%1$s ने बिना लड़े आत्मसमर्पण कर दिया</string>
+
+    <string name="log_merged_armies">%1$s ने अपनी सेनाएँ मिला लीं</string>
+    <string name="log_defend_border">%1$s, %2$s की रक्षा के लिए बढ़ रहा है</string>
+    <string name="log_capture">%1$s ने %2$s पर अधिकार कर लिया</string>
+    <string name="log_advance">%1$s, %2$s की ओर बढ़ रहा है</string>
+    <string name="log_won_battle">%1$s ने %2$s में युद्ध जीता</string>
+    <string name="log_attack_failed">%1$s, %2$s पर कब्ज़ा करने में विफल रहा</string>
+    <string name="log_conquered">%1$s ने %2$s जीत लिया</string>
+    <string name="log_fortify">%1$s ने %2$s को मज़बूत किया</string>
+    <string name="log_fortify_capital">%1$s ने अपनी राजधानी %2$s को मज़बूत किया</string>
+    <string name="log_build_market">%1$s ने %2$s में बाज़ार बनाया</string>
+    <string name="log_recruited">%1$s ने %2$s में सेना खड़ी की</string>
+    <string name="log_player_chief_fell">आपका कबीला सरदार मारा गया! प्रजा शोक में है: −30 सोना, −15 प्रभाव, और आपकी सेना का मनोबल टूट गया।</string>
+    <string name="log_turn_header">बारी %1$d · %2$d</string>
+    <string name="block_not_owned">यह प्रांत आपके नियंत्रण में नहीं है</string>
+    <string name="block_no_gold">पर्याप्त सोना नहीं</string>
+    <string name="block_no_artisans">पर्याप्त कारीगर नहीं</string>
+    <string name="block_no_food">पर्याप्त भोजन नहीं</string>
+    <string name="block_no_horses">पर्याप्त घोड़े नहीं</string>
+    <string name="block_capital_only">अजूबे केवल आपकी राजधानी में बन सकते हैं</string>
+    <string name="block_max_level">पहले से अधिकतम स्तर पर</string>
+    <string name="block_already_built">यहाँ पहले से बना है</string>
+    <string name="block_capital_lost">राजधानी पर कब्ज़े के दौरान भर्ती रुकी हुई है</string>
+    <string name="block_needs_camp">पैदल सेना के लिए यहाँ शिविर चाहिए (या आपकी राजधानी)</string>
+    <string name="block_needs_stable">घुड़सवार सेना के लिए यहाँ अस्तबल चाहिए (या आपकी राजधानी)</string>
+    <string name="block_not_damaged">दीवारें सलामत हैं</string>
+    <string name="toast_recruited">%1$s में नई सेना खड़ी हुई</string>
+    <string name="toast_repaired">%1$s की दीवारों की मरम्मत हुई</string>
+    <string name="toast_merged">सेनाएँ मिल गईं</string>
+    <string name="toast_card_played">%1$s खेला गया</string>
+    <string name="treaty_accepted">%1$s ने स्वीकार किया: %2$s</string>
+    <string name="treaty_rejected">%1$s ने आपका प्रस्ताव ठुकरा दिया</string>
+    <string name="treaty_war_declared">%1$s के विरुद्ध युद्ध की घोषणा</string>
+    <string name="treaty_broken">संधि टूटी: %1$s</string>
+    <string name="treaty_proposal_used">इस बारी में आप इस राज्य को प्रस्ताव भेज चुके हैं</string>
+    <string name="cards_hand_count">कार्ड · %1$d</string>
+    <string name="cards_deck_discard">गड्डी %1$d · त्यागे %2$d</string>
+    <string name="card_type_strategy">रणनीति</string>
+    <string name="card_type_diplomacy">कूटनीति</string>
+    <string name="card_type_technology">प्रौद्योगिकी</string>
+    <string name="card_type_resource">संसाधन</string>
+    <string name="rarity_common">साधारण</string>
+    <string name="rarity_uncommon">असाधारण</string>
+    <string name="rarity_rare">दुर्लभ</string>
+    <string name="rarity_legendary">पौराणिक</string>
+    <string name="card_cost">लागत: %1$s</string>
+    <string name="card_effect_now">खेलने पर</string>
+    <string name="hud_per_turn">%1$s प्रति बारी</string>
+    <string name="panel_close">पैनल बंद करें</string>
+    <string name="ui_victory_goals">विजय के लक्ष्य</string>
+    <string name="goal_progress">%1$d / %2$d</string>
+    <string name="goal_diplomatic_progress">%1$d / %2$d प्रभाव · %3$d / %4$d गठबंधन</string>
+    <string name="realm_streak">सोने की लड़ी %1$d / %2$d</string>
+    <plurals name="army_moves_left">
+        <item quantity="one">%1$d चाल बाकी</item>
+        <item quantity="other">%1$d चालें बाकी</item>
+    </plurals>
+    <string name="army_exhausted">कोई चाल बाकी नहीं</string>
+    <string name="army_banner_hint">कूच के लिए हरा प्रांत, हमले के लिए लाल प्रांत छुएँ</string>
+    <string name="army_chief">कबीला सरदार</string>
+    <string name="wonder_count">%1$d / %2$d</string>
+    <string name="dipl_ruled_by">शासक: %1$s</string>
+    <string name="battle_continue">जारी रखें</string>
+    <string name="battle_skip">छोड़ने के लिए छुएँ</string>
+    <string name="game_over_main_menu">मुख्य मेनू</string>
+    <string name="pause_title">अभियान रुका हुआ है</string>
+    <string name="pause_resume">फिर शुरू करें</string>
+    <string name="pause_exit">मुख्य मेनू पर जाएँ</string>
+    <string name="pause_exit_confirm_title">यह अभियान छोड़ें?</string>
+    <string name="pause_exit_confirm_body">आपका अभियान अपने आप सहेजा जाता है। मुख्य मेनू से उसे जारी रखें।</string>
+    <string name="pause_exit_confirm_yes">छोड़ें</string>
+    <string name="pause_exit_confirm_no">रुकें</string>
+    <string name="streak_label">%1$d बारियों की लड़ी</string>
+    <string name="milestone_first_province">पहली विजय!</string>
+    <string name="milestone_first_province_desc">आपने अपना दूसरा प्रांत जीत लिया</string>
+    <string name="milestone_five_provinces">खान का उदय</string>
+    <string name="milestone_five_provinces_desc">आपके शासन में 5 प्रांत</string>
+    <string name="milestone_ten_provinces">साम्राज्य बढ़ रहा है</string>
+    <string name="milestone_ten_provinces_desc">आपके शासन में 10 प्रांत</string>
+    <string name="milestone_twenty_provinces">महान खान</string>
+    <string name="milestone_twenty_provinces_desc">20 प्रांत — विजय निकट है!</string>
+    <string name="milestone_hundred_gold">धनी व्यापारी</string>
+    <string name="milestone_hundred_gold_desc">खज़ाने में 100 सोना</string>
+    <string name="milestone_three_hundred_gold">स्वर्ण सिंहासन</string>
+    <string name="milestone_three_hundred_gold_desc">खज़ाने में 300 सोना</string>
+    <string name="milestone_streak5">5 बारियों की लड़ी!</string>
+    <string name="milestone_streak5_desc">पाँच बारियों से कोई हानि नहीं</string>
+    <string name="milestone_streak10">10 बारियों की लड़ी!</string>
+    <string name="milestone_streak10_desc">शानदार सिलसिला जारी है</string>
+    <string name="milestone_streak20">20 बारियाँ — दिग्गज</string>
+    <string name="milestone_streak20_desc">अजेय कूच</string>
+
+    <string name="province_none_selected_title">कोई प्रांत चुना नहीं गया</string>
+
+    <string name="battle_walls_hold">दीवारें क्षतिग्रस्त हैं पर अभी भी खड़ी हैं</string>
+    <string name="game_over_defeat_by">%1$s ने विजय प्राप्त की।</string>
+    <string name="pause_settings">सेटिंग्स</string>
+    <string name="pause_rulebook">नियम पुस्तिका</string>
+
+    <string name="how_to_play_hint">हर बारी: आय एकत्र करें, कार्ड खेलें, कूच करें और लड़ें, निर्माण करें — फिर बारी समाप्त करें और प्रतिद्वंद्वी राज्य चाल चलेंगे।</string>
+    <string name="how_to_play_turn">आपकी बारी</string>
+    <string name="how_to_play_goals">जीतने के पाँच रास्ते</string>
+    <string name="faction_challenge">चुनौती: %1$s</string>
+    <string name="faction_starting">आरंभिक खज़ाना</string>
+    <string name="faction_select_hint">एक राज्य चुनें, कठिनाई तय करें, फिर उसे 1206 में आगे ले चलें।</string>
+
+    <string name="save_autosave">स्वतः सहेजा</string>
+    <string name="save_overwrite_title">स्लॉट %1$d को बदलें?</string>
+    <string name="save_overwrite_body">वहाँ सहेजा गया खेल बदल दिया जाएगा।</string>
+    <string name="save_overwrite_yes">बदलें</string>
+    <string name="save_cancel">रद्द करें</string>
+    <string name="save_meta_line">बारी %1$d · %2$d · %3$s</string>
+    <plurals name="save_meta_provinces">
+        <item quantity="one">%1$d प्रांत</item>
+        <item quantity="other">%1$d प्रांत</item>
+    </plurals>
+    <string name="save_load_failed">यह सहेजा गया खेल पढ़ा नहीं जा सका।</string>
+    <string name="save_choose_slot">स्लॉट चुनें</string>
+    <string name="load_title">खेल लोड करें</string>
+    <string name="pause_save">खेल सहेजें</string>
+    <string name="pause_load">खेल लोड करें</string>
+    <string name="menu_continue_desc">बारी %1$d · %2$s</string>
+
+    <string name="settings_language_system">फ़ोन की भाषा</string>
+    <string name="settings_sound">ध्वनि</string>
+    <string name="settings_mute">संगीत बंद करें</string>
+    <string name="settings_privacy">गोपनीयता</string>
+    <string name="settings_about">परिचय</string>
+    <string name="settings_version">संस्करण %1$s</string>
+    <string name="settings_credits">स्टेपी की कहानियाँ — एंड्रॉयड संस्करण।</string>
+
+    <string name="achv_summary">%1$d / %2$d खुलीं</string>
+    <string name="achv_level_line">स्तर %1$d · %2$s</string>
+    <string name="achv_points_line">%1$d अंक</string>
+    <string name="achv_next_level">स्तर %2$d तक %1$d अंक</string>
+    <string name="achv_all">सभी</string>
+    <string name="achv_points_badge">+%1$d</string>
+    <string name="achv_reward_line">इनाम: %1$s</string>
+    <string name="achv_unlocked_on">खुली: %1$s</string>
+    <string name="achv_banner_title">उपलब्धि प्राप्त हुई</string>
+    <string name="achv_legendary">पौराणिक</string>
+    <!-- Books (codex & rulebook) -->
+    <string name="book_previous">पिछला</string>
+    <string name="book_next">अगला</string>
+    <string name="book_search_clear">खोज साफ़ करें</string>
+    <string name="book_no_matches">आपकी खोज से कोई अध्याय नहीं मिला।</string>
+    <!-- Moose guide -->
+    <string name="moose_answer_turn">बारी के कोई तय चरण नहीं हैं: निर्माण, भर्ती, कूच और हमला, कार्ड और कूटनीति किसी भी क्रम में करें। तैयार हों तो “बारी समाप्त करें” दबाएँ। फिर दूसरे राज्य चाल चलते हैं, आपको एक कार्ड मिलता है और आपकी आय जमा होती है।</string>
+    <string name="moose_answer_combat">अपनी किसी सेना को छुएँ, फिर किसी चमकते प्रांत को: खाली पड़ोसी प्रांत वहाँ जाने के लिए, दुश्मन का प्रांत उस पर हमला करने के लिए। युद्ध शक्ति घुड़सवार, पैदल, घेराबंदी दलों, भूभाग, किलों और बोनस के साथ पासे से बनती है; बड़ा योग जीतता है।</string>
+    <string name="moose_answer_cards">आप 5 कार्ड से शुरू करते हैं और हर बारी के अंत में एक और कार्ड लेते हैं। नीचे बाईं ओर “कार्ड” खोलें और अपनी बारी में कभी भी कार्ड खेलकर उसका बोनस (सोना, भोजन, हमला, रक्षा आदि) पाएँ।</string>
+    <string name="moose_answer_language">भाषा सेटिंग्स में बदलें, जो मुख्य मेनू और विराम मेनू दोनों में हैं। खेल आपके फ़ोन की भाषा अपना सकता है या अपनी 14 भाषाओं में से कोई भी।</string>
+    <string name="moose_answer_save">खेल हर बारी के बाद और ऐप छोड़ते समय अपने-आप सहेजता है; मुख्य मेनू में “जारी रखें” वहीं से शुरू करता है जहाँ आपने छोड़ा था। आप विराम मेनू से पाँच स्लॉट में सहेज भी सकते हैं और “खेल लोड करें” से उन्हें खोल सकते हैं।</string>
+    <string name="moose_topic_win">मैं कैसे जीतूँ?</string>
+    <string name="moose_topic_turn">बारी कैसे चलती है?</string>
+    <string name="moose_topic_combat">कूच और युद्ध</string>
+    <string name="moose_topic_buildings">इमारतें</string>
+    <string name="moose_topic_cards">कार्ड</string>
+    <string name="moose_topic_treaties">संधियाँ</string>
+    <string name="moose_topic_handgai">हंडगाई कौन है?</string>
+    <string name="moose_topic_save">सहेजना</string>
+    <string name="moose_thinking">मूस सोच रहा है…</string>
+
+    <!-- Silk Road tribute (opt-in rewarded ad) -->
+    <string name="tribute_button">रेशम मार्ग का कर</string>
+    <string name="tribute_title">रेशम मार्ग का कर</string>
+    <string name="tribute_body">यदि आप एक छोटा विज्ञापन देखें तो रेशम मार्ग के व्यापारी आपको कर देंगे। हर बारी में एक बार; मना करने पर कुछ नहीं खोते।</string>
+    <string name="tribute_gold">+%1$d सोना</string>
+    <string name="tribute_card">एक कार्ड लें</string>
+    <string name="tribute_decline">नहीं, धन्यवाद</string>
+    <string name="tribute_unavailable">अभी कोई विज्ञापन उपलब्ध नहीं है। बाद में फिर कोशिश करें।</string>
+    <string name="tribute_received_gold">कर मिला: +%1$s सोना</string>
+    <string name="tribute_received_card">कर मिला: एक नया कार्ड</string>
+
+    <!-- Second chance (opt-in rewarded ad after a defeat) and new campaign -->
+    <string name="second_chance_title">दूसरा मौका</string>
+    <string name="second_chance_body">एक छोटा विज्ञापन देखें और अपनी पिछली बारी शुरू से दोबारा खेलें। हर अभियान में एक बार।</string>
+    <string name="second_chance_taken">दूसरा मौका: बारी %1$s फिर से शुरू होती है।</string>
+    <string name="new_game_replace_title">नया अभियान शुरू करें?</string>
+    <string name="new_game_replace_body">इससे आपका मौजूदा अभियान (%1$s) बदल जाएगा। उसे रखना हो तो पहले विराम मेनू से किसी स्लॉट में सहेज लें।</string>
+    <string name="new_game_replace_yes">नया शुरू करें</string>
+
+    <!-- Ads, updates -->
+    <string name="settings_ad_privacy">विज्ञापन गोपनीयता विकल्प</string>
+    <string name="update_ready">नया संस्करण तैयार है</string>
+    <string name="update_restart">फिर से शुरू करें</string>
+
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="music_volume">आवाज़</string>
+    <string name="cards_hide_hand">कार्ड छिपाएँ</string>
+</resources>
