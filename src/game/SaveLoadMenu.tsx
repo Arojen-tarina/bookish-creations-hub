@@ -7,6 +7,7 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import type { ReactNode } from 'react';
 import { Save, FolderOpen, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { toast } from 'sonner';
@@ -16,13 +17,15 @@ import type { MVPGameState } from '@/hooks/useProvinceGameState.ts';
 import type { ProvinceGameState } from '@/types/province.ts';
 
 interface SaveLoadMenuProps {
-  gameState: MVPGameState;
+  gameState?: MVPGameState | null;
   onLoad: (state: MVPGameState) => void;
+  buttonClassName?: string;
+  trigger?: ReactNode;
 }
 
 const SLOTS = [1, 2, 3, 4, 5];
 
-export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
+export const SaveLoadMenu = ({ gameState, onLoad, buttonClassName, trigger }: SaveLoadMenuProps) => {
   const { t } = useLanguage();
   const { saves, saveGame, loadGame, deleteGame } = useSaveManager();
   const [open, setOpen] = useState(false);
@@ -64,6 +67,7 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
   const metaForSlot = (slot: number) => saves.find(s => s.slotNumber === slot) ?? null;
 
   const handleSave = (slot: number) => {
+    if (!gameState) return;
     const ok = saveGame(slot, t('save.slot', { n: slot }), gameState as unknown as ProvinceGameState);
     toast[ok ? 'success' : 'error'](ok ? t('save.saved', { n: slot }) : t('save.saveFailed'));
   };
@@ -83,14 +87,19 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
 
   return (
     <div ref={rootRef} className="relative">
-      <Button
-        variant="ghost" size="icon"
-        onClick={() => setOpen(v => !v)}
-        title={t('save.title')}
-        className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8"
-      >
-        <Save className="w-4 h-4" />
-      </Button>
+      {trigger ? (
+        <span onClick={() => setOpen(v => !v)}>{trigger}</span>
+      ) : (
+        <Button
+          variant="ghost" size="icon"
+          onClick={() => setOpen(v => !v)}
+          title={t('save.title')}
+          aria-label={t('save.title')}
+          className={buttonClassName || 'text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8'}
+        >
+          <Save className="w-4 h-4" />
+        </Button>
+      )}
       {open && createPortal(
         <div
           ref={menuRef}
@@ -110,13 +119,15 @@ export const SaveLoadMenu = ({ gameState, onLoad }: SaveLoadMenuProps) => {
                     </span>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => handleSave(slot)}
-                      title={t('save.saveButton')}
-                      className="p-1.5 rounded-md text-amber-200/70 hover:text-amber-100 hover:bg-amber-900/40"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                    </button>
+                    {gameState && (
+                      <button
+                        onClick={() => handleSave(slot)}
+                        title={t('save.saveButton')}
+                        className="p-1.5 rounded-md text-amber-200/70 hover:text-amber-100 hover:bg-amber-900/40"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                     {meta && (
                       <>
                         <button

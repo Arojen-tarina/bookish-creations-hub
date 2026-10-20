@@ -47,6 +47,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'common.back': 'Takaisin',
     'common.close': 'Sulje',
     'common.loading': 'Ladataan...',
+    'menu.newGame': 'Uusi peli',
+    'menu.loadGame': 'Lataa peli',
+    'menu.achievements': 'Saavutukset',
 
     'faction.title': 'Arojen Tarinat',
     'faction.subtitle': 'Vuosi 1206 — Valitse valtakuntasi',
@@ -263,6 +266,9 @@ export const translations: Partial<Record<Language, Record<string, string>>> = {
     'common.back': 'Back',
     'common.close': 'Close',
     'common.loading': 'Loading...',
+    'menu.newGame': 'New game',
+    'menu.loadGame': 'Load game',
+    'menu.achievements': 'Achievements',
 
     'faction.title': 'Tales of the Steppe',
     'faction.subtitle': 'Year 1206 — Choose your realm',

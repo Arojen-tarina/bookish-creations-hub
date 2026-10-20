@@ -10,6 +10,7 @@ import { useAudioManager } from '@/hooks/useAudioManager.ts';
 import { useProvinceGameState, BUILDING_INFO, MVPBuildingType, VICTORY_TARGETS, WONDER_MAX } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType, MVPGameState } from '@/hooks/useProvinceGameState.ts';
 import { ProvinceFactionSelect } from './ProvinceFactionSelect.tsx';
+import { ProvinceMainMenu } from './ProvinceMainMenu.tsx';
 import { ProvinceMap } from './ProvinceMap.tsx';
 import { ProvinceInfoPanel } from './ProvinceInfoPanel.tsx';
 import { DiplomacyPanel } from './DiplomacyPanel.tsx';
@@ -29,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.t
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { 
-  Maximize2, Minimize2, ArrowLeft, Map, Handshake, Settings,
+  Maximize2, Minimize2, ArrowLeft, Map, Handshake, Flag,
   Clock, Users, Sword, ScrollText,
   Target, Crosshair, Wrench, HelpCircle, Volume2, VolumeX, X,
 } from 'lucide-react';
@@ -78,8 +79,10 @@ export const ProvinceGame = () => {
   useAchievementTracking(gameState, playerFaction, pendingBattle);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // The sidebar (including its tab buttons) opens only when requested.
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showMainMenu, setShowMainMenu] = useState(true);
+  const [showFactionSelect, setShowFactionSelect] = useState(false);
+  // Desktop keeps the realm panel alongside the map; mobile opens it on demand.
+  const [showSidebar, setShowSidebar] = useState(!isMobileMode);
   const [activeTab, setActiveTab] = useState('province');
   const [showAchievements, setShowAchievements] = useState(false);
   const [attackMode, setAttackMode] = useState(false);
@@ -88,6 +91,10 @@ export const ProvinceGame = () => {
   const [resourceNoticeDismissed, setResourceNoticeDismissed] = useState(false);
   const [resourceNoticeFadingOut, setResourceNoticeFadingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setShowSidebar(!isMobileMode);
+  }, [isMobileMode]);
 
   // Mittaa yläpalkin ja vaihepalkin todellinen korkeus, jotta alla oleva
   // sisältö osataan sijoittaa oikein riippumatta siitä montako riviä
@@ -249,6 +256,8 @@ export const ProvinceGame = () => {
       midGame: !!gameState && !gameState.gameOver,
     });
     resetGame();
+    setShowFactionSelect(false);
+    setShowMainMenu(true);
   }, [gameState, playerFaction, resetGame]);
 
   const handleEndTurn = useCallback(() => {
@@ -287,23 +296,57 @@ export const ProvinceGame = () => {
       }
     }
     selectProvince(provinceId);
-  }, [gameState, canMoveTo, moveArmy, selectProvince]);
+    if (!isMobileMode) setShowSidebar(true);
+  }, [gameState, canMoveTo, moveArmy, selectProvince, isMobileMode]);
+
+  const continueMeta = autosaveMeta ?? (saves.length > 0 ? [...saves].sort((a, b) => b.timestamp - a.timestamp)[0] : null);
+  if (showMainMenu) {
+    return (
+      <ProvinceMainMenu
+        continueSave={hasContinueGame ? continueMeta : null}
+        onContinue={() => {
+          const state = continueGame();
+          if (state) {
+            loadGameState(state as unknown as MVPGameState);
+            setShowMainMenu(false);
+          }
+        }}
+        onNewGame={() => {
+          setShowMainMenu(false);
+          setShowFactionSelect(true);
+        }}
+        onLoad={(state) => {
+          loadGameState(state);
+          setShowMainMenu(false);
+        }}
+        musicVolume={audioSettings.musicVolume}
+        onMusicVolumeChange={setMusicVolume}
+      />
+    );
+  }
 
   // Faction select
-  if (!gameStarted || !playerFaction) {
-    const continueMeta = autosaveMeta ?? (saves.length > 0 ? [...saves].sort((a, b) => b.timestamp - a.timestamp)[0] : null);
+  if (showFactionSelect || !gameStarted || !playerFaction) {
     return (
       <ProvinceFactionSelect
+        onBackToMenu={() => {
+          setShowFactionSelect(false);
+          setShowMainMenu(true);
+        }}
         onSelect={(f, difficulty) => {
           if (!f) return;
           track('game_start', { faction: f, difficulty: difficulty ?? 'normal', isContinue: false });
           track('onboarding_step', { step: 'faction_chosen' });
           startGame(f, difficulty);
+          setShowFactionSelect(false);
         }}
         continueSave={hasContinueGame ? continueMeta : null}
         onContinue={() => {
           const state = continueGame();
-          if (state) loadGameState(state as unknown as MVPGameState);
+          if (state) {
+            loadGameState(state as unknown as MVPGameState);
+            setShowFactionSelect(false);
+          }
         }}
       />
     );
@@ -349,16 +392,16 @@ export const ProvinceGame = () => {
     <div
       ref={containerRef}
       aria-busy={isAITurn}
-      className={`fixed inset-x-0 top-0 w-screen overflow-hidden bg-slate-950 ${hasBottomBanner ? 'min-h-0' : 'min-h-[100dvh]'}`}
+      className={`native-game fixed inset-x-0 top-0 w-screen overflow-hidden bg-[#120f0c] ${hasBottomBanner ? 'min-h-0' : 'min-h-[100dvh]'}`}
       style={{ height: hasBottomBanner ? `calc(100dvh - ${bottomBannerOffset})` : '100dvh' }}
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/20 to-slate-950" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#120f0c] via-[#251e18] to-[#120f0c]" />
       
       {/* ============= TOP HUD ============= */}
       <div ref={headerRef} className="fixed top-0 left-0 right-0 z-40">
         <div className="relative z-30">
-        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl border-b border-amber-700/20" />
+        <div className="absolute inset-0 bg-[#1b1612]/95 backdrop-blur-xl border-b border-amber-700/30" />
         <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5 min-h-[5rem]' : 'h-12 items-center justify-between'}`}>
           {/* Left: Faction + Year */}
           <div className={`flex items-center gap-3 flex-shrink-0 ${isMobileMode ? 'order-1' : ''}`}>
@@ -375,7 +418,7 @@ export const ProvinceGame = () => {
           
           {/* Center: Resources — own full-width row on mobile so it can never be squeezed to nothing behind the control buttons */}
           {playerFactionData && (
-            <div className={`flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-slate-800/40 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 scrollbar-thin ${
+            <div className={`flex items-center gap-1.5 sm:gap-3 rounded-lg border border-amber-800/25 bg-[#251e18]/80 px-2 sm:px-3 py-1 shadow-inner overflow-x-auto min-w-0 scrollbar-thin ${
               isMobileMode ? 'order-2 w-full basis-full max-w-none min-h-8' : 'max-w-[46vw] sm:max-w-none'
             }`}>
               <div className="flex items-center gap-1 flex-shrink-0" title={t('hud.gold')}>
@@ -411,6 +454,16 @@ export const ProvinceGame = () => {
           
           {/* Right: Controls */}
           <div className={`flex items-center gap-2 flex-shrink-0 ${isMobileMode ? 'order-3 w-full basis-full max-w-full justify-center flex-wrap' : ''}`}>
+            {!isMobileMode && (
+              <Button
+                disabled={isAITurn || gameState.gameOver}
+                onClick={handleEndTurn}
+                className="h-8 rounded-lg border border-amber-300/40 bg-gradient-to-b from-amber-400 to-amber-600 px-3 font-bold text-[#120f0c] shadow-md shadow-black/30 hover:from-amber-300 hover:to-amber-500 disabled:opacity-50"
+              >
+                <Flag className="mr-1.5 h-4 w-4" />
+                {t('phase.endTurn')}
+              </Button>
+            )}
             <SettingsMenu
               musicVolume={audioSettings.musicVolume}
               onMusicVolumeChange={setMusicVolume}
@@ -438,15 +491,15 @@ export const ProvinceGame = () => {
                 </Button>
               </>
             )}
-            {isMobileMode && (
+            {isMobileMode ? (
               <Button
                 variant="ghost" size="sm"
                 onClick={() => { track('menu_interaction', { target: showSidebar ? 'hide_sidebar' : 'show_sidebar' }); setShowSidebar(!showSidebar); }}
-                className="text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 text-sm h-11 px-3"
+                className="h-11 rounded-lg border border-amber-500/25 bg-[#251e18] px-3 text-sm text-amber-100 hover:bg-[#31281f]"
               >
                 {showSidebar ? t('hud.hide') : t('hud.menu')}
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
         </div>
@@ -556,7 +609,7 @@ export const ProvinceGame = () => {
         
         {/* ============= SIDEBAR (side panel on desktop, bottom sheet on mobile) ============= */}
         {showSidebar && <div
-          className={`fixed bg-slate-900/95 backdrop-blur-xl shadow-2xl overflow-hidden ${
+          className={`fixed bg-[#1b1612]/98 backdrop-blur-xl shadow-2xl overflow-hidden ${
             isMobileMode
               ? 'left-0 right-0 bottom-0 top-auto rounded-t-3xl border-t border-amber-700/30 z-50'
               : 'right-0 bottom-0 w-full sm:w-[380px] border-l border-amber-700/20 z-20'
@@ -569,7 +622,7 @@ export const ProvinceGame = () => {
           <div className="flex h-full min-h-0 flex-col">
           <div className="min-h-0 flex-1 overflow-y-auto p-3 scrollbar-thin">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className={`w-full bg-slate-800/50 mb-3 grid grid-cols-4 ${isMobileMode ? 'h-12' : ''}`}>
+              <TabsList className={`w-full bg-[#251e18] mb-3 grid grid-cols-4 ${isMobileMode ? 'h-12' : ''}`}>
                 <TabsTrigger value="province" className={isMobileMode ? 'text-sm h-10' : 'text-xs px-1.5'}>
                   <Map className="w-3 h-3 mr-1" />{t('sidebar.tab.province')}
                 </TabsTrigger>
@@ -988,6 +1041,7 @@ export const ProvinceGame = () => {
                 onToggleAchievements={() => setShowAchievements(visible => !visible)}
                 disabled={isAITurn}
                 compact
+                showEndTurn={false}
               />
             </div>
           )}
@@ -999,7 +1053,7 @@ export const ProvinceGame = () => {
       {(isMobileMode || showCardHand) && <div ref={bottomPanelRef} className={`fixed bottom-0 left-0 z-40 transition-all right-0 ${
         !isMobileMode && showSidebar ? 'sm:right-[380px]' : ''
       }`} style={hasBottomBanner ? { bottom: bottomBannerOffset } : undefined}>
-        <div className="bg-slate-900/98 backdrop-blur-xl border-t-2 border-amber-500/30">
+        <div className="bg-[#1b1612]/98 backdrop-blur-xl border-t-2 border-amber-500/30">
           {/* Vetokahva: raahaa ylös/alas suurentaaksesi tai pienentääksesi korttinäkymää */}
           {showCardHand && (
             <>

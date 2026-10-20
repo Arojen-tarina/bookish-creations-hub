@@ -9,7 +9,7 @@ import { ACTIVE_FACTIONS, Difficulty, VICTORY_TARGETS } from '@/hooks/useProvinc
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 // import { AdManager } from '@/components/ui/AdManager.tsx';
-import { Sword, Coins, Shield, BookOpen, ScrollText, Users, Save } from 'lucide-react';
+import { ArrowLeft, Sword, Coins, Shield, BookOpen, ScrollText, Users, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n.tsx';
@@ -39,18 +39,19 @@ interface ProvinceFactionSelectProps {
   onSelect: (factionId: FactionId, difficulty: Difficulty) => void;
   continueSave?: SaveMetadata | null;
   onContinue?: () => void;
+  onBackToMenu?: () => void;
 }
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
 
-export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: ProvinceFactionSelectProps) => {
+export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue, onBackToMenu }: ProvinceFactionSelectProps) => {
   const { t, lang } = useLanguage();
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal');
   // Vain 4 aktiivista faktiota (Kiina=song, mongolit, rus, persia=khwarezm)
   const factions = ACTIVE_FACTIONS.map(id => FACTION_DATA_1206[id]);
   
   return (
-    <div className="fixed inset-0 overflow-y-auto bg-slate-950 p-4">
+    <div className="native-screen fixed inset-0 overflow-y-auto bg-[#120f0c] p-4 text-[#f4ead5]">
       {/* Tunnelmallinen taustakuva: maailmankartta */}
       <div
         className="fixed inset-0 bg-cover bg-center"
@@ -60,13 +61,23 @@ export const ProvinceFactionSelect = ({ onSelect, continueSave, onContinue }: Pr
       <div
         className="fixed inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(2,6,23,0.50) 0%, rgba(2,6,23,0.32) 40%, rgba(2,6,23,0.62) 100%),
+          background: `linear-gradient(to bottom, rgba(18,15,12,0.82) 0%, rgba(18,15,12,0.62) 40%, rgba(18,15,12,0.9) 100%),
                        radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.12) 0%, transparent 55%)`,
         }}
       />
 
       <div className="relative z-10 max-w-5xl w-full mx-auto py-6">
-        <div className="flex justify-end mb-2">
+        <div className="mb-2 flex items-center justify-between">
+          {onBackToMenu ? (
+            <button
+              type="button"
+              onClick={onBackToMenu}
+              className="inline-flex items-center gap-2 rounded-lg border border-amber-500/25 bg-[#251e18]/90 px-3 py-2 text-sm text-amber-100 hover:bg-[#31281f]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t('common.back')}
+            </button>
+          ) : <span />}
           <SettingsMenu />
         </div>
         {/* Title */}

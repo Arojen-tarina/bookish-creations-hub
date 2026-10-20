@@ -13,6 +13,7 @@ interface PhaseBarProps {
   onToggleAchievements: () => void;
   disabled?: boolean;
   compact?: boolean;
+  showEndTurn?: boolean;
 }
 
 export const PhaseBar = ({
@@ -23,6 +24,7 @@ export const PhaseBar = ({
   onToggleAchievements,
   disabled = false,
   compact = true,
+  showEndTurn = true,
 }: PhaseBarProps) => {
   const { t } = useLanguage();
 
@@ -53,14 +55,16 @@ export const PhaseBar = ({
         {showCardHand ? <EyeOff className="w-4 h-4 sm:mr-1.5" /> : <Eye className="w-4 h-4 sm:mr-1.5" />}
         <span className="hidden sm:inline">{t(showCardHand ? 'cards.hideHand' : 'cards.showHand')}</span>
       </Button>
-      <Button
-        disabled={disabled}
-        onClick={onEndTurn}
-        className={`shrink-0 whitespace-nowrap bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/40 disabled:opacity-40 ${compact ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}
-      >
-        <Flag className="w-4 h-4 mr-1.5" />
-        {t('phase.endTurn')}
-      </Button>
+      {showEndTurn && (
+        <Button
+          disabled={disabled}
+          onClick={onEndTurn}
+          className={`shrink-0 whitespace-nowrap rounded-xl border border-amber-300/40 bg-gradient-to-b from-amber-400 to-amber-600 font-bold text-[#120f0c] shadow-lg shadow-amber-950/40 hover:from-amber-300 hover:to-amber-500 disabled:opacity-40 ${compact ? 'px-6 h-9 text-sm' : 'px-8 h-12 text-base'}`}
+        >
+          <Flag className="w-4 h-4 mr-1.5" />
+          {t('phase.endTurn')}
+        </Button>
+      )}
     </div>
   );
 };
