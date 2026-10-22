@@ -10,7 +10,8 @@ function checksum(value: string): string {
   for (let i = 0; i < value.length; i++) hash = Math.imul(hash ^ value.charCodeAt(i), 0x01000193);
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
-function hasStorage(): boolean { return typeof localStorage !== 'undefined'; }
+// Merely touching localStorage throws in sandboxed iframes (e.g. editor preview panes).
+function hasStorage(): boolean { try { return typeof localStorage !== 'undefined' && localStorage !== null; } catch { return false; } }
 
 export function writeSecure<T>(key: string, data: T, version = VERSION): boolean {
   if (!hasStorage()) return false;
