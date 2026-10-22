@@ -1,8 +1,0 @@
-# Android build artifacts
-build/
-.gradle/
-local.properties
-
-# Generated files
-**/build/
-**/captures/

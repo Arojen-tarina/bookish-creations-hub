@@ -1,7 +1,0 @@
-# Room 2.2.5 (inside WorkManager, which Google Mobile Ads brings in) keeps its generated
-# databases without their constructors. R8 full mode then removes the constructor of
-# androidx.work.impl.WorkDatabase_Impl, and the app crashed on start when Room creates the
-# database by reflection ("Failed to create an instance of androidx.work.impl.WorkDatabase").
--keep class * extends androidx.room.RoomDatabase {
-    <init>();
-}

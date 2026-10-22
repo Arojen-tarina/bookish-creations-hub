@@ -1,9 +1,0 @@
-# Android build artifacts
-.gradle/
-local.properties
-build/
-app/build/
-
-# Android Studio
-.idea/
-*.iml
