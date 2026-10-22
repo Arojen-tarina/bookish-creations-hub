@@ -1,0 +1,4 @@
+import { t, useLocale } from '../../../i18n';
+import '../screens.css';
+export interface AnalyticsConsentDialogProps { onAccept: () => void; onDecline: () => void }
+export function AnalyticsConsentDialog({onAccept,onDecline}:AnalyticsConsentDialogProps){useLocale();return <div className="screen-backdrop"><section className="screen-panel screen-dialog" role="dialog" aria-modal="true" aria-labelledby="analytics-title" style={{width:440,textAlign:'center'}}><div style={{fontSize:36,color:'#c8a24d'}}>◈</div><h2 id="analytics-title" className="screen-title">{t('analytics_consent_title')}</h2><div style={{color:'#A8772A'}}>━━━━━━━━━━━━</div><p>{t('analytics_consent_body')}</p><div style={{display:'flex',gap:10,justifyContent:'center',marginTop:16}}><button className="screen-button secondary" onClick={onDecline}>{t('analytics_consent_decline')}</button><button className="screen-button" onClick={onAccept}>{t('analytics_consent_accept')}</button></div></section></div>}

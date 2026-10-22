@@ -1,0 +1,20 @@
+export const Ink900 = '#120F0C';
+export const Ink800 = '#1B1612';
+export const Ink700 = '#251E18';
+export const Ink600 = '#31281F';
+export const Ink500 = '#43372A';
+export const Gold = '#E0A944';
+export const GoldBright = '#F2C46B';
+export const GoldDeep = '#A8772A';
+export const Parchment = '#EFE3C8';
+export const ParchmentDim = '#CDBE9C';
+export const ParchmentInk = '#3A2C1C';
+export const TextHigh = '#F4EAD5';
+export const TextMid = '#C4B496';
+export const TextLow = '#8C7D64';
+export const Rust = '#C2533A';
+export const Jade = '#5BA374';
+export const Sky = '#6B9AC4';
+export const Scrim = '#0B0907CC';
+
+export const palette = { Ink900, Ink800, Ink700, Ink600, Ink500, Gold, GoldBright, GoldDeep, Parchment, ParchmentDim, ParchmentInk, TextHigh, TextMid, TextLow, Rust, Jade, Sky, Scrim } as const;
