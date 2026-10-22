@@ -79,7 +79,7 @@ export const ProvinceGame = () => {
   useAchievementTracking(gameState, playerFaction, pendingBattle);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showMainMenu, setShowMainMenu] = useState(true);
+  const [showMainMenu, setShowMainMenu] = useState(!gameStarted);
   const [showFactionSelect, setShowFactionSelect] = useState(false);
   // Desktop keeps the realm panel alongside the map; mobile opens it on demand.
   const [showSidebar, setShowSidebar] = useState(!isMobileMode);
@@ -405,11 +405,11 @@ export const ProvinceGame = () => {
         <div className={`relative flex px-2 sm:px-3 gap-1.5 ${isMobileMode ? 'flex-wrap items-center py-1.5 min-h-[5rem]' : 'h-12 items-center justify-between'}`}>
           {/* Left: Faction + Year */}
           <div className={`flex items-center gap-3 flex-shrink-0 ${isMobileMode ? 'order-1' : ''}`}>
-            <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
+            <div className="flex items-center gap-2 rounded-lg border border-amber-700/25 bg-[#251e18]/80 px-2.5 py-1">
               <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: playerFactionData?.color }} />
               <span className="text-amber-100 font-bold text-sm hidden sm:block">{playerFactionData?.name}</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-slate-800/50 rounded-lg px-2.5 py-1 border border-amber-700/20">
+            <div className="flex items-center gap-1.5 rounded-lg border border-amber-700/25 bg-[#251e18]/80 px-2.5 py-1">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
               <span className="text-amber-200 font-mono text-sm">{gameState.year}</span>
               <span className="text-amber-200/40 text-xs">V{gameState.turn}</span>
@@ -515,18 +515,18 @@ export const ProvinceGame = () => {
           }`}
           style={{ top: headerTotalH + 20 }}
         >
-          <Card className="relative bg-green-950/95 backdrop-blur-xl border-green-600/50 shadow-2xl animate-fade-in">
+          <Card className="native-panel relative animate-fade-in border-amber-500/40 bg-[#1b1612]/95 shadow-2xl">
             <button
               type="button"
               onClick={() => setResourceNoticeDismissed(true)}
               aria-label={t('resource.close')}
               title={t('resource.close')}
-              className="absolute top-1.5 right-1.5 p-1 rounded-md text-green-300/70 hover:text-green-100 hover:bg-green-800/50 transition-colors"
+              className="absolute right-1.5 top-1.5 rounded-md p-1 text-[#c4b496]/70 transition-colors hover:bg-amber-900/40 hover:text-[#f4ead5]"
             >
               <X className="w-4 h-4" />
             </button>
             <CardContent className="p-4 text-center">
-              <h3 className="text-green-100 font-bold text-lg mb-2">{t('resource.collected')}</h3>
+              <h3 className="mb-2 text-lg font-bold text-[#f2c46b]">{t('resource.collected')}</h3>
               <div className="flex items-center justify-center gap-4 text-sm flex-wrap">
                 <span className="text-amber-300">🪙 +{gameState.lastCollection.taxIncome} {t('resource.gold')}</span>
                 <span className="text-blue-300">👥 +{gameState.lastCollection.manpowerGain} {t('resource.men')}</span>

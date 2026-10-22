@@ -121,6 +121,33 @@
   }
 }
 
+@layer components {
+  .native-panel {
+    background: linear-gradient(155deg, rgb(37 30 24 / 96%), rgb(18 15 12 / 97%));
+    border: 1px solid rgb(224 169 68 / 42%);
+    box-shadow: inset 0 1px rgb(255 255 255 / 4%), 0 18px 48px rgb(0 0 0 / 38%);
+  }
+
+  .native-button-primary {
+    min-height: 2.875rem;
+    border: 1px solid #f2c46b;
+    border-radius: 0.5rem;
+    background: linear-gradient(180deg, #f2c46b, #e0a944 58%, #a8772a);
+    color: #120f0c;
+    font-weight: 700;
+    box-shadow: inset 0 1px rgb(255 255 255 / 18%);
+  }
+
+  .native-button-secondary {
+    min-height: 2.875rem;
+    border: 1px solid rgb(224 169 68 / 65%);
+    border-radius: 0.5rem;
+    background: linear-gradient(180deg, rgb(37 30 24 / 94%), rgb(18 15 12 / 94%));
+    color: #f2c46b;
+    font-weight: 600;
+  }
+}
+
 /* Comic panel border style */
 .comic-border {
   border: 3px solid hsl(var(--border));

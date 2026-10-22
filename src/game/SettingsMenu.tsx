@@ -5,12 +5,13 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { RotateCcw, Settings } from 'lucide-react';
+import { RotateCcw, Settings, X } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useLanguage, LANGUAGE_OPTIONS } from '@/lib/i18n.tsx';
 import { useDeviceMode, DeviceMode } from '@/lib/deviceMode.tsx';
 import { DevComplianceTools } from '@/game/DevComplianceTools.tsx';
 import { getAnalyticsConsent, setAnalyticsConsent, startSession, track } from '@/lib/analytics';
+import menuBackground from '@/assets/menu-bg.jpg';
 
 interface SettingsMenuProps {
   className?: string;
@@ -18,9 +19,11 @@ interface SettingsMenuProps {
   musicVolume?: number;
   onMusicVolumeChange?: (volume: number) => void;
   onRestart?: () => void;
+  fullScreen?: boolean;
+  showLabel?: boolean;
 }
 
-export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume, onMusicVolumeChange, onRestart }: SettingsMenuProps) => {
+export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume, onMusicVolumeChange, onRestart, fullScreen = false, showLabel = false }: SettingsMenuProps) => {
   const { lang, setLang, t } = useLanguage();
   const { deviceMode, setDeviceMode } = useDeviceMode();
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -88,20 +91,38 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume
         className={buttonClassName || 'text-amber-200/70 hover:text-amber-200 hover:bg-amber-900/30 h-8 w-8'}
       >
         <Settings className="w-4 h-4" />
+        {showLabel && <span>{t('settings.title')}</span>}
       </Button>
       {open && createPortal(
         <div
           ref={menuRef}
-          className="fixed z-[10000] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 backdrop-blur-xl shadow-2xl p-3"
-          style={{
-            top: menuPosition.top,
-            left: menuPosition.left,
-            width: menuPosition.width,
-            maxWidth: `calc(100vw - ${24}px)`,
-            maxHeight: `calc(100dvh - ${24}px)`,
-          }}
+          role={fullScreen ? 'dialog' : undefined}
+          aria-modal={fullScreen || undefined}
+          aria-label={fullScreen ? t('settings.title') : undefined}
+          className={fullScreen
+            ? 'fixed inset-0 z-[10000] overflow-y-auto bg-[#120f0c]/95 p-4 backdrop-blur-sm sm:p-8'
+            : 'fixed z-[10000] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-xl border border-amber-700/30 bg-slate-900/98 p-3 shadow-2xl backdrop-blur-xl'}
+          style={fullScreen ? {
+              backgroundImage: `linear-gradient(rgba(18,15,12,.88), rgba(18,15,12,.94)), url(${menuBackground})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            } : {
+              top: menuPosition.top,
+              left: menuPosition.left,
+              width: menuPosition.width,
+              maxWidth: `calc(100vw - ${24}px)`,
+              maxHeight: `calc(100dvh - ${24}px)`,
+            }}
         >
-          <p className="text-sm font-bold text-amber-100 mb-3">{t('settings.title')}</p>
+          <div className={fullScreen ? 'native-panel mx-auto max-w-2xl rounded-2xl p-4 sm:p-6' : ''}>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm font-bold text-amber-100">{t('settings.title')}</p>
+            {fullScreen && (
+              <Button type="button" variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-[#c4b496] hover:bg-white/10 hover:text-white">
+                <X className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
           <p className="text-amber-200/60 text-[11px] font-bold uppercase tracking-wide mb-1.5">{t('lang.switch')}</p>
           <select
             value={lang}
@@ -182,6 +203,7 @@ export const SettingsMenu = ({ className = '', buttonClassName = '', musicVolume
             </Button>
           )}
           {import.meta.env.DEV && <DevComplianceTools />}
+          </div>
         </div>,
         document.fullscreenElement ?? document.body,
       )}

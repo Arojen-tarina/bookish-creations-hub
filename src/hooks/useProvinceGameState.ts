@@ -78,6 +78,11 @@ const clearPersistedSession = () => {
 
 export type RecruitType = 'infantry' | 'cavalry';
 
+export const RECRUITMENT_COSTS: Record<RecruitType, { gold: number; food: number; horses: number }> = {
+  infantry: { gold: 10, food: 5, horses: 0 },
+  cavalry: { gold: 20, food: 10, horses: 5 },
+};
+
 export type Difficulty = 'easy' | 'normal' | 'hard';
 
 // Vaikeustason vaikutus tekoälyfaktioiden talouteen (aloitusvarat + vuorotulot).
@@ -1170,13 +1175,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       
       const faction = prev.factions.find(f => f.id === playerFaction);
       if (!faction) return prev;
-      // Recruitment costs per new rules
-      // Infantry: 10 gold, 5 food
-      // Cavalry: 20 gold, 5 horses, 10 food
+      const cost = RECRUITMENT_COSTS[type];
       if (type === 'infantry') {
-        if (faction.treasury < 10 || prev.food < 5) return prev;
+        if (faction.treasury < cost.gold || prev.food < cost.food) return prev;
       } else if (type === 'cavalry') {
-        if (faction.treasury < 20 || faction.horses < 5 || prev.food < 10) return prev;
+        if (faction.treasury < cost.gold || faction.horses < cost.horses || prev.food < cost.food) return prev;
       }
       
       // Capital captured: recruitment is suspended until it is recovered
@@ -1218,12 +1221,11 @@ export const useProvinceGameState = (): UseProvinceGameStateReturn => {
       let newFactions = prev.factions;
       let newFood = prev.food;
       if (type === 'infantry') {
-        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - 10, manpower: Math.max(0, f.manpower - 0) } : f);
-        newFood = Math.max(0, prev.food - 5);
+        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - cost.gold, manpower: Math.max(0, f.manpower - 0) } : f);
+        newFood = Math.max(0, prev.food - cost.food);
       } else {
-        const horsesUsed = 5; // fixed per new rule
-        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - 20, manpower: Math.max(0, f.manpower - 0), horses: Math.max(0, f.horses - horsesUsed) } : f);
-        newFood = Math.max(0, prev.food - 10);
+        newFactions = prev.factions.map(f => f.id === playerFaction ? { ...f, treasury: f.treasury - cost.gold, manpower: Math.max(0, f.manpower - 0), horses: Math.max(0, f.horses - cost.horses) } : f);
+        newFood = Math.max(0, prev.food - cost.food);
       }
       
       return {

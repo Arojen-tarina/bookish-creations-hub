@@ -6,6 +6,7 @@
  * kauppatavara, Silkkitie, levottomuus, armeijat ja toimintopainikkeet.
  */
 import { Province, Army, FactionId, PROVINCE_TERRAIN_INFO, TRADE_GOODS_INFO, FACTION_DATA_1206, getFortDurability, getProvinceDefenseBreakdown, isFortDamaged } from '@/types/province.ts';
+import { RECRUITMENT_COSTS } from '@/hooks/useProvinceGameState.ts';
 import type { RecruitType } from '@/hooks/useProvinceGameState.ts';
 import { useLanguage } from '@/lib/i18n.tsx';
 import { localizedName } from '@/lib/i18nGameUi.ts';
@@ -68,6 +69,8 @@ export const ProvinceInfoPanel = ({
   const terrainName = localizedName(t, `terrain.${province.terrain}`, terrainInfo.name);
   const tradeGoodName = tradeGood && localizedName(t, `good.${province.tradeGood}`, tradeGood.name);
   const tradeGoodEffect = tradeGood && localizedName(t, `goodEffect.${province.tradeGood}`, tradeGood.effect);
+  const infantryCost = RECRUITMENT_COSTS.infantry;
+  const cavalryCost = RECRUITMENT_COSTS.cavalry;
   
   return (
     <Card className="bg-gradient-to-br from-stone-900/80 to-stone-950/80 border-stone-700/50">
@@ -234,20 +237,32 @@ export const ProvinceInfoPanel = ({
               <Button
                 onClick={() => onRecruitArmy('infantry')}
                 disabled={!canRecruit}
+                aria-label={`${t('ui.recruitInfantry')} — ${infantryCost.gold} ${t('hud.gold')}, ${infantryCost.food} ${t('hud.food')}`}
                 variant="outline"
-                className="w-full border-green-600 bg-green-900/30 text-green-200 hover:bg-green-900/50"
+                className="h-auto min-h-14 w-full flex-col gap-0.5 border-green-600 bg-green-900/30 px-2 py-2 text-green-200 hover:bg-green-900/50"
               >
-                <Sword className="w-4 h-4 mr-2" />
-                {t('ui.recruitInfantry')}
+                <span className="flex items-center">
+                  <Sword className="mr-2 h-4 w-4" />
+                  {t('ui.recruitInfantry')}
+                </span>
+                <span className="text-[10px] font-medium text-green-100/75">
+                  🪙 {infantryCost.gold} · 🌾 {infantryCost.food}
+                </span>
               </Button>
               <Button
                 onClick={() => onRecruitArmy('cavalry')}
                 disabled={!canRecruit}
+                aria-label={`${t('ui.recruitCavalry')} — ${cavalryCost.gold} ${t('hud.gold')}, ${cavalryCost.horses} ${t('hud.horses')}, ${cavalryCost.food} ${t('hud.food')}`}
                 variant="outline"
-                className="w-full border-blue-600 bg-blue-900/30 text-blue-200 hover:bg-blue-900/50"
+                className="h-auto min-h-14 w-full flex-col gap-0.5 border-blue-600 bg-blue-900/30 px-2 py-2 text-blue-200 hover:bg-blue-900/50"
               >
-                <Wrench className="w-4 h-4 mr-2" />
-                {t('ui.recruitCavalry')}
+                <span className="flex items-center">
+                  <Wrench className="mr-2 h-4 w-4" />
+                  {t('ui.recruitCavalry')}
+                </span>
+                <span className="text-[10px] font-medium text-blue-100/75">
+                  🪙 {cavalryCost.gold} · 🐴 {cavalryCost.horses} · 🌾 {cavalryCost.food}
+                </span>
               </Button>
             </div>
             <p className="text-xs text-amber-300/60 text-center">
