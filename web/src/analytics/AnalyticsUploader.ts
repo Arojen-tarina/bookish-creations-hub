@@ -7,8 +7,10 @@ export class SupabaseAnalyticsUploader implements AnalyticsUploader {
   async insert(rows: AnalyticsRow[]): Promise<UploadResult> {
     if (!this.baseUrl || !this.apiKey || rows.length === 0) return 'FAILED';
     try {
+      const body = JSON.stringify(rows);
+      // keepalive lets the final flush on page hide finish, but browsers cap such bodies at 64 KB.
       const response = await fetch(`${this.baseUrl.replace(/\/$/, '')}/rest/v1/analytics_events`, {
-        method: 'POST', headers: { apikey: this.apiKey, Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rows),
+        method: 'POST', headers: { apikey: this.apiKey, Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body, keepalive: body.length < 60_000,
       });
       if (response.ok) return 'SENT';
       return response.status === 408 || response.status === 429 || response.status >= 500 ? 'FAILED' : 'REFUSED';

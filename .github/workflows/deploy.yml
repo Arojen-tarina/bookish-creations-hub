@@ -30,6 +30,20 @@ jobs:
         working-directory: web
         run: npm ci
 
+      # The URL and anon key are public client values (the Android build embeds them too).
+      # Repository variables win; otherwise reuse the values from the Android gradle.properties.
+      - name: Resolve Supabase client config
+        env:
+          VAR_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VAR_KEY: ${{ vars.VITE_SUPABASE_KEY }}
+        run: |
+          props=ArojenTarinat-Source-Code/ArojenTarinat/gradle.properties
+          url="${VAR_URL:-$(grep -m1 '^arojen.supabase.url=' "$props" | cut -d= -f2-)}"
+          key="${VAR_KEY:-$(grep -m1 '^arojen.supabase.key=' "$props" | cut -d= -f2-)}"
+          echo "::add-mask::$key"
+          echo "VITE_SUPABASE_URL=$url" >> "$GITHUB_ENV"
+          echo "VITE_SUPABASE_KEY=$key" >> "$GITHUB_ENV"
+
       - name: Build
         working-directory: web
         run: npm run build
