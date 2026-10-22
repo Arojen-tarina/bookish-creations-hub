@@ -1,0 +1,196 @@
+{
+ "faction": "khwarezm",
+ "seed": 3,
+ "difficulty": "easy",
+ "maxTurns": 60,
+ "steps": [
+  {
+   "label": "start",
+   "sha": "db2645a2eba5b558790139c857147797663c8b6586b59316b7db9e43d7317c58"
+  },
+  {
+   "label": "t1-actions",
+   "sha": "c131cfd372f1c7afa8f8897b96d2af2d06a51f260e463dd469d970225966c494"
+  },
+  {
+   "label": "t1-end",
+   "sha": "42034bab4708718169b8018d976ae1e23f6fe2d56a5ee1e6143fd525cf3cf955"
+  },
+  {
+   "label": "t2-actions",
+   "sha": "0169587443c476b7c02599eb88a1dd430cc9628dffef66c0fc1f3691c6fff77b"
+  },
+  {
+   "label": "t2-end",
+   "sha": "00d458db68bbbcd7e6ff8fa9aec8eca641b311ef5eb9cdd99629a8e3b3780293"
+  },
+  {
+   "label": "t3-actions",
+   "sha": "756a9b7ed8cccdec2887480bdb7d9b5d6246cc364d1216eb70e4067dc94ac2ae"
+  },
+  {
+   "label": "t3-end",
+   "sha": "6761302ce7b35011777b0c6bf76ce6b8b556a0fbc49e3e2b5d17569905e34386"
+  },
+  {
+   "label": "t4-actions",
+   "sha": "38d0fa6eaf6c1ff8a3d450781f4ee892f96945c58d138c45d15f05a18202f094"
+  },
+  {
+   "label": "t4-end",
+   "sha": "36517b2934ac2b7b2d57a771998ca4df4c6a1ffc578577a7d60d8a38c77fdd86"
+  },
+  {
+   "label": "t5-actions",
+   "sha": "581bc308387e59fec5b52e0ee2cefb0823f7a4ab38bd17004866dd8a8c4fc2b4"
+  },
+  {
+   "label": "t5-end",
+   "sha": "e6ac3a154b4a568ef5c6f15556879c2f0c0aa30c309a38e48178d3d02a020cac"
+  },
+  {
+   "label": "t6-actions",
+   "sha": "0b64611e5041984ded0c53da356c9b89fe0f848caa2026dd01a7e17b33de3b97"
+  },
+  {
+   "label": "t6-end",
+   "sha": "18d392f5c0fe5a55e1a650a5f331e617c920566e2c8aa8f40732cc845d92ae14"
+  },
+  {
+   "label": "t7-actions",
+   "sha": "29ee9462028b37d2576fe7f382fd2dccbbccf239806e3c3168cd60bcaa816024"
+  },
+  {
+   "label": "t7-end",
+   "sha": "b5a06db64981734abab1db02e1f0079331395d7a376ba05c73e9313a67ac9082"
+  },
+  {
+   "label": "t8-actions",
+   "sha": "e9eaf51f12e0737ddc531918e60d2accbb36835eac0726cadc431832fe058097"
+  },
+  {
+   "label": "t8-end",
+   "sha": "109422b94783037097c768fb526b963709307b064d9a82df62300aac12f197c4"
+  },
+  {
+   "label": "t9-actions",
+   "sha": "cfaa4de75f054504aa6d5ca367e86016142b2cbb2b97c7e96de9da46b789c309"
+  },
+  {
+   "label": "t9-end",
+   "sha": "9d0c09ac902b940cf0afa4dcd3c584bfe20b7df2bf45e2f84607c7b28c27b8a9"
+  },
+  {
+   "label": "t10-actions",
+   "sha": "ea5d13f4b2add923b64f519f207773d49f9c4f2baa9e0f1a99ba5a34e7f2c4b6"
+  },
+  {
+   "label": "t10-end",
+   "sha": "3d1683078cf0a28032e797491f596cd41976948fa4d7661eb0b39b97a5168e76"
+  },
+  {
+   "label": "t11-actions",
+   "sha": "cf6c57cd6cc8a30dc78020674f0d557411bef1a5ddbb428c3ec34d56aa31ea1d"
+  },
+  {
+   "label": "t11-end",
+   "sha": "67c258ad675e91b53843a1d0207fe12c34d7f2d6689878fbb15e9c737049455f"
+  },
+  {
+   "label": "t12-actions",
+   "sha": "1696bd76b7320ee5c98b5dfcd7df68682b20d928234cea6ada1e1845492b83bf"
+  },
+  {
+   "label": "t12-end",
+   "sha": "1a3bee1df59df51aa8a0968ad16a6524d13932ba63c98822f6c595923f7b1dc2"
+  },
+  {
+   "label": "t13-actions",
+   "sha": "62cd132e2cf87148a87d7b1240ecc9a41471256c2ee47a2432e62029502fe547"
+  },
+  {
+   "label": "t13-end",
+   "sha": "cf449a5f79f6c79c27bb0cb13b5c515ae5cea4dac6967dc6f27245df54e79067"
+  },
+  {
+   "label": "t14-actions",
+   "sha": "9188599a7ca26f6da74d7b0d4d3cec0f1563ca220117552caf09b2e92f06c46a"
+  },
+  {
+   "label": "t14-end",
+   "sha": "11f2f7b6f47afc63ffe3bbefea06136cbe2f080e58c86dab7a0154dae67e20ec"
+  },
+  {
+   "label": "t15-actions",
+   "sha": "453d8125d9c10aff2b971bef19f9261d5dcdd7ad473ec754ac59c8d2fa5f4dde"
+  },
+  {
+   "label": "t15-end",
+   "sha": "f9d938997016be0be23984b7f4745836a187359f1ec156e8f4c80ff950289ee1"
+  },
+  {
+   "label": "t16-actions",
+   "sha": "49d648588a73fb9cc5d7af48d4f4a000f2561da23b3b079f3b6a548bada1e49a"
+  },
+  {
+   "label": "t16-end",
+   "sha": "c7811c8ced9095e24990712abc1e283d791c9472285cecd301ea23472853efe7"
+  },
+  {
+   "label": "t17-actions",
+   "sha": "2478175fdb1bf930d14480c315996bdac38e63a7026ee7a739e0bc6f088629d1"
+  },
+  {
+   "label": "t17-end",
+   "sha": "b6a6b77069da0a4fae195f4f6f4af0a7e681fd3c91b2f5958b77bc0b9ced0d94"
+  },
+  {
+   "label": "t18-actions",
+   "sha": "9f6dd3df0600b252f64380a35f4959b60c533510776b9b43d3769758a624b5ed"
+  },
+  {
+   "label": "t18-end",
+   "sha": "5c337e7ee3bd6954953f8029c1f6c7cb6423c371ae6a69859ea21dae63be2ee5"
+  },
+  {
+   "label": "t19-actions",
+   "sha": "4eb34628b1b30bc866725b7bec5941b556795a0303a99638105b951616afa39c"
+  },
+  {
+   "label": "t19-end",
+   "sha": "f3276bdb8c353144b8a237fb14788745caa8324959abb870e87059a22e8dc1be"
+  },
+  {
+   "label": "t20-actions",
+   "sha": "6b6a901e1b71252e1c2404783f0689a84371349849e58ea9dd5234f2688f7395"
+  },
+  {
+   "label": "t20-end",
+   "sha": "edf7a9a0f623df7674279d1546ea31684353d8e6c467d4a47dad6336c04f11e3"
+  },
+  {
+   "label": "t21-actions",
+   "sha": "13cb8668fbbca3b89d8b5c9583b33a2fcf8363324ce29cface5e60ddc09bd41d"
+  },
+  {
+   "label": "t21-end",
+   "sha": "c4ba23c1d6bcad7d6714f6d3094ac195cb8335cec99d2db0ea71956ef259272f"
+  },
+  {
+   "label": "t22-actions",
+   "sha": "d542bf42a48d2940378801c4e1b29d9c5a16a9d422366252d1bbb1f877b9ba9d"
+  },
+  {
+   "label": "t22-end",
+   "sha": "e68bec0fadeee5e3d3a91f4036d84b41445b1ea6dfd7fc0b13b74d732d3d1649"
+  },
+  {
+   "label": "t23-actions",
+   "sha": "100f240e7f5c3b1977ff3dcb1e34cb4ee212ea3d88a0e5fad8fe505aa25aef5b"
+  },
+  {
+   "label": "t23-end",
+   "sha": "30fa2cab1dd7562f37b3859abf14c85781b5a2893e678f14b68040f7a66f0f40"
+  }
+ ]
+}

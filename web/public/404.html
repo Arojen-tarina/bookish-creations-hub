@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Arojen Tarinat</title>
+    <script>
+      // GitHub Pages SPA fallback: encode the requested path into a query
+      // parameter and bounce back to the app root, where index.html restores it.
+      // Keeps one path segment (the repository name) as the app base.
+      (function () {
+        var segmentsToKeep = 1;
+        var l = window.location;
+        var pathParts = l.pathname.split('/');
+        var base = pathParts.slice(0, 1 + segmentsToKeep).join('/');
+        var route = pathParts.slice(1 + segmentsToKeep).join('/');
+        l.replace(
+          l.protocol + '//' + l.host + base + '/Arojen-Tarinat.html?p=/' +
+          route.replace(/&/g, '~and~') +
+          (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    Uudelleenohjataan…
+  </body>
+</html>

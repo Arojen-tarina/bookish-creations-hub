@@ -1,2 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+keystore*.properties
+.DS_Store
 android-native/keystore.properties
 /android-native
