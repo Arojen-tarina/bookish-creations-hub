@@ -1,0 +1,4 @@
+#Sat Oct 03 20:46:05 UTC 2026
+base.0=/workspaces/bookish-creations-hub/android/app/build/intermediates/dex/release/minifyReleaseWithR8/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
