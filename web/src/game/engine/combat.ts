@@ -17,7 +17,7 @@ export function createProvinceGarrison(p: Province): Army | null {
   const fortGarrison = p.fortLevel > 0 ? p.fortLevel * 3 + Math.max(1, Math.floor(p.developmentLevel / 2)) : 0;
   const infantry = Math.max(p.garrison, fortGarrison);
   if (infantry <= 0) return null;
-  return { id: `garrison-${p.id}`, ownerId: p.ownerId, provinceId: p.id, cavalry: 0, infantry, siege: 0, morale: Math.min(95, 55 + p.fortLevel * 10 + p.developmentLevel * 2), supply: 20, movementLeft: 0, leaderBonus: 0 };
+  return { id: `garrison-${p.id}`, ownerId: p.ownerId, provinceId: p.id, cavalry: 0, infantry, siege: 0, movementLeft: 0, leaderBonus: 0 };
 }
 export interface CombatOutcome { attackerWins: boolean; defenderDestroyed: boolean; attackerCavalryLoss: number; attackerInfantryLoss: number; defenderCavalryLoss: number; defenderInfantryLoss: number; attackRoll: number; defenseRoll: number; attackerScore: number; defenderScore: number }
 const lossesFromDamage = (army: Army, damage: number): [number, number] => { const infantry = Math.min(army.infantry, damage); return [Math.min(army.cavalry, Math.floor((damage - infantry) / 2)), infantry]; };

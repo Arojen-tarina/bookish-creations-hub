@@ -61,7 +61,7 @@
     <string name="building_stable_name">Конюшня</string>
     <string name="building_wonder_effect">Только в столице: +престиж и +влияние/ход (культурная победа)</string>
     <string name="building_wonder_name">Чудо</string>
-    <string name="building_workshop_effect">+1 ремесленник/ход, нанятые войска получают +10 морали</string>
+    <string name="building_workshop_effect">+1 ремесленник/ход</string>
     <string name="building_workshop_name">Мастерская</string>
     <string name="cards_deck_label">в колоде</string>
     <string name="cards_drag_hint">Потяните, чтобы изменить размер карт — двойной щелчок для сброса</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Соль</string>
     <string name="good_silk">Шёлк</string>
     <string name="good_spices">Пряности</string>
-    <string name="good_effect_fur">+1 к снабжению и +1 к морали</string>
-    <string name="good_effect_gems">+2 золота/ход и +1 к морали</string>
+    <string name="good_effect_fur">Нет бонуса</string>
+    <string name="good_effect_gems">+2 золота/ход</string>
     <string name="good_effect_gold">+3 золота/ход</string>
     <string name="good_effect_grain">+2 живой силы</string>
     <string name="good_effect_horses">+2 к найму конницы</string>
     <string name="good_effect_iron" formatted="false">-20% к стоимости отрядов</string>
-    <string name="good_effect_livestock">+1 живой силы, +1 к снабжению</string>
-    <string name="good_effect_salt">+1 к снабжению</string>
+    <string name="good_effect_livestock">+1 живой силы</string>
+    <string name="good_effect_salt">Нет бонуса</string>
     <string name="good_effect_silk">+3 золота/ход</string>
     <string name="good_effect_spices">+2 золота/ход</string>
     <string name="hud_army_selected">Армия выбрана</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Уровень</string>
     <string name="ui_manpower">Живая сила</string>
     <string name="ui_merge_armies">Объединить армии</string>
-    <string name="ui_morale">Мораль</string>
     <string name="ui_move">Двигаться</string>
     <string name="ui_neutral">Нейтральная</string>
     <string name="ui_no_events">Событий пока нет. Завершите ход, чтобы увидеть действия ИИ.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Провинции</string>
     <string name="ui_statistics">Статистика</string>
     <string name="ui_streak_title">Условия экономической победы выполнены — серия идёт</string>
-    <string name="ui_supply">Снабжение</string>
     <string name="ui_taxes">Налоги</string>
     <string name="ui_technologies">Технологии (%1$s)</string>
     <string name="ui_terrain">Местность</string>

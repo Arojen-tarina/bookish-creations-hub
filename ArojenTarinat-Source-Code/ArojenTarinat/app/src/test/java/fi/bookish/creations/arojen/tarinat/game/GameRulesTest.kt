@@ -132,7 +132,7 @@ class GameRulesTest {
                 else -> it
             }
         }
-        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, siege = 0, morale = 90, supply = 30, movementLeft = 3)
+        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, siege = 0, movementLeft = 3)
         val armies = s0.armies.map {
             if (it.id == Army.chiefArmyId(player)) it.copy(provinceId = chiefLand.id, cavalry = 0, infantry = 1, siege = 0) else it
         } + horde
@@ -223,7 +223,6 @@ class GameRulesTest {
         s.armies.forEach {
             assertTrue("$where: empty army ${it.id}", it.cavalry + it.infantry > 0)
             assertTrue("$where: army ${it.id} in unknown province", it.provinceId in provinceIds)
-            assertTrue("$where: army ${it.id} morale ${it.morale}", it.morale in 10..100)
         }
         assertEquals("$where: duplicate army ids", s.armies.size, s.armies.map { it.id }.toSet().size)
         s.provinces.forEach { p ->

@@ -61,7 +61,7 @@
     <string name="building_stable_name">Stall</string>
     <string name="building_wonder_effect">Nur in der Hauptstadt: +Prestige und +Einfluss/Zug (Kultursieg)</string>
     <string name="building_wonder_name">Wunder</string>
-    <string name="building_workshop_effect">+1 Handwerker/Zug, rekrutierte Truppen erhalten +10 Moral</string>
+    <string name="building_workshop_effect">+1 Handwerker/Zug</string>
     <string name="building_workshop_name">Werkstatt</string>
     <string name="cards_deck_label">im Stapel</string>
     <string name="cards_drag_hint">Ziehen, um die Kartengröße zu ändern — Doppelklick zum Zurücksetzen</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Salz</string>
     <string name="good_silk">Seide</string>
     <string name="good_spices">Gewürze</string>
-    <string name="good_effect_fur">+1 Nachschub und +1 Moral</string>
-    <string name="good_effect_gems">+2 Gold/Zug und +1 Moral</string>
+    <string name="good_effect_fur">Kein Bonus</string>
+    <string name="good_effect_gems">+2 Gold/Zug</string>
     <string name="good_effect_gold">+3 Gold/Zug</string>
     <string name="good_effect_grain">+2 Mannstärke</string>
     <string name="good_effect_horses">+2 Kavallerierekrutierung</string>
     <string name="good_effect_iron" formatted="false">-20 % Einheitenkosten</string>
-    <string name="good_effect_livestock">+1 Mannstärke, +1 Nachschub</string>
-    <string name="good_effect_salt">+1 Nachschub</string>
+    <string name="good_effect_livestock">+1 Mannstärke</string>
+    <string name="good_effect_salt">Kein Bonus</string>
     <string name="good_effect_silk">+3 Gold/Zug</string>
     <string name="good_effect_spices">+2 Gold/Zug</string>
     <string name="hud_army_selected">Armee ausgewählt</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Stufe</string>
     <string name="ui_manpower">Mannstärke</string>
     <string name="ui_merge_armies">Armeen vereinen</string>
-    <string name="ui_morale">Moral</string>
     <string name="ui_move">Bewegen</string>
     <string name="ui_neutral">Neutral</string>
     <string name="ui_no_events">Noch keine Ereignisse. Beende deinen Zug, um die Aktionen der KI zu sehen.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Provinzen</string>
     <string name="ui_statistics">Statistiken</string>
     <string name="ui_streak_title">Bedingungen für den Wirtschaftssieg erfüllt — Serie läuft</string>
-    <string name="ui_supply">Nachschub</string>
     <string name="ui_taxes">Steuern</string>
     <string name="ui_technologies">Technologien (%1$s)</string>
     <string name="ui_terrain">Gelände</string>

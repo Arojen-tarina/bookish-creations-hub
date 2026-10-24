@@ -73,7 +73,6 @@ fun moveArmy(state: GameState, armyId: String, targetProvinceId: String, rng: Ga
     val defender: Army? = when {
         enemyArmy != null && garrison != null -> enemyArmy.copy(
             infantry = enemyArmy.infantry + garrison.infantry,
-            morale = max(enemyArmy.morale, garrison.morale),
         )
         else -> enemyArmy ?: garrison
     }
@@ -94,7 +93,6 @@ fun moveArmy(state: GameState, armyId: String, targetProvinceId: String, rng: Ga
             armies[armyIndex] = army.copy(
                 provinceId = targetProvinceId,
                 movementLeft = max(0, army.movementLeft - moveCost),
-                morale = min(100, army.morale + 5),
             )
             return MoveResult(state.copy(armies = armies, provinces = provinces), surrenderedProvinceId = targetProvinceId)
         }
@@ -112,8 +110,6 @@ fun moveArmy(state: GameState, armyId: String, targetProvinceId: String, rng: Ga
             attackerWon = r.attackerWins,
             attackerLosses = UnitLosses(r.attackerCavalryLoss, r.attackerInfantryLoss),
             defenderLosses = UnitLosses(r.defenderCavalryLoss, r.defenderInfantryLoss),
-            attackerMoraleLoss = if (r.attackerWins) 10 else 20,
-            defenderMoraleLoss = if (r.attackerWins) 20 else 10,
             attackRoll = r.attackRoll,
             defenseRoll = r.defenseRoll,
             attackerPower = r.attackerScore,
@@ -127,11 +123,10 @@ fun moveArmy(state: GameState, armyId: String, targetProvinceId: String, rng: Ga
         fun damagedDefender(def: Army) = def.copy(
             cavalry = max(0, def.cavalry - r.defenderCavalryLoss),
             infantry = max(0, def.infantry - r.defenderInfantryLoss),
-            morale = max(20, def.morale - 20),
         )
 
         if (!r.attackerWins) {
-            armies[armyIndex] = battered.copy(morale = max(20, army.morale - 20))
+            armies[armyIndex] = battered
         } else if (target.fortLevel > 0) {
             // Walls absorb the assault: durability first, then a fort level. No capture yet.
             val walls = provinces[targetIndex]
@@ -143,14 +138,14 @@ fun moveArmy(state: GameState, armyId: String, targetProvinceId: String, rng: Ga
             } else {
                 walls.copy(fortDurability = 0)
             }
-            armies[armyIndex] = battered.copy(morale = max(20, army.morale - 10))
+            armies[armyIndex] = battered
             if (enemyArmy != null) {
                 val i = armies.indexOfFirst { it.id == enemyArmy.id }
                 if (i != -1) armies[i] = damagedDefender(enemyArmy)
             }
         } else {
             // Open ground: the attacker takes the province.
-            armies[armyIndex] = battered.copy(provinceId = targetProvinceId, morale = max(20, army.morale - 10))
+            armies[armyIndex] = battered.copy(provinceId = targetProvinceId)
             if (enemyArmy != null) {
                 if (r.defenderDestroyed) {
                     armies.removeAll { it.id == enemyArmy.id }
@@ -187,13 +182,10 @@ fun mergeArmies(state: GameState, armyId: String, mergeIntoId: String): GameStat
     if (source.ownerId != player || target.ownerId != player) return state
     if (source.provinceId != target.provinceId) return state
 
-    fun weight(a: Army) = (a.cavalry + a.infantry).takeIf { it != 0 } ?: 1
-    val totalUnits = (target.cavalry + target.infantry + source.cavalry + source.infantry).takeIf { it != 0 } ?: 1
     val merged = target.copy(
         cavalry = target.cavalry + source.cavalry,
         infantry = target.infantry + source.infantry,
         siege = target.siege + source.siege,
-        morale = ((target.morale * weight(target) + source.morale * weight(source)).toDouble() / totalUnits).roundJs(),
         // Merging spends the turn's movement for the combined stack.
         movementLeft = min(target.movementLeft, source.movementLeft),
     )
@@ -303,8 +295,6 @@ fun recruitArmy(state: GameState, provinceId: String, type: RecruitType): GameSt
     val faction = state.player
     val buildings = state.buildingsIn(provinceId)
     val stableCount = if (BuildingType.STABLE in buildings) 1 else 0
-    // A workshop (forge) sends new troops out with better morale.
-    val forgeMorale = if (BuildingType.WORKSHOP in buildings) 10 else 0
     val cavalry = if (type == RecruitType.CAVALRY) {
         min(4 + stableCount, floor(faction.horses / 2.0).toInt())
     } else {
@@ -319,8 +309,6 @@ fun recruitArmy(state: GameState, provinceId: String, type: RecruitType): GameSt
         cavalry = cavalry,
         infantry = infantry,
         siege = 0,
-        morale = 70 + forgeMorale,
-        supply = 20,
         movementLeft = 0,
         leaderBonus = 0.0,
     )
@@ -376,7 +364,7 @@ fun playCard(state: GameState, cardId: String): GameState {
         CardEffectType.PERMANENT_ATTACK, CardEffectType.PERMANENT_DEFENSE ->
             next = next.copy(playedTechCards = state.playedTechCards + card)
         CardEffectType.TERRAIN_IGNORE -> next = next.copy(movementBonus = state.movementBonus + 1)
-        CardEffectType.DRAW_CARDS, CardEffectType.RECRUIT_FREE, CardEffectType.MORALE -> Unit
+        CardEffectType.DRAW_CARDS, CardEffectType.RECRUIT_FREE -> Unit
     }
     return next
 }

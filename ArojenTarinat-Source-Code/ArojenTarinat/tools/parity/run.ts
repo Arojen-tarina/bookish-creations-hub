@@ -36,7 +36,7 @@ function snapshot(s: any): string {
     s.attackBonus, s.defenseBonus, s.movementBonus,
     s.factions.map((f: any) => [f.id, f.treasury, f.manpower, f.horses]),
     s.provinces.map((p: any) => [p.id, p.ownerId ?? null, p.fortLevel, p.fortDurability ?? null, p.garrison, p.unrest, p.siegeProgress ?? null]),
-    s.armies.map((a: any) => [a.id, a.ownerId, a.provinceId, a.cavalry, a.infantry, a.siege, a.morale, a.supply, a.movementLeft]),
+    s.armies.map((a: any) => [a.id, a.ownerId, a.provinceId, a.cavalry, a.infantry, a.siege, a.movementLeft]),
     ids(s.hand), ids(s.deck), ids(s.discard), ids(s.playedTechCards),
     s.activeEffects.map((e: any) => [e.cardId, e.type, e.value, e.remainingTurns]),
     Object.keys(s.buildings).sort().map((k) => [k, s.buildings[k]]),

@@ -134,19 +134,11 @@ private fun ProvinceStats(game: GameState, p: Province) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         StatTile(Modifier.weight(1f), { ResourceIcon(ResourceKind.GOLD) }, p.baseTax.toString(), stringResource(R.string.ui_taxes))
         StatTile(Modifier.weight(1f), { ResourceIcon(ResourceKind.MANPOWER) }, p.baseManpower.toString(), stringResource(R.string.ui_manpower))
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         StatTile(
             Modifier.weight(1f),
             { Icon(GameIcons.Shield, null, tint = Jade, modifier = Modifier.size(18.dp)) },
             plus(formatNumber(defense.total)),
             stringResource(R.string.ui_defense),
-        )
-        StatTile(
-            Modifier.weight(1f),
-            { Icon(GameIcons.Flag, null, tint = Color(0xFFD8B4FE), modifier = Modifier.size(18.dp)) },
-            p.supply.toString(),
-            stringResource(R.string.ui_supply),
         )
     }
     if (p.fortLevel > 0) {
@@ -261,13 +253,6 @@ private fun ArmyList(game: GameState, armies: List<Army>, selectedArmyId: String
                         }
                     }
                     Spacer(Modifier.size(6.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.ui_morale), style = MaterialTheme.typography.bodySmall, color = TextMid)
-                        Spacer(Modifier.width(8.dp))
-                        ProgressBar(army.morale / 100f, Gold, Modifier.weight(1f), height = 5.dp)
-                        Spacer(Modifier.width(8.dp))
-                        Text("${army.morale}%", style = MaterialTheme.typography.bodySmall, color = TextMid)
-                    }
                     if (mine && selected != null && !isSelected && selected.ownerId == player) {
                         Spacer(Modifier.size(8.dp))
                         SmallActionButton(stringResource(R.string.ui_merge_armies), GameIcons.Merge, enabled = true) {

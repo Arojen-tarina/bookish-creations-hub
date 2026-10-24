@@ -61,7 +61,7 @@
     <string name="building_stable_name">اصطبل</string>
     <string name="building_wonder_effect">صرف دارالحکومت میں: فی باری +وقار اور +اثر و رسوخ (ثقافتی فتح)</string>
     <string name="building_wonder_name">عجوبہ</string>
-    <string name="building_workshop_effect">+1 کاریگر/باری، بھرتی شدہ فوج کو +10 حوصلہ</string>
+    <string name="building_workshop_effect">+1 کاریگر/باری</string>
     <string name="building_workshop_name">کارگاہ</string>
     <string name="cards_deck_label">گڈی میں</string>
     <string name="cards_drag_hint">کارڈ کا سائز بدلنے کے لیے کھینچیں — ری سیٹ کے لیے دو بار کلک کریں</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">نمک</string>
     <string name="good_silk">ریشم</string>
     <string name="good_spices">مصالحے</string>
-    <string name="good_effect_fur">+1 رسد اور +1 حوصلہ</string>
-    <string name="good_effect_gems">+2 سونا/باری اور +1 حوصلہ</string>
+    <string name="good_effect_fur">کوئی بونس نہیں</string>
+    <string name="good_effect_gems">+2 سونا/باری</string>
     <string name="good_effect_gold">+3 سونا/باری</string>
     <string name="good_effect_grain">+2 افرادی قوت</string>
     <string name="good_effect_horses">+2 گھڑسوار بھرتی</string>
     <string name="good_effect_iron">یونٹس کی لاگت -20٪</string>
-    <string name="good_effect_livestock">+1 افرادی قوت، +1 رسد</string>
-    <string name="good_effect_salt">+1 رسد</string>
+    <string name="good_effect_livestock">+1 افرادی قوت</string>
+    <string name="good_effect_salt">کوئی بونس نہیں</string>
     <string name="good_effect_silk">+3 سونا/باری</string>
     <string name="good_effect_spices">+2 سونا/باری</string>
     <string name="hud_army_selected">فوج منتخب</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">سطح</string>
     <string name="ui_manpower">افرادی قوت</string>
     <string name="ui_merge_armies">فوجیں ملائیں</string>
-    <string name="ui_morale">حوصلہ</string>
     <string name="ui_move">حرکت</string>
     <string name="ui_neutral">غیر جانبدار</string>
     <string name="ui_no_events">ابھی کوئی واقعہ نہیں۔ AI کی چالیں دیکھنے کے لیے باری ختم کریں۔</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">صوبے</string>
     <string name="ui_statistics">اعداد و شمار</string>
     <string name="ui_streak_title">معاشی فتح کی شرائط پوری — سلسلہ جاری</string>
-    <string name="ui_supply">رسد</string>
     <string name="ui_taxes">ٹیکس</string>
     <string name="ui_technologies">ٹیکنالوجیز (%1$s)</string>
     <string name="ui_terrain">خطہ</string>

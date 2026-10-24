@@ -49,8 +49,6 @@ internal fun createProvinceGarrison(province: Province): Army? {
         cavalry = 0,
         infantry = infantry,
         siege = 0,
-        morale = min(95, 55 + province.fortLevel * 10 + province.developmentLevel * 2),
-        supply = 20,
         movementLeft = 0,
         leaderBonus = 0.0,
     )

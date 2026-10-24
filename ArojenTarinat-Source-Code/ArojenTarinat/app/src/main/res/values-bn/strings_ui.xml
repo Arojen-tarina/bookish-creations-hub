@@ -61,7 +61,7 @@
     <string name="building_stable_name">আস্তাবল</string>
     <string name="building_wonder_effect">শুধু রাজধানীতে: প্রতি পালায় +মর্যাদা ও +প্রভাব (সাংস্কৃতিক বিজয়)</string>
     <string name="building_wonder_name">বিস্ময়</string>
-    <string name="building_workshop_effect">+১ কারিগর/পালা, নিয়োগ করা সৈন্যরা +১০ মনোবল পায়</string>
+    <string name="building_workshop_effect">+১ কারিগর/পালা</string>
     <string name="building_workshop_name">কারখানা</string>
     <string name="cards_deck_label">ডেকে</string>
     <string name="cards_drag_hint">কার্ডের আকার বদলাতে টেনে আনুন — রিসেট করতে দুবার ক্লিক করুন</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">লবণ</string>
     <string name="good_silk">রেশম</string>
     <string name="good_spices">মশলা</string>
-    <string name="good_effect_fur">+১ সরবরাহ ও +১ মনোবল</string>
-    <string name="good_effect_gems">+২ সোনা/পালা ও +১ মনোবল</string>
+    <string name="good_effect_fur">কোনো বোনাস নেই</string>
+    <string name="good_effect_gems">+২ সোনা/পালা</string>
     <string name="good_effect_gold">+৩ সোনা/পালা</string>
     <string name="good_effect_grain">+২ জনবল</string>
     <string name="good_effect_horses">+২ অশ্বারোহী নিয়োগ</string>
     <string name="good_effect_iron" formatted="false">ইউনিটের খরচ -২০%</string>
-    <string name="good_effect_livestock">+১ জনবল, +১ সরবরাহ</string>
-    <string name="good_effect_salt">+১ সরবরাহ</string>
+    <string name="good_effect_livestock">+১ জনবল</string>
+    <string name="good_effect_salt">কোনো বোনাস নেই</string>
     <string name="good_effect_silk">+৩ সোনা/পালা</string>
     <string name="good_effect_spices">+২ সোনা/পালা</string>
     <string name="hud_army_selected">সেনাবাহিনী নির্বাচিত</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">স্তর</string>
     <string name="ui_manpower">জনবল</string>
     <string name="ui_merge_armies">সেনাবাহিনী একত্র করুন</string>
-    <string name="ui_morale">মনোবল</string>
     <string name="ui_move">চলুন</string>
     <string name="ui_neutral">নিরপেক্ষ</string>
     <string name="ui_no_events">এখনও কোনো ঘটনা নেই। AI-এর চাল দেখতে পালা শেষ করুন।</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">প্রদেশ</string>
     <string name="ui_statistics">পরিসংখ্যান</string>
     <string name="ui_streak_title">অর্থনৈতিক বিজয়ের শর্ত পূরণ — ধারা চলছে</string>
-    <string name="ui_supply">সরবরাহ</string>
     <string name="ui_taxes">কর</string>
     <string name="ui_technologies">প্রযুক্তি (%1$s)</string>
     <string name="ui_terrain">ভূপ্রকৃতি</string>

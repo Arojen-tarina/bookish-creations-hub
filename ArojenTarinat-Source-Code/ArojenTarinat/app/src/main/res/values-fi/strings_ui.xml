@@ -61,7 +61,7 @@
     <string name="building_stable_name">Hevostalli</string>
     <string name="building_wonder_effect">Vain pääkaupungissa: +arvovaltaa ja +vaikutusvaltaa/vuoro (kulttuurivoitto)</string>
     <string name="building_wonder_name">Ihme</string>
-    <string name="building_workshop_effect">+1 käsityöläinen/vuoro, rekrytoidut joukot saavat +10 moraalia</string>
+    <string name="building_workshop_effect">+1 käsityöläinen/vuoro</string>
     <string name="building_workshop_name">Paja</string>
     <string name="cards_deck_label">pakassa</string>
     <string name="cards_drag_hint">Raahaa muuttaaksesi korttien kokoa — kaksoisklikkaa palauttaaksesi</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Suola</string>
     <string name="good_silk">Silkki</string>
     <string name="good_spices">Mausteet</string>
-    <string name="good_effect_fur">+1 tarjonta ja +1 moraali</string>
-    <string name="good_effect_gems">+2 kultaa/vuoro ja +1 moraali</string>
+    <string name="good_effect_fur">Ei bonusta</string>
+    <string name="good_effect_gems">+2 kultaa/vuoro</string>
     <string name="good_effect_gold">+3 kultaa/vuoro</string>
     <string name="good_effect_grain">+2 miesvoimaa</string>
     <string name="good_effect_horses">+2 ratsuväen rekrytointi</string>
     <string name="good_effect_iron" formatted="false">-20% yksiköiden kustannus</string>
-    <string name="good_effect_livestock">+1 miesvoimaa, +1 tarjonta</string>
-    <string name="good_effect_salt">+1 tarjonta</string>
+    <string name="good_effect_livestock">+1 miesvoimaa</string>
+    <string name="good_effect_salt">Ei bonusta</string>
     <string name="good_effect_silk">+3 kultaa/vuoro</string>
     <string name="good_effect_spices">+2 kultaa/vuoro</string>
     <string name="hud_army_selected">Armeija valittu</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Taso</string>
     <string name="ui_manpower">Miesvoima</string>
     <string name="ui_merge_armies">Yhdistä armeijat</string>
-    <string name="ui_morale">Moraali</string>
     <string name="ui_move">Liiku</string>
     <string name="ui_neutral">Neutraali</string>
     <string name="ui_no_events">Ei tapahtumia vielä. Lopeta vuoro nähdäksesi AI:n toiminnot.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Alueet</string>
     <string name="ui_statistics">Tilastot</string>
     <string name="ui_streak_title">Talousvoiton ehdot täyttyvät — streak käynnissä</string>
-    <string name="ui_supply">Tarjonta</string>
     <string name="ui_taxes">Verot</string>
     <string name="ui_technologies">Teknologiat (%1$s)</string>
     <string name="ui_terrain">Maasto</string>
