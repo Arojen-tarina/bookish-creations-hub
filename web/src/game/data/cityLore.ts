@@ -110,24 +110,98 @@ export const CITY_LORE_OVERRIDES: Record<string, LoreOverride> = {
   },
 };
 
-/** Profile for a city with no specific lore. Built from the province data only. */
+const TERRAIN_LABELS: Record<string, string> = {
+  steppe: 'aro',
+  forest: 'metsä',
+  hills: 'kukkulat',
+  mountain: 'vuoristo',
+  desert: 'autiomaa',
+  marsh: 'kosteikko',
+  farmland: 'viljelysmaa',
+  grassland: 'niitty',
+};
+
+const TRADE_LABELS: Record<string, string> = {
+  fur: 'turkis',
+  horses: 'hevonen',
+  iron: 'rauta',
+  salt: 'suola',
+  grain: 'vilja',
+  livestock: 'karja',
+};
+
+/** Chronicle passages per region. Regions missing here are not described by the chronicle. */
+const REGION_CHRONICLE: Record<string, { text: string; source: string }> = {
+  mongolia: {
+    text: 'Pohjoisen aroheimot ovat itsenäistä paimentolaiskulttuuria. He eivät rakenna kivitaloja, vaan liikkuvat kausiluonteisilla laitumilla.',
+    source: 'Kronikka: Suuri kahtiajako',
+  },
+  rus: {
+    text: 'Kronikka kuvaa Venäjän ruhtinaskunnat metsien puolustajina.',
+    source: 'Kronikka: Liite A — Vuoden 1206 valtakunnat',
+  },
+  khwarezm: {
+    text: 'Kronikka kuvaa Khwarezmia karavaanireittien valtiaana.',
+    source: 'Kronikka: Liite A — Vuoden 1206 valtakunnat',
+  },
+  song_china: {
+    text: 'Kronikka kuvaa Song-Kiinaa kauppias-sivistyksenä.',
+    source: 'Kronikka: Liite A — Heimot ja kansat',
+  },
+};
+
+/** Interpretation linking province facts to the regional chronicle. Labeled as interpretation in the profile. */
+const REGION_INTERPRETATION: Record<string, string> = {
+  mongolia: 'Tulkinta: kronikan kuvaus kausiliikkeestä selittää, miksi kaupungin merkitys on pelissä lähinnä laidunten ja reittien hallinnassa.',
+  rus: 'Tulkinta: metsien puolustajien alueella kaupungin linnoitus ja maasto ovat pelissä keskeisiä.',
+  khwarezm: 'Tulkinta: karavaanireittien valtiaan alueella kaupungin kauppa ja asema reittien varrella liittyvät kronikan kuvaukseen.',
+  song_china: 'Tulkinta: kauppias-sivistyksen kuvaus sopii alueeseen, jonka kauppa on pelitiedoissa merkittävää.',
+};
+
+const NO_CHRONICLE_TEXT = 'Kronikka ei kuvaa tätä aluetta erikseen, joten kaupungille ei ole kirjattu tapahtumia.';
+
+/** Profile for a city with no specific lore. Built from province game data and the regional chronicle passage only. */
 function fallbackLore(province: Province): CityLore {
   const area = AREA_LABELS[province.region] ?? province.region;
   const realmId = CAPITAL_OF[province.id];
   const historical = historicalLabelFor(province.id, province.name);
+  const terrain = TERRAIN_LABELS[province.terrain] ?? province.terrain;
   const capitalLine = realmId ? ` Se on valtakunnan pääkaupunki (${FACTION_NAMES[realmId] ?? realmId}).` : '';
+  const ownerLine = province.ownerId ? ` Alkuasetelmassa se kuuluu: ${FACTION_NAMES[province.ownerId] ?? province.ownerId}.` : '';
+
+  const maastoParts = [`Alueen maasto on ${terrain}.`];
+  if (province.isCoastal) maastoParts.push('Kaupunki on rannikolla.');
+  if (province.hasSilkRoad) maastoParts.push('Se sijaitsee Silkkitien varrella.');
+  if (province.fortLevel > 0) maastoParts.push(`Linnoituksen taso on ${province.fortLevel}.`);
+
+  const trade = province.tradeGood
+    ? `Pelitietojen mukaan kaupungin erikoistuote on ${TRADE_LABELS[province.tradeGood] ?? province.tradeGood}.`
+    : 'Pelitiedoissa kaupungilla ei ole erikoistuotetta.';
+
+  const chronicle = REGION_CHRONICLE[province.region];
+  const interpretation = chronicle ? REGION_INTERPRETATION[province.region] : undefined;
+
+  const sources = ['Pelitiedot: provinssin maasto, kauppa ja linnoitus'];
+  if (ownerLine) sources.push('Pelitiedot: alkuasetelma');
+  if (chronicle) sources.push(chronicle.source);
+  if (interpretation) sources.push('Tulkinta: kronikan alueen kuvaus ja pelitiedot');
+
+  const sections: LoreSection[] = [
+    { heading: 'Maasto ja asema', body: maastoParts.join(' ') },
+    { heading: 'Kauppa', body: trade },
+    { heading: 'Kronikka', body: chronicle ? chronicle.text : NO_CHRONICLE_TEXT },
+  ];
+  if (interpretation) sections.push({ heading: 'Tulkinta', body: interpretation });
+
   return {
     cityId: province.id,
     title: province.name,
     historicalName: historical && historical !== province.name ? historical : null,
     area,
-    summary: `${province.name} sijaitsee alueella: ${area}.${capitalLine}`,
-    sections: [{
-      heading: 'Kronikka',
-      body: 'Maailmankronikassa ei ole tietoa tästä kaupungista. Sen historiaa ei ole täydennetty keksimällä tapahtumia.',
-    }],
-    sources: [],
-    confidence: 'none',
+    summary: `${province.name} sijaitsee alueella: ${area}.${capitalLine}${ownerLine}`,
+    sections,
+    sources,
+    confidence: interpretation ? 'interpretation' : 'game-data',
   };
 }
 
