@@ -18,6 +18,7 @@ import { AdBanner } from '../../ads/AdBanner';
 import { AdUnits } from '../../ads/adUnits';
 import { useStore, createStore } from '../../lib/store';
 import { useLocale, t } from '../../i18n';
+import { attackPower } from '../../game/engine/combat';
 import { useGameViewModel } from './GameViewModel';
 import { useCardTexts } from './cards/CardResources';
 import { CardDetailDialog, CardTray } from './cards/CardViews';
@@ -155,7 +156,7 @@ export function GameScreen(rawProps: Record<string, unknown>) {
       <div className="game-map-column"><div className="game-toast-stack">
         <IncomeToast game={game} visible={incomeVisible} />
         <MessageToast message={message?.message ?? null} cardTexts={cardTexts} onDone={() => message && ui.dismissMessage(message.id)} />
-        {selectedArmy && <ArmyBanner army={selectedArmy} />}
+        {selectedArmy && <ArmyBanner army={selectedArmy} attackPower={attackPower(selectedArmy, selectedArmy.ownerId === game.playerFactionId ? game.attackBonus : 0)} />}
       </div>
       <div className="game-overlay-tools">
         {tributeAvailable && <TributeButton onClick={() => setTributeOpen(true)} size={44} />}

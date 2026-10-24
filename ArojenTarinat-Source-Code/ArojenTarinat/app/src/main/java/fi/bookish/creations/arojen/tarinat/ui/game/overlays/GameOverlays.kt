@@ -312,7 +312,7 @@ private fun Gain(kind: ResourceKind, amount: Int) {
 // ============= SELECTED ARMY =============
 
 @Composable
-fun ArmyBanner(army: Army, modifier: Modifier = Modifier) {
+fun ArmyBanner(army: Army, attackPower: Int, modifier: Modifier = Modifier) {
     Row(
         modifier
             .clip(RoundedCornerShape(50))
@@ -324,6 +324,7 @@ fun ArmyBanner(army: Army, modifier: Modifier = Modifier) {
         BannerStat(GameIcons.Horseshoe, army.cavalry)
         BannerStat(GameIcons.Sword, army.infantry)
         if (army.siege > 0) BannerStat(GameIcons.Catapult, army.siege)
+        BannerStat(GameIcons.Swords, attackPower, stringResource(R.string.battle_attack_label))
         BannerStat(GameIcons.Boot, army.movementLeft)
         Spacer(Modifier.width(4.dp))
         Text(stringResource(R.string.army_banner_hint), style = MaterialTheme.typography.labelMedium, color = TextMid)
@@ -331,8 +332,8 @@ fun ArmyBanner(army: Army, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun BannerStat(icon: ImageVector, value: Int) {
-    Icon(icon, null, tint = Jade, modifier = Modifier.size(16.dp))
+private fun BannerStat(icon: ImageVector, value: Int, description: String? = null) {
+    Icon(icon, description, tint = Jade, modifier = Modifier.size(16.dp))
     Spacer(Modifier.width(4.dp))
     Text(value.toString(), style = MaterialTheme.typography.labelLarge, color = TextHigh)
     Spacer(Modifier.width(10.dp))

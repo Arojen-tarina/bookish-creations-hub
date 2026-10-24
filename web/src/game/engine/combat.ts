@@ -11,6 +11,7 @@ export function defenseBreakdown(p: Province, additional = 0, effectiveFortLevel
   return { terrain, fortress, additional, total: terrain + fortress + additional };
 }
 export const strength = (a: Army): number => a.cavalry * 3 + a.infantry * 1.5 + a.siege * 2;
+export const attackPower = (a: Army, attackBonus = 0): number => a.cavalry * 2 + a.infantry + a.siege + attackBonus;
 export function createProvinceGarrison(p: Province): Army | null {
   if (!p.ownerId) return null;
   const fortGarrison = p.fortLevel > 0 ? p.fortLevel * 3 + Math.max(1, Math.floor(p.developmentLevel / 2)) : 0;
@@ -21,7 +22,7 @@ export function createProvinceGarrison(p: Province): Army | null {
 export interface CombatOutcome { attackerWins: boolean; defenderDestroyed: boolean; attackerCavalryLoss: number; attackerInfantryLoss: number; defenderCavalryLoss: number; defenderInfantryLoss: number; attackRoll: number; defenseRoll: number; attackerScore: number; defenderScore: number }
 const lossesFromDamage = (army: Army, damage: number): [number, number] => { const infantry = Math.min(army.infantry, damage); return [Math.min(army.cavalry, Math.floor((damage - infantry) / 2)), infantry]; };
 export function resolveCombat(attacker: Army, defender: Army, battlefield: Province, attackBonus = 0, defenseBonus = 0, rng: GameRandom): CombatOutcome {
-  const attackerPower = attacker.cavalry * 2 + attacker.infantry + attacker.siege + attackBonus;
+  const attackerPower = attackPower(attacker, attackBonus);
   const defenderPower = defender.cavalry * 2 + defender.infantry;
   const attackRoll = d6(rng), defenseRoll = d6(rng);
   const attackerScore = attackerPower + attackRoll;

@@ -57,6 +57,7 @@ import fi.bookish.creations.arojen.tarinat.data.AchievementRepository
 import fi.bookish.creations.arojen.tarinat.data.SaveRepository
 import fi.bookish.creations.arojen.tarinat.data.SettingsRepository
 import fi.bookish.creations.arojen.tarinat.game.engine.TributeKind
+import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.canDrawTributeCard
 import fi.bookish.creations.arojen.tarinat.game.engine.canTakeSecondChance
 import fi.bookish.creations.arojen.tarinat.game.engine.canTakeTribute
@@ -271,7 +272,9 @@ fun GameScreen(
                         IncomeToast(game, incomeVisible)
                         MessageToast(message, cardTexts, onDone = { message = null })
                         AchievementToast(achievements)
-                        ui.selectedArmyId?.let { id -> game.armies.firstOrNull { it.id == id } }?.let { ArmyBanner(it) }
+                        ui.selectedArmyId?.let { id -> game.armies.firstOrNull { it.id == id } }?.let { army ->
+                            ArmyBanner(army, attackPower = army.attackPower(if (army.ownerId == game.playerFactionId) game.attackBonus else 0))
+                        }
                     }
 
                     // Map controls stacked above the Moose in the bottom corner, so they never overlap,

@@ -8,6 +8,7 @@ import fi.bookish.creations.arojen.tarinat.game.engine.GameRandom
 import fi.bookish.creations.arojen.tarinat.game.engine.Mulberry32
 import fi.bookish.creations.arojen.tarinat.game.engine.buildBlocker
 import fi.bookish.creations.arojen.tarinat.game.engine.buildStructure
+import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.canMoveTo
 import fi.bookish.creations.arojen.tarinat.game.engine.endTurn
 import fi.bookish.creations.arojen.tarinat.game.engine.moveArmy
@@ -73,6 +74,12 @@ class GameRulesTest {
             assertTrue(s.resourcesCollected)
             assertEquals(1, s.armies.count { it.ownerId == faction && it.isChief })
         }
+    }
+
+    @Test
+    fun `attack power includes units siege and active bonus`() {
+        val army = Army("test", FactionId.MONGOL, "test", cavalry = 3, infantry = 4, siege = 2, morale = 80, supply = 20, movementLeft = 3)
+        assertEquals(17, army.attackPower(5))
     }
 
     @Test

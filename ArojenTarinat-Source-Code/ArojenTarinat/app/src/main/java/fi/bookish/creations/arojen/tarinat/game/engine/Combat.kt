@@ -30,6 +30,7 @@ fun Province.defenseBreakdown(
 
 /** Strength estimate the AI and the surrender rule use (not the battle formula). */
 internal fun Army.strength(): Double = cavalry * 3 + infantry * 1.5 + siege * 2
+internal fun Army.attackPower(attackBonus: Int = 0): Int = cavalry * 2 + infantry + siege + attackBonus
 
 /** Soldiers a fortified or garrisoned province fields on its own. */
 internal fun createProvinceGarrison(province: Province): Army? {
@@ -85,7 +86,7 @@ internal fun resolveCombat(
     defenseBonus: Int = 0,
     rng: GameRandom,
 ): CombatOutcome {
-    val attackerPower = attacker.cavalry * 2 + attacker.infantry + attacker.siege + attackBonus
+    val attackerPower = attacker.attackPower(attackBonus)
     val defenderPower = defender.cavalry * 2 + defender.infantry
 
     val attackRoll = rng.d6()

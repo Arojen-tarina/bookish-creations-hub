@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.game.data.Rules
 import fi.bookish.creations.arojen.tarinat.game.engine.BuildBlock
+import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.buildBlocker
 import fi.bookish.creations.arojen.tarinat.game.engine.defenseBreakdown
 import fi.bookish.creations.arojen.tarinat.game.engine.fortDurabilityOrFull
@@ -249,6 +250,7 @@ private fun ArmyList(game: GameState, armies: List<Army>, selectedArmyId: String
                         UnitCount(GameIcons.Horseshoe, army.cavalry)
                         UnitCount(GameIcons.Sword, army.infantry)
                         UnitCount(GameIcons.Catapult, army.siege)
+                        UnitCount(GameIcons.Swords, army.attackPower(if (mine) game.attackBonus else 0), stringResource(R.string.battle_attack_label))
                         if (mine) {
                             Spacer(Modifier.weight(1f))
                             Text(
@@ -417,9 +419,9 @@ private fun StatTile(modifier: Modifier, icon: @Composable () -> Unit, value: St
 }
 
 @Composable
-private fun UnitCount(icon: ImageVector, count: Int) {
+private fun UnitCount(icon: ImageVector, count: Int, description: String? = null) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, tint = TextMid, modifier = Modifier.size(16.dp))
+        Icon(icon, description, tint = TextMid, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(4.dp))
         Text(count.toString(), style = MaterialTheme.typography.labelLarge, color = TextHigh)
     }
