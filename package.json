@@ -1,0 +1,10 @@
+{
+  "name": "bookish-creations-hub",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix web run dev -- --host 0.0.0.0",
+    "build": "npm --prefix web run build",
+    "typecheck": "npm --prefix web run typecheck",
+    "test": "npm --prefix web test"
+  }
+}
