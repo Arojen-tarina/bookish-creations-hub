@@ -43,7 +43,11 @@ class GameRulesTest {
         assertEquals(221, PROVINCES_1206.size)
         val ids = PROVINCES_1206.map { it.id }.toSet()
         assertEquals(221, ids.size)
-        PROVINCES_1206.forEach { p ->
+        PROVINCES_1206.forEachIndexed { index, p ->
+            val row = index / 17
+            val column = index % 17
+            assertEquals(6.82 + column * 7.26 + (row % 2) * 3.63, p.center.x, 0.01)
+            assertEquals(26.87 + row * 6.43, p.center.y, 0.01)
             p.neighbors.forEach { n ->
                 assertTrue("${p.id} -> $n missing", n in ids)
                 assertTrue("${p.id} <-> $n not symmetric", p.id in PROVINCES_1206.first { it.id == n }.neighbors)

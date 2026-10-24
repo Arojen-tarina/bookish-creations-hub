@@ -4,6 +4,7 @@ import type { FactionId } from '../../../game/model/enums';
 import { asset } from '../../../assets';
 import { factionColor, factionSprite, resourceSprite } from '../factionStyle';
 import { MapCameraState, mapImageRect } from './mapCamera';
+import { historicalLabelFor } from '../../../game/data/historicalNames1206';
 
 const S = 1.15, TOKEN_R = 2.2 * S, TOKEN_HIT = 3.6;
 const imageCache = new Map<string, HTMLImageElement>();
@@ -39,9 +40,9 @@ function drawSprite(ctx: CanvasRenderingContext2D, path: string, x: number, y: n
   const scale = Math.min(w / im.naturalWidth, h / im.naturalHeight), dw = im.naturalWidth * scale, dh = im.naturalHeight * scale;
   ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
-// Affine fitted to the hex lattice of board_map.jpg (see provinces -> hex centers).
+// Province centers are already in board-image coordinates.
 function provincePoint(p: Province): Point {
-  return { x: 0.963815 * p.center.x + 4.128249, y: 0.93708 * p.center.y + 4.006433 };
+  return p.center;
 }
 interface Badge { province: Province; armies: Army[]; owner: FactionId; player: boolean; cavalry: number; infantry: number; chief: boolean; kind: 'leader' | 'cavalry' | 'infantry'; x: number; y: number; w: number; h: number }
 function getBadges(state: GameState): Badge[] {
@@ -110,9 +111,9 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
       if (board.complete && board.naturalWidth) {
         const v = camera.visibleWorld, l = Math.max(v.left, ir.left), t = Math.max(v.top, ir.top), r = Math.min(v.right, ir.right), b = Math.min(v.bottom, ir.bottom);
         if (r > l && b > t) {
-          const px = board.naturalHeight / (ir.bottom - ir.top), cropLeft = (board.naturalWidth - board.naturalHeight) / 2;
+          const pxX = board.naturalWidth / (ir.right - ir.left), pxY = board.naturalHeight / (ir.bottom - ir.top);
           const dst = camera.worldToScreen({ x: l, y: t }), br = camera.worldToScreen({ x: r, y: b });
-          ctx.drawImage(board, cropLeft + (l - ir.left) * px, (t - ir.top) * px, (r - l) * px, (b - t) * px, dst.x, dst.y, br.x - dst.x, br.y - dst.y);
+          ctx.drawImage(board, (l - ir.left) * pxX, (t - ir.top) * pxY, (r - l) * pxX, (b - t) * pxY, dst.x, dst.y, br.x - dst.x, br.y - dst.y);
         }
       }
       const vignette = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) * .75);
@@ -166,10 +167,16 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
       }
       if (camera.zoom >= 1.8) for (const p of provinces) {
         const c = camera.worldToScreen(provincePoint(p)), font = Math.max(9, Math.min(14, .75 * S * k));
+        const hist = historicalLabelFor(p.id, p.name), subFont = font * .75;
         ctx.font = `bold ${font}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        const y = c.y + TOKEN_R * k + .25 * S * k, labelW = ctx.measureText(p.name).width, h = font * 1.15;
+        const y = c.y + TOKEN_R * k + .25 * S * k, nameW = ctx.measureText(p.name).width;
+        ctx.font = `italic ${subFont}px serif`; const histW = hist ? ctx.measureText(hist).width : 0;
+        const labelW = Math.max(nameW, histW), h = font * 1.15 + (hist ? subFont * 1.15 : 0);
         ctx.fillStyle = 'rgba(18,15,12,.7)'; ctx.beginPath(); ctx.roundRect(c.x - labelW / 2 - h * .15, y, labelW + h * .3, h, h / 2); ctx.fill();
-        ctx.fillStyle = '#f5e6c8'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3; ctx.fillText(p.name, c.x, y); ctx.shadowBlur = 0;
+        ctx.textAlign = 'center'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3;
+        ctx.font = `bold ${font}px serif`; ctx.fillStyle = '#f5e6c8'; ctx.fillText(p.name, c.x, y);
+        if (hist) { ctx.font = `italic ${subFont}px serif`; ctx.fillStyle = '#c9b98f'; ctx.fillText(hist, c.x, y + font * 1.15); }
+        ctx.shadowBlur = 0;
       }
     };
     raf = requestAnimationFrame(render);

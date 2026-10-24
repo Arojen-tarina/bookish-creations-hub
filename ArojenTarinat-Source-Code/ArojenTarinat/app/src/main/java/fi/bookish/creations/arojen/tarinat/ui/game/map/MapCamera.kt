@@ -18,22 +18,17 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Board space: provinces live in x 0..130, y 20..110 (the original SVG viewBox).
- * The wide board art is center-cropped into the original 130 x 130 square.
+ * Board space maps the complete wide board image to x 0..130, beginning at y=20.
  */
 internal object MapGeometry {
     const val PLAY_LEFT = 0f
-    const val PLAY_TOP = 20f
     const val PLAY_WIDTH = 130f
-    const val PLAY_HEIGHT = 90f
+    const val PLAY_TOP = 20f
+    const val PLAY_HEIGHT = PLAY_WIDTH * 1360f / 1953f
 
-    fun imageRect() = Rect(0f, 0f, 130f, 130f)
+    fun imageRect() = Rect(0f, PLAY_TOP, PLAY_WIDTH, PLAY_TOP + PLAY_HEIGHT)
 
-    // Affine fitted to the hex lattice of board_map.jpg; must match GameMap.tsx provincePoint.
-    fun projectPoint(point: Offset) = Offset(
-        0.963815f * point.x + 4.128249f,
-        0.93708f * point.y + 4.006433f,
-    )
+    fun projectPoint(point: Offset) = point
 
     val playRect = Rect(PLAY_LEFT, PLAY_TOP, PLAY_LEFT + PLAY_WIDTH, PLAY_TOP + PLAY_HEIGHT)
 }
@@ -62,7 +57,10 @@ class MapCameraState(
     /** Area the camera may show; set from the board art once it is loaded. */
     var bounds: Rect = MapGeometry.playRect
         set(value) {
-            if (field == value) return
+            if (field == value) {
+                if (viewport != Size.Zero) becomeReady()
+                return
+            }
             field = value
             if (viewport == Size.Zero) return
             // The art usually arrives after the first layout: refit unless the player already moved.

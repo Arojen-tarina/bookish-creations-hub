@@ -3,9 +3,10 @@ import type { Point } from '../../../game/model/models';
 
 export interface Rect { left: number; top: number; right: number; bottom: number }
 export interface Viewport { width: number; height: number }
-export const PLAY_RECT: Rect = { left: 0, top: 20, right: 130, bottom: 110 };
+const MAP_IMAGE_TOP = 20, MAP_IMAGE_WIDTH = 130, MAP_IMAGE_HEIGHT = MAP_IMAGE_WIDTH * 1360 / 1953;
+export const PLAY_RECT: Rect = { left: 0, top: MAP_IMAGE_TOP, right: MAP_IMAGE_WIDTH, bottom: MAP_IMAGE_TOP + MAP_IMAGE_HEIGHT };
 export const MAX_ZOOM = 6;
-export const mapImageRect = (_width: number, _height: number): Rect => ({ left: 0, top: 0, right: 130, bottom: 130 });
+export const mapImageRect = (width: number, height: number): Rect => ({ left: 0, top: MAP_IMAGE_TOP, right: MAP_IMAGE_WIDTH, bottom: MAP_IMAGE_TOP + MAP_IMAGE_WIDTH * height / width });
 
 /** Pan/zoom camera in the board's 130-unit coordinate system. */
 export class MapCameraState {
@@ -44,7 +45,7 @@ export class MapCameraState {
   setBounds(bounds: Rect) {
     this.bounds = bounds;
     if (!this.viewport.width) return;
-    if (!this.moved) { this.scale = this.minScale; this.center = { x: 65, y: 65 }; }
+    if (!this.moved) { this.scale = this.minScale; this.center = { x: (bounds.left + bounds.right) / 2, y: (bounds.top + bounds.bottom) / 2 }; }
     if (bounds !== PLAY_RECT) this.becomeReady();
     this.notify();
   }
@@ -77,7 +78,7 @@ export class MapCameraState {
   }
   zoomBy(factor: number) { this.moved = true; this.scale = Math.max(this.minScale, Math.min(this.maxScale, this.scale * factor)); this.clamp(); this.notify(); }
   animateZoomBy(factor: number) { this.animateTo(this.scale * factor, this.center); }
-  fit() { this.animateTo(this.minScale, { x: 65, y: 65 }); }
+  fit() { this.animateTo(this.minScale, { x: (this.bounds.left + this.bounds.right) / 2, y: (this.bounds.top + this.bounds.bottom) / 2 }); }
   setRightInset(px: number) { if (this.rightInset === px) return; this.rightInset = px; this.clamp(); this.notify(); }
   intoView(world: Point, force = false) {
     if (!this.viewport.width) return;
