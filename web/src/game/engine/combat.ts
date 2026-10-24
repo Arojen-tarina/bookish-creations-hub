@@ -1,5 +1,5 @@
 import { Rules } from '../data/gameData';
-import type { Army, Province } from '../model/models';
+import { chiefArmyId, type Army, type Province } from '../model/models';
 import { d6, type GameRandom } from './gameRandom';
 
 export const fortDurabilityOrFull = (p: Province): number => p.fortLevel > 0 ? p.fortDurability ?? Rules.FORT_MAX_DURABILITY : 0;
@@ -12,6 +12,16 @@ export function defenseBreakdown(p: Province, additional = 0, effectiveFortLevel
 }
 export const strength = (a: Army): number => a.cavalry * 3 + a.infantry * 1.5 + a.siege * 2;
 export const attackPower = (a: Army, attackBonus = 0): number => a.cavalry * 2 + a.infantry + a.siege + attackBonus;
+export const CHIEF_AURA_SAME_PROVINCE = 2;
+export const CHIEF_AURA_ADJACENT = 1;
+/** Power bonus from the owner's living chief army in the same or an adjacent province. */
+export function chiefAuraBonus(army: Army, armies: Army[], provinces: Province[]): number {
+  const chief = armies.find(a => a.id === chiefArmyId(army.ownerId));
+  if (!chief || chief.cavalry + chief.infantry <= 0) return 0;
+  if (chief.provinceId === army.provinceId) return CHIEF_AURA_SAME_PROVINCE;
+  const home = provinces.find(p => p.id === army.provinceId);
+  return home?.neighbors.includes(chief.provinceId) ? CHIEF_AURA_ADJACENT : 0;
+}
 export function createProvinceGarrison(p: Province): Army | null {
   if (!p.ownerId) return null;
   const fortGarrison = p.fortLevel > 0 ? p.fortLevel * 3 + Math.max(1, Math.floor(p.developmentLevel / 2)) : 0;
@@ -21,9 +31,9 @@ export function createProvinceGarrison(p: Province): Army | null {
 }
 export interface CombatOutcome { attackerWins: boolean; defenderDestroyed: boolean; attackerCavalryLoss: number; attackerInfantryLoss: number; defenderCavalryLoss: number; defenderInfantryLoss: number; attackRoll: number; defenseRoll: number; attackerScore: number; defenderScore: number }
 const lossesFromDamage = (army: Army, damage: number): [number, number] => { const infantry = Math.min(army.infantry, damage); return [Math.min(army.cavalry, Math.floor((damage - infantry) / 2)), infantry]; };
-export function resolveCombat(attacker: Army, defender: Army, battlefield: Province, attackBonus = 0, defenseBonus = 0, rng: GameRandom): CombatOutcome {
+export function resolveCombat(attacker: Army, defender: Army, battlefield: Province, attackBonus = 0, defenseBonus = 0, rng: GameRandom, defenderBonus = 0): CombatOutcome {
   const attackerPower = attackPower(attacker, attackBonus);
-  const defenderPower = defender.cavalry * 2 + defender.infantry;
+  const defenderPower = defender.cavalry * 2 + defender.infantry + defenderBonus;
   const attackRoll = d6(rng), defenseRoll = d6(rng);
   const attackerScore = attackerPower + attackRoll;
   const effectiveFortLevel = Math.max(0, battlefield.fortLevel - attacker.siege * .5);
