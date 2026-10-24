@@ -61,8 +61,8 @@ internal fun buildArmyBadges(armies: List<Army>, provincesById: Map<String, Prov
                 cav >= inf && cav > 0 -> BadgeKind.CAVALRY
                 else -> BadgeKind.INFANTRY
             }
-            val w = (if (kind == BadgeKind.LEADER) 3.6f else 5.4f) * MapMetrics.S
-            val h = (if (kind == BadgeKind.LEADER) 3.3f else 3.9f) * MapMetrics.S
+            val w = (if (kind == BadgeKind.LEADER) 4.6f else 5.4f) * MapMetrics.S
+            val h = (if (kind == BadgeKind.LEADER) 4.2f else 3.9f) * MapMetrics.S
             val rad = Math.toRadians(angleDeg.toDouble())
             val dist = r + h * 0.5f + 0.2f * MapMetrics.S
             val c = Offset(province.center.x.toFloat() + cos(rad).toFloat() * dist, province.center.y.toFloat() + sin(rad).toFloat() * dist)
