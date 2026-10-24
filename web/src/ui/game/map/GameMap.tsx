@@ -5,7 +5,7 @@ import { asset } from '../../../assets';
 import { factionColor, factionSprite, resourceSprite } from '../factionStyle';
 import { MapCameraState, mapImageRect } from './mapCamera';
 
-const S = 1.15, TOKEN_R = 1.45 * S, TOKEN_HIT = 3.6;
+const S = 1.15, TOKEN_R = 2.2 * S, TOKEN_HIT = 3.6;
 const imageCache = new Map<string, HTMLImageElement>();
 function image(path: string): HTMLImageElement {
   let img = imageCache.get(path);
@@ -39,7 +39,9 @@ function drawSprite(ctx: CanvasRenderingContext2D, path: string, x: number, y: n
   const scale = Math.min(w / im.naturalWidth, h / im.naturalHeight), dw = im.naturalWidth * scale, dh = im.naturalHeight * scale;
   ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
-function provincePoint(p: Province): Point { return p.center; }
+function provincePoint(p: Province): Point {
+  return { x: 50 + (p.center.x - 50) * 1.12, y: 65 + (p.center.y - 65) * 1.12 * 0.69 };
+}
 interface Badge { province: Province; armies: Army[]; owner: FactionId; player: boolean; cavalry: number; infantry: number; chief: boolean; kind: 'leader' | 'cavalry' | 'infantry'; x: number; y: number; w: number; h: number }
 function getBadges(state: GameState): Badge[] {
   const byProvince = new Map<string, Army[]>();
@@ -57,11 +59,12 @@ function getBadges(state: GameState): Badge[] {
     const cavalry = armies.reduce((sum, a) => sum + a.cavalry, 0), infantry = armies.reduce((sum, a) => sum + a.infantry, 0);
     const chief = armies.some((a) => a.id === `army-${a.ownerId}-main` || a.leaderBonus > 0);
     const kind = chief ? 'leader' : cavalry >= infantry && cavalry > 0 ? 'cavalry' : 'infantry';
-    const w = (kind === 'leader' ? 4.6 : 5.4) * S, h = (kind === 'leader' ? 4.2 : 3.9) * S;
+    const w = (kind === 'leader' ? 3.6 : 5.4) * S, h = (kind === 'leader' ? 3.3 : 3.9) * S;
     const player = armies[0].ownerId === state.playerFactionId;
     const angle = player ? 315 : 135, rad = angle * Math.PI / 180;
     const dist = TOKEN_R + (p.isCapital ? .5 : 0) + h / 2 + .2 * S;
-    result.push({ province: p, armies, owner: armies[0].ownerId, player, cavalry, infantry, chief, kind, x: p.center.x + Math.cos(rad) * dist, y: p.center.y + Math.sin(rad) * dist, w, h });
+    const center = provincePoint(p);
+    result.push({ province: p, armies, owner: armies[0].ownerId, player, cavalry, infantry, chief, kind, x: center.x + Math.cos(rad) * dist, y: center.y + Math.sin(rad) * dist, w, h });
   }
   return result;
 }
@@ -106,17 +109,18 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
       if (board.complete && board.naturalWidth) {
         const v = camera.visibleWorld, l = Math.max(v.left, ir.left), t = Math.max(v.top, ir.top), r = Math.min(v.right, ir.right), b = Math.min(v.bottom, ir.bottom);
         if (r > l && b > t) {
-          const px = board.naturalWidth / (ir.right - ir.left), dst = camera.worldToScreen({ x: l, y: t }), br = camera.worldToScreen({ x: r, y: b });
-          ctx.drawImage(board, (l - ir.left) * px, (t - ir.top) * px, (r - l) * px, (b - t) * px, dst.x, dst.y, br.x - dst.x, br.y - dst.y);
+          const px = board.naturalHeight / (ir.bottom - ir.top), cropLeft = (board.naturalWidth - board.naturalHeight) / 2;
+          const dst = camera.worldToScreen({ x: l, y: t }), br = camera.worldToScreen({ x: r, y: b });
+          ctx.drawImage(board, cropLeft + (l - ir.left) * px, (t - ir.top) * px, (r - l) * px, (b - t) * px, dst.x, dst.y, br.x - dst.x, br.y - dst.y);
         }
       }
       const vignette = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) * .75);
       vignette.addColorStop(0, 'rgba(18,15,12,0)'); vignette.addColorStop(1, 'rgba(18,15,12,.45)'); ctx.fillStyle = vignette; ctx.fillRect(0, 0, width, height);
       const k = camera.scale, pulse = .35 + .6 * (.5 + .5 * Math.sin(time / 900 * Math.PI));
       const shown = latest.current, visible = camera.visibleWorld;
-      const provinces = shown.state.provinces.filter((p) => p.center.x >= visible.left - 10 && p.center.x <= visible.right + 10 && p.center.y >= visible.top - 10 && p.center.y <= visible.bottom + 10);
+      const provinces = shown.state.provinces.filter((p) => { const c = provincePoint(p); return c.x >= visible.left - 10 && c.x <= visible.right + 10 && c.y >= visible.top - 10 && c.y <= visible.bottom + 10; });
       for (const p of provinces) {
-        const c = camera.worldToScreen(p.center), r = (TOKEN_R + (p.isCapital ? .5 * S : 0)) * k;
+        const c = camera.worldToScreen(provincePoint(p)), r = (TOKEN_R + (p.isCapital ? .5 * S : 0)) * k;
         const target = shown.attackTargets.has(p.id) ? '#ef4444' : shown.moveTargets.has(p.id) ? '#22c55e' : null;
         if (target) disc(ctx, c.x, c.y, r + 1.4 * S * k, `${target}38`);
         disc(ctx, c.x + .3 * S * k, c.y + .3 * S * k, r, '#0006');
@@ -130,7 +134,7 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
         if (p.hasSilkRoad) disc(ctx, c.x + r * .6, c.y + r * .6, .5 * S * k, '#f59e0b', '#92400e', .1 * S * k);
       }
       for (const p of provinces) {
-        const c = camera.worldToScreen(p.center), r = (TOKEN_R + (p.isCapital ? .5 * S : 0)) * k;
+        const c = camera.worldToScreen(provincePoint(p)), r = (TOKEN_R + (p.isCapital ? .5 * S : 0)) * k;
         if (p.fortLevel > 0) drawSprite(ctx, factionSprite('fort', p.ownerId), c.x - 2.9 * S * k, c.y - r - (2.9 + p.fortLevel * .35) * S * k + .2 * k, (4.3 + p.fortLevel * .5) * S * k, (2.9 + p.fortLevel * .35) * S * k);
         const buildings = shown.state.buildings[p.id] ?? [];
         if (buildings.includes('camp')) drawSprite(ctx, factionSprite('camp', p.ownerId), c.x - r - 4.6 * S * k, c.y - r * .4, 4.6 * S * k, 3 * S * k);
@@ -160,7 +164,7 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
         if (badge.armies.length > 1) { disc(ctx, c.x - w * .42, c.y - h * .38, .55 * S * k, '#1a1a1a', '#fbbf24', .1 * S * k); ctx.fillStyle = '#fbbf24'; ctx.font = `bold ${Math.max(7, 1.0 * S * k)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(badge.armies.length), c.x - w * .42, c.y - h * .38); }
       }
       if (camera.zoom >= 1.8) for (const p of provinces) {
-        const c = camera.worldToScreen(p.center), font = Math.max(9, Math.min(14, .75 * S * k));
+        const c = camera.worldToScreen(provincePoint(p)), font = Math.max(9, Math.min(14, .75 * S * k));
         ctx.font = `bold ${font}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         const y = c.y + TOKEN_R * k + .25 * S * k, labelW = ctx.measureText(p.name).width, h = font * 1.15;
         ctx.fillStyle = 'rgba(18,15,12,.7)'; ctx.beginPath(); ctx.roundRect(c.x - labelW / 2 - h * .15, y, labelW + h * .3, h, h / 2); ctx.fill();
@@ -206,8 +210,11 @@ export function GameMap({ state, selectedProvinceId, selectedArmyId, moveTargets
       const i = badge.armies.findIndex((a) => a.id === selected); armyTap(badge.armies[(i + 1) % badge.armies.length].id); return;
     }
     const world = camera.screenToWorld(screen), hit = Math.max(TOKEN_HIT, 24 / camera.scale);
-    const province = current.provinces.reduce<Province | null>((nearest, p) => !nearest || Math.hypot(p.center.x - world.x, p.center.y - world.y) < Math.hypot(nearest.center.x - world.x, nearest.center.y - world.y) ? p : nearest, null);
-    if (province && Math.hypot(province.center.x - world.x, province.center.y - world.y) <= hit) provinceTap(province.id);
+    const province = current.provinces.reduce<Province | null>((nearest, p) => {
+      const point = provincePoint(p);
+      return !nearest || Math.hypot(point.x - world.x, point.y - world.y) < Math.hypot(provincePoint(nearest).x - world.x, provincePoint(nearest).y - world.y) ? p : nearest;
+    }, null);
+    if (province && Math.hypot(provincePoint(province).x - world.x, provincePoint(province).y - world.y) <= hit) provinceTap(province.id);
   };
   return <canvas ref={canvasRef} className={className ?? 'game-map'} aria-label="Campaign map" onPointerDown={handleDown} onPointerMove={handleMove} onPointerUp={handleUp} onPointerCancel={handleUp} onWheel={(e) => { e.preventDefault(); const rect = e.currentTarget.getBoundingClientRect(); camera.transform({ x: e.clientX - rect.left, y: e.clientY - rect.top }, { x: 0, y: 0 }, e.deltaY < 0 ? 1.15 : 1 / 1.15); }} />;
 }

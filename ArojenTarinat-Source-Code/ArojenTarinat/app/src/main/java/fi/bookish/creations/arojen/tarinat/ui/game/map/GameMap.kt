@@ -117,7 +117,7 @@ fun GameMap(
     val tapArmy by rememberUpdatedState(onArmyTap)
 
     LaunchedEffect(assets) {
-        assets?.let { camera.bounds = MapGeometry.imageRect(it.board.width, it.board.height) }
+        if (assets != null) camera.bounds = MapGeometry.imageRect()
     }
 
     Canvas(
@@ -154,7 +154,7 @@ fun GameMap(
 
         val visible = camera.visibleWorld.inflate(10f)
         val k = camera.scale
-        val onScreen = state.provinces.filter { visible.contains(Offset(it.center.x.toFloat(), it.center.y.toFloat())) }
+        val onScreen = state.provinces.filter { visible.contains(it.centerOffset()) }
 
         // Pass 1: tokens and highlights
         for (p in onScreen) {
@@ -203,26 +203,28 @@ fun GameMap(
     }
 }
 
-private fun Province.centerOffset() = Offset(center.x.toFloat(), center.y.toFloat())
+private fun Province.centerOffset() = MapGeometry.projectPoint(Offset(center.x.toFloat(), center.y.toFloat()))
 
 private fun distanceSq(p: Province, world: Offset): Float {
-    val dx = p.center.x.toFloat() - world.x
-    val dy = p.center.y.toFloat() - world.y
+    val center = p.centerOffset()
+    val dx = center.x - world.x
+    val dy = center.y - world.y
     return dx * dx + dy * dy
 }
 
 /** Draws only the visible slice of the board art, mapped through the camera. */
 private fun DrawScope.drawBoard(board: ImageBitmap, camera: MapCameraState) {
-    val imageRect = MapGeometry.imageRect(board.width, board.height)
+    val imageRect = MapGeometry.imageRect()
     val visible = camera.visibleWorld.intersect(imageRect)
     if (visible.width <= 0f || visible.height <= 0f) return
-    val pxPerUnit = board.width / imageRect.width
-    val srcLeft = floor((visible.left - imageRect.left) * pxPerUnit).toInt().coerceIn(0, board.width - 1)
+    val pxPerUnit = board.height / imageRect.height
+    val cropLeft = (board.width - board.height) / 2f
+    val srcLeft = floor(cropLeft + (visible.left - imageRect.left) * pxPerUnit).toInt().coerceIn(0, board.width - 1)
     val srcTop = floor((visible.top - imageRect.top) * pxPerUnit).toInt().coerceIn(0, board.height - 1)
-    val srcRight = ceil((visible.right - imageRect.left) * pxPerUnit).toInt().coerceIn(srcLeft + 1, board.width)
+    val srcRight = ceil(cropLeft + (visible.right - imageRect.left) * pxPerUnit).toInt().coerceIn(srcLeft + 1, board.width)
     val srcBottom = ceil((visible.bottom - imageRect.top) * pxPerUnit).toInt().coerceIn(srcTop + 1, board.height)
-    val topLeft = camera.worldToScreen(Offset(imageRect.left + srcLeft / pxPerUnit, imageRect.top + srcTop / pxPerUnit))
-    val bottomRight = camera.worldToScreen(Offset(imageRect.left + srcRight / pxPerUnit, imageRect.top + srcBottom / pxPerUnit))
+    val topLeft = camera.worldToScreen(Offset(imageRect.left + (srcLeft - cropLeft) / pxPerUnit, imageRect.top + srcTop / pxPerUnit))
+    val bottomRight = camera.worldToScreen(Offset(imageRect.left + (srcRight - cropLeft) / pxPerUnit, imageRect.top + srcBottom / pxPerUnit))
     drawImage(
         image = board,
         srcOffset = IntOffset(srcLeft, srcTop),

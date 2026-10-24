@@ -19,7 +19,7 @@ import kotlin.math.min
 
 /**
  * Board space: provinces live in x 0..130, y 20..110 (the original SVG viewBox).
- * The board art covers a wider area around it (see [MapGeometry.imageRect]).
+ * The wide board art is center-cropped into the original 130 x 130 square.
  */
 internal object MapGeometry {
     const val PLAY_LEFT = 0f
@@ -27,13 +27,12 @@ internal object MapGeometry {
     const val PLAY_WIDTH = 130f
     const val PLAY_HEIGHT = 90f
 
-    /** The original drew the art into a 130 x 130 box with "slice" scaling. */
-    fun imageRect(imageWidthPx: Int, imageHeightPx: Int): Rect {
-        val unitsPerPx = 130f / imageHeightPx
-        val width = imageWidthPx * unitsPerPx
-        val left = (130f - width) / 2f
-        return Rect(left, 0f, left + width, 130f)
-    }
+    fun imageRect() = Rect(0f, 0f, 130f, 130f)
+
+    fun projectPoint(point: Offset) = Offset(
+        50f + (point.x - 50f) * 1.12f,
+        65f + (point.y - 65f) * 1.12f * 0.69f,
+    )
 
     val playRect = Rect(PLAY_LEFT, PLAY_TOP, PLAY_LEFT + PLAY_WIDTH, PLAY_TOP + PLAY_HEIGHT)
 }

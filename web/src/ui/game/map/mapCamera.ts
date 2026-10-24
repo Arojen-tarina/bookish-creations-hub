@@ -5,12 +5,7 @@ export interface Rect { left: number; top: number; right: number; bottom: number
 export interface Viewport { width: number; height: number }
 export const PLAY_RECT: Rect = { left: 0, top: 20, right: 130, bottom: 110 };
 export const MAX_ZOOM = 6;
-export const mapImageRect = (width: number, height: number): Rect => {
-  const unitsPerPx = 130 / height;
-  const w = width * unitsPerPx;
-  const left = (130 - w) / 2;
-  return { left, top: 0, right: left + w, bottom: 130 };
-};
+export const mapImageRect = (_width: number, _height: number): Rect => ({ left: 0, top: 0, right: 130, bottom: 130 });
 
 /** Pan/zoom camera in the board's 130-unit coordinate system. */
 export class MapCameraState {

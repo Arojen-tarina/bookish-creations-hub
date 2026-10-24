@@ -10,7 +10,7 @@ import kotlin.math.sin
 /** Sizes in board units, matching the original board (SCALE_FACTOR = 1.15). */
 internal object MapMetrics {
     const val S = 1.15f
-    const val TOKEN_RADIUS = 1.45f * S
+    const val TOKEN_RADIUS = 2.2f * S
 
     fun tokenRadius(p: Province) = TOKEN_RADIUS + if (p.isCapital) 0.5f * S else 0f
 
@@ -61,11 +61,12 @@ internal fun buildArmyBadges(armies: List<Army>, provincesById: Map<String, Prov
                 cav >= inf && cav > 0 -> BadgeKind.CAVALRY
                 else -> BadgeKind.INFANTRY
             }
-            val w = (if (kind == BadgeKind.LEADER) 4.6f else 5.4f) * MapMetrics.S
-            val h = (if (kind == BadgeKind.LEADER) 4.2f else 3.9f) * MapMetrics.S
+            val w = (if (kind == BadgeKind.LEADER) 3.6f else 5.4f) * MapMetrics.S
+            val h = (if (kind == BadgeKind.LEADER) 3.3f else 3.9f) * MapMetrics.S
             val rad = Math.toRadians(angleDeg.toDouble())
             val dist = r + h * 0.5f + 0.2f * MapMetrics.S
-            val c = Offset(province.center.x.toFloat() + cos(rad).toFloat() * dist, province.center.y.toFloat() + sin(rad).toFloat() * dist)
+            val center = MapGeometry.projectPoint(Offset(province.center.x.toFloat(), province.center.y.toFloat()))
+            val c = Offset(center.x + cos(rad).toFloat() * dist, center.y + sin(rad).toFloat() * dist)
             badges += ArmyBadge(provinceId, group, isPlayer, c, kind, w, h)
         }
         add(list.filter { it.ownerId == player }, isPlayer = true, angleDeg = 315f)
