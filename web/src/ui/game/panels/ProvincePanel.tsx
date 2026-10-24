@@ -32,11 +32,12 @@ function ArmyRow({ army, player, attack, selected, selectedOther, onSelect, onMe
     {player && selectedOther && !selected && <GameButton compact variant="Secondary" onClick={onMerge}><GameIcon name="Merge" width={15} /> {label('ui_merge_armies')}</GameButton>}
   </div>;
 }
-export function ProvincePanel({ game, province, selectedArmyId, actions }: { game: GameState; province: Province | null; selectedArmyId: string | null; actions: ProvinceActions }) {
+export function ProvincePanel({ game, province, selectedArmyId, actions, onOpenLore }: { game: GameState; province: Province | null; selectedArmyId: string | null; actions: ProvinceActions; onOpenLore?: (id: string) => void }) {
   useLocale();
   if (!province) return section(t('province_none_selected_title'), <p>{t('ui_select_province')}</p>);
   const p = province, owned = p.ownerId === game.playerFactionId, player = playerOf(game), defense = defenseBreakdown(p, game.defenseBonus), armies = game.armies.filter((a) => a.provinceId === p.id), selected = armies.find((a) => a.id === selectedArmyId), buildings = game.buildings[p.id] ?? [];
   return <>
+    {onOpenLore && <GameButton compact variant="Secondary" onClick={() => onOpenLore(p.id)}>Kaupungin tarina</GameButton>}
     {section(p.name, <><div className="game-row"><span>{t('ui_owner')}</span><strong><i style={{ display: 'inline-block', width: 9, height: 9, borderRadius: '50%', background: factionColor(p.ownerId), marginRight: 7 }} />{p.ownerId === game.playerFactionId ? t('ui_you') : factionName(p.ownerId)}</strong></div><div className="game-row"><span>{t('ui_terrain')}</span><strong>{terrainName(p.terrain)}</strong></div>{p.isCapital && <span className="game-pill">{t('ui_capital')}</span>}</>)}
     <div style={{ display: 'flex', gap: 8 }}>{[[t('ui_taxes'), p.baseTax, '◉'], [t('ui_manpower'), p.baseManpower, '♟'], [t('ui_defense'), fmt(defense.total), '⬟']].map(([label, value, icon]) => <Stat key={String(label)} label={String(label)} value={String(value)} icon={String(icon)} />)}</div>
     {p.fortLevel > 0 && section(t('ui_fortress'), <><div className="game-row"><span>{t('ui_level')} {p.fortLevel}</span><strong>{t('ui_durability')} {fortDurabilityOrFull(p)}%</strong></div><div className="game-progress"><i style={{ width: `${fortDurabilityOrFull(p)}%`, background: isFortDamaged(p) ? '#c2533a' : '#5ba374' }} /></div></>)}

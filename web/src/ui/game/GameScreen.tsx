@@ -27,6 +27,7 @@ import { useMapCamera } from './map/mapCamera';
 import { GameMap } from './map/GameMap';
 import { SidePanel } from './panels/SidePanel';
 import { ProvincePanel } from './panels/ProvincePanel';
+import { LorePanel } from './panels/LorePanel';
 import { ChroniclePanel, RealmPanel } from './panels/RealmPanels';
 import { DiplomacyPanel } from './panels/DiplomacyPanel';
 import { AiTurnOverlay, ArmyBanner, GameOverDialog, IncomeToast, MessageToast, PauseMenuDialog, type PauseActions, EngagementLayer } from './overlays/GameOverlays';
@@ -75,6 +76,7 @@ export function GameScreen(rawProps: Record<string, unknown>) {
   const camera = useMapCamera();
   const [panel, setPanel] = useState<PanelTab | null>(null), [lastPanel, setLastPanel] = useState<PanelTab>('Province');
   const [trayOpen, setTrayOpen] = useState(false), [detailCardId, setDetailCardId] = useState<string | null>(null);
+  const [loreProvinceId, setLoreProvinceId] = useState<string | null>(null);
   const [pauseOpen, setPauseOpen] = useState(false), [saveOpen, setSaveOpen] = useState(false), [tributeOpen, setTributeOpen] = useState(false), [mooseOpen, setMooseOpen] = useState(false);
   const [incomeVisible, setIncomeVisible] = useState(false);
   const [incomeShownTurn, setIncomeShownTurn] = useState(-1);
@@ -111,10 +113,10 @@ export function GameScreen(rawProps: Record<string, unknown>) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
-      if (detailCardId) setDetailCardId(null); else if (mooseOpen) setMooseOpen(false); else if (tributeOpen) setTributeOpen(false); else if (saveOpen) setSaveOpen(false); else if (pauseOpen) setPauseOpen(false); else if (panel) setPanel(null); else if (ui.selectedArmyId) ui.clearSelection(); else if (!game.gameOver) setPauseOpen(true);
+      if (loreProvinceId) setLoreProvinceId(null); else if (detailCardId) setDetailCardId(null); else if (mooseOpen) setMooseOpen(false); else if (tributeOpen) setTributeOpen(false); else if (saveOpen) setSaveOpen(false); else if (pauseOpen) setPauseOpen(false); else if (panel) setPanel(null); else if (ui.selectedArmyId) ui.clearSelection(); else if (!game.gameOver) setPauseOpen(true);
     };
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
-  }, [detailCardId, mooseOpen, tributeOpen, saveOpen, pauseOpen, panel, ui, game.gameOver]);
+  }, [loreProvinceId, detailCardId, mooseOpen, tributeOpen, saveOpen, pauseOpen, panel, ui, game.gameOver]);
 
   const pickProvince = useCallback((id: string) => { if (!ui.onProvinceTap(id)) { setPanel('Province'); setLastPanel('Province'); } }, [ui]);
   const playReward = (kind: 'GOLD' | 'CARD' | 'SECOND_CHANCE') => {
@@ -162,7 +164,7 @@ export function GameScreen(rawProps: Record<string, unknown>) {
       <CardTray game={game} texts={cardTexts} expanded={trayOpen} onToggle={() => setTrayOpen((x) => !x)} onCardClick={(card) => setDetailCardId(card.id)} />
       </div>
       {panel && <SidePanel tab={lastPanel} onTab={(tab) => { setLastPanel(tab); setPanel(tab); }} onClose={() => setPanel(null)} footer={ads ? <AdBanner ads={ads} slot={AdUnits.BANNER_GAME} /> : null}>
-        {lastPanel === 'Province' && <ProvincePanel game={game} province={game.provinces.find((p) => p.id === ui.selectedProvinceId) ?? null} selectedArmyId={ui.selectedArmyId} actions={panelAction} />}
+        {lastPanel === 'Province' && <ProvincePanel game={game} province={game.provinces.find((p) => p.id === ui.selectedProvinceId) ?? null} selectedArmyId={ui.selectedArmyId} actions={panelAction} onOpenLore={setLoreProvinceId} />}
         {lastPanel === 'Realm' && <RealmPanel game={game} cardTexts={cardTexts} />}
         {lastPanel === 'Chronicle' && <ChroniclePanel game={game} />}
         {lastPanel === 'Diplomacy' && <DiplomacyPanel game={game} onPropose={ui.propose} onBreak={ui.breakTreaty} />}
@@ -172,6 +174,7 @@ export function GameScreen(rawProps: Record<string, unknown>) {
     {ui.lastBattle && <BattleDialog battle={ui.lastBattle} provinceName={game.provinces.find((p) => p.id === ui.lastBattle?.provinceId)?.name ?? ''} captured={game.provinces.find((p) => p.id === ui.lastBattle?.provinceId)?.ownerId === ui.lastBattle.attackerFaction} onClose={ui.dismissBattle} />}
     {detailCardId && game.hand.find((card) => card.id === detailCardId) && <CardDetailDialog card={game.hand.find((card) => card.id === detailCardId)!} text={cardTexts[detailCardId]} onPlay={() => { ui.playCard(detailCardId); setDetailCardId(null); }} onDismiss={() => setDetailCardId(null)} />}
     {game.gameOver && !ui.lastBattle && <GameOverDialog game={game} onPlayAgain={() => { analytics?.track(Events.campaignRestart(game)); onNewGame(); }} onMainMenu={() => { if (victory) onExit(); else void askAdBreak('GAME_OVER').then(onExit); }} onSecondChance={secondChanceAvailable ? () => playReward('SECOND_CHANCE') : null} />}
+    {loreProvinceId && game.provinces.find((p) => p.id === loreProvinceId) && <LorePanel province={game.provinces.find((p) => p.id === loreProvinceId)!} onDismiss={() => setLoreProvinceId(null)} />}
     {tributeOpen && <TributeDialog gold={ui.tributeGold} canDrawCard={ui.canDrawTributeCard} onGold={() => { setTributeOpen(false); playReward('GOLD'); }} onCard={() => { setTributeOpen(false); playReward('CARD'); }} onDismiss={() => setTributeOpen(false)} />}
     {pauseOpen && <PauseMenuDialog musicMuted={muted} actions={pauseActions} />}
     {mooseOpen && moose && <MooseDialog guide={moose} onDismiss={() => setMooseOpen(false)} />}
