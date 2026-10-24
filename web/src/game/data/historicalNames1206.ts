@@ -256,10 +256,16 @@ export const HISTORICAL_NAMES_1206: Record<string, HistoricalName> = Object.from
   ]),
 );
 
+// Strips glosses like " (臨安)" and normalizes for comparison (case, diacritics, apostrophes, spaces).
+const baseName = (s: string) => s.replace(/\s*\(.*?\)\s*/g, ' ').trim();
+const normalize = (s: string) =>
+  baseName(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’\-\s]/g, '').toLowerCase();
+
 // Label text for the map: returns null when there is nothing distinct or reliable to show.
 export function historicalLabelFor(id: string, currentName: string): string | null {
   const entry = HISTORICAL_NAMES_1206[id];
   if (!entry || entry.historicalNameConfidence === 'unavailable') return null;
-  if (entry.historicalName1206 === currentName) return null;
-  return entry.historicalNameConfidence === 'uncertain' ? `${entry.historicalName1206}?` : entry.historicalName1206;
+  const shown = baseName(entry.historicalName1206);
+  if (normalize(shown) === normalize(currentName)) return null;
+  return entry.historicalNameConfidence === 'uncertain' ? `${shown}?` : shown;
 }

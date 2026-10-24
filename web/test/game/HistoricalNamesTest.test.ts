@@ -36,6 +36,12 @@ describe('historical 1206 names', () => {
     expect(historicalLabelFor('karakorum', 'Orkhon')).toBe('Ordu-Baliq?');
   });
 
+  it('does not repeat the current name when only a gloss differs', () => {
+    expect(historicalLabelFor('hangzhou', "Lin'an")).toBeNull();
+    expect(historicalLabelFor('shaoxing', 'Shaoxing')).toBeNull();
+    expect(historicalLabelFor('bianjing', 'Kaifeng')).toBe('Nanjing');
+  });
+
   it('returns the 1206 name for distinct probable/verified entries', () => {
     expect(historicalLabelFor('kiova', 'Kiev')).toBe('Kyiv');
   });
