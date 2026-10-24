@@ -35,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -145,16 +144,10 @@ fun GameScreen(
         if (message == null && queue.isNotEmpty()) message = queue.removeAt(0)
     }
 
-    // Open on the player's capital, framed below the HUD (a camera coming back from
-    // another screen keeps the player's view).
+    // Keep the complete hex board visible on entry.
     val density = LocalDensity.current
     LaunchedEffect(camera) {
         camera.topInset = with(density) { 68.dp.toPx() }
-        snapshotFlow { camera.isReady }.first { it }
-        if (camera.restored) return@LaunchedEffect
-        game.province(game.player.capitalId)?.let {
-            camera.animateIntoView(Offset(it.center.x.toFloat(), it.center.y.toFloat()), force = true)
-        }
     }
 
     // An open drawer covers the right of the map: let the map slide clear of it,

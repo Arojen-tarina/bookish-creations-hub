@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { GameState } from '../../game/model/models';
 import type { Difficulty, FactionId } from '../../game/model/enums';
 import type { Route } from '../../navigation/Routes';
@@ -96,12 +96,6 @@ export function GameScreen(rawProps: Record<string, unknown>) {
       if (province) camera.intoView(province.center);
     }
   }, [camera, panel, ui.selectedProvinceId, game.provinces]);
-  const initialFramed = useRef(false);
-  useEffect(() => {
-    if (!camera.ready || camera.restored || initialFramed.current) return;
-    const capital = game.provinces.find((p) => p.id === game.factions.find((f) => f.id === game.playerFactionId)?.capitalId);
-    if (capital) { camera.intoView(capital.center, true); initialFramed.current = true; }
-  }, [camera, camera.ready, camera.restored, game]);
   useEffect(() => { if (ui.lastBattle) setCombatTurn(game.turn); }, [ui.lastBattle, game.turn]);
   useEffect(() => { music?.setMood(combatTurn === game.turn ? 'COMBAT' : 'CALM'); return () => music?.setMood('CALM'); }, [music, combatTurn, game.turn]);
   useEffect(() => {

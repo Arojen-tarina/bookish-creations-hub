@@ -80,10 +80,7 @@ class MapCameraState(
      */
     val minScale: Float
         get() = if (viewport == Size.Zero) 1f
-        else max(
-            min(viewport.width / MapGeometry.PLAY_WIDTH, viewport.height / MapGeometry.PLAY_HEIGHT),
-            viewport.width / bounds.width,
-        )
+        else min(viewport.width / bounds.width, viewport.height / bounds.height)
     val maxScale: Float get() = minScale * MAX_ZOOM
 
     /** 1 = whole board visible, up to [MAX_ZOOM]. */

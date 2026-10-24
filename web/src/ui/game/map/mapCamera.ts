@@ -32,7 +32,8 @@ export class MapCameraState {
   get minScale() {
     if (!this.viewport.width || !this.viewport.height) return 1;
     const bw = this.bounds.right - this.bounds.left;
-    return Math.max(Math.min(this.viewport.width / 130, this.viewport.height / 90), this.viewport.width / bw);
+    const bh = this.bounds.bottom - this.bounds.top;
+    return Math.min(this.viewport.width / bw, this.viewport.height / bh);
   }
   get maxScale() { return this.minScale * MAX_ZOOM; }
   get zoom() { return this.scale / this.minScale; }
