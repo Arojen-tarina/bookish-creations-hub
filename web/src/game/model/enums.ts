@@ -6,18 +6,18 @@ export type Region = 'mongolia' | 'manchuria' | 'jin_china' | 'song_china' | 'xi
 export const ALL_REGIONS: Region[] = ['mongolia', 'manchuria', 'jin_china', 'song_china', 'xixia', 'tibet', 'khwarezm', 'persia', 'khorasan', 'transoxiana', 'kipchak', 'rus', 'caucasus', 'siberia', 'korea', 'central_asia'];
 
 export type Terrain = 'steppe' | 'grassland' | 'forest' | 'mountain' | 'desert' | 'taiga' | 'tundra' | 'farmland' | 'hills' | 'marsh';
-export interface TerrainInfo { movementCost: number; movementCostInfantry: number; movementCostCavalry: number; movementCostSiege: number; defenseBonus: number; supplyLimit: number; taxModifier: number }
+export interface TerrainInfo { movementCost: number; movementCostInfantry: number; movementCostCavalry: number; movementCostSiege: number; defenseBonus: number; taxModifier: number }
 export const TERRAIN_INFO: Record<Terrain, TerrainInfo> = {
-  steppe: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 3, taxModifier: .8 },
-  grassland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 5, taxModifier: 1 },
-  forest: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 1, movementCostSiege: 3, defenseBonus: 1, supplyLimit: 4, taxModifier: .9 },
-  mountain: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 3, supplyLimit: 2, taxModifier: .5 },
-  desert: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, supplyLimit: 1, taxModifier: .3 },
-  taiga: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 1, supplyLimit: 2, taxModifier: .6 },
-  tundra: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, supplyLimit: 1, taxModifier: .2 },
-  farmland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, supplyLimit: 8, taxModifier: 1.5 },
-  hills: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 2, supplyLimit: 4, taxModifier: .8 },
-  marsh: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 1, supplyLimit: 2, taxModifier: .4 },
+  steppe: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: .8 },
+  grassland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: 1 },
+  forest: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 1, movementCostSiege: 3, defenseBonus: 1, taxModifier: .9 },
+  mountain: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 3, taxModifier: .5 },
+  desert: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, taxModifier: .3 },
+  taiga: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 1, taxModifier: .6 },
+  tundra: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, taxModifier: .2 },
+  farmland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: 1.5 },
+  hills: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 2, taxModifier: .8 },
+  marsh: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 1, taxModifier: .4 },
 };
 export const ALL_TERRAINS = Object.keys(TERRAIN_INFO) as Terrain[];
 
@@ -40,13 +40,13 @@ export const AI_INCOME_MULTIPLIER: Record<Difficulty, number> = { easy: .75, nor
 export const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
 export type CardType = 'strategy' | 'diplomacy' | 'technology' | 'resource';
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'legendary';
-export type CardEffectType = 'attack_bonus' | 'defense_bonus' | 'movement_bonus' | 'gold' | 'food' | 'horses' | 'artisans' | 'draw_cards' | 'recruit_free' | 'permanent_attack' | 'permanent_defense' | 'terrain_ignore' | 'morale';
+export type CardEffectType = 'attack_bonus' | 'defense_bonus' | 'movement_bonus' | 'gold' | 'food' | 'horses' | 'artisans' | 'draw_cards' | 'recruit_free' | 'permanent_attack' | 'permanent_defense' | 'terrain_ignore';
 export type WinCondition = 'military' | 'economic' | 'technology' | 'diplomatic' | 'cultural';
 export type TurnLogKind = 'MERGED_ARMIES' | 'DEFEND_BORDER' | 'CAPTURE' | 'ADVANCE' | 'WON_BATTLE' | 'ATTACK_FAILED' | 'CONQUERED' | 'FORTIFY' | 'FORTIFY_CAPITAL' | 'BUILD_MARKET' | 'RECRUITED' | 'PLAYER_CHIEF_FELL';
 export const ALL_RECRUIT_TYPES: RecruitType[] = ['infantry', 'cavalry'];
 export const ALL_CARD_TYPES: CardType[] = ['strategy', 'diplomacy', 'technology', 'resource'];
 export const ALL_RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'legendary'];
-export const ALL_CARD_EFFECT_TYPES: CardEffectType[] = ['attack_bonus', 'defense_bonus', 'movement_bonus', 'gold', 'food', 'horses', 'artisans', 'draw_cards', 'recruit_free', 'permanent_attack', 'permanent_defense', 'terrain_ignore', 'morale'];
+export const ALL_CARD_EFFECT_TYPES: CardEffectType[] = ['attack_bonus', 'defense_bonus', 'movement_bonus', 'gold', 'food', 'horses', 'artisans', 'draw_cards', 'recruit_free', 'permanent_attack', 'permanent_defense', 'terrain_ignore'];
 export const ALL_WIN_CONDITIONS: WinCondition[] = ['military', 'economic', 'technology', 'diplomatic', 'cultural'];
 export const ALL_TURN_LOG_KINDS: TurnLogKind[] = ['MERGED_ARMIES', 'DEFEND_BORDER', 'CAPTURE', 'ADVANCE', 'WON_BATTLE', 'ATTACK_FAILED', 'CONQUERED', 'FORTIFY', 'FORTIFY_CAPITAL', 'BUILD_MARKET', 'RECRUITED', 'PLAYER_CHIEF_FELL'];
 

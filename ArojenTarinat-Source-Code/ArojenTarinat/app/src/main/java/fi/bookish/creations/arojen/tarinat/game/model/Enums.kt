@@ -48,19 +48,18 @@ enum class Terrain(
     val movementCostCavalry: Int,
     val movementCostSiege: Int,
     val defenseBonus: Int,
-    val supplyLimit: Int,
     val taxModifier: Double,
 ) {
-    @SerialName("steppe") STEPPE(1, 1, 1, 2, 0, 3, 0.8),
-    @SerialName("grassland") GRASSLAND(1, 1, 1, 2, 0, 5, 1.0),
-    @SerialName("forest") FOREST(2, 2, 1, 3, 1, 4, 0.9),
-    @SerialName("mountain") MOUNTAIN(3, 3, 3, 4, 3, 2, 0.5),
-    @SerialName("desert") DESERT(2, 2, 2, 3, 0, 1, 0.3),
-    @SerialName("taiga") TAIGA(2, 2, 2, 3, 1, 2, 0.6),
-    @SerialName("tundra") TUNDRA(2, 2, 2, 3, 0, 1, 0.2),
-    @SerialName("farmland") FARMLAND(1, 1, 1, 2, 0, 8, 1.5),
-    @SerialName("hills") HILLS(2, 2, 2, 3, 2, 4, 0.8),
-    @SerialName("marsh") MARSH(3, 3, 3, 4, 1, 2, 0.4),
+    @SerialName("steppe") STEPPE(1, 1, 1, 2, 0, 0.8),
+    @SerialName("grassland") GRASSLAND(1, 1, 1, 2, 0, 1.0),
+    @SerialName("forest") FOREST(2, 2, 1, 3, 1, 0.9),
+    @SerialName("mountain") MOUNTAIN(3, 3, 3, 4, 3, 0.5),
+    @SerialName("desert") DESERT(2, 2, 2, 3, 0, 0.3),
+    @SerialName("taiga") TAIGA(2, 2, 2, 3, 1, 0.6),
+    @SerialName("tundra") TUNDRA(2, 2, 2, 3, 0, 0.2),
+    @SerialName("farmland") FARMLAND(1, 1, 1, 2, 0, 1.5),
+    @SerialName("hills") HILLS(2, 2, 2, 3, 2, 0.8),
+    @SerialName("marsh") MARSH(3, 3, 3, 4, 1, 0.4),
 }
 
 @Serializable
@@ -157,7 +156,6 @@ enum class CardEffectType {
     @SerialName("permanent_attack") PERMANENT_ATTACK,
     @SerialName("permanent_defense") PERMANENT_DEFENSE,
     @SerialName("terrain_ignore") TERRAIN_IGNORE,
-    @SerialName("morale") MORALE,
 }
 
 @Serializable

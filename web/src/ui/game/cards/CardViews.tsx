@@ -9,7 +9,7 @@ import { GameIcon } from '../../icons/GameIcons';
 
 const cardColor: Record<Card['type'], string> = { strategy: '#dc2626', diplomacy: '#2563eb', technology: '#16a34a', resource: '#d97706' };
 const rarityColor: Record<NonNullable<Card['rarity']>, string> = { common: '#9ca3af', uncommon: '#22c55e', rare: '#3b82f6', legendary: '#a855f7' };
-const effectIcon: Record<Card['effect']['type'], string> = { gold: '◉', food: '♨', horses: '♞', artisans: '⚒', attack_bonus: '⚔', permanent_attack: '⚔', defense_bonus: '⬟', permanent_defense: '⬟', movement_bonus: '➤', terrain_ignore: '➤', draw_cards: '▤', recruit_free: '♟', morale: '⚑' } as Record<Card['effect']['type'], string>;
+const effectIcon: Record<Card['effect']['type'], string> = { gold: '◉', food: '♨', horses: '♞', artisans: '⚒', attack_bonus: '⚔', permanent_attack: '⚔', defense_bonus: '⬟', permanent_defense: '⬟', movement_bonus: '➤', terrain_ignore: '➤', draw_cards: '▤', recruit_free: '♟' } as Record<Card['effect']['type'], string>;
 
 export function CardFace({ card, text, width = 96, onClick, style }: { card: Card; text?: CardText; width?: number; onClick?: () => void; style?: CSSProperties }) {
   useLocale();

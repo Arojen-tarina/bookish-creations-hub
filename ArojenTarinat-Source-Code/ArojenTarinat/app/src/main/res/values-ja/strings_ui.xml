@@ -61,7 +61,7 @@
     <string name="building_stable_name">厩舎</string>
     <string name="building_wonder_effect">首都のみ：毎ターン威信と影響力が増加（文化勝利）</string>
     <string name="building_wonder_name">驚異</string>
-    <string name="building_workshop_effect">職人+1/ターン、雇用した部隊は士気+10</string>
+    <string name="building_workshop_effect">職人+1/ターン</string>
     <string name="building_workshop_name">工房</string>
     <string name="cards_deck_label">山札</string>
     <string name="cards_drag_hint">ドラッグでカードの大きさを変更 — ダブルクリックでリセット</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">塩</string>
     <string name="good_silk">絹</string>
     <string name="good_spices">香辛料</string>
-    <string name="good_effect_fur">補給 +1、士気 +1</string>
-    <string name="good_effect_gems">金+2/ターン、士気 +1</string>
+    <string name="good_effect_fur">ボーナスなし</string>
+    <string name="good_effect_gems">金+2/ターン</string>
     <string name="good_effect_gold">金+3/ターン</string>
     <string name="good_effect_grain">兵力 +2</string>
     <string name="good_effect_horses">騎兵雇用 +2</string>
     <string name="good_effect_iron" formatted="false">ユニット費用 -20%</string>
-    <string name="good_effect_livestock">兵力 +1、補給 +1</string>
-    <string name="good_effect_salt">補給 +1</string>
+    <string name="good_effect_livestock">兵力 +1</string>
+    <string name="good_effect_salt">ボーナスなし</string>
     <string name="good_effect_silk">金+3/ターン</string>
     <string name="good_effect_spices">金+2/ターン</string>
     <string name="hud_army_selected">軍隊を選択しました</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">レベル</string>
     <string name="ui_manpower">兵力</string>
     <string name="ui_merge_armies">軍隊を統合</string>
-    <string name="ui_morale">士気</string>
     <string name="ui_move">移動</string>
     <string name="ui_neutral">中立</string>
     <string name="ui_no_events">まだイベントはありません。ターンを終了するとAIの行動が表示されます。</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">州</string>
     <string name="ui_statistics">統計</string>
     <string name="ui_streak_title">経済勝利の条件達成 — 連続カウント中</string>
-    <string name="ui_supply">補給</string>
     <string name="ui_taxes">税収</string>
     <string name="ui_technologies">テクノロジー（%1$s）</string>
     <string name="ui_terrain">地形</string>

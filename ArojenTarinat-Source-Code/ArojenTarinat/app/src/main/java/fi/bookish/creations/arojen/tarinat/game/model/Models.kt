@@ -19,7 +19,6 @@ data class Province(
     val neighbors: List<String> = emptyList(),
     val baseTax: Int,
     val baseManpower: Int,
-    val supply: Int = 3,
     val tradeGood: TradeGood? = null,
     val hasSilkRoad: Boolean = false,
     val unrest: Int = 0,
@@ -54,9 +53,6 @@ data class Army(
     val cavalry: Int,
     val infantry: Int,
     val siege: Int,
-    /** 0..100 */
-    val morale: Int,
-    val supply: Int,
     val movementLeft: Int,
     val leaderBonus: Double = 0.0,
 ) {
@@ -171,8 +167,6 @@ data class BattleReport(
     val attackerWon: Boolean,
     val attackerLosses: UnitLosses,
     val defenderLosses: UnitLosses,
-    val attackerMoraleLoss: Int,
-    val defenderMoraleLoss: Int,
     val attackRoll: Int,
     val defenseRoll: Int,
     val attackerPower: Double,

@@ -61,7 +61,7 @@
     <string name="building_stable_name">अस्तबल</string>
     <string name="building_wonder_effect">केवल राजधानी में: प्रति बारी +प्रतिष्ठा और +प्रभाव (सांस्कृतिक विजय)</string>
     <string name="building_wonder_name">आश्चर्य</string>
-    <string name="building_workshop_effect">+1 कारीगर/बारी, भर्ती किए गए सैनिकों को +10 मनोबल</string>
+    <string name="building_workshop_effect">+1 कारीगर/बारी</string>
     <string name="building_workshop_name">कार्यशाला</string>
     <string name="cards_deck_label">गड्डी में</string>
     <string name="cards_drag_hint">कार्ड का आकार बदलने के लिए खींचें — रीसेट करने के लिए दो बार क्लिक करें</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">नमक</string>
     <string name="good_silk">रेशम</string>
     <string name="good_spices">मसाले</string>
-    <string name="good_effect_fur">+1 आपूर्ति और +1 मनोबल</string>
-    <string name="good_effect_gems">+2 सोना/बारी और +1 मनोबल</string>
+    <string name="good_effect_fur">कोई बोनस नहीं</string>
+    <string name="good_effect_gems">+2 सोना/बारी</string>
     <string name="good_effect_gold">+3 सोना/बारी</string>
     <string name="good_effect_grain">+2 जनशक्ति</string>
     <string name="good_effect_horses">+2 घुड़सवार भर्ती</string>
     <string name="good_effect_iron" formatted="false">इकाई लागत -20%</string>
-    <string name="good_effect_livestock">+1 जनशक्ति, +1 आपूर्ति</string>
-    <string name="good_effect_salt">+1 आपूर्ति</string>
+    <string name="good_effect_livestock">+1 जनशक्ति</string>
+    <string name="good_effect_salt">कोई बोनस नहीं</string>
     <string name="good_effect_silk">+3 सोना/बारी</string>
     <string name="good_effect_spices">+2 सोना/बारी</string>
     <string name="hud_army_selected">सेना चुनी गई</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">स्तर</string>
     <string name="ui_manpower">जनशक्ति</string>
     <string name="ui_merge_armies">सेनाएँ मिलाएँ</string>
-    <string name="ui_morale">मनोबल</string>
     <string name="ui_move">चलें</string>
     <string name="ui_neutral">तटस्थ</string>
     <string name="ui_no_events">अभी कोई घटना नहीं। AI की चालें देखने के लिए बारी समाप्त करें।</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">प्रांत</string>
     <string name="ui_statistics">आँकड़े</string>
     <string name="ui_streak_title">आर्थिक विजय की शर्तें पूरी — लगातार गिनती जारी</string>
-    <string name="ui_supply">आपूर्ति</string>
     <string name="ui_taxes">कर</string>
     <string name="ui_technologies">प्रौद्योगिकियाँ (%1$s)</string>
     <string name="ui_terrain">भूभाग</string>

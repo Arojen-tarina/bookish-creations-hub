@@ -16,9 +16,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Ends the player's turn: AI realms collect income and act, supply and siege
- * attrition apply, the Tribal Chief rallies nearby troops, victory is checked,
- * a card is drawn and the player's income for the new turn is credited.
+ * Ends the player's turn: AI realms collect income and act, sieges resolve,
+ * victory is checked, a card is drawn and the player's income is credited.
  */
 fun endTurn(prev: GameState, rng: GameRandom): GameState {
     val player = prev.playerFactionId
@@ -65,7 +64,6 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                         cavalry = target.cavalry + source.cavalry,
                         infantry = target.infantry + source.infantry,
                         siege = target.siege + source.siege,
-                        morale = ((target.morale + source.morale) / 2.0).roundJs(),
                     )
                     armies = armies.filterTo(mutableListOf()) { it.id != action.armyId }
                     log += TurnLogEntry(TurnLogKind.MERGED_ARMIES, faction.id)
@@ -121,8 +119,6 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                         cavalry = cavalry,
                         infantry = 6,
                         siege = 0,
-                        morale = 70,
-                        supply = 20,
                         movementLeft = 0,
                         leaderBonus = 0.0,
                     )
@@ -134,55 +130,18 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
     }
     armies = armies.filterTo(mutableListOf()) { it.cavalry + it.infantry > 0 }
 
-    // 3. Supply: oversized stacks lose morale and men; friendly land restores them.
-    armies = armies.mapTo(mutableListOf()) { army ->
-        val province = provinces.firstOrNull { it.id == army.provinceId } ?: return@mapTo army
-        val armySize = army.cavalry + army.infantry + army.siege
-        val supplyLimit = province.supply + province.terrain.supplyLimit
-        when {
-            armySize > supplyLimit -> {
-                val over = armySize - supplyLimit
-                val moraleLoss = min(15, over * 3)
-                val attritionChance = min(0.5, over * 0.08)
-                val cavLoss = if (rng.nextDouble() < attritionChance) max(1, floor(army.cavalry * 0.1).toInt()) else 0
-                val infLoss = if (rng.nextDouble() < attritionChance) max(1, floor(army.infantry * 0.1).toInt()) else 0
-                army.copy(
-                    morale = max(10, army.morale - moraleLoss),
-                    cavalry = max(0, army.cavalry - cavLoss),
-                    infantry = max(0, army.infantry - infLoss),
-                    supply = max(0, army.supply - over),
-                )
-            }
-            province.ownerId == army.ownerId -> army.copy(
-                morale = min(100, army.morale + 5),
-                supply = min(30, army.supply + supplyLimit),
-            )
-            else -> army.copy(supply = max(0, army.supply - 2))
-        }
-    }
+    // 3. Reset army movement for the new turn.
     armies = armies
         .filter { it.cavalry + it.infantry > 0 }
         .mapTo(mutableListOf()) { it.copy(movementLeft = Rules.ARMY_MOVEMENT) }
 
-    // 4. Tribal Chief: troops sharing or bordering the Chief's province rally.
+    // 4. The player's Chief falling costs gold and influence once.
     val chiefLocations = armies.filter { it.isChief }.associate { it.ownerId to it.provinceId }
-    armies = armies.mapTo(mutableListOf()) { a ->
-        val chiefProvince = chiefLocations[a.ownerId]
-        when {
-            a.isChief || chiefProvince == null -> a
-            chiefProvince == a.provinceId -> a.copy(morale = min(100, a.morale + 5))
-            provinces.firstOrNull { it.id == chiefProvince }?.neighbors?.contains(a.provinceId) == true ->
-                a.copy(morale = min(100, a.morale + 1))
-            else -> a
-        }
-    }
-    // The player's Chief falling costs gold, influence and morale once.
     var chiefFell = false
     if (player !in chiefLocations && !prev.chiefLost && prev.armies.any { it.id == Army.chiefArmyId(player) }) {
         chiefFell = true
         val i = factions.indexOfFirst { it.id == player }
         factions[i] = factions[i].copy(treasury = max(0, factions[i].treasury - 30))
-        armies = armies.mapTo(mutableListOf()) { if (it.ownerId == player) it.copy(morale = max(10, it.morale - 10)) else it }
         base = base.copy(influence = max(0, base.influence - 15))
         log += TurnLogEntry(TurnLogKind.PLAYER_CHIEF_FELL, player)
     }
@@ -276,7 +235,6 @@ private fun resolveAiAttack(
     val defender = when {
         fieldDefender != null && garrison != null -> fieldDefender.copy(
             infantry = fieldDefender.infantry + garrison.infantry,
-            morale = max(fieldDefender.morale, garrison.morale),
         )
         else -> fieldDefender ?: garrison
     }

@@ -61,7 +61,7 @@
     <string name="building_stable_name">Stable</string>
     <string name="building_wonder_effect">Capital only: +prestige and +influence/turn (cultural victory)</string>
     <string name="building_wonder_name">Wonder</string>
-    <string name="building_workshop_effect">+1 artisan/turn, recruited troops get +10 morale</string>
+    <string name="building_workshop_effect">+1 artisan/turn</string>
     <string name="building_workshop_name">Workshop</string>
     <string name="cards_deck_label">in deck</string>
     <string name="cards_drag_hint">Drag to resize the card view — double-click to reset</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Salt</string>
     <string name="good_silk">Silk</string>
     <string name="good_spices">Spices</string>
-    <string name="good_effect_fur">+1 supply and +1 morale</string>
-    <string name="good_effect_gems">+2 gold/turn and +1 morale</string>
+    <string name="good_effect_fur">No bonus</string>
+    <string name="good_effect_gems">+2 gold/turn</string>
     <string name="good_effect_gold">+3 gold/turn</string>
     <string name="good_effect_grain">+2 manpower</string>
     <string name="good_effect_horses">+2 cavalry recruitment</string>
     <string name="good_effect_iron" formatted="false">-20% unit cost</string>
-    <string name="good_effect_livestock">+1 manpower, +1 supply</string>
-    <string name="good_effect_salt">+1 supply</string>
+    <string name="good_effect_livestock">+1 manpower</string>
+    <string name="good_effect_salt">No bonus</string>
     <string name="good_effect_silk">+3 gold/turn</string>
     <string name="good_effect_spices">+2 gold/turn</string>
     <string name="hud_army_selected">Army selected</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Level</string>
     <string name="ui_manpower">Manpower</string>
     <string name="ui_merge_armies">Merge armies</string>
-    <string name="ui_morale">Morale</string>
     <string name="ui_move">Move</string>
     <string name="ui_neutral">Neutral</string>
     <string name="ui_no_events">No events yet. End your turn to see AI actions.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Provinces</string>
     <string name="ui_statistics">Statistics</string>
     <string name="ui_streak_title">Economic victory conditions met - streak active</string>
-    <string name="ui_supply">Supply</string>
     <string name="ui_taxes">Taxes</string>
     <string name="ui_technologies">Technologies (%1$s)</string>
     <string name="ui_terrain">Terrain</string>

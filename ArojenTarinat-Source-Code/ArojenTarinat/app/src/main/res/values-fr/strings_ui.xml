@@ -61,7 +61,7 @@
     <string name="building_stable_name">Écurie</string>
     <string name="building_wonder_effect">Capitale uniquement : +prestige et +influence/tour (victoire culturelle)</string>
     <string name="building_wonder_name">Merveille</string>
-    <string name="building_workshop_effect">+1 artisan/tour, les troupes recrutées gagnent +10 de moral</string>
+    <string name="building_workshop_effect">+1 artisan/tour</string>
     <string name="building_workshop_name">Atelier</string>
     <string name="cards_deck_label">dans la pioche</string>
     <string name="cards_drag_hint">Faites glisser pour redimensionner les cartes — double-clic pour réinitialiser</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Sel</string>
     <string name="good_silk">Soie</string>
     <string name="good_spices">Épices</string>
-    <string name="good_effect_fur">+1 ravitaillement et +1 moral</string>
-    <string name="good_effect_gems">+2 or/tour et +1 moral</string>
+    <string name="good_effect_fur">Aucun bonus</string>
+    <string name="good_effect_gems">+2 or/tour</string>
     <string name="good_effect_gold">+3 or/tour</string>
     <string name="good_effect_grain">+2 effectifs</string>
     <string name="good_effect_horses">+2 recrutement de cavalerie</string>
     <string name="good_effect_iron" formatted="false">-20 % de coût des unités</string>
-    <string name="good_effect_livestock">+1 effectif, +1 ravitaillement</string>
-    <string name="good_effect_salt">+1 ravitaillement</string>
+    <string name="good_effect_livestock">+1 effectif</string>
+    <string name="good_effect_salt">Aucun bonus</string>
     <string name="good_effect_silk">+3 or/tour</string>
     <string name="good_effect_spices">+2 or/tour</string>
     <string name="hud_army_selected">Armée sélectionnée</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Niveau</string>
     <string name="ui_manpower">Effectifs</string>
     <string name="ui_merge_armies">Fusionner les armées</string>
-    <string name="ui_morale">Moral</string>
     <string name="ui_move">Déplacer</string>
     <string name="ui_neutral">Neutre</string>
     <string name="ui_no_events">Aucun événement pour l’instant. Terminez votre tour pour voir les actions de l’IA.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Provinces</string>
     <string name="ui_statistics">Statistiques</string>
     <string name="ui_streak_title">Conditions de victoire économique remplies — série en cours</string>
-    <string name="ui_supply">Ravitaillement</string>
     <string name="ui_taxes">Impôts</string>
     <string name="ui_technologies">Technologies (%1$s)</string>
     <string name="ui_terrain">Terrain</string>

@@ -316,7 +316,7 @@ object GameIcons {
         }
     }
 
-    /** Morale. */
+    /** Flag. */
     val Flag: ImageVector by lazy {
         icon("Flag") {
             stroke {

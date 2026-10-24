@@ -61,7 +61,7 @@
     <string name="building_stable_name">إسطبل</string>
     <string name="building_wonder_effect">في العاصمة فقط: +مكانة و+نفوذ/دور (النصر الثقافي)</string>
     <string name="building_wonder_name">عجيبة</string>
-    <string name="building_workshop_effect">+1 حرفي/دور، والقوات المجندة تحصل على +10 معنويات</string>
+    <string name="building_workshop_effect">+1 حرفي/دور</string>
     <string name="building_workshop_name">ورشة</string>
     <string name="cards_deck_label">في الرزمة</string>
     <string name="cards_drag_hint">اسحب لتغيير حجم البطاقات — انقر مرتين للاستعادة</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">ملح</string>
     <string name="good_silk">حرير</string>
     <string name="good_spices">توابل</string>
-    <string name="good_effect_fur">+1 إمداد و+1 معنويات</string>
-    <string name="good_effect_gems">+2 ذهب/دور و+1 معنويات</string>
+    <string name="good_effect_fur">لا مكافأة</string>
+    <string name="good_effect_gems">+2 ذهب/دور</string>
     <string name="good_effect_gold">+3 ذهب/دور</string>
     <string name="good_effect_grain">+2 قوى بشرية</string>
     <string name="good_effect_horses">+2 تجنيد الفرسان</string>
     <string name="good_effect_iron" formatted="false">-20% تكلفة الوحدات</string>
-    <string name="good_effect_livestock">+1 قوى بشرية، +1 إمداد</string>
-    <string name="good_effect_salt">+1 إمداد</string>
+    <string name="good_effect_livestock">+1 قوى بشرية</string>
+    <string name="good_effect_salt">لا مكافأة</string>
     <string name="good_effect_silk">+3 ذهب/دور</string>
     <string name="good_effect_spices">+2 ذهب/دور</string>
     <string name="hud_army_selected">تم اختيار الجيش</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">المستوى</string>
     <string name="ui_manpower">القوى البشرية</string>
     <string name="ui_merge_armies">دمج الجيوش</string>
-    <string name="ui_morale">المعنويات</string>
     <string name="ui_move">تحرك</string>
     <string name="ui_neutral">محايد</string>
     <string name="ui_no_events">لا توجد أحداث بعد. أنهِ دورك لرؤية تحركات الذكاء الاصطناعي.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">المقاطعات</string>
     <string name="ui_statistics">الإحصائيات</string>
     <string name="ui_streak_title">شروط النصر الاقتصادي مستوفاة — السلسلة جارية</string>
-    <string name="ui_supply">الإمداد</string>
     <string name="ui_taxes">الضرائب</string>
     <string name="ui_technologies">التقنيات (%1$s)</string>
     <string name="ui_terrain">التضاريس</string>

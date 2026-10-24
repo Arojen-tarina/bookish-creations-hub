@@ -61,7 +61,7 @@
     <string name="building_stable_name">马厩</string>
     <string name="building_wonder_effect">仅限首都：每回合 +声望与 +影响力（文化胜利）</string>
     <string name="building_wonder_name">奇观</string>
-    <string name="building_workshop_effect">+1 工匠/回合，新招募部队 +10 士气</string>
+    <string name="building_workshop_effect">+1 工匠/回合</string>
     <string name="building_workshop_name">工坊</string>
     <string name="cards_deck_label">牌堆</string>
     <string name="cards_drag_hint">拖动以调整卡牌大小 — 双击恢复</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">盐</string>
     <string name="good_silk">丝绸</string>
     <string name="good_spices">香料</string>
-    <string name="good_effect_fur">+1 补给与 +1 士气</string>
-    <string name="good_effect_gems">+2 金币/回合与 +1 士气</string>
+    <string name="good_effect_fur">无加成</string>
+    <string name="good_effect_gems">+2 金币/回合</string>
     <string name="good_effect_gold">+3 金币/回合</string>
     <string name="good_effect_grain">+2 人力</string>
     <string name="good_effect_horses">+2 骑兵招募</string>
     <string name="good_effect_iron" formatted="false">单位费用 -20%</string>
-    <string name="good_effect_livestock">+1 人力，+1 补给</string>
-    <string name="good_effect_salt">+1 补给</string>
+    <string name="good_effect_livestock">+1 人力</string>
+    <string name="good_effect_salt">无加成</string>
     <string name="good_effect_silk">+3 金币/回合</string>
     <string name="good_effect_spices">+2 金币/回合</string>
     <string name="hud_army_selected">已选择军队</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">等级</string>
     <string name="ui_manpower">人力</string>
     <string name="ui_merge_armies">合并军队</string>
-    <string name="ui_morale">士气</string>
     <string name="ui_move">移动</string>
     <string name="ui_neutral">中立</string>
     <string name="ui_no_events">暂无事件。结束回合即可查看 AI 的行动。</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">省份</string>
     <string name="ui_statistics">统计</string>
     <string name="ui_streak_title">已满足经济胜利条件——连续计数中</string>
-    <string name="ui_supply">补给</string>
     <string name="ui_taxes">税收</string>
     <string name="ui_technologies">科技（%1$s）</string>
     <string name="ui_terrain">地形</string>

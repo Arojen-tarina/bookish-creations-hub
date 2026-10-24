@@ -20,15 +20,15 @@ function validGame(value: unknown): value is GameState {
   if (!isObject(value)) return false;
   const g = value;
   const record = (v: unknown): v is Record<string, unknown> => isObject(v);
-  const validProvince = (v: unknown): boolean => record(v) && typeof v.id === 'string' && typeof v.name === 'string' && oneOf(v.region, ['mongolia','manchuria','jin_china','song_china','xixia','tibet','khwarezm','persia','khorasan','transoxiana','kipchak','rus','caucasus','siberia','korea','central_asia']) && (v.ownerId === null || factionIds.includes(String(v.ownerId))) && oneOf(v.terrain, ['steppe','grassland','forest','mountain','desert','taiga','tundra','farmland','hills','marsh']) && typeof v.isCoastal === 'boolean' && typeof v.isCapital === 'boolean' && Array.isArray(v.neighbors) && v.neighbors.every(id => typeof id === 'string') && finite(v.baseTax,v.baseManpower,v.supply,v.unrest,v.fortLevel,v.developmentLevel,v.garrison,v.center && (v.center as Record<string, unknown>).x,v.center && (v.center as Record<string, unknown>).y) && (v.tradeGood === null || ['horses','silk','spices','gold','iron','fur','grain','salt','livestock','gems'].includes(String(v.tradeGood))) && typeof v.hasSilkRoad === 'boolean' && (v.fortDurability === null || finite(v.fortDurability)) && (v.siegeProgress === null || finite(v.siegeProgress));
+  const validProvince = (v: unknown): boolean => record(v) && typeof v.id === 'string' && typeof v.name === 'string' && oneOf(v.region, ['mongolia','manchuria','jin_china','song_china','xixia','tibet','khwarezm','persia','khorasan','transoxiana','kipchak','rus','caucasus','siberia','korea','central_asia']) && (v.ownerId === null || factionIds.includes(String(v.ownerId))) && oneOf(v.terrain, ['steppe','grassland','forest','mountain','desert','taiga','tundra','farmland','hills','marsh']) && typeof v.isCoastal === 'boolean' && typeof v.isCapital === 'boolean' && Array.isArray(v.neighbors) && v.neighbors.every(id => typeof id === 'string') && finite(v.baseTax,v.baseManpower,v.unrest,v.fortLevel,v.developmentLevel,v.garrison,v.center && (v.center as Record<string, unknown>).x,v.center && (v.center as Record<string, unknown>).y) && (v.tradeGood === null || ['horses','silk','spices','gold','iron','fur','grain','salt','livestock','gems'].includes(String(v.tradeGood))) && typeof v.hasSilkRoad === 'boolean' && (v.fortDurability === null || finite(v.fortDurability)) && (v.siegeProgress === null || finite(v.siegeProgress));
   const validFaction = (v: unknown): boolean => record(v) && factionIds.includes(String(v.id)) && typeof v.capitalId === 'string' && ['aggressive','defensive','trader','expansionist','cautious'].includes(String(v.personality)) && finite(v.treasury,v.manpower,v.horses,v.cavalryBonus,v.taxBonus,v.siegeBonus) && typeof v.isPlayer === 'boolean';
-  const validArmy = (v: unknown): boolean => record(v) && typeof v.id === 'string' && factionIds.includes(String(v.ownerId)) && typeof v.provinceId === 'string' && finite(v.cavalry,v.infantry,v.siege,v.morale,v.supply,v.movementLeft,v.leaderBonus);
+  const validArmy = (v: unknown): boolean => record(v) && typeof v.id === 'string' && factionIds.includes(String(v.ownerId)) && typeof v.provinceId === 'string' && finite(v.cavalry,v.infantry,v.siege,v.movementLeft,v.leaderBonus);
   const validRelation = (v: unknown): boolean => record(v) && factionIds.includes(String(v.factionA)) && factionIds.includes(String(v.factionB)) && finite(v.relation,v.trust,v.threat,v.borderFriction) && (v.lastProposalTurn === null || Number.isInteger(v.lastProposalTurn)) && Array.isArray(v.treaties) && v.treaties.every(t => record(t) && ['non_aggression','trade_agreement','alliance','truce','tributary','peace','war_surprise','war_formal'].includes(String(t.type)) && Number.isInteger(t.startTurn) && Number.isInteger(t.duration));
-  const validCard = (v: unknown): boolean => record(v) && typeof v.id === 'string' && ['strategy','diplomacy','technology','resource'].includes(String(v.type)) && (v.rarity === null || ['common','uncommon','rare','legendary'].includes(String(v.rarity))) && record(v.effect) && ['attack_bonus','defense_bonus','movement_bonus','gold','food','horses','artisans','draw_cards','recruit_free','permanent_attack','permanent_defense','terrain_ignore','morale'].includes(String(v.effect.type)) && finite(v.effect.value,v.effect.duration);
+  const validCard = (v: unknown): boolean => record(v) && typeof v.id === 'string' && ['strategy','diplomacy','technology','resource'].includes(String(v.type)) && (v.rarity === null || ['common','uncommon','rare','legendary'].includes(String(v.rarity))) && record(v.effect) && ['attack_bonus','defense_bonus','movement_bonus','gold','food','horses','artisans','draw_cards','recruit_free','permanent_attack','permanent_defense','terrain_ignore'].includes(String(v.effect.type)) && finite(v.effect.value,v.effect.duration);
   if (!Number.isInteger(g.turn) || (g.turn as number) < 1 || !Number.isInteger(g.year) || !factionIds.includes(String(g.playerFactionId)) || !difficulties.includes(String(g.difficulty))) return false;
   if (!Array.isArray(g.provinces) || g.provinces.length > 1000 || !g.provinces.every(validProvince) || !Array.isArray(g.factions) || g.factions.length > 20 || !g.factions.every(validFaction) || !Array.isArray(g.armies) || g.armies.length > 10000 || !g.armies.every(validArmy) || !Array.isArray(g.relations) || !g.relations.every(validRelation)) return false;
   if (!['deck','hand','discard','playedTechCards'].every(key => Array.isArray(g[key]) && (g[key] as unknown[]).length <= 10000 && (g[key] as unknown[]).every(validCard))) return false;
-  if (!Array.isArray(g.activeEffects) || !g.activeEffects.every(effect => record(effect) && typeof effect.cardId === 'string' && ['attack_bonus','defense_bonus','movement_bonus','gold','food','horses','artisans','draw_cards','recruit_free','permanent_attack','permanent_defense','terrain_ignore','morale'].includes(String(effect.type)) && finite(effect.value,effect.remainingTurns))) return false;
+  if (!Array.isArray(g.activeEffects) || !g.activeEffects.every(effect => record(effect) && typeof effect.cardId === 'string' && ['attack_bonus','defense_bonus','movement_bonus','gold','food','horses','artisans','draw_cards','recruit_free','permanent_attack','permanent_defense','terrain_ignore'].includes(String(effect.type)) && finite(effect.value,effect.remainingTurns))) return false;
   if (!record(g.buildings) || !Object.values(g.buildings).every(items => Array.isArray(items) && items.every(item => ['camp','market','fortress','workshop','stable','bridge','wonder'].includes(String(item))))) return false;
   if (!Array.isArray(g.turnLog) || !g.turnLog.every(log => record(log) && typeof log.kind === 'string' && (log.factionId === null || factionIds.includes(String(log.factionId))) && (log.provinceId === null || typeof log.provinceId === 'string'))) return false;
   if (!finite(g.food,g.artisans,g.influence,g.prestige,g.treasuryStreak,g.attackBonus,g.defenseBonus,g.movementBonus,g.nextId,g.tributeTurn) || !Number.isInteger(g.nextId) || typeof g.resourcesCollected !== 'boolean' || typeof g.chiefLost !== 'boolean' || typeof g.secondChanceUsed !== 'boolean' || typeof g.gameOver !== 'boolean' || (g.winnerId !== null && !factionIds.includes(String(g.winnerId))) || (g.winCondition !== null && !['military','economic','technology','diplomatic','cultural'].includes(String(g.winCondition)))) return false;
@@ -40,6 +40,20 @@ function validGame(value: unknown): value is GameState {
 }
 function validSave(value: unknown): value is SaveFile {
   return isObject(value) && validMeta(value.meta) && validGame(value.state);
+}
+function removeLegacyArmyStats(state: GameState): GameState {
+  const provinces = state.provinces.map(province => {
+    const cleaned = { ...province } as typeof province & { supply?: unknown };
+    delete cleaned.supply;
+    return cleaned;
+  });
+  const armies = state.armies.map(army => {
+    const cleaned = { ...army } as typeof army & { morale?: unknown; supply?: unknown };
+    delete cleaned.morale;
+    delete cleaned.supply;
+    return cleaned;
+  });
+  return { ...state, provinces, armies };
 }
 
 /** Browser save slots: autosave at 0 and five manual slots, stored as checked JSON envelopes. */
@@ -98,7 +112,7 @@ export class SaveRepository {
       if (save) logSecurityEvent('save_invalid', `slot:${slot}`);
       return null;
     }
-    return save;
+    return { ...save, state: removeLegacyArmyStats(save.state) };
   }
 }
 

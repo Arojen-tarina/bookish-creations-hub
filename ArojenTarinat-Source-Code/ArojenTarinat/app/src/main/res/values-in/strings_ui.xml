@@ -61,7 +61,7 @@
     <string name="building_stable_name">Istal</string>
     <string name="building_wonder_effect">Hanya di ibu kota: +prestise dan +pengaruh/giliran (kemenangan budaya)</string>
     <string name="building_wonder_name">Keajaiban</string>
-    <string name="building_workshop_effect">+1 pengrajin/giliran, pasukan rekrutan mendapat +10 moral</string>
+    <string name="building_workshop_effect">+1 pengrajin/giliran</string>
     <string name="building_workshop_name">Bengkel</string>
     <string name="cards_deck_label">di dek</string>
     <string name="cards_drag_hint">Seret untuk mengubah ukuran kartu — klik dua kali untuk mengatur ulang</string>
@@ -156,14 +156,14 @@
     <string name="good_salt">Garam</string>
     <string name="good_silk">Sutra</string>
     <string name="good_spices">Rempah</string>
-    <string name="good_effect_fur">+1 suplai dan +1 moral</string>
-    <string name="good_effect_gems">+2 emas/giliran dan +1 moral</string>
+    <string name="good_effect_fur">Tidak ada bonus</string>
+    <string name="good_effect_gems">+2 emas/giliran</string>
     <string name="good_effect_gold">+3 emas/giliran</string>
     <string name="good_effect_grain">+2 tenaga</string>
     <string name="good_effect_horses">+2 rekrutmen kavaleri</string>
     <string name="good_effect_iron" formatted="false">biaya unit -20%</string>
-    <string name="good_effect_livestock">+1 tenaga, +1 suplai</string>
-    <string name="good_effect_salt">+1 suplai</string>
+    <string name="good_effect_livestock">+1 tenaga</string>
+    <string name="good_effect_salt">Tidak ada bonus</string>
     <string name="good_effect_silk">+3 emas/giliran</string>
     <string name="good_effect_spices">+2 emas/giliran</string>
     <string name="hud_army_selected">Pasukan dipilih</string>
@@ -299,7 +299,6 @@
     <string name="ui_level">Level</string>
     <string name="ui_manpower">Tenaga</string>
     <string name="ui_merge_armies">Gabungkan pasukan</string>
-    <string name="ui_morale">Moral</string>
     <string name="ui_move">Gerak</string>
     <string name="ui_neutral">Netral</string>
     <string name="ui_no_events">Belum ada peristiwa. Akhiri giliran untuk melihat aksi AI.</string>
@@ -320,7 +319,6 @@
     <string name="ui_stat_provinces">Provinsi</string>
     <string name="ui_statistics">Statistik</string>
     <string name="ui_streak_title">Syarat kemenangan ekonomi terpenuhi — rentetan aktif</string>
-    <string name="ui_supply">Suplai</string>
     <string name="ui_taxes">Pajak</string>
     <string name="ui_technologies">Teknologi (%1$s)</string>
     <string name="ui_terrain">Medan</string>

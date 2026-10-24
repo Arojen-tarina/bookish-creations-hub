@@ -106,7 +106,6 @@ private fun EffectIcon(type: CardEffectType, tint: Color, modifier: Modifier) {
         CardEffectType.MOVEMENT_BONUS, CardEffectType.TERRAIN_IGNORE -> GameIcons.Boot
         CardEffectType.ARTISANS -> GameIcons.Hammer
         CardEffectType.DRAW_CARDS -> GameIcons.Cards
-        CardEffectType.MORALE -> GameIcons.Flag
         CardEffectType.RECRUIT_FREE -> GameIcons.People
         else -> GameIcons.Cards
     }
