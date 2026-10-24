@@ -56,7 +56,6 @@ private fun createStartingArmies(factions: List<Faction>, provinces: List<Provin
             provinceId = capital.id,
             cavalry = if (faction.id == FactionId.MONGOL) 12 else 5,
             infantry = if (faction.id == FactionId.SONG) 15 else 8,
-            siege = if (faction.id == FactionId.KHWAREZM) 0 else 1,
             movementLeft = Rules.ARMY_MOVEMENT,
             leaderBonus = if (faction.id == FactionId.MONGOL) 0.3 else 0.1,
         )

@@ -6,18 +6,18 @@ export type Region = 'mongolia' | 'manchuria' | 'jin_china' | 'song_china' | 'xi
 export const ALL_REGIONS: Region[] = ['mongolia', 'manchuria', 'jin_china', 'song_china', 'xixia', 'tibet', 'khwarezm', 'persia', 'khorasan', 'transoxiana', 'kipchak', 'rus', 'caucasus', 'siberia', 'korea', 'central_asia'];
 
 export type Terrain = 'steppe' | 'grassland' | 'forest' | 'mountain' | 'desert' | 'taiga' | 'tundra' | 'farmland' | 'hills' | 'marsh';
-export interface TerrainInfo { movementCost: number; movementCostInfantry: number; movementCostCavalry: number; movementCostSiege: number; defenseBonus: number; taxModifier: number }
+export interface TerrainInfo { movementCost: number; movementCostInfantry: number; movementCostCavalry: number; defenseBonus: number; taxModifier: number }
 export const TERRAIN_INFO: Record<Terrain, TerrainInfo> = {
-  steppe: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: .8 },
-  grassland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: 1 },
-  forest: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 1, movementCostSiege: 3, defenseBonus: 1, taxModifier: .9 },
-  mountain: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 3, taxModifier: .5 },
-  desert: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, taxModifier: .3 },
-  taiga: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 1, taxModifier: .6 },
-  tundra: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 0, taxModifier: .2 },
-  farmland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, movementCostSiege: 2, defenseBonus: 0, taxModifier: 1.5 },
-  hills: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, movementCostSiege: 3, defenseBonus: 2, taxModifier: .8 },
-  marsh: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, movementCostSiege: 4, defenseBonus: 1, taxModifier: .4 },
+  steppe: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, defenseBonus: 0, taxModifier: .8 },
+  grassland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, defenseBonus: 0, taxModifier: 1 },
+  forest: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 1, defenseBonus: 1, taxModifier: .9 },
+  mountain: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, defenseBonus: 3, taxModifier: .5 },
+  desert: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, defenseBonus: 0, taxModifier: .3 },
+  taiga: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, defenseBonus: 1, taxModifier: .6 },
+  tundra: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, defenseBonus: 0, taxModifier: .2 },
+  farmland: { movementCost: 1, movementCostInfantry: 1, movementCostCavalry: 1, defenseBonus: 0, taxModifier: 1.5 },
+  hills: { movementCost: 2, movementCostInfantry: 2, movementCostCavalry: 2, defenseBonus: 2, taxModifier: .8 },
+  marsh: { movementCost: 3, movementCostInfantry: 3, movementCostCavalry: 3, defenseBonus: 1, taxModifier: .4 },
 };
 export const ALL_TERRAINS = Object.keys(TERRAIN_INFO) as Terrain[];
 

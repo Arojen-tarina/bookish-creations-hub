@@ -28,7 +28,7 @@ function ArmyRow({ army, player, attack, aura, selected, selectedOther, onSelect
   const label = t;
   return <div style={{ padding: 9, borderRadius: 9, marginTop: 6, border: `1px solid ${selected ? '#e0a944' : factionColor(army.ownerId)}`, background: selected ? '#e0a94425' : '#31281f' }}>
     <button className="game-status" disabled={!player} onClick={onSelect} style={{ background: 'none', border: 0, padding: 0, color: '#f4ead5', cursor: 'pointer', width: '100%', textAlign: 'left' }}><i style={{ width: 9, height: 9, borderRadius: '50%', background: factionColor(army.ownerId) }} /><strong>{player ? label('ui_you') : factionName(army.ownerId)}</strong>{army.id === `army-${army.ownerId}-main` && <span className="game-pill">{label('army_chief')}</span>}</button>
-    <div className="game-row game-muted" style={{ marginTop: 6 }}>♞ {army.cavalry}　⚔ {army.infantry}　♜ {army.siege}　<span aria-label={`${label('battle_attack_label')} ${attack}`}>⚔ {attack}</span>{aura > 0 && <span className="game-pill" title="Päällikön vaikutusalue">Päällikön aura +{aura}</span>}<span>{army.movementLeft > 0 ? `${army.movementLeft} moves` : label('army_exhausted')}</span></div>
+  <div className="game-row game-muted" style={{ marginTop: 6 }}>♞ {army.cavalry}　⚔ {army.infantry}　<span aria-label={`${label('battle_attack_label')} ${attack}`}>⚔ {attack}</span>{aura > 0 && <span className="game-pill" title="Päällikön vaikutusalue">Päällikön aura +{aura}</span>}<span>{army.movementLeft > 0 ? `${army.movementLeft} moves` : label('army_exhausted')}</span></div>
     {player && selectedOther && !selected && <GameButton compact variant="Secondary" onClick={onMerge}><GameIcon name="Merge" width={15} /> {label('ui_merge_armies')}</GameButton>}
   </div>;
 }

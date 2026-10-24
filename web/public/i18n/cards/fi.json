@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Kiehuvat Öljyt",
   "d": "Puolustustaktiikka",
-  "e": "+3 puolustus piiritystä vastaan",
-  "s": "+3 puolustus piiritystä vastaan"
+  "e": "+3 puolustus",
+  "s": "+3 puolustus"
  },
  "str-025": {
   "n": "Kaupungin Vartijat",
@@ -96,9 +96,9 @@
   "s": "+2 puolustus"
  },
  "str-026": {
-  "n": "Skorpionikone",
-  "d": "Puolustuspiiritysase",
-  "e": "+2 puolustus, voi iskeä viereiseen alueeseen",
+  "n": "Puolustusmuodostelma",
+  "d": "Puolustustaktiikka",
+  "e": "+2 puolustus",
   "s": "+2 puolustus"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 käsityöläistä + 2 hevosta"
  },
  "tek-003": {
-  "n": "Piirityskone",
-  "d": "Kiviä singottava kone",
-  "e": "Linnoitukset -1 puolustus sinua vastaan",
-  "s": "+2 linnoituksia vastaan",
+  "n": "Taistelutaktiikka",
+  "d": "Pysyvä hyökkäysoppi",
+  "e": "+2 hyökkäysvoimaa",
+  "s": "+2 hyökkäysvoimaa",
   "c": "3 käsityöläistä"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 käsityöläistä"
  },
  "res-032": {
-  "n": "Kiinalaiset Insinöörit",
+  "n": "Kiinalaiset käsityöläiset",
   "d": "3 käsityöläistä",
-  "e": "Piirityskoneiden rakentajat",
+  "e": "Taitavat käsityöläiset",
   "s": "+3 käsityöläistä"
  },
  "res-033": {

@@ -82,7 +82,7 @@ const EMOJI_ICON: Record<string, string> = {
   '🦌': 'paw', '🦅': 'paw', '🐻': 'paw', '🦉': 'paw', '🦊': 'paw', '🐀': 'paw',
   '⚔️': 'swords', '🪓': 'swords', '🗡️': 'sword', '🧭': 'compass', '🕯️': 'temple', '🐦': 'feather',
   '🏇': 'horseshoe', '🐎': 'horseshoe', '🐉': 'crown', '👑': 'crown', '💜': 'crown', '🌾': 'people', '👥': 'people',
-  '🛡️': 'shield', '🏗️': 'hammer', '💥': 'catapult', '🏯': 'castle', '🌉': 'bridge', '⛰️': 'mountain', '🌿': 'leaf',
+  '🛡️': 'shield', '🏗️': 'hammer', '💥': 'swords', '🏯': 'castle', '🌉': 'bridge', '⛰️': 'mountain', '🌿': 'leaf',
 };
 
 /** Icon key of the first emoji-only text inside a card, if any. */

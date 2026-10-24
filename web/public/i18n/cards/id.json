@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Minyak Mendidih",
   "d": "Taktik bertahan",
-  "e": "+3 pertahanan melawan pengepungan",
-  "s": "+3 lawan pengepungan"
+  "e": "+3 pertahanan",
+  "s": "+3 pertahanan"
  },
  "str-025": {
   "n": "Penjaga Kota",
@@ -96,9 +96,9 @@
   "s": "+2 pertahanan"
  },
  "str-026": {
-  "n": "Mesin Skorpion",
-  "d": "Senjata kepung defensif",
-  "e": "+2 pertahanan, dapat menyerang provinsi bersebelahan",
+  "n": "Formasi Bertahan",
+  "d": "Taktik formasi defensif",
+  "e": "+2 pertahanan",
   "s": "+2 pertahanan"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 pengrajin + 2 kuda"
  },
  "tek-003": {
-  "n": "Mesin Kepung",
-  "d": "Mesin pelempar batu",
-  "e": "Benteng -1 pertahanan terhadapmu",
-  "s": "+2 lawan benteng",
+  "n": "Doktrin Tempur",
+  "d": "Doktrin ofensif permanen",
+  "e": "+2 daya serang",
+  "s": "+2 daya serang",
   "c": "3 pengrajin"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 pengrajin"
  },
  "res-032": {
-  "n": "Insinyur Tiongkok",
+  "n": "Pengrajin Tiongkok",
   "d": "3 pengrajin",
-  "e": "Pembuat mesin kepung",
+  "e": "Pengrajin terampil",
   "s": "+3 pengrajin"
  },
  "res-033": {

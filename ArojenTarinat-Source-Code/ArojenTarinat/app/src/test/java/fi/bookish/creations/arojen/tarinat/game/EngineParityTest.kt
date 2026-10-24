@@ -152,7 +152,7 @@ class EngineParityTest {
             s.attackBonus, s.defenseBonus, s.movementBonus,
             s.factions.map { listOf(it.id, it.treasury, it.manpower, it.horses) },
             s.provinces.map { listOf(it.id, it.ownerId, it.fortLevel, it.fortDurability, it.garrison, it.unrest, it.siegeProgress) },
-            s.armies.map { listOf(it.id, it.ownerId, it.provinceId, it.cavalry, it.infantry, it.siege, it.movementLeft) },
+            s.armies.map { listOf(it.id, it.ownerId, it.provinceId, it.cavalry, it.infantry, it.movementLeft) },
             s.hand.map { it.id }, s.deck.map { it.id }, s.discard.map { it.id }, s.playedTechCards.map { it.id },
             s.activeEffects.map { listOf(it.cardId, it.type, it.value, it.remainingTurns) },
             s.buildings.keys.sorted().map { listOf(it, s.buildings.getValue(it)) },

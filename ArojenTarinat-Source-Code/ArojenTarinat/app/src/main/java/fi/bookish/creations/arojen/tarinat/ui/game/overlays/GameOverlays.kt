@@ -323,7 +323,6 @@ fun ArmyBanner(army: Army, attackPower: Int, modifier: Modifier = Modifier) {
     ) {
         BannerStat(GameIcons.Horseshoe, army.cavalry)
         BannerStat(GameIcons.Sword, army.infantry)
-        if (army.siege > 0) BannerStat(GameIcons.Catapult, army.siege)
         BannerStat(GameIcons.Swords, attackPower, stringResource(R.string.battle_attack_label))
         BannerStat(GameIcons.Boot, army.movementLeft)
         Spacer(Modifier.width(4.dp))

@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Huile bouillante",
   "d": "Une tactique défensive",
-  "e": "+3 défense contre le siège",
-  "s": "+3 défense contre le siège"
+  "e": "+3 défense",
+  "s": "+3 défense"
  },
  "str-025": {
   "n": "Gardes de la ville",
@@ -96,9 +96,9 @@
   "s": "+2 défense"
  },
  "str-026": {
-  "n": "Scorpion",
-  "d": "Une arme de siège défensive",
-  "e": "+2 défense, peut frapper une province adjacente",
+  "n": "Formation défensive",
+  "d": "Formation de combat défensive",
+  "e": "+2 défense",
   "s": "+2 défense"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 artisans + 2 chevaux"
  },
  "tek-003": {
-  "n": "Engin de siège",
-  "d": "Une machine à lancer des pierres",
-  "e": "Les forteresses ont -1 défense contre vous",
-  "s": "+2 contre forteresses",
+  "n": "Doctrine de combat",
+  "d": "Doctrine offensive permanente",
+  "e": "+2 puissance d’attaque",
+  "s": "+2 puissance d’attaque",
   "c": "3 artisans"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 artisans"
  },
  "res-032": {
-  "n": "Ingénieurs chinois",
+  "n": "Artisans chinois",
   "d": "3 artisans",
-  "e": "Bâtisseurs d'engins de siège",
+  "e": "Artisans qualifiés",
   "s": "+3 artisans"
  },
  "res-033": {

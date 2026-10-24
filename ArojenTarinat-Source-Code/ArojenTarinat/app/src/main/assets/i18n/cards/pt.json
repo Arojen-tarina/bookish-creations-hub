@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Óleo Fervente",
   "d": "Uma tática defensiva",
-  "e": "+3 defesa contra cerco",
-  "s": "+3 defesa contra cerco"
+  "e": "+3 defesa",
+  "s": "+3 defesa"
  },
  "str-025": {
   "n": "Guardas da Cidade",
@@ -96,9 +96,9 @@
   "s": "+2 defesa"
  },
  "str-026": {
-  "n": "Escorpião",
-  "d": "Uma arma de cerco defensiva",
-  "e": "+2 defesa, pode atingir uma província adjacente",
+  "n": "Formação defensiva",
+  "d": "Tática de defesa",
+  "e": "+2 defesa",
   "s": "+2 defesa"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 artesãos + 2 cavalos"
  },
  "tek-003": {
-  "n": "Máquina de Cerco",
-  "d": "Uma máquina que lança pedras",
-  "e": "Fortalezas -1 defesa contra você",
-  "s": "+2 contra fortalezas",
+  "n": "Doutrina de batalha",
+  "d": "Doutrina ofensiva permanente",
+  "e": "+2 poder de ataque",
+  "s": "+2 poder de ataque",
   "c": "3 artesãos"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 artesãos"
  },
  "res-032": {
-  "n": "Engenheiros Chineses",
+  "n": "Artesãos chineses",
   "d": "3 artesãos",
-  "e": "Construtores de máquinas de cerco",
+  "e": "Artesãos habilidosos",
   "s": "+3 artesãos"
  },
  "res-033": {

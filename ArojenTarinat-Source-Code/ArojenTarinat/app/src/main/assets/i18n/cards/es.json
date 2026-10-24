@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Aceite hirviendo",
   "d": "Una táctica defensiva",
-  "e": "+3 defensa contra asedio",
-  "s": "+3 defensa contra asedio"
+  "e": "+3 defensa",
+  "s": "+3 defensa"
  },
  "str-025": {
   "n": "Guardias de la ciudad",
@@ -96,9 +96,9 @@
   "s": "+2 defensa"
  },
  "str-026": {
-  "n": "Escorpión",
-  "d": "Un arma de asedio defensiva",
-  "e": "+2 defensa, puede golpear una provincia adyacente",
+  "n": "Formación defensiva",
+  "d": "Táctica de defensa",
+  "e": "+2 defensa",
   "s": "+2 defensa"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 artesanos + 2 caballos"
  },
  "tek-003": {
-  "n": "Máquina de asedio",
-  "d": "Máquina lanzapiedras",
-  "e": "Las fortalezas tienen -1 defensa contra ti",
-  "s": "+2 contra fortalezas",
+  "n": "Doctrina de batalla",
+  "d": "Doctrina ofensiva permanente",
+  "e": "+2 poder de ataque",
+  "s": "+2 poder de ataque",
   "c": "3 artesanos"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 artesanos"
  },
  "res-032": {
-  "n": "Ingenieros chinos",
+  "n": "Artesanos chinos",
   "d": "3 artesanos",
-  "e": "Constructores de máquinas de asedio",
+  "e": "Artesanos expertos",
   "s": "+3 artesanos"
  },
  "res-033": {

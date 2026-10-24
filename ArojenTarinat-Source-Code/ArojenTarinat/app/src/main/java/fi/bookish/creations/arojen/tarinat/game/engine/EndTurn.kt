@@ -63,7 +63,6 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                     armies[targetIdx] = target.copy(
                         cavalry = target.cavalry + source.cavalry,
                         infantry = target.infantry + source.infantry,
-                        siege = target.siege + source.siege,
                     )
                     armies = armies.filterTo(mutableListOf()) { it.id != action.armyId }
                     log += TurnLogEntry(TurnLogKind.MERGED_ARMIES, faction.id)
@@ -118,7 +117,6 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                         provinceId = targetId,
                         cavalry = cavalry,
                         infantry = 6,
-                        siege = 0,
                         movementLeft = 0,
                         leaderBonus = 0.0,
                     )

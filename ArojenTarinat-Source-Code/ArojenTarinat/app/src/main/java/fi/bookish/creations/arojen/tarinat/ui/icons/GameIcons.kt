@@ -293,19 +293,6 @@ object GameIcons {
         }
     }
 
-    /** Siege engines: a catapult. */
-    val Catapult: ImageVector by lazy {
-        icon("Catapult") {
-            stroke {
-                moveTo(3f, 17f); lineTo(21f, 17f)
-                moveTo(9f, 17f); lineTo(16f, 6f)
-                circle(17.5f, 4.8f, 1.6f)
-                moveTo(12f, 17f); lineTo(14f, 11f)
-            }
-            stroke { circle(6.5f, 19f, 1.8f); circle(17.5f, 19f, 1.8f) }
-        }
-    }
-
     /** Movement points. */
     val Boot: ImageVector by lazy {
         icon("Boot") {

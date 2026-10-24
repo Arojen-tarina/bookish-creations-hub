@@ -14,7 +14,7 @@ const snapshot=(s:GameState):unknown[]=>[
  s.gameOver,s.winnerId,s.winCondition,s.chiefLost,s.attackBonus,s.defenseBonus,s.movementBonus,
  s.factions.map(f=>[f.id,f.treasury,f.manpower,f.horses]),
  s.provinces.map(p=>[p.id,p.ownerId,p.fortLevel,p.fortDurability,p.garrison,p.unrest,p.siegeProgress]),
- s.armies.map(a=>[a.id,a.ownerId,a.provinceId,a.cavalry,a.infantry,a.siege,a.movementLeft]),
+ s.armies.map(a=>[a.id,a.ownerId,a.provinceId,a.cavalry,a.infantry,a.movementLeft]),
  s.hand.map(c=>c.id),s.deck.map(c=>c.id),s.discard.map(c=>c.id),s.playedTechCards.map(c=>c.id),
  s.activeEffects.map(e=>[e.cardId,e.type,e.value,e.remainingTurns]),
  Object.keys(s.buildings).sort().map(k=>[k,s.buildings[k]]),

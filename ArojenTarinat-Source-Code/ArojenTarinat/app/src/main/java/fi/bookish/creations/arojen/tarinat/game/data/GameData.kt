@@ -46,13 +46,13 @@ object Rules {
 
 /** Starting stats for 1206 (FACTION_DATA_1206). Names, rulers and colours live in the UI layer. */
 val FACTION_DATA_1206: Map<FactionId, Faction> = listOf(
-    Faction(FactionId.MONGOL, "karakorum", Personality.AGGRESSIVE, 50, 80, 100, 0.3, 0.0, 0.2, isPlayer = false),
-    Faction(FactionId.JIN, "zhongdu", Personality.DEFENSIVE, 150, 200, 30, 0.0, 0.2, 0.0, isPlayer = false),
-    Faction(FactionId.SONG, "hangzhou", Personality.TRADER, 200, 150, 20, -0.1, 0.3, -0.1, isPlayer = false),
-    Faction(FactionId.XIXIA, "xingqing", Personality.CAUTIOUS, 60, 60, 40, 0.1, 0.1, 0.0, isPlayer = false),
-    Faction(FactionId.KHWAREZM, "samarkand", Personality.EXPANSIONIST, 120, 100, 50, 0.1, 0.2, 0.1, isPlayer = false),
-    Faction(FactionId.RUS, "novgorod", Personality.DEFENSIVE, 80, 80, 25, 0.0, 0.1, 0.1, isPlayer = false),
-    Faction(FactionId.KIPCHAK, "sarkel", Personality.AGGRESSIVE, 30, 50, 70, 0.2, -0.1, -0.1, isPlayer = false),
+    Faction(FactionId.MONGOL, "karakorum", Personality.AGGRESSIVE, 50, 80, 100, 0.3, 0.0, isPlayer = false),
+    Faction(FactionId.JIN, "zhongdu", Personality.DEFENSIVE, 150, 200, 30, 0.0, 0.2, isPlayer = false),
+    Faction(FactionId.SONG, "hangzhou", Personality.TRADER, 200, 150, 20, -0.1, 0.3, isPlayer = false),
+    Faction(FactionId.XIXIA, "xingqing", Personality.CAUTIOUS, 60, 60, 40, 0.1, 0.1, isPlayer = false),
+    Faction(FactionId.KHWAREZM, "samarkand", Personality.EXPANSIONIST, 120, 100, 50, 0.1, 0.2, isPlayer = false),
+    Faction(FactionId.RUS, "novgorod", Personality.DEFENSIVE, 80, 80, 25, 0.0, 0.1, isPlayer = false),
+    Faction(FactionId.KIPCHAK, "sarkel", Personality.AGGRESSIVE, 30, 50, 70, 0.2, -0.1, isPlayer = false),
 ).associateBy { it.id }
 
 /** Shorthand used by the generated province table. */

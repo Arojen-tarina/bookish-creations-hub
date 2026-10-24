@@ -4,8 +4,8 @@ import type { BuildingType, CardEffectType, CardType, Difficulty, FactionId, Per
 
 export interface Point { x: number; y: number }
 export interface Province { id: string; name: string; region: Region; ownerId: FactionId | null; terrain: Terrain; isCoastal: boolean; isCapital: boolean; neighbors: string[]; baseTax: number; baseManpower: number; tradeGood: TradeGood | null; hasSilkRoad: boolean; unrest: number; fortLevel: number; fortDurability: number | null; developmentLevel: number; garrison: number; siegeProgress: number | null; center: Point }
-export interface Faction { id: FactionId; capitalId: string; personality: Personality; treasury: number; manpower: number; horses: number; cavalryBonus: number; taxBonus: number; siegeBonus: number; isPlayer: boolean }
-export interface Army { id: string; ownerId: FactionId; provinceId: string; cavalry: number; infantry: number; siege: number; movementLeft: number; leaderBonus: number }
+export interface Faction { id: FactionId; capitalId: string; personality: Personality; treasury: number; manpower: number; horses: number; cavalryBonus: number; taxBonus: number; isPlayer: boolean }
+export interface Army { id: string; ownerId: FactionId; provinceId: string; cavalry: number; infantry: number; movementLeft: number; leaderBonus: number }
 export interface Treaty { type: TreatyType; startTurn: number; duration: number }
 export interface DiplomaticRelation { factionA: FactionId; factionB: FactionId; relation: number; trust: number; threat: number; treaties: Treaty[]; borderFriction: number; lastProposalTurn: number | null }
 export interface CardEffect { type: CardEffectType; value: number; duration: number }
@@ -25,7 +25,7 @@ export interface GameState {
 export const chiefArmyId = (owner: FactionId): string => `army-${owner}-main`;
 export const isChiefArmy = (army: Army): boolean => army.id === chiefArmyId(army.ownerId);
 export const newProvince = (value: Pick<Province, 'id' | 'name' | 'region' | 'ownerId' | 'terrain' | 'baseTax' | 'baseManpower' | 'center'> & Partial<Province>): Province => ({ isCoastal: false, isCapital: false, neighbors: [], tradeGood: null, hasSilkRoad: false, unrest: 0, fortLevel: 0, fortDurability: null, developmentLevel: 1, garrison: 0, siegeProgress: null, ...value });
-export const newArmy = (value: Pick<Army, 'id' | 'ownerId' | 'provinceId' | 'cavalry' | 'infantry' | 'siege' | 'movementLeft'> & Partial<Army>): Army => ({ leaderBonus: 0, ...value });
+export const newArmy = (value: Pick<Army, 'id' | 'ownerId' | 'provinceId' | 'cavalry' | 'infantry' | 'movementLeft'> & Partial<Army>): Army => ({ leaderBonus: 0, ...value });
 export const newGameState = (value: Pick<GameState, 'turn' | 'year' | 'playerFactionId' | 'difficulty' | 'provinces' | 'factions' | 'relations' | 'armies' | 'deck' | 'hand' | 'discard' | 'food' | 'artisans'> & Partial<GameState>): GameState => ({ playedTechCards: [], activeEffects: [], attackBonus: 0, defenseBonus: 0, movementBonus: 0, buildings: {}, influence: 0, prestige: 0, treasuryStreak: 0, aiTreasuryStreaks: {}, turnLog: [], resourcesCollected: false, lastCollection: null, chiefLost: false, tributeTurn: 0, secondChanceUsed: false, gameOver: false, winnerId: null, winCondition: null, nextId: 1, ...value });
 export const playerOf = (state: GameState): Faction => state.factions.find(f => f.id === state.playerFactionId)!;
 export const provinceById = (state: GameState, id: string): Province | null => state.provinces.find(p => p.id === id) ?? null;

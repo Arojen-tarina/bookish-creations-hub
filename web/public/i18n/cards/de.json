@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Siedendes Öl",
   "d": "Eine Verteidigungstaktik",
-  "e": "+3 Verteidigung gegen Belagerung",
-  "s": "+3 gegen Belagerung"
+  "e": "+3 Verteidigung",
+  "s": "+3 Verteidigung"
  },
  "str-025": {
   "n": "Stadtwachen",
@@ -96,9 +96,9 @@
   "s": "+2 Verteidigung"
  },
  "str-026": {
-  "n": "Skorpiongeschütz",
-  "d": "Eine defensive Belagerungswaffe",
-  "e": "+2 Verteidigung, kann eine benachbarte Provinz treffen",
+  "n": "Verteidigungsformation",
+  "d": "Defensive Gefechtsformation",
+  "e": "+2 Verteidigung",
   "s": "+2 Verteidigung"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 Handwerker + 2 Pferde"
  },
  "tek-003": {
-  "n": "Belagerungsmaschine",
-  "d": "Eine steinschleudernde Maschine",
-  "e": "Festungen haben -1 Verteidigung gegen dich",
-  "s": "+2 gegen Festungen",
+  "n": "Schlachtdoktrin",
+  "d": "Dauerhafte offensive Doktrin",
+  "e": "+2 Angriffskraft",
+  "s": "+2 Angriffskraft",
   "c": "3 Handwerker"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 Handwerker"
  },
  "res-032": {
-  "n": "Chinesische Ingenieure",
+  "n": "Chinesische Handwerker",
   "d": "3 Handwerker",
-  "e": "Erbauer von Belagerungsmaschinen",
+  "e": "Erfahrene Handwerker",
   "s": "+3 Handwerker"
  },
  "res-033": {

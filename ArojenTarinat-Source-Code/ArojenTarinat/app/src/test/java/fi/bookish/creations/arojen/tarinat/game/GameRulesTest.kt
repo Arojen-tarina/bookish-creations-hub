@@ -81,9 +81,9 @@ class GameRulesTest {
     }
 
     @Test
-    fun `attack power includes units siege and active bonus`() {
-        val army = Army("test", FactionId.MONGOL, "test", cavalry = 3, infantry = 4, siege = 2, morale = 80, supply = 20, movementLeft = 3)
-        assertEquals(17, army.attackPower(5))
+    fun `attack power includes cavalry infantry and active bonus`() {
+        val army = Army("test", FactionId.MONGOL, "test", cavalry = 3, infantry = 4, movementLeft = 3)
+        assertEquals(15, army.attackPower(5))
     }
 
     @Test
@@ -136,9 +136,9 @@ class GameRulesTest {
                 else -> it
             }
         }
-        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, siege = 0, movementLeft = 3)
+        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, movementLeft = 3)
         val armies = s0.armies.map {
-            if (it.id == Army.chiefArmyId(player)) it.copy(provinceId = chiefLand.id, cavalry = 0, infantry = 1, siege = 0) else it
+            if (it.id == Army.chiefArmyId(player)) it.copy(provinceId = chiefLand.id, cavalry = 0, infantry = 1) else it
         } + horde
 
         val s1 = endTurn(s0.copy(provinces = provinces, armies = armies), Mulberry32(3))
@@ -155,11 +155,10 @@ class GameRulesTest {
     fun `peace treaty blocks entering a rival's land`() {
         val s0 = newGame()
         val player = s0.playerFactionId
-        // A siege-free, cavalry-heavy army with full movement standing next to rival land
-        // (cavalry never pays more than 3 movement for any terrain).
+        // A cavalry-heavy army with full movement standing next to rival land.
         val target = s0.provinces.first { it.ownerId != null && it.ownerId != player }
         val army = s0.armies.first { it.ownerId == player }
-            .copy(provinceId = target.neighbors.first(), siege = 0, cavalry = 10, infantry = 5, movementLeft = 3)
+            .copy(provinceId = target.neighbors.first(), cavalry = 10, infantry = 5, movementLeft = 3)
         val base = s0.copy(armies = s0.armies.map { if (it.id == army.id) army else it })
         val rival = target.ownerId!!
         fun withTreaties(vararg treaties: Treaty) = base.copy(relations = base.relations.map {

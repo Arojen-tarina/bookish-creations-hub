@@ -241,7 +241,6 @@ private fun ArmyList(game: GameState, armies: List<Army>, selectedArmyId: String
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                         UnitCount(GameIcons.Horseshoe, army.cavalry)
                         UnitCount(GameIcons.Sword, army.infantry)
-                        UnitCount(GameIcons.Catapult, army.siege)
                         UnitCount(GameIcons.Swords, army.attackPower(if (mine) game.attackBonus else 0), stringResource(R.string.battle_attack_label))
                         if (mine) {
                             Spacer(Modifier.weight(1f))

@@ -41,7 +41,6 @@ data class Faction(
     val horses: Int,
     val cavalryBonus: Double,
     val taxBonus: Double,
-    val siegeBonus: Double,
     val isPlayer: Boolean,
 )
 
@@ -52,7 +51,6 @@ data class Army(
     val provinceId: String,
     val cavalry: Int,
     val infantry: Int,
-    val siege: Int,
     val movementLeft: Int,
     val leaderBonus: Double = 0.0,
 ) {

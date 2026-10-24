@@ -22,9 +22,8 @@ internal fun bonusTotals(effects: List<ActiveCardEffect>) = EffectTotals(
     movement = effects.filter { it.type == CardEffectType.MOVEMENT_BONUS }.sumOf { it.value },
 )
 
-/** Movement points an army spends to enter [terrainOf]; siege trains are slowest, cavalry-heavy stacks fastest. */
+/** Movement points an army spends to enter [target]; cavalry-heavy stacks move fastest. */
 private fun Army.moveCostInto(target: Province): Int = when {
-    siege > 0 -> target.terrain.movementCostSiege
     cavalry >= infantry -> target.terrain.movementCostCavalry
     else -> target.terrain.movementCostInfantry
 }
@@ -185,7 +184,6 @@ fun mergeArmies(state: GameState, armyId: String, mergeIntoId: String): GameStat
     val merged = target.copy(
         cavalry = target.cavalry + source.cavalry,
         infantry = target.infantry + source.infantry,
-        siege = target.siege + source.siege,
         // Merging spends the turn's movement for the combined stack.
         movementLeft = min(target.movementLeft, source.movementLeft),
     )
@@ -308,7 +306,6 @@ fun recruitArmy(state: GameState, provinceId: String, type: RecruitType): GameSt
         provinceId = provinceId,
         cavalry = cavalry,
         infantry = infantry,
-        siege = 0,
         movementLeft = 0,
         leaderBonus = 0.0,
     )

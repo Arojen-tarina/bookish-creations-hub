@@ -172,7 +172,7 @@
     <string name="book_no_matches">No chapter matches your search.</string>
     <!-- Moose guide: native answers for topics the original described for the web build -->
     <string name="moose_answer_turn">A turn has no fixed phases: build, recruit, move and attack, play cards and use diplomacy in any order. Press End turn when you are ready. The other realms then move, you draw a card and your income is collected.</string>
-    <string name="moose_answer_combat">Tap one of your armies, then a highlighted province: a free neighbouring province to move there, an enemy one to attack it. Battle power comes from cavalry, infantry, siege units, terrain, forts and bonuses, plus a dice roll; the higher total wins.</string>
+    <string name="moose_answer_combat">Tap one of your armies, then a highlighted province: a free neighbouring province to move there, an enemy one to attack it. Battle power comes from cavalry, infantry, terrain, forts and bonuses, plus a dice roll; the higher total wins.</string>
     <string name="moose_answer_cards">You start with 5 cards and draw one more at the end of every turn. Open Cards at the bottom left and play a card any time during your turn for its bonus (gold, food, attack, defense and more).</string>
     <string name="moose_answer_language">Change the language in Settings, found in the main menu and the pause menu. The game can follow your phone\'s language or use any of its 14 languages.</string>
     <string name="moose_answer_save">The game saves itself after every turn and whenever you leave the app; Continue on the main menu picks up where you left off. You can also save to five slots from the pause menu and load them from Load game.</string>

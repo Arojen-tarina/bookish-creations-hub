@@ -86,8 +86,8 @@
  "str-024": {
   "n": "Boiling Oil",
   "d": "A defensive tactic",
-  "e": "+3 defense against siege",
-  "s": "+3 defense against siege"
+  "e": "+3 defense",
+  "s": "+3 defense"
  },
  "str-025": {
   "n": "City Guards",
@@ -96,9 +96,9 @@
   "s": "+2 defense"
  },
  "str-026": {
-  "n": "Scorpion Engine",
-  "d": "A defensive siege weapon",
-  "e": "+2 defense, can strike an adjacent province",
+  "n": "Defensive Formation",
+  "d": "A defensive battlefield formation",
+  "e": "+2 defense",
   "s": "+2 defense"
  },
  "str-027": {
@@ -164,10 +164,10 @@
   "c": "2 artisans + 2 horses"
  },
  "tek-003": {
-  "n": "Siege Engine",
-  "d": "A stone-hurling machine",
-  "e": "Fortresses -1 defense against you",
-  "s": "+2 against fortresses",
+  "n": "Battle Doctrine",
+  "d": "A permanent offensive doctrine",
+  "e": "+2 attack power",
+  "s": "+2 attack power",
   "c": "3 artisans"
  },
  "tek-005": {
@@ -407,9 +407,9 @@
   "s": "+2 artisans"
  },
  "res-032": {
-  "n": "Chinese Engineers",
+  "n": "Chinese Artisans",
   "d": "3 artisans",
-  "e": "Builders of siege engines",
+  "e": "Skilled artisans",
   "s": "+3 artisans"
  },
  "res-033": {

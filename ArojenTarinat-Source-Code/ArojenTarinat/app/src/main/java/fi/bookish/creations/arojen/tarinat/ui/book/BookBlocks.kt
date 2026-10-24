@@ -97,7 +97,6 @@ fun bookIcon(key: String?): ImageVector? = when (key) {
     "people" -> GameIcons.People
     "shield" -> GameIcons.Shield
     "hammer" -> GameIcons.Hammer
-    "catapult" -> GameIcons.Catapult
     "castle" -> GameIcons.Castle
     "bridge" -> GameIcons.Bridge
     "mountain" -> GameIcons.Mountain

@@ -10,8 +10,8 @@ export function defenseBreakdown(p: Province, additional = 0, effectiveFortLevel
   const fortress = effectiveFortLevel * 3 * fortDurabilityOrFull(p) / Rules.FORT_MAX_DURABILITY;
   return { terrain, fortress, additional, total: terrain + fortress + additional };
 }
-export const strength = (a: Army): number => a.cavalry * 3 + a.infantry * 1.5 + a.siege * 2;
-export const attackPower = (a: Army, attackBonus = 0): number => a.cavalry * 2 + a.infantry + a.siege + attackBonus;
+export const strength = (a: Army): number => a.cavalry * 3 + a.infantry * 1.5;
+export const attackPower = (a: Army, attackBonus = 0): number => a.cavalry * 2 + a.infantry + attackBonus;
 export const CHIEF_AURA_SAME_PROVINCE = 2;
 export const CHIEF_AURA_ADJACENT = 1;
 /** Power bonus from the owner's living chief army in the same or an adjacent province. */
@@ -27,7 +27,7 @@ export function createProvinceGarrison(p: Province): Army | null {
   const fortGarrison = p.fortLevel > 0 ? p.fortLevel * 3 + Math.max(1, Math.floor(p.developmentLevel / 2)) : 0;
   const infantry = Math.max(p.garrison, fortGarrison);
   if (infantry <= 0) return null;
-  return { id: `garrison-${p.id}`, ownerId: p.ownerId, provinceId: p.id, cavalry: 0, infantry, siege: 0, movementLeft: 0, leaderBonus: 0 };
+  return { id: `garrison-${p.id}`, ownerId: p.ownerId, provinceId: p.id, cavalry: 0, infantry, movementLeft: 0, leaderBonus: 0 };
 }
 export interface CombatOutcome { attackerWins: boolean; defenderDestroyed: boolean; attackerCavalryLoss: number; attackerInfantryLoss: number; defenderCavalryLoss: number; defenderInfantryLoss: number; attackRoll: number; defenseRoll: number; attackerScore: number; defenderScore: number }
 const lossesFromDamage = (army: Army, damage: number): [number, number] => { const infantry = Math.min(army.infantry, damage); return [Math.min(army.cavalry, Math.floor((damage - infantry) / 2)), infantry]; };
@@ -36,7 +36,7 @@ export function resolveCombat(attacker: Army, defender: Army, battlefield: Provi
   const defenderPower = defender.cavalry * 2 + defender.infantry + defenderBonus;
   const attackRoll = d6(rng), defenseRoll = d6(rng);
   const attackerScore = attackerPower + attackRoll;
-  const effectiveFortLevel = Math.max(0, battlefield.fortLevel - attacker.siege * .5);
+  const effectiveFortLevel = battlefield.fortLevel;
   const defenderScore = defenderPower + defenseRoll + defenseBreakdown(battlefield, 0, effectiveFortLevel).terrain + defenseBreakdown(battlefield, 0, effectiveFortLevel).fortress;
   const attackerWins = attackerScore > defenderScore;
   const [defenderCavalryLoss, defenderInfantryLoss] = lossesFromDamage(defender, attackerWins ? Math.max(0, attackerPower - defenseBonus) : 0);
