@@ -30,8 +30,6 @@ jobs:
         working-directory: web
         run: npm ci
 
-=======
->>>>>>> aa3f281a4c18f9630e6720761be688f0651ecda7
       # The URL and anon key are public client values (the Android build embeds them too).
       # Repository variables win; otherwise reuse the values from the Android gradle.properties.
       - name: Resolve Supabase client config
@@ -46,13 +44,6 @@ jobs:
           echo "VITE_SUPABASE_URL=$url" >> "$GITHUB_ENV"
           echo "VITE_SUPABASE_KEY=$key" >> "$GITHUB_ENV"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0bbae60f0551310dd187dd62a50d21161a193436
-=======
->>>>>>> 0bbae60f0551310dd187dd62a50d21161a193436
-=======
->>>>>>> aa3f281a4c18f9630e6720761be688f0651ecda7
       - name: Build
         working-directory: web
         run: npm run build
