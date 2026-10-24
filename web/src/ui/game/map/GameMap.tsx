@@ -39,8 +39,9 @@ function drawSprite(ctx: CanvasRenderingContext2D, path: string, x: number, y: n
   const scale = Math.min(w / im.naturalWidth, h / im.naturalHeight), dw = im.naturalWidth * scale, dh = im.naturalHeight * scale;
   ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
+// Affine fitted to the hex lattice of board_map.jpg (see provinces -> hex centers).
 function provincePoint(p: Province): Point {
-  return { x: 50 + (p.center.x - 50) * 1.12, y: 65 + (p.center.y - 65) * 1.12 * 0.69 };
+  return { x: 0.963815 * p.center.x + 4.128249, y: 0.93708 * p.center.y + 4.006433 };
 }
 interface Badge { province: Province; armies: Army[]; owner: FactionId; player: boolean; cavalry: number; infantry: number; chief: boolean; kind: 'leader' | 'cavalry' | 'infantry'; x: number; y: number; w: number; h: number }
 function getBadges(state: GameState): Badge[] {

@@ -29,9 +29,10 @@ internal object MapGeometry {
 
     fun imageRect() = Rect(0f, 0f, 130f, 130f)
 
+    // Affine fitted to the hex lattice of board_map.jpg; must match GameMap.tsx provincePoint.
     fun projectPoint(point: Offset) = Offset(
-        50f + (point.x - 50f) * 1.12f,
-        65f + (point.y - 65f) * 1.12f * 0.69f,
+        0.963815f * point.x + 4.128249f,
+        0.93708f * point.y + 4.006433f,
     )
 
     val playRect = Rect(PLAY_LEFT, PLAY_TOP, PLAY_LEFT + PLAY_WIDTH, PLAY_TOP + PLAY_HEIGHT)
