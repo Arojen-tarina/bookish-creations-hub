@@ -1,220 +1,164 @@
 {
- "faction": "song",
- "seed": 2,
- "difficulty": "hard",
- "maxTurns": 60,
- "steps": [
-  {
-   "label": "start",
-   "sha": "800711f5142852451a70808b2bf5e9e686dc331d48b02add23bc36c4a1d5cbce"
-  },
-  {
-   "label": "t1-actions",
-   "sha": "029bc2c807ab4a03f4f9f0190b285ce641891b8a13e040c90c3166a0881ea95f"
-  },
-  {
-   "label": "t1-end",
-   "sha": "1e558803bd536416425187bd52f4cc6192c27ae22acf62e4844fd3535e7c531d"
-  },
-  {
-   "label": "t2-actions",
-   "sha": "8e9984d216f5026cd71cf50abd2f0cdff95aa8de22107101992e8f032f671262"
-  },
-  {
-   "label": "t2-end",
-   "sha": "dae52b5cbd11637d00a5b962464c55f376893ac02f545c1f5ccd03d06b91683b"
-  },
-  {
-   "label": "t3-actions",
-   "sha": "2e79d28bca47a900b06ea361eaa5497c866ce70b6f866d4cd46a748dc9558dac"
-  },
-  {
-   "label": "t3-end",
-   "sha": "a4cd17283990484eb5c6689a4452d52b55d1d4e959934d605295bbefc5f7225a"
-  },
-  {
-   "label": "t4-actions",
-   "sha": "bac394c433fae6fbecc1d3c3c88221aa078cd7c8ba10eed9607527b9920ba711"
-  },
-  {
-   "label": "t4-end",
-   "sha": "89285d800b7794f0ed91d42a910871b4ba6e7f55d9939098ee6998ddce5753b1"
-  },
-  {
-   "label": "t5-actions",
-   "sha": "f7555b3d8aa3cb1bb2bfd744550c60ceb64b1614c2b8f06aebddf0a69f180242"
-  },
-  {
-   "label": "t5-end",
-   "sha": "e2647be3621163c50d9ead9ca40340071272be3bb0f64a531721ba1db7a28e9f"
-  },
-  {
-   "label": "t6-actions",
-   "sha": "4d4cda9eaa405fa031b26df769a3e6a0acd2770fd0c81aba24c4c4fe3ec49690"
-  },
-  {
-   "label": "t6-end",
-   "sha": "16f658ce0b853fbfd151e836ba91a903fb5d5f1dc1c9ba5071515055f1b78572"
-  },
-  {
-   "label": "t7-actions",
-   "sha": "be56f308614ff5a02b86f6217e7efb1c71cebec9518f926a103f0246abb264ad"
-  },
-  {
-   "label": "t7-end",
-   "sha": "ff2f6bd670580db01c929d11ee3ee9785bc28ce662db790da4a1253e55397b39"
-  },
-  {
-   "label": "t8-actions",
-   "sha": "0bda5407773ab024b60789187ccd8c2950e8eec65736eeb26c4036aabe073e70"
-  },
-  {
-   "label": "t8-end",
-   "sha": "94c62416faa21a4ebdda457c3ac857b1457b99b5290ea9bf58ac5005147cbc11"
-  },
-  {
-   "label": "t9-actions",
-   "sha": "38b385983cafcea0bb648a5a6bc6957e661f923494a74b43de866077cadf68e6"
-  },
-  {
-   "label": "t9-end",
-   "sha": "ebc58851271c4acbbbd9a7c851caae2a6c41a2891052887338c805d1e62c0142"
-  },
-  {
-   "label": "t10-actions",
-   "sha": "1152cc7051db1bbf97f8b08a5946f87786291816f4133dd929eb89af922244ab"
-  },
-  {
-   "label": "t10-end",
-   "sha": "116522095ede8a7ac745555406358e91599bf9feacf1b109eaa9d83610e6a47b"
-  },
-  {
-   "label": "t11-actions",
-   "sha": "b922d52b150a7a98aca42d1e6d670668e537743de6572589dd0fd4b3d3b96f27"
-  },
-  {
-   "label": "t11-end",
-   "sha": "86f72786740a7efd3fa07597084b969aa74aba3d26994a48d5e33f1179e5341c"
-  },
-  {
-   "label": "t12-actions",
-   "sha": "782bef3fb23c9ae535b2f92f7b4c903fc4ab772b0f4a4bd7738eeabe59d93497"
-  },
-  {
-   "label": "t12-end",
-   "sha": "23dbe9626b2ca37e77995b74cf5fd7cbaec3526bb6d50a72f38fefcb9608a080"
-  },
-  {
-   "label": "t13-actions",
-   "sha": "f53de0fdce24b3a9ffb769d3354556af7bba46313f58c1323e2ae89f5d76a39c"
-  },
-  {
-   "label": "t13-end",
-   "sha": "cc3c9deb2c22998fbf527eeeab658120ce96413dbb5ad4a182b955c1ff424420"
-  },
-  {
-   "label": "t14-actions",
-   "sha": "22a1355a42b65852edda0b719c88ecabbaedf0d1e7d872f427d495b4fe2d7ac5"
-  },
-  {
-   "label": "t14-end",
-   "sha": "4c67525964dc908c08600eb057329d31e9d290b3ce6a051191f776646c9bd2cf"
-  },
-  {
-   "label": "t15-actions",
-   "sha": "23f2b29a730cdf5e904860cbe5db2d8f5a7f3a03154d9460b84026282089cc60"
-  },
-  {
-   "label": "t15-end",
-   "sha": "def54c8ab5336ed1c957b8e596cf8a80d1da7dc12845f722d66b1202dda181a7"
-  },
-  {
-   "label": "t16-actions",
-   "sha": "d0798c7aa5ef868d99f82fab76f9613c9d396b2de4457c2f8b462ae558ad6b8d"
-  },
-  {
-   "label": "t16-end",
-   "sha": "cbd43a8fd539c8ec78db6906540994d8296193095b433b21a96bb9bd0790541d"
-  },
-  {
-   "label": "t17-actions",
-   "sha": "1a968a56203e94501b5b7b638e1da7c8c2cb522203cb67adb95e80bee49eb092"
-  },
-  {
-   "label": "t17-end",
-   "sha": "28048e36ddce687233de35a8ef3ef25c1db409271b176367fce36373b7cc3928"
-  },
-  {
-   "label": "t18-actions",
-   "sha": "c12964479144be4edeacf5d4f15a73066ad1f2122312e48df3ed3913ad9c19af"
-  },
-  {
-   "label": "t18-end",
-   "sha": "51a028f1e9241313bba8c8c4a7880f167fc5c686287d934ef0ea77d6320e8734"
-  },
-  {
-   "label": "t19-actions",
-   "sha": "7f9897f1846965223dc2f629c769713f177b10926f32aa7ba0d90096617d9679"
-  },
-  {
-   "label": "t19-end",
-   "sha": "56cf33d62e3dc82ce2da734202ba51f44e80efa16da427a94cc811dd080198ec"
-  },
-  {
-   "label": "t20-actions",
-   "sha": "aa767e49161de4c73ac07b58d4d3d6f2d99a378e2324303e7c8b755d0726bcdc"
-  },
-  {
-   "label": "t20-end",
-   "sha": "6c8be6881cad48f18dfb6dc95173bec95777eb2e43f6b8417739254f27d31722"
-  },
-  {
-   "label": "t21-actions",
-   "sha": "e2fc31ab35b14e6406934f5ad5b693f4ab80a26faefdf5fdd4712f8bbcf3f7ab"
-  },
-  {
-   "label": "t21-end",
-   "sha": "4d1fa5dba5cc64076992ead889c186973c9ac1e5b91f93657940f050523e8adc"
-  },
-  {
-   "label": "t22-actions",
-   "sha": "86d3e617f791e440d85fc4e18abd45bef6bef1c0fb879573df74cf514cc728f6"
-  },
-  {
-   "label": "t22-end",
-   "sha": "694cfc10e8ee596b7ceff8a6ab0b2c506b6f54e202d5120ed312cbb0c42cf1d3"
-  },
-  {
-   "label": "t23-actions",
-   "sha": "fdf738277e79fc3cafcc556f47879b4ea914ba79dca216a9ec3edf1a37fb16e0"
-  },
-  {
-   "label": "t23-end",
-   "sha": "5acd228f89d07cdcbe34c5b19043a37c13bd51d43f932ce10fdef96045f861b8"
-  },
-  {
-   "label": "t24-actions",
-   "sha": "c22c2c5ec67941ea7285f79a4c783fa85d49818ac9de4ea85cd3e5b1a66ea4f0"
-  },
-  {
-   "label": "t24-end",
-   "sha": "c4697abc4e33b9c87e20bb61688b09799d4450fd23a0ced9f6b1e5c48dc6f9f4"
-  },
-  {
-   "label": "t25-actions",
-   "sha": "3cb429beab0b562cb6c47c1523040603ad83e5992cebe841ad3b76476a87c9be"
-  },
-  {
-   "label": "t25-end",
-   "sha": "ccb4aace03665bf1fe24d02bc3cf6c283fd56195fcffbbf95736c3c5618040c3"
-  },
-  {
-   "label": "t26-actions",
-   "sha": "5f4015d632ca39220a60d4fde904f06aa8b9909ce791aa9cdb0a39a5e83c8a8d"
-  },
-  {
-   "label": "t26-end",
-   "sha": "3bfc952ccc315e6dd0b41323ddf5bbf1330a58a8a6ee34ad0139a9f483cdcc79"
-  }
- ]
+  "faction": "song",
+  "seed": 2,
+  "difficulty": "hard",
+  "maxTurns": 60,
+  "steps": [
+    {
+      "label": "start",
+      "sha": "800711f5142852451a70808b2bf5e9e686dc331d48b02add23bc36c4a1d5cbce"
+    },
+    {
+      "label": "t1-actions",
+      "sha": "029bc2c807ab4a03f4f9f0190b285ce641891b8a13e040c90c3166a0881ea95f"
+    },
+    {
+      "label": "t1-end",
+      "sha": "1e558803bd536416425187bd52f4cc6192c27ae22acf62e4844fd3535e7c531d"
+    },
+    {
+      "label": "t2-actions",
+      "sha": "8e9984d216f5026cd71cf50abd2f0cdff95aa8de22107101992e8f032f671262"
+    },
+    {
+      "label": "t2-end",
+      "sha": "dae52b5cbd11637d00a5b962464c55f376893ac02f545c1f5ccd03d06b91683b"
+    },
+    {
+      "label": "t3-actions",
+      "sha": "2e79d28bca47a900b06ea361eaa5497c866ce70b6f866d4cd46a748dc9558dac"
+    },
+    {
+      "label": "t3-end",
+      "sha": "a4cd17283990484eb5c6689a4452d52b55d1d4e959934d605295bbefc5f7225a"
+    },
+    {
+      "label": "t4-actions",
+      "sha": "bac394c433fae6fbecc1d3c3c88221aa078cd7c8ba10eed9607527b9920ba711"
+    },
+    {
+      "label": "t4-end",
+      "sha": "4a3f53ef13ba92e0ab8fff4a00447e7740984677e79b1639aa56f119560d757c"
+    },
+    {
+      "label": "t5-actions",
+      "sha": "c5dd7bae69a436969637d504795a8f25233bf42ff3a1e6b6d10a5bc22c53bcc8"
+    },
+    {
+      "label": "t5-end",
+      "sha": "d4b9bd88e8a90e6cf7f77e8493c605cd2ccf6bc2d4594557bb0cb074b8284f82"
+    },
+    {
+      "label": "t6-actions",
+      "sha": "4b35d6a30ede038c2b447c041fbd9f813590981290c7c8441828d723351e1e77"
+    },
+    {
+      "label": "t6-end",
+      "sha": "c259c0a9af37db1d19db3651095cb83d283a644a9062f3c50c46dd2e9e3c7d89"
+    },
+    {
+      "label": "t7-actions",
+      "sha": "a9149f291e35d3073ed54e904dc3c653c5ad02b9cd44f6147e91f4812a9e1c4e"
+    },
+    {
+      "label": "t7-end",
+      "sha": "1c361a05c45877263852def67e618356694592746a3349c24535645d756e23a8"
+    },
+    {
+      "label": "t8-actions",
+      "sha": "f60eed82b8b5f6c647a01f9095c8711eda0738661e8c0b07f659a601245b7c1f"
+    },
+    {
+      "label": "t8-end",
+      "sha": "6c7859c1d51e69a5811c86b38206abb73fc0ea30e5e91a221025956598f30ef2"
+    },
+    {
+      "label": "t9-actions",
+      "sha": "0ff0060ddd851a7bde9292bb4acfce522290ff54cad8e922f0355de01600c5f1"
+    },
+    {
+      "label": "t9-end",
+      "sha": "3927b8a93fd7bcd0656b25fc90ecf5da050b99eb96004208c38eee8eb79debde"
+    },
+    {
+      "label": "t10-actions",
+      "sha": "4fdc5596863d8b06a8d4bdbfe81be38249638747257cd30dbc238f329fac7b5a"
+    },
+    {
+      "label": "t10-end",
+      "sha": "0417c0bbfed793cedd97df5dfabdbf7b7fba499360b6105bc05b41fdf317d983"
+    },
+    {
+      "label": "t11-actions",
+      "sha": "c78034dfe3d788d852958aaccce2e4b8bca9aa9139236b9a475717d0185193db"
+    },
+    {
+      "label": "t11-end",
+      "sha": "c44f27b794f20c33bf91dedf7c29d7eef3155fac770ad14167c90845bbfe90aa"
+    },
+    {
+      "label": "t12-actions",
+      "sha": "6b25c4e1b39718573bed571086d6a676604cfeba331d41e37361c9fd7d5bab0c"
+    },
+    {
+      "label": "t12-end",
+      "sha": "e4650a1a33ff4e7a23929c0631c224e315601393f6b16bbbd6b243a329bcb076"
+    },
+    {
+      "label": "t13-actions",
+      "sha": "4e72aa18127a152ea7db03141dbdce21c632298d4289d2149c9d649715d71886"
+    },
+    {
+      "label": "t13-end",
+      "sha": "05cc27cf7b0a9c7c38eb771b1ccec8acf8302e422ae56f1fe033ab61e17f504f"
+    },
+    {
+      "label": "t14-actions",
+      "sha": "af8beea2652873e5f60da73bbc555963665d339d03e93429f8f95e58ab5be671"
+    },
+    {
+      "label": "t14-end",
+      "sha": "6e7c8251cec1fa4687ca257b5f071ef3d5dc6a2975962b60af8d4fdac55a52b7"
+    },
+    {
+      "label": "t15-actions",
+      "sha": "d73dcdc535676810832a4d81afb5a27fa198a5b845f9859002438a23c9b8a5ab"
+    },
+    {
+      "label": "t15-end",
+      "sha": "8e21c0172b6bf92c563bc02e45a8bcb9eeda6951fdfb397e382719838cdcdee6"
+    },
+    {
+      "label": "t16-actions",
+      "sha": "ae568113d4eec83e31b34feef89ec65611a678e75fb75e11be31e46250858308"
+    },
+    {
+      "label": "t16-end",
+      "sha": "59462e25532a17f2bbbcf6ad014956008de1e4182e7072609c16bcaef11f1193"
+    },
+    {
+      "label": "t17-actions",
+      "sha": "19f45934eef2698c7ab9005794296aa885bcf2fbc3c434f065cc9974d2529e6b"
+    },
+    {
+      "label": "t17-end",
+      "sha": "b5fd98127275f82d37ee44c7e318b33f087ca4fe0962cb78092254c0245f6669"
+    },
+    {
+      "label": "t18-actions",
+      "sha": "59319951bd6061b6c7dca161db3c9b37655a5b3a75c23431464d2cdf8444f9c1"
+    },
+    {
+      "label": "t18-end",
+      "sha": "45d49981994bbbc216c5742890f718fccff03d1594c4bf5a60643a024c2b8201"
+    },
+    {
+      "label": "t19-actions",
+      "sha": "613483ded7459dea18a44de6483c6a160c6304f0ac0b5dbb9fe79c5380b6c5d9"
+    },
+    {
+      "label": "t19-end",
+      "sha": "248e9dfb702d6d5fdd8b56e39ce69d289a8997cc8cfccf0546762e479b654a7f"
+    }
+  ]
 }
