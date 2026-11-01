@@ -18,7 +18,7 @@ export interface AiAction {
   features?: number[];
 }
 
-/** `caution` shifts the personality's minimum attack win chance; negative values attack more recklessly. */
+/** `caution` shifts the tribe's minimum attack win chance; negative values attack more recklessly. */
 export interface AiSkill { noise: number; policyWeight: number; maxActions: number; caution: number; retreat: boolean }
 export const AI_SKILL: Record<Difficulty, AiSkill> = {
   easy: { noise: .3, policyWeight: 0, maxActions: 3, caution: -.12, retreat: false },
@@ -26,12 +26,16 @@ export const AI_SKILL: Record<Difficulty, AiSkill> = {
   hard: { noise: 0, policyWeight: 1, maxActions: 6, caution: -.03, retreat: true },
 };
 
-const PERSONALITY: Record<Personality, { attack: number; expand: number; defend: number; build: number; recruit: number; minWinChance: number }> = {
-  aggressive: { attack: 2, expand: 1.5, defend: .5, build: .5, recruit: 1.5, minWinChance: .42 },
-  defensive: { attack: .5, expand: .8, defend: 2, build: 1.5, recruit: 1, minWinChance: .68 },
-  trader: { attack: .3, expand: 1, defend: 1, build: 2, recruit: .8, minWinChance: .6 },
-  expansionist: { attack: 1, expand: 2, defend: .8, build: 1, recruit: 1.2, minWinChance: .5 },
-  cautious: { attack: .3, expand: .6, defend: 1.5, build: 1.5, recruit: 1, minWinChance: .8 },
+/** Each tribe has its own persona. `breaksTreaties` and `advances` are behavioural switches; the faction's `personality` archetype is still used for policy features. */
+export interface TribePersona { attack: number; expand: number; defend: number; build: number; recruit: number; minWinChance: number; breaksTreaties: boolean; advances: boolean }
+const TRIBE_PERSONA: Record<FactionId, TribePersona> = {
+  mongol: { attack: 2.4, expand: 1.4, defend: .4, build: .4, recruit: 1.8, minWinChance: .4, breaksTreaties: true, advances: true },
+  kipchak: { attack: 2.2, expand: 1.8, defend: .6, build: .5, recruit: 1.4, minWinChance: .44, breaksTreaties: true, advances: true },
+  jin: { attack: .4, expand: .7, defend: 2.4, build: 2, recruit: 1.1, minWinChance: .72, breaksTreaties: false, advances: false },
+  rus: { attack: .7, expand: 1, defend: 2, build: 1.2, recruit: 1.2, minWinChance: .62, breaksTreaties: false, advances: true },
+  song: { attack: .3, expand: .9, defend: 1.2, build: 2.5, recruit: .7, minWinChance: .6, breaksTreaties: false, advances: true },
+  xixia: { attack: .3, expand: .5, defend: 1.6, build: 1.4, recruit: 1, minWinChance: .82, breaksTreaties: false, advances: false },
+  khwarezm: { attack: 1.2, expand: 2.2, defend: .7, build: 1, recruit: 1.3, minWinChance: .5, breaksTreaties: true, advances: true },
 };
 
 const MOVE_COST: Record<Province['terrain'], number> = { steppe: 1, grassland: 1, forest: 1, mountain: 3, desert: 2, taiga: 2, tundra: 2, farmland: 1, hills: 2, marsh: 3 };
@@ -80,7 +84,7 @@ function targets(from: string, by: Map<string, Province>, f: FactionId, maxRange
 
 /** All legal candidate actions with their policy features. Selection is done by `selectAiActions`. */
 export function calculateAiCandidates(faction: Faction, armies: Army[], provinces: Province[], relations: DiplomaticRelation[]): AiAction[] {
-  const w = PERSONALITY[faction.personality];
+  const w = TRIBE_PERSONA[faction.id];
   const by = new Map(provinces.map(p => [p.id, p] as const));
   const owned = provinces.filter(p => p.ownerId === faction.id);
   const my = armies.filter(a => a.ownerId === faction.id && a.movementLeft > 0);
@@ -140,7 +144,7 @@ export function calculateAiCandidates(faction: Faction, armies: Army[], province
       const p = by.get(nid);
       if (!p || !p.ownerId || p.ownerId === faction.id) continue;
       const treatied = relations.find(r => (r.factionA === faction.id && r.factionB === p.ownerId) || (r.factionB === faction.id && r.factionA === p.ownerId));
-      if (treatied?.treaties.some(t => ['truce', 'alliance', 'non_aggression'].includes(t.type)) && faction.personality !== 'aggressive') continue;
+      if (treatied?.treaties.some(t => ['truce', 'alliance', 'non_aggression'].includes(t.type)) && !w.breaksTreaties) continue;
       if (a.movementLeft < MOVE_COST[p.terrain]) continue;
       const defender = defenderOf(p, armies, faction.id);
       const win = defender ? battleOdds(a, defender, p) : 1;
@@ -180,7 +184,7 @@ export function calculateAiCandidates(faction: Faction, armies: Army[], province
       add({ type: 'MOVE', armyId: a.id, targetProvinceId: freeTarget.path[0], logKind: 'CAPTURE', priority: freeTarget.score * w.expand }, 'CAPTURE', { ...threatCtx, freeTarget: true, provinceValue: value(by.get(freeTarget.provinceId)!) });
     }
 
-    if (faction.personality !== 'cautious') {
+    if (w.advances) {
       const advance = targets(a.provinceId, by, faction.id, 4).find(x => by.get(x.provinceId)?.ownerId);
       if (advance && advance.path.length) {
         add({ type: 'MOVE', armyId: a.id, targetProvinceId: advance.path[0], logKind: 'ADVANCE', priority: advance.score * .5 * w.attack }, 'ADVANCE', { ...threatCtx, enemyTarget: true, provinceValue: value(by.get(advance.provinceId)!) });
@@ -216,10 +220,10 @@ export function calculateAiCandidates(faction: Faction, armies: Army[], province
 export interface AiOptions { difficulty?: Difficulty; rng?: GameRandom; policy?: AiPolicy | null }
 
 /** Ranks candidates by priority (+ learned policy value and difficulty noise) and enforces one order per army and one attack per target. */
-export function selectAiActions(candidates: AiAction[], personality: Personality, options: AiOptions = {}): AiAction[] {
+export function selectAiActions(candidates: AiAction[], factionId: FactionId, options: AiOptions = {}): AiAction[] {
   const skill = AI_SKILL[options.difficulty ?? 'normal'];
   const policy = options.policy === undefined ? DEFAULT_AI_POLICY : options.policy;
-  const minWin = PERSONALITY[personality].minWinChance + skill.caution;
+  const minWin = TRIBE_PERSONA[factionId].minWinChance + skill.caution;
   const scored = candidates
     .filter(c => !(c.kind === 'RETREAT' && !skill.retreat))
     .filter(c => c.kind !== 'ATTACK' || (c.winChance ?? 0) >= minWin)
@@ -248,5 +252,5 @@ export function selectAiActions(candidates: AiAction[], personality: Personality
 }
 
 export function calculateAiActions(faction: Faction, armies: Army[], provinces: Province[], relations: DiplomaticRelation[], options: AiOptions = {}): AiAction[] {
-  return selectAiActions(calculateAiCandidates(faction, armies, provinces, relations), faction.personality, options);
+  return selectAiActions(calculateAiCandidates(faction, armies, provinces, relations), faction.id, options);
 }
