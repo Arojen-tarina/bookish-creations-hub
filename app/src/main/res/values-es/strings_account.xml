@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Cuenta</string>
+    <string name="acct_guest">Juegas como invitado: tu progreso solo está en este teléfono. Inicia sesión para guardarlo en la nube y jugar en cualquier teléfono.</string>
+    <string name="acct_signed_in_google">Sesión iniciada con Google: %1$s</string>
+    <string name="acct_signed_in_email">Sesión iniciada con correo: %1$s</string>
+    <string name="acct_backup_time">Último guardado en la nube: %1$s</string>
+    <string name="acct_backup_never">Tu progreso se guarda en la nube cada vez que sales del juego.</string>
+    <string name="acct_google">Iniciar sesión con Google</string>
+    <string name="acct_email">Correo y contraseña</string>
+    <string name="acct_backup_now">Guardar en la nube ahora</string>
+    <string name="acct_saved">Progreso guardado en la nube.</string>
+    <string name="acct_sign_out">Cerrar sesión</string>
+    <string name="acct_delete">Eliminar cuenta</string>
+    <string name="acct_delete_title">¿Eliminar tu cuenta?</string>
+    <string name="acct_delete_body">Tu cuenta y su copia en la nube se eliminan para siempre. El progreso de este teléfono se queda.</string>
+    <string name="acct_delete_confirm">Eliminar</string>
+    <string name="acct_deleted">Tu cuenta se ha eliminado.</string>
+    <string name="acct_email_label">Correo</string>
+    <string name="acct_password_label">Contraseña (al menos 6 caracteres)</string>
+    <string name="acct_sign_in">Iniciar sesión</string>
+    <string name="acct_create">Crear cuenta</string>
+    <string name="acct_done">Sesión iniciada. Tu progreso está a salvo en la nube.</string>
+    <string name="acct_choice_title">¿Qué progreso quieres conservar?</string>
+    <string name="acct_choice_body">Esta cuenta ya tiene progreso en la nube (nivel %1$d, guardado %2$s). ¿Usarlo en este teléfono o reemplazarlo con el progreso de este teléfono?</string>
+    <string name="acct_keep_cloud">Usar el progreso de la nube</string>
+    <string name="acct_keep_phone">Conservar el de este teléfono</string>
+    <string name="acct_err_invalid">Correo o contraseña incorrectos.</string>
+    <string name="acct_err_exists">Ese correo ya tiene una cuenta. Inicia sesión.</string>
+    <string name="acct_err_weak">La contraseña necesita al menos 6 caracteres.</string>
+    <string name="acct_err_bad_email">Introduce un correo válido.</string>
+    <string name="acct_err_no_google">No se encontró ninguna cuenta de Google en este teléfono.</string>
+    <string name="acct_err_google">El inicio de sesión con Google no funcionó. Inténtalo de nuevo.</string>
+</resources>

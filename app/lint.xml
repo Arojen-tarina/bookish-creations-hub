@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- strings_ui.xml is generated from the original game's dictionaries (tools/parity). It keeps
+         every entry, used or not, and its original typography, so it stays a 1:1 copy. -->
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/values*/strings_ui.xml" />
+    </issue>
+    <issue id="TypographyEllipsis">
+        <ignore path="src/main/res/values*/strings_ui.xml" />
+    </issue>
+    <!-- Android keeps Indonesian in values-in (its old code); locales_config.xml lists it as "id",
+         which is the same language, but lint does not match the two. -->
+    <issue id="UnusedTranslation">
+        <ignore path="src/main/AndroidManifest.xml" />
+    </issue>
+</lint>

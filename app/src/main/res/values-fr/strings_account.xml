@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Compte</string>
+    <string name="acct_guest">Vous jouez en invité : votre progression n’existe que sur ce téléphone. Connectez-vous pour la garder dans le cloud et jouer sur n’importe quel téléphone.</string>
+    <string name="acct_signed_in_google">Connecté avec Google : %1$s</string>
+    <string name="acct_signed_in_email">Connecté avec e-mail : %1$s</string>
+    <string name="acct_backup_time">Dernière sauvegarde cloud : %1$s</string>
+    <string name="acct_backup_never">Votre progression est sauvegardée dans le cloud chaque fois que vous quittez le jeu.</string>
+    <string name="acct_google">Se connecter avec Google</string>
+    <string name="acct_email">E-mail et mot de passe</string>
+    <string name="acct_backup_now">Sauvegarder dans le cloud</string>
+    <string name="acct_saved">Progression sauvegardée dans le cloud.</string>
+    <string name="acct_sign_out">Se déconnecter</string>
+    <string name="acct_delete">Supprimer le compte</string>
+    <string name="acct_delete_title">Supprimer votre compte ?</string>
+    <string name="acct_delete_body">Votre compte et sa copie cloud sont supprimés définitivement. La progression de ce téléphone reste.</string>
+    <string name="acct_delete_confirm">Supprimer</string>
+    <string name="acct_deleted">Votre compte a été supprimé.</string>
+    <string name="acct_email_label">E-mail</string>
+    <string name="acct_password_label">Mot de passe (6 caractères minimum)</string>
+    <string name="acct_sign_in">Se connecter</string>
+    <string name="acct_create">Créer un compte</string>
+    <string name="acct_done">Connecté. Votre progression est en sécurité dans le cloud.</string>
+    <string name="acct_choice_title">Quelle progression garder ?</string>
+    <string name="acct_choice_body">Ce compte a déjà une progression dans le cloud (niveau %1$d, sauvegardée %2$s). L’utiliser sur ce téléphone ou la remplacer par celle de ce téléphone ?</string>
+    <string name="acct_keep_cloud">Utiliser la progression cloud</string>
+    <string name="acct_keep_phone">Garder celle de ce téléphone</string>
+    <string name="acct_err_invalid">E-mail ou mot de passe incorrect.</string>
+    <string name="acct_err_exists">Cet e-mail a déjà un compte. Connectez-vous.</string>
+    <string name="acct_err_weak">Le mot de passe doit contenir au moins 6 caractères.</string>
+    <string name="acct_err_bad_email">Saisissez une adresse e-mail valide.</string>
+    <string name="acct_err_no_google">Aucun compte Google trouvé sur ce téléphone.</string>
+    <string name="acct_err_google">La connexion Google a échoué. Veuillez réessayer.</string>
+</resources>

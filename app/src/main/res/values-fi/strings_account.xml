@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Tili</string>
+    <string name="acct_guest">Pelaat vieraana: edistymisesi on tallessa vain tässä puhelimessa. Kirjaudu, niin se säilyy pilvessä ja voit pelata millä tahansa puhelimella.</string>
+    <string name="acct_signed_in_google">Kirjautunut Googlella: %1$s</string>
+    <string name="acct_signed_in_email">Kirjautunut sähköpostilla: %1$s</string>
+    <string name="acct_backup_time">Viimeisin pilvitallennus: %1$s</string>
+    <string name="acct_backup_never">Edistymisesi tallentuu pilveen aina, kun poistut pelistä.</string>
+    <string name="acct_google">Kirjaudu Googlella</string>
+    <string name="acct_email">Sähköposti ja salasana</string>
+    <string name="acct_backup_now">Tallenna pilveen nyt</string>
+    <string name="acct_saved">Edistyminen tallennettu pilveen.</string>
+    <string name="acct_sign_out">Kirjaudu ulos</string>
+    <string name="acct_delete">Poista tili</string>
+    <string name="acct_delete_title">Poistetaanko tilisi?</string>
+    <string name="acct_delete_body">Tilisi ja sen pilvikopio poistetaan pysyvästi. Tämän puhelimen edistyminen säilyy.</string>
+    <string name="acct_delete_confirm">Poista</string>
+    <string name="acct_deleted">Tilisi on poistettu.</string>
+    <string name="acct_email_label">Sähköposti</string>
+    <string name="acct_password_label">Salasana (vähintään 6 merkkiä)</string>
+    <string name="acct_sign_in">Kirjaudu</string>
+    <string name="acct_create">Luo tili</string>
+    <string name="acct_done">Kirjauduttu. Edistymisesi on tallessa pilvessä.</string>
+    <string name="acct_choice_title">Kumman edistymisen haluat pitää?</string>
+    <string name="acct_choice_body">Tilillä on jo edistymistä pilvessä (taso %1$d, tallennettu %2$s). Käytetäänkö sitä tässä puhelimessa vai korvataanko se tämän puhelimen edistymisellä?</string>
+    <string name="acct_keep_cloud">Käytä pilven edistymistä</string>
+    <string name="acct_keep_phone">Pidä tämän puhelimen edistyminen</string>
+    <string name="acct_err_invalid">Väärä sähköposti tai salasana.</string>
+    <string name="acct_err_exists">Tällä sähköpostilla on jo tili. Kirjaudu sisään.</string>
+    <string name="acct_err_weak">Salasanassa on oltava vähintään 6 merkkiä.</string>
+    <string name="acct_err_bad_email">Anna kelvollinen sähköpostiosoite.</string>
+    <string name="acct_err_no_google">Puhelimesta ei löytynyt Google-tiliä.</string>
+    <string name="acct_err_google">Google-kirjautuminen ei onnistunut. Yritä uudelleen.</string>
+</resources>

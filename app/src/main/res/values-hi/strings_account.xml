@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">खाता</string>
+    <string name="acct_guest">आप मेहमान के रूप में खेल रहे हैं: आपकी प्रगति सिर्फ़ इसी फ़ोन पर है। साइन इन करें ताकि यह क्लाउड में सुरक्षित रहे और किसी भी फ़ोन पर खेल सकें।</string>
+    <string name="acct_signed_in_google">Google से साइन इन: %1$s</string>
+    <string name="acct_signed_in_email">ईमेल से साइन इन: %1$s</string>
+    <string name="acct_backup_time">पिछला क्लाउड सेव: %1$s</string>
+    <string name="acct_backup_never">खेल से निकलते ही आपकी प्रगति क्लाउड में सेव हो जाती है।</string>
+    <string name="acct_google">Google से साइन इन करें</string>
+    <string name="acct_email">ईमेल और पासवर्ड</string>
+    <string name="acct_backup_now">अभी क्लाउड में सेव करें</string>
+    <string name="acct_saved">प्रगति क्लाउड में सेव हो गई।</string>
+    <string name="acct_sign_out">साइन आउट</string>
+    <string name="acct_delete">खाता हटाएँ</string>
+    <string name="acct_delete_title">अपना खाता हटाएँ?</string>
+    <string name="acct_delete_body">आपका खाता और उसकी क्लाउड कॉपी हमेशा के लिए हट जाएँगे। इस फ़ोन की प्रगति बनी रहेगी।</string>
+    <string name="acct_delete_confirm">हटाएँ</string>
+    <string name="acct_deleted">आपका खाता हटा दिया गया।</string>
+    <string name="acct_email_label">ईमेल</string>
+    <string name="acct_password_label">पासवर्ड (कम से कम 6 अक्षर)</string>
+    <string name="acct_sign_in">साइन इन</string>
+    <string name="acct_create">खाता बनाएँ</string>
+    <string name="acct_done">साइन इन हो गया। आपकी प्रगति क्लाउड में सुरक्षित है।</string>
+    <string name="acct_choice_title">कौन सी प्रगति रखनी है?</string>
+    <string name="acct_choice_body">इस खाते की क्लाउड में पहले से प्रगति है (लेवल %1$d, सेव %2$s)। इसे इस फ़ोन पर इस्तेमाल करें या इस फ़ोन की प्रगति से बदलें?</string>
+    <string name="acct_keep_cloud">क्लाउड की प्रगति इस्तेमाल करें</string>
+    <string name="acct_keep_phone">इस फ़ोन की प्रगति रखें</string>
+    <string name="acct_err_invalid">गलत ईमेल या पासवर्ड।</string>
+    <string name="acct_err_exists">इस ईमेल का खाता पहले से है। साइन इन करें।</string>
+    <string name="acct_err_weak">पासवर्ड में कम से कम 6 अक्षर चाहिए।</string>
+    <string name="acct_err_bad_email">सही ईमेल पता डालें।</string>
+    <string name="acct_err_no_google">इस फ़ोन पर कोई Google खाता नहीं मिला।</string>
+    <string name="acct_err_google">Google साइन इन नहीं हुआ। फिर से कोशिश करें।</string>
+</resources>

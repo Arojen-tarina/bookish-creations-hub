@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Conta</string>
+    <string name="acct_guest">Você joga como convidado: seu progresso fica só neste celular. Entre para guardá-lo na nuvem e jogar em qualquer celular.</string>
+    <string name="acct_signed_in_google">Conectado com Google: %1$s</string>
+    <string name="acct_signed_in_email">Conectado com e-mail: %1$s</string>
+    <string name="acct_backup_time">Último salvamento na nuvem: %1$s</string>
+    <string name="acct_backup_never">Seu progresso é salvo na nuvem sempre que você sai do jogo.</string>
+    <string name="acct_google">Entrar com Google</string>
+    <string name="acct_email">E-mail e senha</string>
+    <string name="acct_backup_now">Salvar na nuvem agora</string>
+    <string name="acct_saved">Progresso salvo na nuvem.</string>
+    <string name="acct_sign_out">Sair</string>
+    <string name="acct_delete">Excluir conta</string>
+    <string name="acct_delete_title">Excluir sua conta?</string>
+    <string name="acct_delete_body">Sua conta e a cópia na nuvem são excluídas para sempre. O progresso deste celular continua.</string>
+    <string name="acct_delete_confirm">Excluir</string>
+    <string name="acct_deleted">Sua conta foi excluída.</string>
+    <string name="acct_email_label">E-mail</string>
+    <string name="acct_password_label">Senha (pelo menos 6 caracteres)</string>
+    <string name="acct_sign_in">Entrar</string>
+    <string name="acct_create">Criar conta</string>
+    <string name="acct_done">Conectado. Seu progresso está seguro na nuvem.</string>
+    <string name="acct_choice_title">Qual progresso manter?</string>
+    <string name="acct_choice_body">Esta conta já tem progresso na nuvem (nível %1$d, salvo %2$s). Usar neste celular ou substituir pelo progresso deste celular?</string>
+    <string name="acct_keep_cloud">Usar o progresso da nuvem</string>
+    <string name="acct_keep_phone">Manter o deste celular</string>
+    <string name="acct_err_invalid">E-mail ou senha incorretos.</string>
+    <string name="acct_err_exists">Esse e-mail já tem uma conta. Entre nela.</string>
+    <string name="acct_err_weak">A senha precisa de pelo menos 6 caracteres.</string>
+    <string name="acct_err_bad_email">Digite um e-mail válido.</string>
+    <string name="acct_err_no_google">Nenhuma conta Google encontrada neste celular.</string>
+    <string name="acct_err_google">O login com Google não funcionou. Tente novamente.</string>
+</resources>

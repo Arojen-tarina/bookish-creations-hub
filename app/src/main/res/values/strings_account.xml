@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Account</string>
+    <string name="acct_guest">Playing as a guest: your progress is kept only on this phone. Sign in to keep it safe in the cloud and play on any phone.</string>
+    <string name="acct_signed_in_google">Signed in with Google: %1$s</string>
+    <string name="acct_signed_in_email">Signed in with email: %1$s</string>
+    <string name="acct_backup_time">Last cloud save: %1$s</string>
+    <string name="acct_backup_never">Your progress is saved to the cloud whenever you leave the game.</string>
+    <string name="acct_google">Sign in with Google</string>
+    <string name="acct_email">Email and password</string>
+    <string name="acct_backup_now">Save to cloud now</string>
+    <string name="acct_saved">Progress saved to the cloud.</string>
+    <string name="acct_sign_out">Sign out</string>
+    <string name="acct_delete">Delete account</string>
+    <string name="acct_delete_title">Delete your account?</string>
+    <string name="acct_delete_body">Your account and its cloud copy are deleted for good. The progress on this phone stays.</string>
+    <string name="acct_delete_confirm">Delete</string>
+    <string name="acct_deleted">Your account was deleted.</string>
+    <string name="acct_email_label">Email</string>
+    <string name="acct_password_label">Password (at least 6 characters)</string>
+    <string name="acct_sign_in">Sign in</string>
+    <string name="acct_create">Create account</string>
+    <string name="acct_done">Signed in. Your progress is safe in the cloud.</string>
+    <string name="acct_choice_title">Which progress do you want to keep?</string>
+    <string name="acct_choice_body">This account already has progress in the cloud (level %1$d, saved %2$s). Use it on this phone, or replace it with this phone’s progress?</string>
+    <string name="acct_keep_cloud">Use the cloud progress</string>
+    <string name="acct_keep_phone">Keep this phone’s progress</string>
+    <string name="acct_err_invalid">Wrong email or password.</string>
+    <string name="acct_err_exists">That email already has an account. Sign in instead.</string>
+    <string name="acct_err_weak">The password needs at least 6 characters.</string>
+    <string name="acct_err_bad_email">Enter a valid email address.</string>
+    <string name="acct_err_no_google">No Google account was found on this phone.</string>
+    <string name="acct_err_google">Google sign-in did not work. Please try again.</string>
+</resources>

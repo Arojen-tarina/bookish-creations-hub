@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Android 11 and older backup: the same game data as data_extraction_rules.xml.
+-->
+<full-backup-content>
+    <include domain="file" path="saves/" />
+    <include domain="file" path="player_stats.json" />
+    <include domain="file" path="datastore/" />
+    <include domain="sharedpref" path="achievements_prefs.xml" />
+</full-backup-content>

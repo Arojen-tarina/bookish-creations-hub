@@ -1,0 +1,206 @@
+{
+ "generic": "I can explain turn phases, victory conditions, factions, combat, diplomacy, buildings, and cards. Try asking: “How do I win?” or “What are the turn phases?”",
+ "stopWords": [
+  "a",
+  "an",
+  "and",
+  "can",
+  "do",
+  "how",
+  "i",
+  "is",
+  "it",
+  "my",
+  "the",
+  "to",
+  "what",
+  "when",
+  "where",
+  "with",
+  "game",
+  "play",
+  "playing"
+ ],
+ "faq": [
+  {
+   "id": "phases",
+   "keywords": [
+    "turn",
+    "phase",
+    "phases"
+   ],
+   "answer": "Each turn has 5 phases in order: Resources, Cards, Attack, Build, End. Press \"Next\" to move to the next phase."
+  },
+  {
+   "id": "victory-military",
+   "keywords": [
+    "military",
+    "conquer",
+    "provinces",
+    "capital"
+   ],
+   "answer": "Military victory: control 130 provinces (or capture every enemy capital)."
+  },
+  {
+   "id": "victory-economic",
+   "keywords": [
+    "economic",
+    "economy",
+    "gold",
+    "money"
+   ],
+   "answer": "Economic victory: accumulate 2000 gold and control more than half of the Silk Road hubs for 5 consecutive turns."
+  },
+  {
+   "id": "victory-tech",
+   "keywords": [
+    "technology",
+    "tech",
+    "research"
+   ],
+   "answer": "Technology victory: play 5 technology cards."
+  },
+  {
+   "id": "victory-diplomatic",
+   "keywords": [
+    "diplomatic",
+    "diplomacy",
+    "alliance",
+    "influence"
+   ],
+   "answer": "Diplomatic victory: form an alliance with 2+ realms OR accumulate 100 influence."
+  },
+  {
+   "id": "victory-cultural",
+   "keywords": [
+    "cultural",
+    "culture",
+    "wonder",
+    "prestige"
+   ],
+   "answer": "Cultural victory: accumulate 60 prestige by building Wonders (max 3 per capital)."
+  },
+  {
+   "id": "buildings",
+   "keywords": [
+    "build",
+    "building",
+    "camp",
+    "market",
+    "fortress",
+    "workshop",
+    "stable",
+    "bridge"
+   ],
+   "answer": "Buildings: Camp (15 gold) · Market (25 gold) · Fortress (50 gold) · Workshop (30 gold) · Stable (40 gold) · Bridge (20 gold) · Wonder (80 gold)."
+  },
+  {
+   "id": "factions",
+   "keywords": [
+    "faction",
+    "factions",
+    "realm",
+    "nation",
+    "tribe"
+   ],
+   "answer": "You can play four realms: Mongol Empire, Song Dynasty, Rus Principalities, Khwarezmian Empire. Other realms appear as AI opponents."
+  },
+  {
+   "id": "combat",
+   "keywords": [
+    "combat",
+    "battle",
+    "attack",
+    "war",
+    "army"
+   ],
+   "answer": "During the Attack phase, move an army or attack an enemy province. Power is calculated from cavalry, infantry, siege, and bonuses, plus a dice roll — the higher score wins."
+  },
+  {
+   "id": "diplomacy",
+   "keywords": [
+    "treaty",
+    "peace",
+    "truce",
+    "trade agreement"
+   ],
+   "answer": "From the Diplomacy tab you can propose treaties (non-aggression, trade, alliance, peace) or declare war on other realms."
+  },
+  {
+   "id": "cards",
+   "keywords": [
+    "card",
+    "cards",
+    "hand",
+    "play card"
+   ],
+   "answer": "In the Cards phase you draw a card from the deck. Cards can be played from your hand any time during the turn for bonuses (attack, defense, gold, food, and more)."
+  },
+  {
+   "id": "language",
+   "keywords": [
+    "language",
+    "english",
+    "finnish",
+    "translate"
+   ],
+   "answer": "You can switch between Finnish and English from the icon in the top bar."
+  },
+  {
+   "id": "save",
+   "keywords": [
+    "save",
+    "resume",
+    "lost my game",
+    "continue"
+   ],
+   "answer": "Your game is kept automatically for the session, so you can open the Rulebook or Chronicle without losing progress. The \"Start over\" button in the sidebar begins a completely new game."
+  }
+ ],
+ "knowledge": [
+  {
+   "id": "stag",
+   "keywords": [
+    "stag",
+    "handgai",
+    "cosmic",
+    "song"
+   ],
+   "answer": "Handgai, the Great Stag, shaped the world and guided life into being. The universe was sung into existence, and every stone, animal, and person remains part of the divine melody."
+  },
+  {
+   "id": "lore",
+   "keywords": [
+    "lore",
+    "story",
+    "chronicle",
+    "temüü",
+    "qorchi",
+    "bolormaa"
+   ],
+   "answer": "The Chronicle centers on Temüü, his tyrant father Ganbataar, the shaman Qorchi, and the reformer Bolormaa. Temüü unites the clans and tries to replace fear, vengeance, and endless war with an order based on merit, diplomacy, and peace."
+  },
+  {
+   "id": "turn",
+   "keywords": [
+    "turn",
+    "phase",
+    "phases"
+   ],
+   "answer": "The five turn phases are Resources, Cards, Attack, Build, and End."
+  },
+  {
+   "id": "win",
+   "keywords": [
+    "win",
+    "victory",
+    "military",
+    "economic",
+    "technology",
+    "diplomatic",
+    "culture"
+   ],
+   "answer": "There are five victory paths: military, economic, technology, diplomatic, and cultural. The exact targets are shown in the Victory Goals view and the Rulebook."
+  }
+ ]
+}

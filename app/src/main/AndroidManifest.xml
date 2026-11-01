@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Ads, the Moose guide (Supabase function) and analytics. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Voice messages in multiplayer chat; asked for only when the player records one. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Push notifications (Firebase Cloud Messaging); Android 13+ asks the player once. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".ArojenApp"
+        android:allowBackup="true"
+        android:appCategory="game"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="${appLabel}"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:localeConfig="@xml/locales_config"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ArojenTarinat">
+        <!-- Landscape everywhere. Android 16+ ignores orientation locks on large screens (tablets,
+             open foldables) except for games, which appCategory="game" above declares this app to be. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.ArojenTarinat.Starting"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Multiplayer invites (https://dl.arojentarinat.com/join/ABC123) open the game straight into the room.
+                 Both hosts serve /.well-known/assetlinks.json (cloudflare/worker.js); the workers.dev one
+                 keeps invites shared by version 2.1.0 working. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="dl.arojentarinat.com" />
+                <data android:host="arojentarinat.juusohonkonen2004.workers.dev" />
+                <data android:pathPrefix="/join/" />
+            </intent-filter>
+        </activity>
+
+        <!-- AdMob app ID: Google's sample ID in debug builds, the real one in release (build.gradle.kts). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
+        <!-- Google Analytics stays off until the player agrees to usage analytics (AppFirebase turns it on). -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+
+        <!-- Push notifications from the Firebase console. -->
+        <service
+            android:name=".firebase.PushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notify_accent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="news" />
+
+        <!-- Persists the in-app language choice on Android 12 and below. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+    </application>
+
+</manifest>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">অ্যাকাউন্ট</string>
+    <string name="acct_guest">আপনি অতিথি হিসেবে খেলছেন: অগ্রগতি শুধু এই ফোনে আছে। সাইন ইন করলে তা ক্লাউডে নিরাপদ থাকবে এবং যেকোনো ফোনে খেলতে পারবেন।</string>
+    <string name="acct_signed_in_google">Google দিয়ে সাইন ইন: %1$s</string>
+    <string name="acct_signed_in_email">ইমেইল দিয়ে সাইন ইন: %1$s</string>
+    <string name="acct_backup_time">শেষ ক্লাউড সেভ: %1$s</string>
+    <string name="acct_backup_never">খেলা থেকে বের হলেই আপনার অগ্রগতি ক্লাউডে সেভ হয়।</string>
+    <string name="acct_google">Google দিয়ে সাইন ইন</string>
+    <string name="acct_email">ইমেইল ও পাসওয়ার্ড</string>
+    <string name="acct_backup_now">এখনই ক্লাউডে সেভ করুন</string>
+    <string name="acct_saved">অগ্রগতি ক্লাউডে সেভ হয়েছে।</string>
+    <string name="acct_sign_out">সাইন আউট</string>
+    <string name="acct_delete">অ্যাকাউন্ট মুছুন</string>
+    <string name="acct_delete_title">অ্যাকাউন্ট মুছবেন?</string>
+    <string name="acct_delete_body">আপনার অ্যাকাউন্ট ও তার ক্লাউড কপি চিরতরে মুছে যাবে। এই ফোনের অগ্রগতি থাকবে।</string>
+    <string name="acct_delete_confirm">মুছুন</string>
+    <string name="acct_deleted">আপনার অ্যাকাউন্ট মুছে ফেলা হয়েছে।</string>
+    <string name="acct_email_label">ইমেইল</string>
+    <string name="acct_password_label">পাসওয়ার্ড (অন্তত ৬ অক্ষর)</string>
+    <string name="acct_sign_in">সাইন ইন</string>
+    <string name="acct_create">অ্যাকাউন্ট তৈরি করুন</string>
+    <string name="acct_done">সাইন ইন হয়েছে। আপনার অগ্রগতি ক্লাউডে নিরাপদ।</string>
+    <string name="acct_choice_title">কোন অগ্রগতি রাখবেন?</string>
+    <string name="acct_choice_body">এই অ্যাকাউন্টের ক্লাউডে আগে থেকেই অগ্রগতি আছে (লেভেল %1$d, সেভ %2$s)। এই ফোনে ব্যবহার করবেন, নাকি এই ফোনের অগ্রগতি দিয়ে বদলাবেন?</string>
+    <string name="acct_keep_cloud">ক্লাউডের অগ্রগতি ব্যবহার করুন</string>
+    <string name="acct_keep_phone">এই ফোনের অগ্রগতি রাখুন</string>
+    <string name="acct_err_invalid">ভুল ইমেইল বা পাসওয়ার্ড।</string>
+    <string name="acct_err_exists">এই ইমেইলে আগে থেকেই অ্যাকাউন্ট আছে। সাইন ইন করুন।</string>
+    <string name="acct_err_weak">পাসওয়ার্ডে অন্তত ৬টি অক্ষর লাগবে।</string>
+    <string name="acct_err_bad_email">সঠিক ইমেইল ঠিকানা দিন।</string>
+    <string name="acct_err_no_google">এই ফোনে কোনো Google অ্যাকাউন্ট পাওয়া যায়নি।</string>
+    <string name="acct_err_google">Google সাইন ইন হয়নি। আবার চেষ্টা করুন।</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">アカウント</string>
+    <string name="acct_guest">ゲストとしてプレイ中：進行状況はこの端末にのみ保存されています。ログインするとクラウドに安全に保存され、どの端末でも続きを遊べます。</string>
+    <string name="acct_signed_in_google">Google でログイン中：%1$s</string>
+    <string name="acct_signed_in_email">メールでログイン中：%1$s</string>
+    <string name="acct_backup_time">前回のクラウド保存：%1$s</string>
+    <string name="acct_backup_never">ゲームを離れるたびに進行状況がクラウドに保存されます。</string>
+    <string name="acct_google">Google でログイン</string>
+    <string name="acct_email">メールとパスワード</string>
+    <string name="acct_backup_now">今すぐクラウドに保存</string>
+    <string name="acct_saved">進行状況をクラウドに保存しました。</string>
+    <string name="acct_sign_out">ログアウト</string>
+    <string name="acct_delete">アカウントを削除</string>
+    <string name="acct_delete_title">アカウントを削除しますか？</string>
+    <string name="acct_delete_body">アカウントとクラウドのコピーは完全に削除されます。この端末の進行状況は残ります。</string>
+    <string name="acct_delete_confirm">削除</string>
+    <string name="acct_deleted">アカウントを削除しました。</string>
+    <string name="acct_email_label">メールアドレス</string>
+    <string name="acct_password_label">パスワード（6文字以上）</string>
+    <string name="acct_sign_in">ログイン</string>
+    <string name="acct_create">アカウントを作成</string>
+    <string name="acct_done">ログインしました。進行状況はクラウドに安全に保存されています。</string>
+    <string name="acct_choice_title">どちらの進行状況を残しますか？</string>
+    <string name="acct_choice_body">このアカウントにはクラウドに進行状況があります（レベル %1$d、保存 %2$s）。この端末で使いますか？それともこの端末の進行状況で置き換えますか？</string>
+    <string name="acct_keep_cloud">クラウドの進行状況を使う</string>
+    <string name="acct_keep_phone">この端末の進行状況を残す</string>
+    <string name="acct_err_invalid">メールアドレスまたはパスワードが違います。</string>
+    <string name="acct_err_exists">このメールアドレスにはすでにアカウントがあります。ログインしてください。</string>
+    <string name="acct_err_weak">パスワードは6文字以上必要です。</string>
+    <string name="acct_err_bad_email">有効なメールアドレスを入力してください。</string>
+    <string name="acct_err_no_google">この端末に Google アカウントが見つかりません。</string>
+    <string name="acct_err_google">Google でのログインに失敗しました。もう一度お試しください。</string>
+</resources>

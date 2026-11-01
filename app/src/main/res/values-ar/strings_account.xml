@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">الحساب</string>
+    <string name="acct_guest">تلعب كضيف: تقدمك محفوظ على هذا الهاتف فقط. سجّل الدخول ليبقى آمنًا في السحابة وتلعب على أي هاتف.</string>
+    <string name="acct_signed_in_google">مسجّل الدخول عبر Google: %1$s</string>
+    <string name="acct_signed_in_email">مسجّل الدخول بالبريد: %1$s</string>
+    <string name="acct_backup_time">آخر حفظ في السحابة: %1$s</string>
+    <string name="acct_backup_never">يُحفظ تقدمك في السحابة كلما غادرت اللعبة.</string>
+    <string name="acct_google">تسجيل الدخول عبر Google</string>
+    <string name="acct_email">البريد وكلمة المرور</string>
+    <string name="acct_backup_now">احفظ في السحابة الآن</string>
+    <string name="acct_saved">تم حفظ التقدم في السحابة.</string>
+    <string name="acct_sign_out">تسجيل الخروج</string>
+    <string name="acct_delete">حذف الحساب</string>
+    <string name="acct_delete_title">حذف حسابك؟</string>
+    <string name="acct_delete_body">سيُحذف حسابك ونسخته في السحابة نهائيًا. يبقى التقدم على هذا الهاتف.</string>
+    <string name="acct_delete_confirm">حذف</string>
+    <string name="acct_deleted">تم حذف حسابك.</string>
+    <string name="acct_email_label">البريد الإلكتروني</string>
+    <string name="acct_password_label">كلمة المرور (6 أحرف على الأقل)</string>
+    <string name="acct_sign_in">تسجيل الدخول</string>
+    <string name="acct_create">إنشاء حساب</string>
+    <string name="acct_done">تم تسجيل الدخول. تقدمك آمن في السحابة.</string>
+    <string name="acct_choice_title">أي تقدم تريد الاحتفاظ به؟</string>
+    <string name="acct_choice_body">لهذا الحساب تقدم في السحابة (المستوى %1$d، حُفظ %2$s). هل تستخدمه على هذا الهاتف أم تستبدله بتقدم هذا الهاتف؟</string>
+    <string name="acct_keep_cloud">استخدام تقدم السحابة</string>
+    <string name="acct_keep_phone">الاحتفاظ بتقدم هذا الهاتف</string>
+    <string name="acct_err_invalid">البريد أو كلمة المرور غير صحيحة.</string>
+    <string name="acct_err_exists">لهذا البريد حساب بالفعل. سجّل الدخول.</string>
+    <string name="acct_err_weak">تحتاج كلمة المرور إلى 6 أحرف على الأقل.</string>
+    <string name="acct_err_bad_email">أدخل بريدًا إلكترونيًا صالحًا.</string>
+    <string name="acct_err_no_google">لم يُعثر على حساب Google على هذا الهاتف.</string>
+    <string name="acct_err_google">فشل تسجيل الدخول عبر Google. حاول مرة أخرى.</string>
+</resources>
