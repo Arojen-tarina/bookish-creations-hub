@@ -23,6 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.OrnamentDivider
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
@@ -38,6 +39,7 @@ import fi.bookish.creations.arojen.tarinat.ui.theme.TextHigh
 @Composable
 fun AnalyticsConsentDialog(onAccept: () -> Unit, onDecline: () -> Unit) {
     Dialog(onDismissRequest = {}, properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)) {
+        KeepFullScreen()
         GamePanel(Modifier.widthIn(max = 440.dp), alpha = 0.98f) {
             Column(Modifier.padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(GameIcons.Shield, null, tint = Gold, modifier = Modifier.size(40.dp))

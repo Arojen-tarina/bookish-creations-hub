@@ -211,4 +211,38 @@
     <string name="settings_title">Asetukset</string>
     <string name="music_volume">Äänenvoimakkuus</string>
     <string name="cards_hide_hand">Piilota kortit</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Ei lainkaan mainoksia. Silkkitien tribuutin ja toisen mahdollisuuden saat ilman mainosta.</string>
+    <string name="premium_price">%1$s / kk</string>
+    <string name="premium_subscribe">Tilaa</string>
+    <string name="premium_renews">Uusiutuu kuukausittain. Voit perua milloin tahansa Google Playssa.</string>
+    <string name="premium_active">Premium on käytössä: ei mainoksia. Kiitos, että tuet peliä!</string>
+    <string name="premium_manage">Hallitse tilausta</string>
+    <string name="premium_unavailable">Tilaus ei ole juuri nyt saatavilla.</string>
+    <string name="premium_pending">Maksu odottaa vahvistusta. Premium alkaa heti, kun Google Play vahvistaa sen.</string>
+    <string name="premium_failed">Osto ei onnistunut. Yritä uudelleen.</string>
+    <string name="premium_menu">Ei mainoksia: %1$s / kk</string>
+    <string name="premium_skip_ads">Ohita kaikki mainokset Premiumilla: %1$s / kk</string>
+    <string name="tribute_body_premium">Premium-pelaajana saat Silkkitien kauppiaiden tribuutin ilman mainosta. Kerran vuorossa.</string>
+    <string name="second_chance_body_premium">Pelaa viimeisin vuorosi uudelleen sen alusta. Kerran kampanjassa.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Päivän haaste</string>
+    <string name="daily_goal_provinces">Hallitse %1$d provinssia vuoroon %2$d mennessä</string>
+    <string name="daily_goal_treasury">Kerää %1$d kultaa vuoroon %2$d mennessä</string>
+    <string name="daily_goal_buildings">Rakenna %1$d rakennusta vuoroon %2$d mennessä</string>
+    <string name="daily_play">Pelaa</string>
+    <string name="daily_done_today">Suoritettu tänään</string>
+    <string name="daily_streak">Putki: %1$d</string>
+    <string name="daily_chip_provinces">Haaste: %1$d / %2$d provinssia · vuoro %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Haaste: %1$d / %2$d kultaa · vuoro %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Haaste: %1$d / %2$d rakennusta · vuoro %3$d / %4$d</string>
+    <string name="daily_chip_done">Päivän haaste suoritettu</string>
+    <string name="daily_chip_failed">Päivän haaste epäonnistui</string>
+    <string name="daily_completed_toast">Päivän haaste suoritettu!</string>
+    <string name="daily_failed_toast">Vuororaja ylittyi: päivän haaste jäi saavuttamatta. Uusi haaste tulee huomenna.</string>
+    <string name="mastery_won">Voitettu: %1$s</string>
+    <string name="mastery_none">Ei vielä voittoa</string>
 </resources>

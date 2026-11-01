@@ -213,4 +213,14 @@
     <string name="rank_20">Reichsgründer</string>
     <string name="rank_25">Großkhan</string>
     <string name="rank_30">Legende</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Reiter des Tages</string>
+    <string name="achv_daily_challenge_first_desc">Eine tägliche Herausforderung geschafft.</string>
+    <string name="achv_daily_challenge_first_reward">Tagesabzeichen</string>
+    <string name="achv_daily_challenge_ten_name">Zehn Morgen</string>
+    <string name="achv_daily_challenge_ten_desc">10 tägliche Herausforderungen geschafft.</string>
+    <string name="achv_daily_challenge_streak_5_name">Ungebrochener Sattel</string>
+    <string name="achv_daily_challenge_streak_5_desc">An 5 Tagen in Folge die tägliche Herausforderung geschafft.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Titel: Hüter der Tage</string>
 </resources>

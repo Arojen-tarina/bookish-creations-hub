@@ -188,6 +188,16 @@ object GameIcons {
         }
     }
 
+    /** A won difficulty (faction mastery). Filled. */
+    val Star: ImageVector by lazy {
+        icon("Star") {
+            fill {
+                moveTo(12.00f, 2.60f); lineTo(14.53f, 9.12f); lineTo(21.51f, 9.51f); lineTo(16.09f, 13.93f); lineTo(17.88f, 20.69f)
+                lineTo(12.00f, 16.90f); lineTo(6.12f, 20.69f); lineTo(7.91f, 13.93f); lineTo(2.49f, 9.51f); lineTo(9.47f, 9.12f); close()
+            }
+        }
+    }
+
     /** Realm status and victory goals. */
     val Trophy: ImageVector by lazy {
         icon("Trophy") {
@@ -293,6 +303,19 @@ object GameIcons {
         }
     }
 
+    /** Siege engines: a catapult. */
+    val Catapult: ImageVector by lazy {
+        icon("Catapult") {
+            stroke {
+                moveTo(3f, 17f); lineTo(21f, 17f)
+                moveTo(9f, 17f); lineTo(16f, 6f)
+                circle(17.5f, 4.8f, 1.6f)
+                moveTo(12f, 17f); lineTo(14f, 11f)
+            }
+            stroke { circle(6.5f, 19f, 1.8f); circle(17.5f, 19f, 1.8f) }
+        }
+    }
+
     /** Movement points. */
     val Boot: ImageVector by lazy {
         icon("Boot") {
@@ -303,7 +326,7 @@ object GameIcons {
         }
     }
 
-    /** Flag. */
+    /** Morale. */
     val Flag: ImageVector by lazy {
         icon("Flag") {
             stroke {
@@ -494,6 +517,54 @@ object GameIcons {
                 moveTo(4f, 11.5f); lineTo(20f, 4f); lineTo(14.5f, 20f); lineTo(11f, 13f); close()
                 moveTo(11f, 13f); lineTo(20f, 4f)
             }
+        }
+    }
+
+    /** Speech bubble: multiplayer chat. */
+    val Chat: ImageVector by lazy {
+        icon("Chat", autoMirror = true) {
+            stroke {
+                moveTo(4f, 5f); lineTo(20f, 5f); lineTo(20f, 16f); lineTo(10f, 16f); lineTo(5.5f, 20f); lineTo(6f, 16f); lineTo(4f, 16f); close()
+                moveTo(8f, 9f); lineTo(16f, 9f)
+                moveTo(8f, 12.5f); lineTo(13.5f, 12.5f)
+            }
+        }
+    }
+
+    /** Microphone: record a voice message. */
+    val Mic: ImageVector by lazy {
+        icon("Mic") {
+            stroke {
+                moveTo(9.5f, 6f); curveTo(9.5f, 2.7f, 14.5f, 2.7f, 14.5f, 6f); lineTo(14.5f, 11.5f); curveTo(14.5f, 14.8f, 9.5f, 14.8f, 9.5f, 11.5f); close()
+                moveTo(6f, 11f); curveTo(6f, 18.5f, 18f, 18.5f, 18f, 11f)
+                moveTo(12f, 17f); lineTo(12f, 21f)
+                moveTo(8.5f, 21f); lineTo(15.5f, 21f)
+            }
+        }
+    }
+
+    /** Play a voice message. Filled. */
+    val Play: ImageVector by lazy {
+        icon("Play", autoMirror = true) {
+            fill { moveTo(7f, 4.5f); lineTo(19f, 12f); lineTo(7f, 19.5f); close() }
+        }
+    }
+
+    /** Stop playback or recording. Filled. */
+    val Stop: ImageVector by lazy {
+        icon("Stop") {
+            fill { moveTo(6.5f, 6.5f); lineTo(17.5f, 6.5f); lineTo(17.5f, 17.5f); lineTo(6.5f, 17.5f); close() }
+        }
+    }
+
+    /** Share: invite friends to a room. */
+    val Share: ImageVector by lazy {
+        icon("Share") {
+            stroke {
+                moveTo(8.2f, 10.8f); lineTo(15.8f, 6.7f)
+                moveTo(8.2f, 13.2f); lineTo(15.8f, 17.3f)
+            }
+            fill { circle(6f, 12f, 2.6f); circle(18f, 5.5f, 2.6f); circle(18f, 18.5f, 2.6f) }
         }
     }
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Akun</string>
+    <string name="acct_guest">Kamu bermain sebagai tamu: progres hanya ada di ponsel ini. Masuk agar tersimpan aman di cloud dan bisa dimainkan di ponsel mana pun.</string>
+    <string name="acct_signed_in_google">Masuk dengan Google: %1$s</string>
+    <string name="acct_signed_in_email">Masuk dengan email: %1$s</string>
+    <string name="acct_backup_time">Simpan cloud terakhir: %1$s</string>
+    <string name="acct_backup_never">Progresmu disimpan ke cloud setiap kali kamu keluar dari game.</string>
+    <string name="acct_google">Masuk dengan Google</string>
+    <string name="acct_email">Email dan kata sandi</string>
+    <string name="acct_backup_now">Simpan ke cloud sekarang</string>
+    <string name="acct_saved">Progres tersimpan di cloud.</string>
+    <string name="acct_sign_out">Keluar</string>
+    <string name="acct_delete">Hapus akun</string>
+    <string name="acct_delete_title">Hapus akunmu?</string>
+    <string name="acct_delete_body">Akun dan salinannya di cloud dihapus permanen. Progres di ponsel ini tetap ada.</string>
+    <string name="acct_delete_confirm">Hapus</string>
+    <string name="acct_deleted">Akunmu sudah dihapus.</string>
+    <string name="acct_email_label">Email</string>
+    <string name="acct_password_label">Kata sandi (minimal 6 karakter)</string>
+    <string name="acct_sign_in">Masuk</string>
+    <string name="acct_create">Buat akun</string>
+    <string name="acct_done">Sudah masuk. Progresmu aman di cloud.</string>
+    <string name="acct_choice_title">Progres mana yang ingin disimpan?</string>
+    <string name="acct_choice_body">Akun ini sudah punya progres di cloud (level %1$d, disimpan %2$s). Pakai di ponsel ini, atau ganti dengan progres ponsel ini?</string>
+    <string name="acct_keep_cloud">Pakai progres cloud</string>
+    <string name="acct_keep_phone">Simpan progres ponsel ini</string>
+    <string name="acct_err_invalid">Email atau kata sandi salah.</string>
+    <string name="acct_err_exists">Email itu sudah punya akun. Silakan masuk.</string>
+    <string name="acct_err_weak">Kata sandi minimal 6 karakter.</string>
+    <string name="acct_err_bad_email">Masukkan alamat email yang valid.</string>
+    <string name="acct_err_no_google">Tidak ada akun Google di ponsel ini.</string>
+    <string name="acct_err_google">Masuk dengan Google gagal. Coba lagi.</string>
+</resources>

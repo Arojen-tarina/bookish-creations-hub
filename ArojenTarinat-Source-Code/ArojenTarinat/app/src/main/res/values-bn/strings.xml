@@ -212,4 +212,38 @@
     <string name="settings_title">সেটিংস</string>
     <string name="music_volume">ভলিউম</string>
     <string name="cards_hide_hand">কার্ড লুকান</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">কোনো বিজ্ঞাপন নেই। সিল্ক রোডের কর আর দ্বিতীয় সুযোগ মেলে বিজ্ঞাপন ছাড়াই।</string>
+    <string name="premium_price">%1$s / মাস</string>
+    <string name="premium_subscribe">সাবস্ক্রাইব করুন</string>
+    <string name="premium_renews">প্রতি মাসে নবায়ন হয়। Google Play থেকে যেকোনো সময় বাতিল করুন।</string>
+    <string name="premium_active">Premium চালু আছে: কোনো বিজ্ঞাপন নেই। গেমটিকে সমর্থন করার জন্য ধন্যবাদ!</string>
+    <string name="premium_manage">সাবস্ক্রিপশন পরিচালনা</string>
+    <string name="premium_unavailable">সাবস্ক্রিপশন এখন পাওয়া যাচ্ছে না।</string>
+    <string name="premium_pending">পেমেন্ট অপেক্ষমাণ। Google Play নিশ্চিত করলেই Premium শুরু হবে।</string>
+    <string name="premium_failed">কেনাকাটা সম্পন্ন হয়নি। আবার চেষ্টা করুন।</string>
+    <string name="premium_menu">বিজ্ঞাপন ছাড়া: %1$s / মাস</string>
+    <string name="premium_skip_ads">Premium-এ কোনো বিজ্ঞাপন নেই: %1$s / মাস</string>
+    <string name="tribute_body_premium">Premium খেলোয়াড় হিসেবে আপনি বিজ্ঞাপন ছাড়াই সিল্ক রোডের বণিকদের কর পান। প্রতি পালায় একবার।</string>
+    <string name="second_chance_body_premium">আপনার শেষ পালা শুরু থেকে আবার খেলুন। প্রতি অভিযানে একবার।</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">আজকের চ্যালেঞ্জ</string>
+    <string name="daily_goal_provinces">পালা %2$d-এর মধ্যে %1$dটি প্রদেশ দখলে রাখুন</string>
+    <string name="daily_goal_treasury">পালা %2$d-এর মধ্যে %1$d সোনা জমান</string>
+    <string name="daily_goal_buildings">পালা %2$d-এর মধ্যে %1$dটি ভবন রাখুন</string>
+    <string name="daily_play">খেলুন</string>
+    <string name="daily_done_today">আজ সম্পন্ন</string>
+    <string name="daily_streak">ধারাবাহিকতা: %1$d</string>
+    <string name="daily_chip_provinces">চ্যালেঞ্জ: %1$d / %2$d প্রদেশ · পালা %3$d / %4$d</string>
+    <string name="daily_chip_treasury">চ্যালেঞ্জ: %1$d / %2$d সোনা · পালা %3$d / %4$d</string>
+    <string name="daily_chip_buildings">চ্যালেঞ্জ: %1$d / %2$d ভবন · পালা %3$d / %4$d</string>
+    <string name="daily_chip_done">আজকের চ্যালেঞ্জ সম্পন্ন</string>
+    <string name="daily_chip_failed">আজকের চ্যালেঞ্জ ব্যর্থ</string>
+    <string name="daily_completed_toast">আজকের চ্যালেঞ্জ সম্পন্ন!</string>
+    <string name="daily_failed_toast">পালার সীমা পেরিয়ে গেছে: আজকের চ্যালেঞ্জ হাতছাড়া। কাল নতুন চ্যালেঞ্জ আসবে।</string>
+    <string name="mastery_won">%1$s স্তরে জয়</string>
+    <string name="mastery_none">এখনো জয় নেই</string>
 </resources>

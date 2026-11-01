@@ -35,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.game.data.VictoryTargets
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.HudIconButton
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
@@ -59,6 +60,7 @@ private val STEPS = listOf(
 @Composable
 fun HowToPlayDialog(onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        KeepFullScreen()
         GamePanel(Modifier.widthIn(max = 760.dp).fillMaxWidth(0.94f).fillMaxHeight(0.94f), alpha = 0.98f) {
             Row(Modifier.padding(start = 16.dp, end = 10.dp, top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {

@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -52,16 +53,17 @@ import fi.bookish.creations.arojen.tarinat.ads.AdUnits
 import fi.bookish.creations.arojen.tarinat.ads.Ads
 import fi.bookish.creations.arojen.tarinat.audio.GameMusic
 import fi.bookish.creations.arojen.tarinat.audio.MusicMood
+import fi.bookish.creations.arojen.tarinat.billing.Premium
 import fi.bookish.creations.arojen.tarinat.data.AchievementRepository
 import fi.bookish.creations.arojen.tarinat.data.SaveRepository
 import fi.bookish.creations.arojen.tarinat.data.SettingsRepository
 import fi.bookish.creations.arojen.tarinat.game.engine.TributeKind
-import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.canDrawTributeCard
 import fi.bookish.creations.arojen.tarinat.game.engine.canTakeSecondChance
 import fi.bookish.creations.arojen.tarinat.game.engine.canTakeTribute
 import fi.bookish.creations.arojen.tarinat.game.engine.tributeGold
 import fi.bookish.creations.arojen.tarinat.moose.MooseGuide
+import fi.bookish.creations.arojen.tarinat.multiplayer.Multiplayer
 import fi.bookish.creations.arojen.tarinat.play.ReviewPrompt
 import fi.bookish.creations.arojen.tarinat.ui.achievements.AchievementToast
 import fi.bookish.creations.arojen.tarinat.ui.components.RoundIconButton
@@ -92,6 +94,11 @@ import fi.bookish.creations.arojen.tarinat.ui.game.panels.SidePanelWidth
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
 import fi.bookish.creations.arojen.tarinat.ui.moose.MooseButton
 import fi.bookish.creations.arojen.tarinat.ui.moose.MooseDialog
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.ChatButton
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.ChatDialog
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.PlayersButton
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.PlayersSheet
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.TurnBanner
 import fi.bookish.creations.arojen.tarinat.ui.screens.saves.SaveGameDialog
 import fi.bookish.creations.arojen.tarinat.ui.theme.Ink900
 import kotlinx.coroutines.delay
@@ -107,14 +114,21 @@ fun GameScreen(
     music: GameMusic,
     settings: SettingsRepository,
     ads: Ads,
+    premium: Premium,
     review: ReviewPrompt,
     onExit: () -> Unit,
     onNewGame: () -> Unit,
     onLoadGame: () -> Unit,
     onRulebook: () -> Unit,
     onSettings: () -> Unit,
+    /** Online play, for the room's chat; null in a single-player campaign. */
+    multiplayer: Multiplayer? = null,
+    room: String? = null,
     viewModel: GameViewModel = viewModel(factory = GameViewModel.Factory),
 ) {
+    val session = room?.let { id -> multiplayer?.session(id) }
+    var chatOpen by rememberSaveable { mutableStateOf(false) }
+    var playersOpen by rememberSaveable { mutableStateOf(false) }
     // Leaving the app (home button, call, screen off) always keeps the campaign.
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.autosaveNow() }
     var saveDialogOpen by rememberSaveable { mutableStateOf(false) }
@@ -144,10 +158,16 @@ fun GameScreen(
         if (message == null && queue.isNotEmpty()) message = queue.removeAt(0)
     }
 
-    // Keep the complete hex board visible on entry.
+    // Open on the player's capital, framed below the HUD (a camera coming back from
+    // another screen keeps the player's view).
     val density = LocalDensity.current
     LaunchedEffect(camera) {
         camera.topInset = with(density) { 68.dp.toPx() }
+        snapshotFlow { camera.isReady }.first { it }
+        if (camera.restored) return@LaunchedEffect
+        game.province(game.player.capitalId)?.let {
+            camera.animateIntoView(Offset(it.center.x.toFloat(), it.center.y.toFloat()), force = true)
+        }
     }
 
     // An open drawer covers the right of the map: let the map slide clear of it,
@@ -185,15 +205,20 @@ fun GameScreen(
     // Adverts and the rating card need the activity to show over.
     val activity = LocalActivity.current
     val rewardReady by ads.rewardReady.collectAsStateWithLifecycle()
+    val adFree by ads.adFree.collectAsStateWithLifecycle()
+    // Where an advert stands before a reward, Premium is offered as the way to skip it.
+    val premiumOffer by premium.offer.collectAsStateWithLifecycle()
+    val premiumPrice = premiumOffer?.price
+    val subscribe = { activity?.let(premium::subscribe); Unit }
     var tributeOpen by rememberSaveable { mutableStateOf(false) }
-    val tributeOffered = rewardReady && canTakeTribute(game) && !ui.processingTurn
+    val tributeOffered = rewardReady && canTakeTribute(game) && ui.canAct
     fun askTribute(kind: TributeKind) {
         tributeOpen = false
         val shown = activity != null && ads.showReward(activity) { viewModel.takeTribute(kind) }
         if (!shown) queue += GameMessage(R.string.tribute_unavailable, tone = Tone.Negative)
     }
     // After a defeat: replay the lost turn once per campaign, only while an advert is ready.
-    val secondChanceOffered = rewardReady && canTakeSecondChance(game)
+    val secondChanceOffered = rewardReady && canTakeSecondChance(game) && session == null
     fun askSecondChance() {
         if (activity != null) ads.showReward(activity) { viewModel.takeSecondChance() }
     }
@@ -244,14 +269,15 @@ fun GameScreen(
             TopBar(
                 game = game,
                 openTab = panel,
-                endTurnEnabled = !ui.processingTurn && !game.gameOver,
+                endTurnEnabled = ui.canAct && !game.gameOver,
                 onMenu = { pauseOpen = true },
                 onTab = { tab -> openPanel(if (panel == tab) null else tab) },
                 onEndTurn = {
                     val ended = game.turn
                     viewModel.endTurn()
                     // The rival realms move behind the advert, so it costs the player no waiting.
-                    adBreak(AdBreak.TURN_END, ended) {}
+                    // Online the others are waiting for this turn: no advert there.
+                    if (session == null) adBreak(AdBreak.TURN_END, ended) {}
                 },
             )
             Spacer(Modifier.padding(top = 8.dp))
@@ -262,12 +288,11 @@ fun GameScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
+                        if (session != null) TurnBanner(ui, onSkip = viewModel::skipAbsentPlayer)
                         IncomeToast(game, incomeVisible)
                         MessageToast(message, cardTexts, onDone = { message = null })
                         AchievementToast(achievements)
-                        ui.selectedArmyId?.let { id -> game.armies.firstOrNull { it.id == id } }?.let { army ->
-                            ArmyBanner(army, attackPower = army.attackPower(if (army.ownerId == game.playerFactionId) game.attackBonus else 0))
-                        }
+                        ui.selectedArmyId?.let { id -> game.armies.firstOrNull { it.id == id } }?.let { ArmyBanner(it) }
                     }
 
                     // Map controls stacked above the Moose in the bottom corner, so they never overlap,
@@ -277,8 +302,18 @@ fun GameScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        // Only while a tribute can be taken this turn and an advert is ready.
-                        if (tributeOffered) TributeButton({ tributeOpen = true }, size = 44.dp)
+                        // The tribute (only while one can be taken and an advert is ready) and, online, the
+                        // players and the chat share one row, so the column still fits above the Moose.
+                        val online = session != null && multiplayer != null
+                        if (tributeOffered || online) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                if (tributeOffered) TributeButton({ tributeOpen = true }, size = 44.dp)
+                                if (session != null && multiplayer != null) {
+                                    PlayersButton(onOpen = { playersOpen = true })
+                                    ChatButton(session, multiplayer, chatOpen, onOpen = { chatOpen = true })
+                                }
+                            }
+                        }
                         RoundIconButton(GameIcons.ZoomIn, stringResource(R.string.map_zoom_in), { scope.launch { camera.animateZoomBy(1.6f) } })
                         RoundIconButton(GameIcons.ZoomOut, stringResource(R.string.map_zoom_out), { scope.launch { camera.animateZoomBy(1 / 1.6f) } })
                         RoundIconButton(GameIcons.FitMap, stringResource(R.string.map_show_all), { scope.launch { camera.animateToFit() } })
@@ -368,10 +403,18 @@ fun GameScreen(
                 game,
                 onPlayAgain = {
                     viewModel.noteRestart()
+                    if (session != null) multiplayer?.forget(session.roomId)
                     leave(onNewGame)
                 },
-                onMainMenu = { leave(onExit) },
+                onMainMenu = {
+                    // A finished online match is over for this phone too.
+                    if (session != null) multiplayer?.forget(session.roomId)
+                    leave(onExit)
+                },
                 onSecondChance = if (secondChanceOffered) ::askSecondChance else null,
+                adFree = adFree,
+                premiumPrice = premiumPrice,
+                onPremium = subscribe,
             )
         }
 
@@ -382,10 +425,15 @@ fun GameScreen(
                 onGold = { askTribute(TributeKind.GOLD) },
                 onCard = { askTribute(TributeKind.CARD) },
                 onDismiss = { tributeOpen = false },
+                adFree = adFree,
+                premiumPrice = premiumPrice,
+                onPremium = subscribe,
             )
         }
 
         if (mooseOpen) MooseDialog(moose, onDismiss = { mooseOpen = false })
+        if (chatOpen && session != null && multiplayer != null) ChatDialog(session, multiplayer, music) { chatOpen = false }
+        if (playersOpen && session != null) PlayersSheet(session, game) { playersOpen = false }
 
         if (saveDialogOpen) {
             val slots by saves.slots.collectAsStateWithLifecycle()
@@ -405,15 +453,15 @@ fun GameScreen(
                 musicMuted = muted,
                 onToggleMusic = { scope.launch { settings.setMusicMuted(!muted) } },
                 onResume = { pauseOpen = false },
-                onSave = {
+                onSave = if (session != null) null else ({
                     pauseOpen = false
                     saveDialogOpen = true
-                },
-                onLoad = {
+                }),
+                onLoad = if (session != null) null else ({
                     pauseOpen = false
                     viewModel.autosaveNow()
                     onLoadGame()
-                },
+                }),
                 onRulebook = {
                     pauseOpen = false
                     onRulebook()

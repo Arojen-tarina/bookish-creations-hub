@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.moose.MooseGuide
 import fi.bookish.creations.arojen.tarinat.moose.MooseTexts
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.assetLanguage
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
@@ -137,6 +138,7 @@ fun MooseDialog(guide: MooseGuide, onDismiss: () -> Unit) {
     LaunchedEffect(itemCount) { list.animateScrollToItem(itemCount - 1) }
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
+        KeepFullScreen()
         // Taken inside the dialog: its window owns the text field's focus and keyboard.
         val focus = LocalFocusManager.current
         val keyboard = LocalSoftwareKeyboardController.current

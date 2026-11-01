@@ -145,6 +145,7 @@ object StatsTracker {
             fastestVictoryTurn = s.fastestVictoryTurn?.let { minOf(it, game.turn) } ?: game.turn,
             hardDifficultyWins = s.hardDifficultyWins + if (game.difficulty == Difficulty.HARD) 1 else 0,
             victoriesByFaction = s.victoriesByFaction + (player to (s.victoriesByFaction[player] ?: 0) + 1),
+            victoriesByFactionDifficulty = s.victoriesByFactionDifficulty + masteryKey(player, game.difficulty),
         )
         out = when (game.winCondition) {
             WinCondition.MILITARY -> out.copy(militaryVictories = out.militaryVictories + 1)
@@ -157,7 +158,23 @@ object StatsTracker {
         return out
     }
 
+    /** Key of [PlayerStats.victoriesByFactionDifficulty]. */
+    fun masteryKey(faction: FactionId, difficulty: Difficulty) = "${faction.key}:${difficulty.name.lowercase()}"
+
+    /** The day's challenge was completed; days in a row build the streak. Once per date. */
+    fun onDailyChallengeCompleted(s: PlayerStats, date: LocalDate): PlayerStats {
+        val today = date.toString()
+        if (s.lastDailyChallengeDate == today) return s
+        val streak = if (s.lastDailyChallengeDate == date.minusDays(1).toString()) s.dailyChallengeStreak + 1 else 1
+        return s.copy(
+            dailyChallengesCompleted = s.dailyChallengesCompleted + 1,
+            dailyChallengeStreak = streak,
+            longestDailyChallengeStreak = maxOf(s.longestDailyChallengeStreak, streak),
+            lastDailyChallengeDate = today,
+        )
+    }
+
     /** Achievements whose rule is met by [s] and that are not yet unlocked. */
     fun newlyMet(s: PlayerStats, unlocked: Set<String>): List<AchievementDef> =
-        ACHIEVEMENTS.filter { it.id !in unlocked && it.check.isMet(s) }
+        ALL_ACHIEVEMENTS.filter { it.id !in unlocked && it.check.isMet(s) }
 }

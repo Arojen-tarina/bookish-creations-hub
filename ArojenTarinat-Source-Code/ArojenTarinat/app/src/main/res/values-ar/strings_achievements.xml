@@ -213,4 +213,14 @@
     <string name="rank_20">باني الإمبراطورية</string>
     <string name="rank_25">الخان الأعظم</string>
     <string name="rank_30">أسطورة</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">فارس اليوم</string>
+    <string name="achv_daily_challenge_first_desc">أنجزت تحدي اليوم.</string>
+    <string name="achv_daily_challenge_first_reward">شارة اليوم</string>
+    <string name="achv_daily_challenge_ten_name">عشرة فجور</string>
+    <string name="achv_daily_challenge_ten_desc">أنجزت 10 تحديات يومية.</string>
+    <string name="achv_daily_challenge_streak_5_name">سرج لا ينكسر</string>
+    <string name="achv_daily_challenge_streak_5_desc">أنجزت تحدي اليوم 5 أيام متتالية.</string>
+    <string name="achv_daily_challenge_streak_5_reward">لقب: حارس الأيام</string>
 </resources>

@@ -2,4 +2,5 @@
 <resources>
     <color name="ink_900">#FF120F0C</color>
     <color name="gold">#FFE0A944</color>
+    <color name="notify_accent">#FFE0A944</color>
 </resources>

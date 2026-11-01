@@ -54,6 +54,8 @@ class Analytics(
     private val scope: CoroutineScope,
     private val clock: () -> Long = System::currentTimeMillis,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /** Also hands every consented event to another analytics service (Google Analytics in the Play build). */
+    private val forward: (AnalyticsEvent) -> Unit = {},
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val mutex = Mutex()
@@ -119,7 +121,14 @@ class Analytics(
 
     fun track(events: List<AnalyticsEvent>) {
         if (events.isEmpty()) return
-        scope.launch { mutex.withLock { if (consented && session != null) appendLocked(events) } }
+        scope.launch {
+            mutex.withLock {
+                if (consented && session != null) {
+                    appendLocked(events)
+                    events.forEach(forward)
+                }
+            }
+        }
     }
 
     /** Onboarding steps that count once per run of the app (first battle, first building). */
@@ -127,7 +136,9 @@ class Analytics(
         scope.launch {
             mutex.withLock {
                 if (!consented || session == null || !firstsThisRun.add(step)) return@withLock
-                appendLocked(listOf(Events.onboarding(step)))
+                val event = Events.onboarding(step)
+                appendLocked(listOf(event))
+                forward(event)
             }
         }
     }

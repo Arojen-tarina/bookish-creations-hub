@@ -31,7 +31,10 @@ import androidx.compose.ui.window.Dialog
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.OrnamentDivider
+import fi.bookish.creations.arojen.tarinat.ui.components.PremiumPill
+import fi.bookish.creations.arojen.tarinat.ui.components.ltr
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
 import fi.bookish.creations.arojen.tarinat.ui.theme.Gold
@@ -63,8 +66,19 @@ fun TributeButton(onClick: () -> Unit, modifier: Modifier = Modifier, size: Dp =
  * the tribute pays, and a clear way to say no.
  */
 @Composable
-fun TributeDialog(gold: Int, canDrawCard: Boolean, onGold: () -> Unit, onCard: () -> Unit, onDismiss: () -> Unit) {
+fun TributeDialog(
+    gold: Int,
+    canDrawCard: Boolean,
+    onGold: () -> Unit,
+    onCard: () -> Unit,
+    onDismiss: () -> Unit,
+    adFree: Boolean = false,
+    /** The Premium price, offered here to skip the advert; null when it cannot be bought. */
+    premiumPrice: String? = null,
+    onPremium: () -> Unit = {},
+) {
     Dialog(onDismissRequest = onDismiss) {
+        KeepFullScreen()
         GamePanel(Modifier.widthIn(max = 400.dp), alpha = 0.98f) {
             Column(Modifier.padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(Modifier.size(56.dp).clip(CircleShape).background(ChestFill), contentAlignment = Alignment.Center) {
@@ -73,7 +87,7 @@ fun TributeDialog(gold: Int, canDrawCard: Boolean, onGold: () -> Unit, onCard: (
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.tribute_title), style = MaterialTheme.typography.headlineSmall, color = GoldBright, textAlign = TextAlign.Center)
                 OrnamentDivider(Modifier.width(180.dp).padding(vertical = 8.dp))
-                Text(stringResource(R.string.tribute_body), style = MaterialTheme.typography.bodyMedium, color = TextHigh, textAlign = TextAlign.Center)
+                Text(stringResource(if (adFree) R.string.tribute_body_premium else R.string.tribute_body), style = MaterialTheme.typography.bodyMedium, color = TextHigh, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     GameButton(stringResource(R.string.tribute_gold, gold), onGold)
@@ -81,6 +95,10 @@ fun TributeDialog(gold: Int, canDrawCard: Boolean, onGold: () -> Unit, onCard: (
                 }
                 Spacer(Modifier.height(8.dp))
                 GameButton(stringResource(R.string.tribute_decline), onDismiss, style = GameButtonStyle.Secondary, compact = true)
+                if (!adFree && premiumPrice != null) {
+                    Spacer(Modifier.height(12.dp))
+                    PremiumPill(stringResource(R.string.premium_skip_ads, ltr(premiumPrice)), onPremium)
+                }
             }
         }
     }

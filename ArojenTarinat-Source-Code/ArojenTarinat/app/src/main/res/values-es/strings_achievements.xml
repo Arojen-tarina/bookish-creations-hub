@@ -213,4 +213,14 @@
     <string name="rank_20">Constructor de imperios</string>
     <string name="rank_25">Gran Kan</string>
     <string name="rank_30">Leyenda</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Jinete del día</string>
+    <string name="achv_daily_challenge_first_desc">Completaste un desafío diario.</string>
+    <string name="achv_daily_challenge_first_reward">Insignia diaria</string>
+    <string name="achv_daily_challenge_ten_name">Diez amaneceres</string>
+    <string name="achv_daily_challenge_ten_desc">Completaste 10 desafíos diarios.</string>
+    <string name="achv_daily_challenge_streak_5_name">Silla inquebrantable</string>
+    <string name="achv_daily_challenge_streak_5_desc">Completaste el desafío diario 5 días seguidos.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Título: Guardián de los días</string>
 </resources>

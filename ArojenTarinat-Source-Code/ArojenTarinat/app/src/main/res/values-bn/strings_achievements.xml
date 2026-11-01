@@ -213,4 +213,14 @@
     <string name="rank_20">সাম্রাজ্য নির্মাতা</string>
     <string name="rank_25">মহান খান</string>
     <string name="rank_30">কিংবদন্তি</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">আজকের অশ্বারোহী</string>
+    <string name="achv_daily_challenge_first_desc">আজকের চ্যালেঞ্জ সম্পন্ন করেছেন।</string>
+    <string name="achv_daily_challenge_first_reward">দৈনিক ব্যাজ</string>
+    <string name="achv_daily_challenge_ten_name">দশ ভোর</string>
+    <string name="achv_daily_challenge_ten_desc">10টি দৈনিক চ্যালেঞ্জ সম্পন্ন করেছেন।</string>
+    <string name="achv_daily_challenge_streak_5_name">অটুট জিন</string>
+    <string name="achv_daily_challenge_streak_5_desc">টানা 5 দিন দৈনিক চ্যালেঞ্জ সম্পন্ন করেছেন।</string>
+    <string name="achv_daily_challenge_streak_5_reward">উপাধি: দিনের রক্ষক</string>
 </resources>

@@ -60,11 +60,17 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.game.model.Army
+import fi.bookish.creations.arojen.tarinat.game.challenge.ChallengeGoal
+import fi.bookish.creations.arojen.tarinat.game.challenge.ChallengeStatus
+import fi.bookish.creations.arojen.tarinat.game.challenge.DailyChallenge
 import fi.bookish.creations.arojen.tarinat.game.model.GameState
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.OrnamentDivider
+import fi.bookish.creations.arojen.tarinat.ui.components.PremiumPill
 import fi.bookish.creations.arojen.tarinat.ui.components.RoundIconButton
+import fi.bookish.creations.arojen.tarinat.ui.components.ltr
 import fi.bookish.creations.arojen.tarinat.ui.components.signed
 import fi.bookish.creations.arojen.tarinat.ui.game.GameMessage
 import fi.bookish.creations.arojen.tarinat.ui.game.MessageArg
@@ -91,12 +97,22 @@ import kotlinx.coroutines.launch
 // ============= GAME OVER =============
 
 @Composable
-fun GameOverDialog(game: GameState, onPlayAgain: () -> Unit, onMainMenu: () -> Unit, onSecondChance: (() -> Unit)? = null) {
+fun GameOverDialog(
+    game: GameState,
+    onPlayAgain: () -> Unit,
+    onMainMenu: () -> Unit,
+    onSecondChance: (() -> Unit)? = null,
+    adFree: Boolean = false,
+    /** The Premium price, offered next to the second chance to skip its advert; null when it cannot be bought. */
+    premiumPrice: String? = null,
+    onPremium: () -> Unit = {},
+) {
     val victory = game.winnerId == game.playerFactionId
     val accent = if (victory) Gold else Rust
     // The second-chance offer needs room on a phone held sideways.
     val medal = if (onSecondChance != null) 60.dp else 84.dp
     Dialog(onDismissRequest = {}, properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)) {
+        KeepFullScreen()
         GamePanel(Modifier.widthIn(max = 460.dp), alpha = 0.98f) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
@@ -121,7 +137,11 @@ fun GameOverDialog(game: GameState, onPlayAgain: () -> Unit, onMainMenu: () -> U
                 Text(stringResource(R.string.game_over_turn_year, game.turn, game.year), style = MaterialTheme.typography.bodySmall, color = TextMid)
                 Spacer(Modifier.height(18.dp))
                 if (onSecondChance != null) {
-                    SecondChanceButton(onSecondChance)
+                    SecondChanceButton(onSecondChance, adFree)
+                    if (!adFree && premiumPrice != null) {
+                        Spacer(Modifier.height(8.dp))
+                        PremiumPill(stringResource(R.string.premium_skip_ads, ltr(premiumPrice)), onPremium)
+                    }
                     Spacer(Modifier.height(10.dp))
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -140,9 +160,10 @@ fun GameOverDialog(game: GameState, onPlayAgain: () -> Unit, onMainMenu: () -> U
 /**
  * The offer before the ad (the intro the rewarded format asks for): what watching
  * gives, and that it comes once per campaign. The other buttons are the way to say no.
+ * Premium players get it without an ad, so their text does not mention one.
  */
 @Composable
-private fun SecondChanceButton(onClick: () -> Unit) {
+private fun SecondChanceButton(onClick: () -> Unit, adFree: Boolean) {
     val shape = MaterialTheme.shapes.small
     Row(
         Modifier
@@ -158,7 +179,7 @@ private fun SecondChanceButton(onClick: () -> Unit) {
         Spacer(Modifier.width(12.dp))
         Column {
             Text(stringResource(R.string.second_chance_title), style = MaterialTheme.typography.titleMedium, color = Ink900)
-            Text(stringResource(R.string.second_chance_body), style = MaterialTheme.typography.bodySmall, color = Ink900.copy(alpha = 0.8f))
+            Text(stringResource(if (adFree) R.string.second_chance_body_premium else R.string.second_chance_body), style = MaterialTheme.typography.bodySmall, color = Ink900.copy(alpha = 0.8f))
         }
     }
 }
@@ -170,14 +191,16 @@ fun PauseMenuDialog(
     musicMuted: Boolean,
     onToggleMusic: () -> Unit,
     onResume: () -> Unit,
-    onSave: () -> Unit,
-    onLoad: () -> Unit,
+    /** Null in multiplayer, where the game lives on the server. */
+    onSave: (() -> Unit)?,
+    onLoad: (() -> Unit)?,
     onRulebook: () -> Unit,
     onSettings: () -> Unit,
     onExit: () -> Unit,
 ) {
     var confirmExit by remember { mutableStateOf(false) }
     Dialog(onDismissRequest = onResume) {
+        KeepFullScreen()
         GamePanel(Modifier.width(340.dp), alpha = 0.98f) {
             Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (!confirmExit) {
@@ -193,10 +216,12 @@ fun PauseMenuDialog(
                             size = 48.dp,
                         )
                     }
-                    Spacer(Modifier.height(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        GameButton(stringResource(R.string.pause_save), onSave, Modifier.weight(1f), GameButtonStyle.Secondary, compact = true)
-                        GameButton(stringResource(R.string.pause_load), onLoad, Modifier.weight(1f), GameButtonStyle.Secondary, compact = true)
+                    if (onSave != null && onLoad != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            GameButton(stringResource(R.string.pause_save), onSave, Modifier.weight(1f), GameButtonStyle.Secondary, compact = true)
+                            GameButton(stringResource(R.string.pause_load), onLoad, Modifier.weight(1f), GameButtonStyle.Secondary, compact = true)
+                        }
                     }
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -208,7 +233,7 @@ fun PauseMenuDialog(
                 } else {
                     Text(stringResource(R.string.pause_exit_confirm_title), style = MaterialTheme.typography.headlineSmall, color = GoldBright, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(8.dp))
-                    Text(stringResource(R.string.pause_exit_confirm_body), style = MaterialTheme.typography.bodyMedium, color = TextMid, textAlign = TextAlign.Center)
+                    Text(stringResource(if (onSave == null) R.string.mp_exit_confirm_body else R.string.pause_exit_confirm_body), style = MaterialTheme.typography.bodyMedium, color = TextMid, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(16.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         GameButton(stringResource(R.string.pause_exit_confirm_no), { confirmExit = false }, style = GameButtonStyle.Secondary)
@@ -312,7 +337,7 @@ private fun Gain(kind: ResourceKind, amount: Int) {
 // ============= SELECTED ARMY =============
 
 @Composable
-fun ArmyBanner(army: Army, attackPower: Int, modifier: Modifier = Modifier) {
+fun ArmyBanner(army: Army, modifier: Modifier = Modifier) {
     Row(
         modifier
             .clip(RoundedCornerShape(50))
@@ -323,7 +348,7 @@ fun ArmyBanner(army: Army, attackPower: Int, modifier: Modifier = Modifier) {
     ) {
         BannerStat(GameIcons.Horseshoe, army.cavalry)
         BannerStat(GameIcons.Sword, army.infantry)
-        BannerStat(GameIcons.Swords, attackPower, stringResource(R.string.battle_attack_label))
+        if (army.siege > 0) BannerStat(GameIcons.Catapult, army.siege)
         BannerStat(GameIcons.Boot, army.movementLeft)
         Spacer(Modifier.width(4.dp))
         Text(stringResource(R.string.army_banner_hint), style = MaterialTheme.typography.labelMedium, color = TextMid)
@@ -331,8 +356,8 @@ fun ArmyBanner(army: Army, attackPower: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun BannerStat(icon: ImageVector, value: Int, description: String? = null) {
-    Icon(icon, description, tint = Jade, modifier = Modifier.size(16.dp))
+private fun BannerStat(icon: ImageVector, value: Int) {
+    Icon(icon, null, tint = Jade, modifier = Modifier.size(16.dp))
     Spacer(Modifier.width(4.dp))
     Text(value.toString(), style = MaterialTheme.typography.labelLarge, color = TextHigh)
     Spacer(Modifier.width(10.dp))
@@ -427,20 +452,21 @@ fun EngagementLayer(game: GameState, modifier: Modifier = Modifier) {
             }
         }
 
-        if (streak >= 3) {
-            Row(
-                Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = 64.dp, start = 4.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(Brush.horizontalGradient(listOf(Color(0xFFEA580C), Color(0xFFDC2626))))
-                    .border(1.dp, GoldBright.copy(alpha = 0.7f), RoundedCornerShape(50))
-                    .padding(horizontal = 12.dp, vertical = 5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(GameIcons.Flag, null, tint = Color.White, modifier = Modifier.size(14.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(R.string.streak_label, streak), style = MaterialTheme.typography.labelMedium, color = Color.White)
+        Column(Modifier.align(Alignment.TopStart).padding(top = 64.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            game.challenge?.let { ChallengeChip(it, game) }
+            if (streak >= 3) {
+                Row(
+                    Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(Brush.horizontalGradient(listOf(Color(0xFFEA580C), Color(0xFFDC2626))))
+                        .border(1.dp, GoldBright.copy(alpha = 0.7f), RoundedCornerShape(50))
+                        .padding(horizontal = 12.dp, vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(GameIcons.Flag, null, tint = Color.White, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.streak_label, streak), style = MaterialTheme.typography.labelMedium, color = Color.White)
+                }
             }
         }
 
@@ -457,6 +483,41 @@ fun EngagementLayer(game: GameState, modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+/** The daily challenge's goal and progress, then its result. */
+@Composable
+private fun ChallengeChip(challenge: DailyChallenge, game: GameState) {
+    val status = challenge.status(game)
+    val text = when (status) {
+        ChallengeStatus.COMPLETED -> stringResource(R.string.daily_chip_done)
+        ChallengeStatus.FAILED -> stringResource(R.string.daily_chip_failed)
+        ChallengeStatus.IN_PROGRESS -> stringResource(
+            when (challenge.goal) {
+                ChallengeGoal.PROVINCES -> R.string.daily_chip_provinces
+                ChallengeGoal.TREASURY -> R.string.daily_chip_treasury
+                ChallengeGoal.BUILDINGS -> R.string.daily_chip_buildings
+            },
+            challenge.progress(game), challenge.target, game.turn, challenge.turnLimit,
+        )
+    }
+    val accent = when (status) {
+        ChallengeStatus.COMPLETED -> Jade
+        ChallengeStatus.FAILED -> Rust
+        ChallengeStatus.IN_PROGRESS -> GoldBright
+    }
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .background(Ink900.copy(alpha = 0.88f))
+            .border(1.dp, accent, RoundedCornerShape(50))
+            .padding(horizontal = 12.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(if (status == ChallengeStatus.COMPLETED) GameIcons.Check else GameIcons.Trophy, null, tint = accent, modifier = Modifier.size(14.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(text, style = MaterialTheme.typography.labelMedium, color = TextHigh)
     }
 }
 

@@ -213,4 +213,14 @@
     <string name="rank_20">Valtakunnan rakentaja</string>
     <string name="rank_25">Suurkhaani</string>
     <string name="rank_30">Legenda</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Päivän ratsastaja</string>
+    <string name="achv_daily_challenge_first_desc">Suoritit päivän haasteen.</string>
+    <string name="achv_daily_challenge_first_reward">Päivän merkki</string>
+    <string name="achv_daily_challenge_ten_name">Kymmenen aamua</string>
+    <string name="achv_daily_challenge_ten_desc">Suoritit 10 päivän haastetta.</string>
+    <string name="achv_daily_challenge_streak_5_name">Katkeamaton satula</string>
+    <string name="achv_daily_challenge_streak_5_desc">Suoritit päivän haasteen 5 päivänä peräkkäin.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Arvonimi: Päivien vartija</string>
 </resources>

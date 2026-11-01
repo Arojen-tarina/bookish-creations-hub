@@ -220,4 +220,38 @@
     <string name="settings_title">الإعدادات</string>
     <string name="music_volume">مستوى الصوت</string>
     <string name="cards_hide_hand">إخفاء البطاقات</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">بلا إعلانات على الإطلاق. تحصل على جزية طريق الحرير والفرصة الثانية دون إعلان.</string>
+    <string name="premium_price">%1$s / شهريًا</string>
+    <string name="premium_subscribe">اشترك</string>
+    <string name="premium_renews">يتجدد كل شهر. يمكنك الإلغاء في أي وقت من Google Play.</string>
+    <string name="premium_active">Premium مفعّل: بلا إعلانات. شكرًا لدعمك اللعبة!</string>
+    <string name="premium_manage">إدارة الاشتراك</string>
+    <string name="premium_unavailable">الاشتراك غير متاح حاليًا.</string>
+    <string name="premium_pending">الدفع قيد الانتظار. يبدأ Premium فور تأكيد Google Play له.</string>
+    <string name="premium_failed">لم تكتمل عملية الشراء. يُرجى المحاولة مرة أخرى.</string>
+    <string name="premium_menu">بلا إعلانات: %1$s / شهريًا</string>
+    <string name="premium_skip_ads">بلا إعلانات مع Premium: ‏%1$s شهريًا</string>
+    <string name="tribute_body_premium">بصفتك لاعب Premium تحصل على جزية تجار طريق الحرير دون إعلان. مرة واحدة في كل دور.</string>
+    <string name="second_chance_body_premium">أعد لعب دورك الأخير من بدايته. مرة واحدة في كل حملة.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">تحدي اليوم</string>
+    <string name="daily_goal_provinces">اسيطر على %1$d مقاطعة قبل نهاية الدور %2$d</string>
+    <string name="daily_goal_treasury">اجمع %1$d ذهبًا قبل نهاية الدور %2$d</string>
+    <string name="daily_goal_buildings">امتلك %1$d مبنى قبل نهاية الدور %2$d</string>
+    <string name="daily_play">العب</string>
+    <string name="daily_done_today">أُنجز اليوم</string>
+    <string name="daily_streak">سلسلة: %1$d</string>
+    <string name="daily_chip_provinces">التحدي: %1$d / %2$d مقاطعة · الدور %3$d / %4$d</string>
+    <string name="daily_chip_treasury">التحدي: %1$d / %2$d ذهب · الدور %3$d / %4$d</string>
+    <string name="daily_chip_buildings">التحدي: %1$d / %2$d مبنى · الدور %3$d / %4$d</string>
+    <string name="daily_chip_done">أُنجز تحدي اليوم</string>
+    <string name="daily_chip_failed">فشل تحدي اليوم</string>
+    <string name="daily_completed_toast">أُنجز تحدي اليوم!</string>
+    <string name="daily_failed_toast">انتهى حد الأدوار: خسرت تحدي اليوم. يأتي تحدٍ جديد غدًا.</string>
+    <string name="mastery_won">فاز على مستوى %1$s</string>
+    <string name="mastery_none">لا فوز بعد</string>
 </resources>

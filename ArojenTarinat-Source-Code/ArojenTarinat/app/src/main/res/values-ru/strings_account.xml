@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">Аккаунт</string>
+    <string name="acct_guest">Вы играете как гость: прогресс хранится только на этом телефоне. Войдите, чтобы сохранить его в облаке и играть на любом телефоне.</string>
+    <string name="acct_signed_in_google">Вход через Google: %1$s</string>
+    <string name="acct_signed_in_email">Вход по почте: %1$s</string>
+    <string name="acct_backup_time">Последнее сохранение в облаке: %1$s</string>
+    <string name="acct_backup_never">Прогресс сохраняется в облаке каждый раз, когда вы выходите из игры.</string>
+    <string name="acct_google">Войти через Google</string>
+    <string name="acct_email">Почта и пароль</string>
+    <string name="acct_backup_now">Сохранить в облако сейчас</string>
+    <string name="acct_saved">Прогресс сохранён в облаке.</string>
+    <string name="acct_sign_out">Выйти</string>
+    <string name="acct_delete">Удалить аккаунт</string>
+    <string name="acct_delete_title">Удалить аккаунт?</string>
+    <string name="acct_delete_body">Аккаунт и его копия в облаке будут удалены навсегда. Прогресс на этом телефоне останется.</string>
+    <string name="acct_delete_confirm">Удалить</string>
+    <string name="acct_deleted">Аккаунт удалён.</string>
+    <string name="acct_email_label">Почта</string>
+    <string name="acct_password_label">Пароль (не менее 6 символов)</string>
+    <string name="acct_sign_in">Войти</string>
+    <string name="acct_create">Создать аккаунт</string>
+    <string name="acct_done">Вы вошли. Прогресс в безопасности в облаке.</string>
+    <string name="acct_choice_title">Какой прогресс сохранить?</string>
+    <string name="acct_choice_body">У аккаунта уже есть прогресс в облаке (уровень %1$d, сохранён %2$s). Использовать его на этом телефоне или заменить прогрессом этого телефона?</string>
+    <string name="acct_keep_cloud">Использовать облачный прогресс</string>
+    <string name="acct_keep_phone">Оставить прогресс телефона</string>
+    <string name="acct_err_invalid">Неверная почта или пароль.</string>
+    <string name="acct_err_exists">Для этой почты уже есть аккаунт. Войдите в него.</string>
+    <string name="acct_err_weak">Пароль должен быть не короче 6 символов.</string>
+    <string name="acct_err_bad_email">Введите корректный адрес почты.</string>
+    <string name="acct_err_no_google">На телефоне не найден аккаунт Google.</string>
+    <string name="acct_err_google">Не удалось войти через Google. Попробуйте ещё раз.</string>
+</resources>

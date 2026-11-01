@@ -22,9 +22,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.atomic.AtomicBoolean
@@ -34,11 +38,15 @@ import java.util.concurrent.atomic.AtomicBoolean
  * launch, then the SDK, then one interstitial, one tribute (rewarded) ad and,
  * for returning players, one app-open ad kept loaded. [AdPacing] decides when
  * full-screen ads may appear; the game music pauses while one is on screen.
+ * While [adFree] (Premium) is on, no advert of any kind loads or shows, and
+ * the opt-in rewards are granted without one.
  * Everything runs on the main thread.
  */
 class Ads(
     private val app: Application,
     private val music: GameMusic,
+    /** The player subscribes to Premium: no adverts at all. */
+    val adFree: StateFlow<Boolean>,
     scope: CoroutineScope,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
@@ -66,8 +74,9 @@ class Ads(
 
     private val _rewardReady = MutableStateFlow(false)
 
-    /** A tribute ad is loaded and can be offered. */
-    val rewardReady: StateFlow<Boolean> = _rewardReady.asStateFlow()
+    /** A reward (tribute, second chance) can be offered: its advert is loaded, or Premium needs none. */
+    val rewardReady: StateFlow<Boolean> = combine(_rewardReady, adFree) { loaded, free -> loaded || free }
+        .stateIn(main, SharingStarted.Eagerly, adFree.value)
 
     private val _fullScreen = MutableStateFlow(false)
 
@@ -90,6 +99,19 @@ class Ads(
         val launches = prefs.getInt(KEY_LAUNCHES, 0) + 1
         prefs.edit { putInt(KEY_LAUNCHES, launches) }
         appOpenDue = AdPacing.appOpenDue(launches, prefs.getLong(KEY_APP_OPEN_AT, 0L), clock())
+        // Premium starting mid-session drops the loaded adverts; ending it loads them again.
+        main.launch {
+            adFree.drop(1).collect { free ->
+                if (free) {
+                    interstitial = null
+                    reward = null
+                    _rewardReady.value = false
+                } else {
+                    loadInterstitial()
+                    loadReward()
+                }
+            }
+        }
     }
 
     /** Call from the activity on every launch: refreshes consent (the form appears when required), then starts the SDK. */
@@ -131,7 +153,7 @@ class Ads(
                     _ready.value = true
                     loadInterstitial()
                     loadReward()
-                    if (appOpenDue && coldStartPending) loadAppOpen()
+                    if (appOpenDue && coldStartPending && !adFree.value) loadAppOpen()
                 }
             }
         }
@@ -149,7 +171,7 @@ class Ads(
     // ---------- interstitial ----------
 
     private fun loadInterstitial() {
-        if (!_ready.value || interstitial != null || loadingInterstitial) return
+        if (!_ready.value || adFree.value || interstitial != null || loadingInterstitial) return
         loadingInterstitial = true
         InterstitialAd.load(app, AdUnits.INTERSTITIAL, request(), object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(ad: InterstitialAd) {
@@ -169,6 +191,10 @@ class Ads(
      * loaded, then runs [then]; otherwise runs [then] straight away.
      */
     fun interstitialBreak(activity: Activity, moment: AdBreak, turn: Int, then: () -> Unit = {}) {
+        if (adFree.value) {
+            then()
+            return
+        }
         val loaded = interstitial?.takeIf { clock() - it.at < MAX_AGE_MS }
         if (loaded == null) interstitial = null
         if (loaded == null || _fullScreen.value || !pacing.interstitialDue(moment, turn)) {
@@ -187,7 +213,7 @@ class Ads(
     // ---------- tribute (rewarded) ----------
 
     private fun loadReward() {
-        if (!_ready.value || reward != null || loadingReward) return
+        if (!_ready.value || adFree.value || reward != null || loadingReward) return
         loadingReward = true
         RewardedInterstitialAd.load(app, AdUnits.REWARDED, request(), object : RewardedInterstitialAdLoadCallback() {
             override fun onAdLoaded(ad: RewardedInterstitialAd) {
@@ -206,8 +232,13 @@ class Ads(
     /**
      * Shows the tribute ad the player asked for. [onEarned] runs after the ad
      * closes, only if it was watched to the reward. False when none is loaded.
+     * With Premium there is no advert: [onEarned] runs straight away.
      */
     fun showReward(activity: Activity, onEarned: () -> Unit): Boolean {
+        if (adFree.value) {
+            onEarned()
+            return true
+        }
         val loaded = reward?.takeIf { clock() - it.at < MAX_AGE_MS }
         reward = null
         _rewardReady.value = false
@@ -227,6 +258,7 @@ class Ads(
     // ---------- app open ----------
 
     private fun loadAppOpen() {
+        if (adFree.value) return
         AppOpenAd.load(app, AdUnits.APP_OPEN, request(), object : AppOpenAd.AppOpenAdLoadCallback() {
             override fun onAdLoaded(ad: AppOpenAd) {
                 if (coldStartPending) appOpen.value = Loaded(ad, clock())
@@ -241,9 +273,15 @@ class Ads(
      * after launch) for the app-open ad when one is due, so it can open the game.
      */
     suspend fun awaitAppOpen() {
-        if (!appOpenDue) return
+        if (!appOpenDue || adFree.value || !coldStartPending) return
         val left = APP_OPEN_WAIT_MS - (clock() - createdAt)
         if (left > 0) withTimeoutOrNull(left) { appOpen.first { it != null } }
+    }
+
+    /** No app-open ad this launch: the player came through an invite link to join a game. */
+    fun skipAppOpen() {
+        coldStartPending = false
+        appOpen.value = null
     }
 
     /** Shows the app-open ad if it arrived in time; never later in the session. */
@@ -252,7 +290,7 @@ class Ads(
         coldStartPending = false
         val loaded = appOpen.value ?: return
         appOpen.value = null
-        if (_fullScreen.value) return
+        if (_fullScreen.value || adFree.value) return
         prefs.edit { putLong(KEY_APP_OPEN_AT, clock()) }
         loaded.ad.fullScreenContentCallback = fullScreenCallback {}
         loaded.ad.show(activity)

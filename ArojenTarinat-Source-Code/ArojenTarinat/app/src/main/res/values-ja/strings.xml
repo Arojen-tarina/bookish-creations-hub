@@ -210,4 +210,38 @@
     <string name="settings_title">設定</string>
     <string name="music_volume">音量</string>
     <string name="cards_hide_hand">カードを隠す</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">広告は一切表示されません。シルクロードの貢ぎ物とセカンドチャンスも広告なしで受け取れます。</string>
+    <string name="premium_price">%1$s / 月</string>
+    <string name="premium_subscribe">登録する</string>
+    <string name="premium_renews">毎月自動更新。Google Play でいつでも解約できます。</string>
+    <string name="premium_active">Premium 有効：広告なし。ゲームを応援してくださりありがとうございます！</string>
+    <string name="premium_manage">定期購入を管理</string>
+    <string name="premium_unavailable">現在、定期購入はご利用いただけません。</string>
+    <string name="premium_pending">支払いを保留中です。Google Play で確認され次第 Premium が始まります。</string>
+    <string name="premium_failed">購入できませんでした。もう一度お試しください。</string>
+    <string name="premium_menu">広告なし：%1$s / 月</string>
+    <string name="premium_skip_ads">Premium で広告なし：%1$s / 月</string>
+    <string name="tribute_body_premium">Premium プレイヤーは広告なしでシルクロードの商人からの貢ぎ物を受け取れます。1ターンに1回。</string>
+    <string name="second_chance_body_premium">直前のターンを最初からやり直します。キャンペーンにつき1回。</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">デイリーチャレンジ</string>
+    <string name="daily_goal_provinces">%2$dターン目までに%1$d州を保持する</string>
+    <string name="daily_goal_treasury">%2$dターン目までに%1$dゴールドを貯める</string>
+    <string name="daily_goal_buildings">%2$dターン目までに建物を%1$d棟持つ</string>
+    <string name="daily_play">プレイ</string>
+    <string name="daily_done_today">本日達成</string>
+    <string name="daily_streak">連続：%1$d</string>
+    <string name="daily_chip_provinces">デイリー：%1$d / %2$d州 · ターン %3$d / %4$d</string>
+    <string name="daily_chip_treasury">デイリー：%1$d / %2$dゴールド · ターン %3$d / %4$d</string>
+    <string name="daily_chip_buildings">デイリー：%1$d / %2$d棟 · ターン %3$d / %4$d</string>
+    <string name="daily_chip_done">デイリーチャレンジ達成</string>
+    <string name="daily_chip_failed">デイリーチャレンジ失敗</string>
+    <string name="daily_completed_toast">デイリーチャレンジ達成！</string>
+    <string name="daily_failed_toast">ターン上限を過ぎました。本日のチャレンジは失敗です。明日また新しいチャレンジがあります。</string>
+    <string name="mastery_won">%1$sで勝利</string>
+    <string name="mastery_none">まだ勝利なし</string>
 </resources>

@@ -32,6 +32,7 @@ import fi.bookish.creations.arojen.tarinat.data.SaveRepository
 import fi.bookish.creations.arojen.tarinat.ui.components.BoardBackdrop
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.RoundIconButton
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.icons.GameIcons
@@ -98,6 +99,7 @@ fun LoadGameScreen(saves: SaveRepository, onLoaded: (SaveMeta) -> Unit, onBack: 
 
     confirmDelete?.let { slot ->
         Dialog(onDismissRequest = { confirmDelete = null }) {
+            KeepFullScreen()
             GamePanel(alpha = 0.98f) {
                 Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(slotTitle(slot), style = MaterialTheme.typography.titleLarge, color = TextHigh)

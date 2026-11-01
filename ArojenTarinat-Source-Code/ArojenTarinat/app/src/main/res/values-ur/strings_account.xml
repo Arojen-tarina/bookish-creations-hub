@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player accounts (guest, Google, email) and the cloud copy of the progress. -->
+<resources>
+    <string name="acct_title">اکاؤنٹ</string>
+    <string name="acct_guest">آپ مہمان کے طور پر کھیل رہے ہیں: آپ کی پیش رفت صرف اسی فون پر ہے۔ سائن ان کریں تاکہ یہ کلاؤڈ میں محفوظ رہے اور کسی بھی فون پر کھیل سکیں۔</string>
+    <string name="acct_signed_in_google">Google سے سائن ان: %1$s</string>
+    <string name="acct_signed_in_email">ای میل سے سائن ان: %1$s</string>
+    <string name="acct_backup_time">آخری کلاؤڈ محفوظ: %1$s</string>
+    <string name="acct_backup_never">کھیل سے نکلتے ہی آپ کی پیش رفت کلاؤڈ میں محفوظ ہو جاتی ہے۔</string>
+    <string name="acct_google">Google سے سائن ان کریں</string>
+    <string name="acct_email">ای میل اور پاس ورڈ</string>
+    <string name="acct_backup_now">ابھی کلاؤڈ میں محفوظ کریں</string>
+    <string name="acct_saved">پیش رفت کلاؤڈ میں محفوظ ہو گئی۔</string>
+    <string name="acct_sign_out">سائن آؤٹ</string>
+    <string name="acct_delete">اکاؤنٹ حذف کریں</string>
+    <string name="acct_delete_title">اپنا اکاؤنٹ حذف کریں؟</string>
+    <string name="acct_delete_body">آپ کا اکاؤنٹ اور اس کی کلاؤڈ کاپی ہمیشہ کے لیے حذف ہو جائیں گے۔ اس فون کی پیش رفت باقی رہے گی۔</string>
+    <string name="acct_delete_confirm">حذف کریں</string>
+    <string name="acct_deleted">آپ کا اکاؤنٹ حذف ہو گیا۔</string>
+    <string name="acct_email_label">ای میل</string>
+    <string name="acct_password_label">پاس ورڈ (کم از کم 6 حروف)</string>
+    <string name="acct_sign_in">سائن ان</string>
+    <string name="acct_create">اکاؤنٹ بنائیں</string>
+    <string name="acct_done">سائن ان ہو گیا۔ آپ کی پیش رفت کلاؤڈ میں محفوظ ہے۔</string>
+    <string name="acct_choice_title">کون سی پیش رفت رکھنا چاہتے ہیں؟</string>
+    <string name="acct_choice_body">اس اکاؤنٹ کی کلاؤڈ میں پہلے سے پیش رفت ہے (لیول %1$d، محفوظ %2$s)۔ اسے اس فون پر استعمال کریں یا اس فون کی پیش رفت سے بدل دیں؟</string>
+    <string name="acct_keep_cloud">کلاؤڈ کی پیش رفت استعمال کریں</string>
+    <string name="acct_keep_phone">اس فون کی پیش رفت رکھیں</string>
+    <string name="acct_err_invalid">غلط ای میل یا پاس ورڈ۔</string>
+    <string name="acct_err_exists">اس ای میل کا اکاؤنٹ پہلے سے موجود ہے۔ سائن ان کریں۔</string>
+    <string name="acct_err_weak">پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔</string>
+    <string name="acct_err_bad_email">درست ای میل درج کریں۔</string>
+    <string name="acct_err_no_google">اس فون پر کوئی Google اکاؤنٹ نہیں ملا۔</string>
+    <string name="acct_err_google">Google سائن ان نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+</resources>

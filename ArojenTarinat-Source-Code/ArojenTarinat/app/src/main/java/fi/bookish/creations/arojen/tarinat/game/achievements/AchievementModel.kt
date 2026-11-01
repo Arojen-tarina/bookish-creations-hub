@@ -88,6 +88,15 @@ data class PlayerStats(
     val hardDifficultyWins: Int = 0,
     val currentGameWinStreak: Int = 0,
     val longestGameWinStreak: Int = 0,
+
+    // Native additions (not in the original): daily challenges and faction mastery.
+    val dailyChallengesCompleted: Int = 0,
+    val dailyChallengeStreak: Int = 0,
+    val longestDailyChallengeStreak: Int = 0,
+    /** yyyy-MM-dd of the last completed daily challenge. */
+    val lastDailyChallengeDate: String? = null,
+    /** "faction:difficulty" keys (e.g. "mongol:hard") the player has won with. */
+    val victoriesByFactionDifficulty: Set<String> = emptySet(),
 )
 
 /** Player level from total points: gentle early, steeper later (50 * level * (level - 1) points per level). */

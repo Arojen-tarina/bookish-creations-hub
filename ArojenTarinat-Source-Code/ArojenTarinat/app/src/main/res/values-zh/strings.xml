@@ -210,4 +210,38 @@
     <string name="settings_title">设置</string>
     <string name="music_volume">音量</string>
     <string name="cards_hide_hand">隐藏卡牌</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">完全没有广告。丝绸之路贡赋和第二次机会都无需观看广告。</string>
+    <string name="premium_price">%1$s / 月</string>
+    <string name="premium_subscribe">订阅</string>
+    <string name="premium_renews">每月自动续订。可随时在 Google Play 中取消。</string>
+    <string name="premium_active">Premium 已启用：没有广告。感谢你对游戏的支持！</string>
+    <string name="premium_manage">管理订阅</string>
+    <string name="premium_unavailable">订阅目前不可用。</string>
+    <string name="premium_pending">付款待处理。Google Play 确认后 Premium 即会生效。</string>
+    <string name="premium_failed">购买未成功。请重试。</string>
+    <string name="premium_menu">无广告：%1$s / 月</string>
+    <string name="premium_skip_ads">开通 Premium，跳过所有广告：%1$s / 月</string>
+    <string name="tribute_body_premium">作为 Premium 玩家，你无需观看广告即可获得丝绸之路商人的贡赋。每回合一次。</string>
+    <string name="second_chance_body_premium">从头重玩你的上一回合。每场战役一次。</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">每日挑战</string>
+    <string name="daily_goal_provinces">在第 %2$d 回合前控制 %1$d 个省份</string>
+    <string name="daily_goal_treasury">在第 %2$d 回合前积攒 %1$d 金币</string>
+    <string name="daily_goal_buildings">在第 %2$d 回合前拥有 %1$d 座建筑</string>
+    <string name="daily_play">开始</string>
+    <string name="daily_done_today">今日已完成</string>
+    <string name="daily_streak">连续：%1$d</string>
+    <string name="daily_chip_provinces">挑战：%1$d / %2$d 个省份 · 回合 %3$d / %4$d</string>
+    <string name="daily_chip_treasury">挑战：%1$d / %2$d 金币 · 回合 %3$d / %4$d</string>
+    <string name="daily_chip_buildings">挑战：%1$d / %2$d 座建筑 · 回合 %3$d / %4$d</string>
+    <string name="daily_chip_done">每日挑战已完成</string>
+    <string name="daily_chip_failed">每日挑战失败</string>
+    <string name="daily_completed_toast">每日挑战完成！</string>
+    <string name="daily_failed_toast">已超过回合上限：今日挑战失败。明天会有新的挑战。</string>
+    <string name="mastery_won">已在%1$s难度获胜</string>
+    <string name="mastery_none">尚未获胜</string>
 </resources>

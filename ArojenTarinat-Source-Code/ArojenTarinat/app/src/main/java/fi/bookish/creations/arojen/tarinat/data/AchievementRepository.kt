@@ -3,7 +3,7 @@ package fi.bookish.creations.arojen.tarinat.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import fi.bookish.creations.arojen.tarinat.game.achievements.ACHIEVEMENTS
+import fi.bookish.creations.arojen.tarinat.game.achievements.ALL_ACHIEVEMENTS
 import fi.bookish.creations.arojen.tarinat.game.achievements.AchievementDef
 import fi.bookish.creations.arojen.tarinat.game.achievements.PlayerStats
 import fi.bookish.creations.arojen.tarinat.game.achievements.StatsTracker
@@ -43,7 +43,7 @@ class AchievementRepository(
     private val statsFile = File(context.applicationContext.filesDir, "player_stats.json")
     private val json = Json { ignoreUnknownKeys = true }
     private val mutex = Mutex()
-    private val known = ACHIEVEMENTS.map { it.id }.toSet()
+    private val known = ALL_ACHIEVEMENTS.map { it.id }.toSet()
 
     private val _unlocked = MutableStateFlow<Map<String, Long>>(emptyMap())
     /** Achievement id -> unlock time (epoch millis). */
@@ -122,6 +122,18 @@ class AchievementRepository(
                 writeUnlocked(merged)
                 _unlocked.value = merged
             }
+        }
+    }
+
+    /** Takes the progress of the player's cloud copy as this phone's (signing in on a new phone). */
+    suspend fun replaceAll(stats: PlayerStats, unlocks: Map<String, Long>) = withContext(io) {
+        mutex.withLock {
+            val now = System.currentTimeMillis()
+            val clean = unlocks.filter { (id, at) -> id in known && at in 1..now }
+            _stats.value = stats
+            writeStats(stats)
+            _unlocked.value = clean
+            writeUnlocked(clean)
         }
     }
 

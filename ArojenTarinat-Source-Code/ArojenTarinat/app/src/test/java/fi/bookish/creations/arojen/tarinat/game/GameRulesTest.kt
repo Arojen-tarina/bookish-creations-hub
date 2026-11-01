@@ -8,7 +8,6 @@ import fi.bookish.creations.arojen.tarinat.game.engine.GameRandom
 import fi.bookish.creations.arojen.tarinat.game.engine.Mulberry32
 import fi.bookish.creations.arojen.tarinat.game.engine.buildBlocker
 import fi.bookish.creations.arojen.tarinat.game.engine.buildStructure
-import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.canMoveTo
 import fi.bookish.creations.arojen.tarinat.game.engine.endTurn
 import fi.bookish.creations.arojen.tarinat.game.engine.moveArmy
@@ -43,11 +42,7 @@ class GameRulesTest {
         assertEquals(221, PROVINCES_1206.size)
         val ids = PROVINCES_1206.map { it.id }.toSet()
         assertEquals(221, ids.size)
-        PROVINCES_1206.forEachIndexed { index, p ->
-            val row = index / 17
-            val column = index % 17
-            assertEquals(6.82 + column * 7.26 + (row % 2) * 3.63, p.center.x, 0.01)
-            assertEquals(26.87 + row * 6.43, p.center.y, 0.01)
+        PROVINCES_1206.forEach { p ->
             p.neighbors.forEach { n ->
                 assertTrue("${p.id} -> $n missing", n in ids)
                 assertTrue("${p.id} <-> $n not symmetric", p.id in PROVINCES_1206.first { it.id == n }.neighbors)
@@ -78,12 +73,6 @@ class GameRulesTest {
             assertTrue(s.resourcesCollected)
             assertEquals(1, s.armies.count { it.ownerId == faction && it.isChief })
         }
-    }
-
-    @Test
-    fun `attack power includes cavalry infantry and active bonus`() {
-        val army = Army("test", FactionId.MONGOL, "test", cavalry = 3, infantry = 4, movementLeft = 3)
-        assertEquals(15, army.attackPower(5))
     }
 
     @Test
@@ -136,9 +125,9 @@ class GameRulesTest {
                 else -> it
             }
         }
-        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, movementLeft = 3)
+        val horde = Army("horde", FactionId.MONGOL, mongolLand.id, cavalry = 50, infantry = 50, siege = 0, morale = 90, supply = 30, movementLeft = 3)
         val armies = s0.armies.map {
-            if (it.id == Army.chiefArmyId(player)) it.copy(provinceId = chiefLand.id, cavalry = 0, infantry = 1) else it
+            if (it.id == Army.chiefArmyId(player)) it.copy(provinceId = chiefLand.id, cavalry = 0, infantry = 1, siege = 0) else it
         } + horde
 
         val s1 = endTurn(s0.copy(provinces = provinces, armies = armies), Mulberry32(3))
@@ -155,10 +144,11 @@ class GameRulesTest {
     fun `peace treaty blocks entering a rival's land`() {
         val s0 = newGame()
         val player = s0.playerFactionId
-        // A cavalry-heavy army with full movement standing next to rival land.
+        // A siege-free, cavalry-heavy army with full movement standing next to rival land
+        // (cavalry never pays more than 3 movement for any terrain).
         val target = s0.provinces.first { it.ownerId != null && it.ownerId != player }
         val army = s0.armies.first { it.ownerId == player }
-            .copy(provinceId = target.neighbors.first(), cavalry = 10, infantry = 5, movementLeft = 3)
+            .copy(provinceId = target.neighbors.first(), siege = 0, cavalry = 10, infantry = 5, movementLeft = 3)
         val base = s0.copy(armies = s0.armies.map { if (it.id == army.id) army else it })
         val rival = target.ownerId!!
         fun withTreaties(vararg treaties: Treaty) = base.copy(relations = base.relations.map {
@@ -226,6 +216,7 @@ class GameRulesTest {
         s.armies.forEach {
             assertTrue("$where: empty army ${it.id}", it.cavalry + it.infantry > 0)
             assertTrue("$where: army ${it.id} in unknown province", it.provinceId in provinceIds)
+            assertTrue("$where: army ${it.id} morale ${it.morale}", it.morale in 10..100)
         }
         assertEquals("$where: duplicate army ids", s.armies.size, s.armies.map { it.id }.toSet().size)
         s.provinces.forEach { p ->

@@ -16,7 +16,10 @@ import fi.bookish.creations.arojen.tarinat.analytics.Events
 import fi.bookish.creations.arojen.tarinat.data.AchievementRepository
 import fi.bookish.creations.arojen.tarinat.data.SaveRepository
 import fi.bookish.creations.arojen.tarinat.game.achievements.StatsTracker
+import fi.bookish.creations.arojen.tarinat.game.challenge.ChallengeStatus
+import fi.bookish.creations.arojen.tarinat.game.challenge.DailyChallenges
 import fi.bookish.creations.arojen.tarinat.game.engine.GameRandom
+import fi.bookish.creations.arojen.tarinat.game.engine.Mulberry32
 import fi.bookish.creations.arojen.tarinat.game.engine.breakTreaty
 import fi.bookish.creations.arojen.tarinat.game.engine.buildBlocker
 import fi.bookish.creations.arojen.tarinat.game.engine.TributeKind
@@ -44,20 +47,28 @@ import fi.bookish.creations.arojen.tarinat.game.model.FactionId
 import fi.bookish.creations.arojen.tarinat.game.model.GameState
 import fi.bookish.creations.arojen.tarinat.game.model.RecruitType
 import fi.bookish.creations.arojen.tarinat.game.model.TreatyType
+import fi.bookish.creations.arojen.tarinat.multiplayer.Multiplayer
+import fi.bookish.creations.arojen.tarinat.multiplayer.MultiplayerException
+import fi.bookish.creations.arojen.tarinat.multiplayer.RoomSession
+import fi.bookish.creations.arojen.tarinat.multiplayer.RoomSnapshot
 import fi.bookish.creations.arojen.tarinat.navigation.GameRoute
+import fi.bookish.creations.arojen.tarinat.ui.multiplayer.multiplayerErrorRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 data class GameUiState(
     val game: GameState,
@@ -70,7 +81,16 @@ data class GameUiState(
     val lastBattle: BattleReport? = null,
     /** True while the AI realms take their turn. */
     val processingTurn: Boolean = false,
-)
+    /** Multiplayer: the name of the player on turn while it is not this player's turn ("" while connecting). */
+    val waitingFor: String? = null,
+    /** Multiplayer: this player's realm fell; the campaign goes on without them. */
+    val eliminated: Boolean = false,
+    /** Multiplayer: the player on turn left or sat idle too long, so this player may pass their turn. */
+    val canSkipAbsent: Boolean = false,
+) {
+    /** The player may act on the board now. */
+    val canAct: Boolean get() = !processingTurn && waitingFor == null && !eliminated
+}
 
 enum class Tone { Positive, Negative, Neutral }
 
@@ -89,12 +109,20 @@ class GameViewModel(
     private val achievements: AchievementRepository,
     private val analytics: Analytics,
     private val appScope: CoroutineScope,
+    multiplayer: Multiplayer?,
 ) : ViewModel() {
 
     private val rng = GameRandom.System
     private val route = savedStateHandle.toRoute<GameRoute>()
 
-    private val _ui = MutableStateFlow(GameUiState(game = initialGame()))
+    /** The online room this campaign is played in; null for a single-player campaign. */
+    private val session: RoomSession? = route.room?.let { id -> multiplayer?.session(id) }
+    val isMultiplayer: Boolean get() = session != null
+
+    /** Multiplayer: the server version of the game the screen shows. */
+    private var appliedVersion = session?.snapshot?.value?.version ?: -1
+
+    private val _ui = MutableStateFlow(GameUiState(game = initialGame(), waitingFor = session?.let { multiplayerWaiting(it.snapshot.value) }))
     val ui: StateFlow<GameUiState> = _ui.asStateFlow()
 
     /** The campaign as the current turn began: what a second chance goes back to. */
@@ -108,6 +136,13 @@ class GameViewModel(
      * from the autosave instead of silently starting over.
      */
     private fun initialGame(): GameState {
+        session?.let { s ->
+            val me = s.myFaction
+            val shared = s.snapshot.value?.game
+            if (me != null && shared != null) return shared.viewFor(me)
+            // Until the room's game arrives (after process death) a blank start stands in, behind "connecting".
+            return startGame(me ?: FactionId.MONGOL, Difficulty.NORMAL, Mulberry32(0))
+        }
         val resume = savedStateHandle.get<Int>(KEY_RESUME_SLOT)
         val slot = resume ?: route.loadSlot.takeIf { it != GameRoute.NEW_GAME }
         slot?.let { s ->
@@ -116,14 +151,21 @@ class GameViewModel(
                 return it
             }
         }
-        val fresh = startGame(FactionId.valueOf(route.faction.uppercase()), Difficulty.valueOf(route.difficulty.uppercase()), rng)
+        val fresh = if (route.daily) {
+            val setup = DailyChallenges.forDate(LocalDate.now())
+            // The seed makes the map and the decks the same for everyone today; play itself stays random.
+            startGame(setup.faction, setup.difficulty, Mulberry32(setup.seed)).copy(challenge = setup.challenge)
+        } else {
+            startGame(FactionId.valueOf(route.faction.uppercase()), Difficulty.valueOf(route.difficulty.uppercase()), rng)
+        }
         analytics.track(Events.gameStart(fresh, isContinue = false))
         autosave(fresh)
         return fresh
     }
 
-    /** Fire-and-forget autosave that survives leaving the screen. */
+    /** Fire-and-forget autosave that survives leaving the screen. Multiplayer games live on the server instead. */
     private fun autosave(state: GameState) {
+        if (session != null) return
         appScope.launch {
             if (state.gameOver) {
                 // A finished campaign is not something to "Continue".
@@ -153,6 +195,7 @@ class GameViewModel(
     }
 
     init {
+        session?.let(::followRoom)
         // Every state change feeds the lifetime stats behind achievements.
         viewModelScope.launch {
             var prev: GameState? = null
@@ -161,6 +204,7 @@ class GameViewModel(
                 val before = prev?.takeIf { next.turn >= it.turn }
                 prev = next
                 achievements.record { StatsTracker.onStateChanged(it, before, next) }
+                checkChallenge(before, next)
                 if (next.gameOver && before != null && !before.gameOver) {
                     if (canTakeSecondChance(next)) {
                         pendingDefeat = next
@@ -174,6 +218,78 @@ class GameViewModel(
                     analytics.track(Events.fromStateChange(before, next, analytics.turnsThisSession))
                 }
             }
+        }
+    }
+
+    /** Who the screen waits for in [snap]: null on this player's turn, "" while the game is not here yet. */
+    private fun multiplayerWaiting(snap: RoomSnapshot?): String? {
+        val shared = snap?.game ?: return ""
+        val me = session?.myFaction ?: return ""
+        if (shared.finished || shared.activeFaction == me) return null
+        return snap.nameOf(shared.activeFaction).orEmpty()
+    }
+
+    /** Multiplayer: shows each new version of the shared game; this player's own unsent turn is never overwritten. */
+    private fun followRoom(s: RoomSession) {
+        viewModelScope.launch {
+            s.snapshot.filterNotNull().collect { snap ->
+                val shared = snap.game ?: return@collect
+                val me = s.myFaction ?: return@collect
+                if (snap.version == appliedVersion) return@collect
+                val wasWaiting = _ui.value.waitingFor != null
+                appliedVersion = snap.version
+                val waiting = multiplayerWaiting(snap)
+                _ui.update {
+                    it.copy(
+                        game = shared.viewFor(me),
+                        waitingFor = waiting,
+                        eliminated = shared.seatOf(me)?.eliminated == true,
+                        processingTurn = false,
+                        lastBattle = null,
+                        selectedArmyId = null,
+                        moveTargets = emptySet(),
+                        attackTargets = emptySet(),
+                        canSkipAbsent = false,
+                    )
+                }
+                if (!shared.finished && waiting == null && wasWaiting) say(R.string.mp_your_turn, tone = Tone.Positive)
+            }
+        }
+        // A player who left or idles on their turn can be passed over by the others.
+        viewModelScope.launch {
+            while (true) {
+                _ui.update { it.copy(canSkipAbsent = it.waitingFor != null && s.activePlayerAbsent()) }
+                delay(SKIP_CHECK_MS)
+            }
+        }
+    }
+
+    /** Multiplayer: passes the absent player's turn (their realm turns AI). */
+    fun skipAbsentPlayer() {
+        val s = session ?: return
+        if (!_ui.value.canSkipAbsent) return
+        _ui.update { it.copy(canSkipAbsent = false) }
+        viewModelScope.launch {
+            try {
+                s.skipAbsentPlayer()
+            } catch (e: MultiplayerException) {
+                say(multiplayerErrorRes(e.reason), tone = Tone.Negative)
+                s.refresh()
+            }
+        }
+    }
+
+    /** Marks the daily challenge completed the moment its goal is reached, and says when it is lost. */
+    private fun checkChallenge(before: GameState?, next: GameState) {
+        val challenge = next.challenge ?: return
+        if (challenge.reachedIn(next)) {
+            _ui.update { it.copy(game = it.game.copy(challenge = challenge.copy(completedTurn = next.turn))) }
+            achievements.record { StatsTracker.onDailyChallengeCompleted(it, LocalDate.parse(challenge.date)) }
+            analytics.track(Events.dailyChallenge(challenge, completed = true))
+            say(R.string.daily_completed_toast, tone = Tone.Positive)
+        } else if (before != null && challenge.status(before) == ChallengeStatus.IN_PROGRESS && challenge.status(next) == ChallengeStatus.FAILED) {
+            analytics.track(Events.dailyChallenge(challenge, completed = false))
+            say(R.string.daily_failed_toast, tone = Tone.Negative)
         }
     }
 
@@ -193,7 +309,7 @@ class GameViewModel(
         val ui = _ui.value
         if (ui.processingTurn) return false
         val armyId = ui.selectedArmyId
-        if (armyId != null && (provinceId in ui.moveTargets || provinceId in ui.attackTargets)) {
+        if (armyId != null && ui.canAct && (provinceId in ui.moveTargets || provinceId in ui.attackTargets)) {
             val result = moveArmy(ui.game, armyId, provinceId, rng)
             val moved = result.state.armies.firstOrNull { it.id == armyId }
             // Keep a surviving army selected while it can still move, so marches can be chained.
@@ -237,6 +353,7 @@ class GameViewModel(
     // ============= PROVINCE ACTIONS =============
 
     fun build(provinceId: String, type: BuildingType) {
+        if (!_ui.value.canAct) return
         buildBlocker(game, provinceId, type)?.let { return say(it.messageRes, tone = Tone.Negative) }
         val upgrading = type == BuildingType.FORTRESS && (game.province(provinceId)?.fortLevel ?: 0) > 0
         _ui.update { it.copy(game = buildStructure(it.game, provinceId, type)) }
@@ -245,12 +362,14 @@ class GameViewModel(
     }
 
     fun recruit(provinceId: String, type: RecruitType) {
+        if (!_ui.value.canAct) return
         recruitBlocker(game, provinceId, type)?.let { return say(it.messageRes, tone = Tone.Negative) }
         _ui.update { it.copy(game = recruitArmy(it.game, provinceId, type)) }
         say(R.string.toast_recruited, provinceName(provinceId), tone = Tone.Positive)
     }
 
     fun repair(provinceId: String, useArtisan: Boolean) {
+        if (!_ui.value.canAct) return
         repairFortBlocker(game, provinceId, useArtisan)?.let { return say(it.messageRes, tone = Tone.Negative) }
         _ui.update { it.copy(game = repairFort(it.game, provinceId, useArtisan)) }
         say(R.string.toast_repaired, provinceName(provinceId), tone = Tone.Positive)
@@ -258,6 +377,7 @@ class GameViewModel(
 
     /** Folds the selected army into [intoId] (both must stand in the same province). */
     fun mergeSelectedInto(intoId: String) {
+        if (!_ui.value.canAct) return
         val armyId = _ui.value.selectedArmyId ?: return
         val merged = mergeArmies(game, armyId, intoId)
         if (merged === game) return
@@ -266,7 +386,7 @@ class GameViewModel(
     }
 
     fun playCard(cardId: String) {
-        if (game.hand.none { it.id == cardId }) return
+        if (!_ui.value.canAct || game.hand.none { it.id == cardId }) return
         _ui.update { ui ->
             val next = ui.copy(game = playCard(ui.game, cardId))
             // A movement card changes what the selected army can reach.
@@ -278,6 +398,9 @@ class GameViewModel(
     // ============= DIPLOMACY =============
 
     fun propose(target: FactionId, type: TreatyType) {
+        if (!_ui.value.canAct) return
+        // Another player's realm answers no AI proposals; only war is declared on it.
+        if (!type.isWar && session?.snapshot?.value?.game?.humans?.contains(target) == true) return say(R.string.mp_no_treaty_with_player, tone = Tone.Negative)
         val rel = game.relation(game.playerFactionId, target) ?: return
         if (!type.isWar && rel.lastProposalTurn == game.turn) return say(R.string.treaty_proposal_used, tone = Tone.Negative)
         val result = proposeTreaty(game, target, type, rng)
@@ -291,6 +414,7 @@ class GameViewModel(
     }
 
     fun breakTreaty(target: FactionId, type: TreatyType) {
+        if (!_ui.value.canAct) return
         _ui.update { it.copy(game = breakTreaty(it.game, target, type)) }
         say(R.string.treaty_broken, MessageArg.Res(type.nameRes), tone = Tone.Negative)
     }
@@ -303,7 +427,7 @@ class GameViewModel(
     /** Pays the tribute the player chose after watching the ad. */
     fun takeTribute(kind: TributeKind) {
         val before = game
-        if (!canTakeTribute(before)) return
+        if (!_ui.value.canAct || !canTakeTribute(before)) return
         _ui.update { it.copy(game = takeTribute(it.game, kind, rng)) }
         when (kind) {
             TributeKind.GOLD -> say(R.string.tribute_received_gold, MessageArg.Raw(tributeGold(before).toString()), tone = Tone.Positive)
@@ -315,7 +439,7 @@ class GameViewModel(
 
     /** Plays the lost turn again from its start, after the player watched the ad. */
     fun takeSecondChance() {
-        if (!canTakeSecondChance(game)) return
+        if (session != null || !canTakeSecondChance(game)) return
         val replay = takeSecondChance(turnStart)
         pendingDefeat = null
         _ui.value = GameUiState(game = replay)
@@ -332,8 +456,21 @@ class GameViewModel(
 
     fun endTurn() {
         val start = _ui.value
-        if (start.processingTurn || start.game.gameOver) return
+        if (!start.canAct || start.game.gameOver) return
         _ui.value = start.copy(processingTurn = true, selectedArmyId = null, moveTargets = emptySet(), attackTargets = emptySet())
+        session?.let { s ->
+            viewModelScope.launch {
+                try {
+                    // The next version arrives through followRoom.
+                    s.submitMyTurn(start.game)
+                } catch (e: MultiplayerException) {
+                    _ui.update { it.copy(processingTurn = false) }
+                    say(multiplayerErrorRes(e.reason), tone = Tone.Negative)
+                    s.refresh()
+                }
+            }
+            return
+        }
         viewModelScope.launch {
             val next = withContext(Dispatchers.Default) { endTurn(start.game, rng) }
             _ui.update { it.copy(game = next, processingTurn = false, lastBattle = null) }
@@ -359,11 +496,12 @@ class GameViewModel(
 
     companion object {
         private const val KEY_RESUME_SLOT = "resumeSlot"
+        private const val SKIP_CHECK_MS = 30_000L
 
         val Factory = viewModelFactory {
             initializer {
                 val container = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ArojenApp).container
-                GameViewModel(createSavedStateHandle(), container.saves, container.achievements, container.analytics, container.appScope)
+                GameViewModel(createSavedStateHandle(), container.saves, container.achievements, container.analytics, container.appScope, container.multiplayer)
             }
         }
     }

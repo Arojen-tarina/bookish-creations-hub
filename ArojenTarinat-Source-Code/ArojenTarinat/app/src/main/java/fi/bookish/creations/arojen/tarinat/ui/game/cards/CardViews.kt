@@ -56,6 +56,7 @@ import fi.bookish.creations.arojen.tarinat.game.model.CardType
 import fi.bookish.creations.arojen.tarinat.game.model.GameState
 import fi.bookish.creations.arojen.tarinat.game.model.Rarity
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.WordFitText
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
@@ -106,6 +107,7 @@ private fun EffectIcon(type: CardEffectType, tint: Color, modifier: Modifier) {
         CardEffectType.MOVEMENT_BONUS, CardEffectType.TERRAIN_IGNORE -> GameIcons.Boot
         CardEffectType.ARTISANS -> GameIcons.Hammer
         CardEffectType.DRAW_CARDS -> GameIcons.Cards
+        CardEffectType.MORALE -> GameIcons.Flag
         CardEffectType.RECRUIT_FREE -> GameIcons.People
         else -> GameIcons.Cards
     }
@@ -265,6 +267,7 @@ fun CardTray(
 @Composable
 fun CardDetailDialog(card: Card, text: CardText?, onPlay: () -> Unit, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
+        KeepFullScreen()
         GamePanel(Modifier.width(520.dp), alpha = 0.98f) {
             Row(Modifier.padding(16.dp)) {
                 CardFace(card, text, 170.dp)

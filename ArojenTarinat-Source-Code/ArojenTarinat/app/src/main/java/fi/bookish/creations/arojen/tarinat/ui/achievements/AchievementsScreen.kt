@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.data.AchievementRepository
-import fi.bookish.creations.arojen.tarinat.game.achievements.ACHIEVEMENTS
+import fi.bookish.creations.arojen.tarinat.game.achievements.ALL_ACHIEVEMENTS
 import fi.bookish.creations.arojen.tarinat.game.achievements.AchievementCategory
 import fi.bookish.creations.arojen.tarinat.game.achievements.Progression
 import fi.bookish.creations.arojen.tarinat.ui.components.BoardBackdrop
@@ -69,11 +69,11 @@ fun AchievementsScreen(repo: AchievementRepository, onBack: () -> Unit) {
     var filterName by rememberSaveable { mutableStateOf<String?>(null) }
     val filter = filterName?.let { AchievementCategory.valueOf(it) }
 
-    val points = ACHIEVEMENTS.filter { it.id in unlocked }.sumOf { it.points }
+    val points = ALL_ACHIEVEMENTS.filter { it.id in unlocked }.sumOf { it.points }
     val level = Progression.level(points)
     val levelStart = Progression.pointsForLevel(level)
     val levelEnd = Progression.pointsForLevel(level + 1)
-    val shown = ACHIEVEMENTS
+    val shown = ALL_ACHIEVEMENTS
         .filter { filter == null || it.category == filter }
         .sortedWith(compareBy({ CATEGORY_ORDER.indexOf(it.category) }, { it.id !in unlocked }))
 
@@ -89,7 +89,7 @@ fun AchievementsScreen(repo: AchievementRepository, onBack: () -> Unit) {
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.achv_title), style = MaterialTheme.typography.headlineMedium, color = GoldBright)
-                    Text(stringResource(R.string.achv_summary, unlocked.size, ACHIEVEMENTS.size), style = MaterialTheme.typography.bodySmall, color = TextMid)
+                    Text(stringResource(R.string.achv_summary, unlocked.size, ALL_ACHIEVEMENTS.size), style = MaterialTheme.typography.bodySmall, color = TextMid)
                 }
                 GamePanel(Modifier.widthIn(min = 260.dp, max = 340.dp)) {
                     Column(Modifier.padding(horizontal = 14.dp, vertical = 8.dp)) {
@@ -112,10 +112,10 @@ fun AchievementsScreen(repo: AchievementRepository, onBack: () -> Unit) {
             Spacer(Modifier.height(10.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
-                    CategoryChip(stringResource(R.string.achv_all), "${unlocked.size}/${ACHIEVEMENTS.size}", filter == null) { filterName = null }
+                    CategoryChip(stringResource(R.string.achv_all), "${unlocked.size}/${ALL_ACHIEVEMENTS.size}", filter == null) { filterName = null }
                 }
                 items(CATEGORY_ORDER) { cat ->
-                    val inCat = ACHIEVEMENTS.filter { it.category == cat }
+                    val inCat = ALL_ACHIEVEMENTS.filter { it.category == cat }
                     CategoryChip(stringResource(cat.labelRes), "${inCat.count { it.id in unlocked }}/${inCat.size}", filter == cat) { filterName = cat.name }
                 }
             }

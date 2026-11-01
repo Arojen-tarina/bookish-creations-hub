@@ -29,8 +29,7 @@ fun Province.defenseBreakdown(
 }
 
 /** Strength estimate the AI and the surrender rule use (not the battle formula). */
-internal fun Army.strength(): Double = cavalry * 3 + infantry * 1.5
-internal fun Army.attackPower(attackBonus: Int = 0): Int = cavalry * 2 + infantry + attackBonus
+internal fun Army.strength(): Double = cavalry * 3 + infantry * 1.5 + siege * 2
 
 /** Soldiers a fortified or garrisoned province fields on its own. */
 internal fun createProvinceGarrison(province: Province): Army? {
@@ -48,6 +47,9 @@ internal fun createProvinceGarrison(province: Province): Army? {
         provinceId = province.id,
         cavalry = 0,
         infantry = infantry,
+        siege = 0,
+        morale = min(95, 55 + province.fortLevel * 10 + province.developmentLevel * 2),
+        supply = 20,
         movementLeft = 0,
         leaderBonus = 0.0,
     )
@@ -83,13 +85,14 @@ internal fun resolveCombat(
     defenseBonus: Int = 0,
     rng: GameRandom,
 ): CombatOutcome {
-    val attackerPower = attacker.attackPower(attackBonus)
+    val attackerPower = attacker.cavalry * 2 + attacker.infantry + attacker.siege + attackBonus
     val defenderPower = defender.cavalry * 2 + defender.infantry
 
     val attackRoll = rng.d6()
     val defenseRoll = rng.d6()
 
-    val effectiveFortLevel = battlefield.fortLevel.toDouble()
+    // Siege units undermine walls, lowering the effective fortification level.
+    val effectiveFortLevel = max(0.0, battlefield.fortLevel - attacker.siege * 0.5)
     val attackerScore = (attackerPower + attackRoll).toDouble()
     val breakdown = battlefield.defenseBreakdown(0.0, effectiveFortLevel)
     val defenderScore = (defenderPower + defenseRoll).toDouble() + breakdown.terrain + breakdown.fortress

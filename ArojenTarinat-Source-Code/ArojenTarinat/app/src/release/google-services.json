@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "724101650976",
+    "project_id": "tales-of-the-steppe",
+    "storage_bucket": "tales-of-the-steppe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724101650976:android:320c6bdd5702b1dc9dba45",
+        "android_client_info": {
+          "package_name": "fi.bookish.creations.arojen.tarinat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUcnXw7bYwnuudhIcTI4NJyyfqE6THXRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

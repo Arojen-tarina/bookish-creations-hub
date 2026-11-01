@@ -216,4 +216,38 @@
     <string name="settings_title">Настройки</string>
     <string name="music_volume">Громкость</string>
     <string name="cards_hide_hand">Скрыть карты</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Никакой рекламы. Дань Шёлкового пути и второй шанс — без рекламы.</string>
+    <string name="premium_price">%1$s / мес.</string>
+    <string name="premium_subscribe">Оформить подписку</string>
+    <string name="premium_renews">Продлевается каждый месяц. Отменить можно в любой момент в Google Play.</string>
+    <string name="premium_active">Premium активен: рекламы нет. Спасибо за поддержку игры!</string>
+    <string name="premium_manage">Управлять подпиской</string>
+    <string name="premium_unavailable">Подписка сейчас недоступна.</string>
+    <string name="premium_pending">Платёж ожидает подтверждения. Premium начнёт действовать, как только Google Play его подтвердит.</string>
+    <string name="premium_failed">Покупка не прошла. Попробуйте ещё раз.</string>
+    <string name="premium_menu">Без рекламы: %1$s / мес.</string>
+    <string name="premium_skip_ads">Без рекламы с Premium: %1$s в месяц</string>
+    <string name="tribute_body_premium">Как игрок Premium вы получаете дань купцов Шёлкового пути без рекламы. Раз за ход.</string>
+    <string name="second_chance_body_premium">Переиграйте последний ход с самого начала. Один раз за кампанию.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Ежедневное испытание</string>
+    <string name="daily_goal_provinces">Удерживайте %1$d провинций к ходу %2$d</string>
+    <string name="daily_goal_treasury">Соберите %1$d золота к ходу %2$d</string>
+    <string name="daily_goal_buildings">Постройте %1$d зданий к ходу %2$d</string>
+    <string name="daily_play">Играть</string>
+    <string name="daily_done_today">Выполнено сегодня</string>
+    <string name="daily_streak">Серия: %1$d</string>
+    <string name="daily_chip_provinces">Испытание: %1$d / %2$d провинций · ход %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Испытание: %1$d / %2$d золота · ход %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Испытание: %1$d / %2$d зданий · ход %3$d / %4$d</string>
+    <string name="daily_chip_done">Ежедневное испытание выполнено</string>
+    <string name="daily_chip_failed">Ежедневное испытание провалено</string>
+    <string name="daily_completed_toast">Ежедневное испытание выполнено!</string>
+    <string name="daily_failed_toast">Лимит ходов истёк: ежедневное испытание провалено. Завтра будет новое.</string>
+    <string name="mastery_won">Победа на уровне: %1$s</string>
+    <string name="mastery_none">Побед пока нет</string>
 </resources>

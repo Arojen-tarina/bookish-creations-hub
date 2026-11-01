@@ -213,4 +213,14 @@
     <string name="rank_20">Строитель империи</string>
     <string name="rank_25">Великий хан</string>
     <string name="rank_30">Легенда</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Всадник дня</string>
+    <string name="achv_daily_challenge_first_desc">Выполнено ежедневное испытание.</string>
+    <string name="achv_daily_challenge_first_reward">Значок дня</string>
+    <string name="achv_daily_challenge_ten_name">Десять рассветов</string>
+    <string name="achv_daily_challenge_ten_desc">Выполнено 10 ежедневных испытаний.</string>
+    <string name="achv_daily_challenge_streak_5_name">Несломленное седло</string>
+    <string name="achv_daily_challenge_streak_5_desc">Ежедневное испытание выполнено 5 дней подряд.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Титул: Хранитель дней</string>
 </resources>

@@ -213,4 +213,14 @@
     <string name="rank_20">Bâtisseur d’empire</string>
     <string name="rank_25">Grand Khan</string>
     <string name="rank_30">Légende</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Cavalier du jour</string>
+    <string name="achv_daily_challenge_first_desc">Défi du jour réussi.</string>
+    <string name="achv_daily_challenge_first_reward">Insigne du jour</string>
+    <string name="achv_daily_challenge_ten_name">Dix aurores</string>
+    <string name="achv_daily_challenge_ten_desc">10 défis du jour réussis.</string>
+    <string name="achv_daily_challenge_streak_5_name">Selle inébranlable</string>
+    <string name="achv_daily_challenge_streak_5_desc">Défi du jour réussi 5 jours d’affilée.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Titre : Gardien des jours</string>
 </resources>

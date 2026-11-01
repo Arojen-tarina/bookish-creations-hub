@@ -212,4 +212,38 @@
     <string name="settings_title">Einstellungen</string>
     <string name="music_volume">Lautstärke</string>
     <string name="cards_hide_hand">Karten verbergen</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Überhaupt keine Werbung. Den Tribut der Seidenstraße und die zweite Chance gibt es ohne Werbung.</string>
+    <string name="premium_price">%1$s / Monat</string>
+    <string name="premium_subscribe">Abonnieren</string>
+    <string name="premium_renews">Verlängert sich monatlich. Jederzeit in Google Play kündbar.</string>
+    <string name="premium_active">Premium ist aktiv: keine Werbung. Danke, dass du das Spiel unterstützt!</string>
+    <string name="premium_manage">Abo verwalten</string>
+    <string name="premium_unavailable">Das Abo ist gerade nicht verfügbar.</string>
+    <string name="premium_pending">Zahlung ausstehend. Premium startet, sobald Google Play sie bestätigt.</string>
+    <string name="premium_failed">Der Kauf hat nicht geklappt. Bitte versuche es erneut.</string>
+    <string name="premium_menu">Keine Werbung: %1$s / Monat</string>
+    <string name="premium_skip_ads">Alle Werbung überspringen mit Premium: %1$s / Monat</string>
+    <string name="tribute_body_premium">Als Premium-Spieler erhältst du den Tribut der Händler der Seidenstraße ohne Werbung. Einmal pro Zug.</string>
+    <string name="second_chance_body_premium">Spiele deinen letzten Zug von Anfang an erneut. Einmal pro Feldzug.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Tägliche Herausforderung</string>
+    <string name="daily_goal_provinces">Halte %1$d Provinzen bis Zug %2$d</string>
+    <string name="daily_goal_treasury">Sammle %1$d Gold bis Zug %2$d</string>
+    <string name="daily_goal_buildings">Besitze %1$d Gebäude bis Zug %2$d</string>
+    <string name="daily_play">Spielen</string>
+    <string name="daily_done_today">Heute geschafft</string>
+    <string name="daily_streak">Serie: %1$d</string>
+    <string name="daily_chip_provinces">Täglich: %1$d / %2$d Provinzen · Zug %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Täglich: %1$d / %2$d Gold · Zug %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Täglich: %1$d / %2$d Gebäude · Zug %3$d / %4$d</string>
+    <string name="daily_chip_done">Tägliche Herausforderung geschafft</string>
+    <string name="daily_chip_failed">Tägliche Herausforderung verfehlt</string>
+    <string name="daily_completed_toast">Tägliche Herausforderung geschafft!</string>
+    <string name="daily_failed_toast">Das Zuglimit ist vorbei: Die tägliche Herausforderung ist verfehlt. Morgen gibt es eine neue.</string>
+    <string name="mastery_won">Gewonnen auf %1$s</string>
+    <string name="mastery_none">Noch nicht gewonnen</string>
 </resources>

@@ -210,4 +210,38 @@
     <string name="settings_title">Pengaturan</string>
     <string name="music_volume">Volume</string>
     <string name="cards_hide_hand">Sembunyikan kartu</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Tanpa iklan sama sekali. Upeti Jalur Sutra dan kesempatan kedua didapat tanpa iklan.</string>
+    <string name="premium_price">%1$s / bulan</string>
+    <string name="premium_subscribe">Berlangganan</string>
+    <string name="premium_renews">Diperpanjang setiap bulan. Batalkan kapan saja di Google Play.</string>
+    <string name="premium_active">Premium aktif: tanpa iklan. Terima kasih telah mendukung game ini!</string>
+    <string name="premium_manage">Kelola langganan</string>
+    <string name="premium_unavailable">Langganan sedang tidak tersedia.</string>
+    <string name="premium_pending">Pembayaran tertunda. Premium dimulai setelah Google Play mengonfirmasinya.</string>
+    <string name="premium_failed">Pembelian tidak berhasil. Silakan coba lagi.</string>
+    <string name="premium_menu">Tanpa iklan: %1$s / bulan</string>
+    <string name="premium_skip_ads">Tanpa iklan dengan Premium: %1$s / bulan</string>
+    <string name="tribute_body_premium">Sebagai pemain Premium, kamu menerima upeti para pedagang Jalur Sutra tanpa iklan. Sekali per giliran.</string>
+    <string name="second_chance_body_premium">Mainkan ulang giliran terakhirmu dari awal. Sekali per kampanye.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Tantangan harian</string>
+    <string name="daily_goal_provinces">Kuasai %1$d provinsi sebelum giliran %2$d</string>
+    <string name="daily_goal_treasury">Kumpulkan %1$d emas sebelum giliran %2$d</string>
+    <string name="daily_goal_buildings">Miliki %1$d bangunan sebelum giliran %2$d</string>
+    <string name="daily_play">Main</string>
+    <string name="daily_done_today">Selesai hari ini</string>
+    <string name="daily_streak">Beruntun: %1$d</string>
+    <string name="daily_chip_provinces">Harian: %1$d / %2$d provinsi · giliran %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Harian: %1$d / %2$d emas · giliran %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Harian: %1$d / %2$d bangunan · giliran %3$d / %4$d</string>
+    <string name="daily_chip_done">Tantangan harian selesai</string>
+    <string name="daily_chip_failed">Tantangan harian gagal</string>
+    <string name="daily_completed_toast">Tantangan harian selesai!</string>
+    <string name="daily_failed_toast">Batas giliran sudah lewat: tantangan harian gagal. Besok ada tantangan baru.</string>
+    <string name="mastery_won">Menang di %1$s</string>
+    <string name="mastery_none">Belum pernah menang</string>
 </resources>

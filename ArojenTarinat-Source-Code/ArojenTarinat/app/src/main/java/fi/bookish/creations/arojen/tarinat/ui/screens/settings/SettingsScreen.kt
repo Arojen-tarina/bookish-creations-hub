@@ -47,10 +47,13 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.bookish.creations.arojen.tarinat.BuildConfig
 import fi.bookish.creations.arojen.tarinat.R
+import fi.bookish.creations.arojen.tarinat.account.Account
 import fi.bookish.creations.arojen.tarinat.ads.Ads
 import fi.bookish.creations.arojen.tarinat.analytics.Analytics
 import fi.bookish.creations.arojen.tarinat.analytics.Events
 import fi.bookish.creations.arojen.tarinat.audio.GameMusic
+import fi.bookish.creations.arojen.tarinat.billing.Premium
+import fi.bookish.creations.arojen.tarinat.billing.PremiumNotice
 import fi.bookish.creations.arojen.tarinat.data.AnalyticsConsent
 import fi.bookish.creations.arojen.tarinat.data.SettingsRepository
 import fi.bookish.creations.arojen.tarinat.ui.components.BoardBackdrop
@@ -66,6 +69,7 @@ import fi.bookish.creations.arojen.tarinat.ui.theme.GoldBright
 import fi.bookish.creations.arojen.tarinat.ui.theme.Ink500
 import fi.bookish.creations.arojen.tarinat.ui.theme.Ink700
 import fi.bookish.creations.arojen.tarinat.ui.theme.Ink900
+import fi.bookish.creations.arojen.tarinat.ui.theme.Rust
 import fi.bookish.creations.arojen.tarinat.ui.theme.TextHigh
 import fi.bookish.creations.arojen.tarinat.ui.theme.TextLow
 import fi.bookish.creations.arojen.tarinat.ui.theme.TextMid
@@ -80,7 +84,7 @@ private val LANGUAGES = listOf(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SettingsScreen(settingsRepo: SettingsRepository, music: GameMusic, ads: Ads, analytics: Analytics, onBack: () -> Unit) {
+fun SettingsScreen(settingsRepo: SettingsRepository, music: GameMusic, ads: Ads, premium: Premium, account: Account?, analytics: Analytics, onBack: () -> Unit) {
     val settings by settingsRepo.settings.collectAsStateWithLifecycle()
     val adPrivacyRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
@@ -122,6 +126,13 @@ fun SettingsScreen(settingsRepo: SettingsRepository, music: GameMusic, ads: Ads,
                 }
                 GamePanel(Modifier.weight(1f).fillMaxHeight()) {
                     Column(Modifier.verticalScroll(rememberScrollState()).padding(14.dp)) {
+                        if (account != null) {
+                            AccountSection(account)
+                            Spacer(Modifier.height(16.dp))
+                        }
+                        PremiumSection(premium)
+
+                        Spacer(Modifier.height(16.dp))
                         SectionTitle(stringResource(R.string.settings_sound), icon = GameIcons.Music)
                         // Local slider state so dragging is smooth and heard live; persisted when the finger lifts.
                         var volume by remember(settings.musicVolume) { mutableFloatStateOf(settings.musicVolume) }
@@ -177,6 +188,54 @@ fun SettingsScreen(settingsRepo: SettingsRepository, music: GameMusic, ads: Ads,
                 }
             }
         }
+    }
+}
+
+/** The monthly ad-free subscription: its price and subscribe button, or a way to manage it once active. */
+@Composable
+private fun PremiumSection(premium: Premium) {
+    val active by premium.active.collectAsStateWithLifecycle()
+    val offer by premium.offer.collectAsStateWithLifecycle()
+    val notice by premium.notice.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+    SectionTitle(stringResource(R.string.premium_title), icon = GameIcons.Crown)
+    if (active) {
+        Text(stringResource(R.string.premium_active), style = MaterialTheme.typography.bodyMedium, color = GoldBright)
+        if (activity != null) {
+            GameButton(
+                stringResource(R.string.premium_manage),
+                { premium.openManagement(activity) },
+                Modifier.fillMaxWidth().padding(top = 8.dp),
+                GameButtonStyle.Secondary,
+                compact = true,
+            )
+        }
+        return
+    }
+    Text(stringResource(R.string.premium_desc), style = MaterialTheme.typography.bodySmall, color = TextMid)
+    val current = offer
+    if (current == null || activity == null) {
+        Text(stringResource(R.string.premium_unavailable), style = MaterialTheme.typography.labelSmall, color = TextLow, modifier = Modifier.padding(top = 6.dp))
+        return
+    }
+    Text(
+        // Only the price keeps left-to-right order; the words follow the language.
+        stringResource(R.string.premium_price, ltr(current.price)),
+        style = MaterialTheme.typography.titleMedium,
+        color = GoldBright,
+        modifier = Modifier.padding(top = 8.dp),
+    )
+    GameButton(
+        stringResource(R.string.premium_subscribe),
+        { premium.subscribe(activity) },
+        Modifier.fillMaxWidth().padding(top = 6.dp),
+        compact = true,
+    )
+    Text(stringResource(R.string.premium_renews), style = MaterialTheme.typography.labelSmall, color = TextLow, modifier = Modifier.padding(top = 4.dp))
+    when (notice) {
+        PremiumNotice.PENDING -> Text(stringResource(R.string.premium_pending), style = MaterialTheme.typography.labelMedium, color = TextHigh, modifier = Modifier.padding(top = 6.dp))
+        PremiumNotice.FAILED -> Text(stringResource(R.string.premium_failed), style = MaterialTheme.typography.labelMedium, color = Rust, modifier = Modifier.padding(top = 6.dp))
+        null -> Unit
     }
 }
 

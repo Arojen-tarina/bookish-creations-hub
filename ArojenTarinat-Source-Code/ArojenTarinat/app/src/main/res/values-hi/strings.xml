@@ -212,4 +212,38 @@
     <string name="settings_title">सेटिंग्स</string>
     <string name="music_volume">आवाज़</string>
     <string name="cards_hide_hand">कार्ड छिपाएँ</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">कोई विज्ञापन नहीं। रेशम मार्ग का कर और दूसरा मौका बिना विज्ञापन के मिलते हैं।</string>
+    <string name="premium_price">%1$s / महीना</string>
+    <string name="premium_subscribe">सदस्यता लें</string>
+    <string name="premium_renews">हर महीने नवीनीकृत होती है। Google Play में कभी भी रद्द करें।</string>
+    <string name="premium_active">Premium सक्रिय है: कोई विज्ञापन नहीं। गेम का समर्थन करने के लिए धन्यवाद!</string>
+    <string name="premium_manage">सदस्यता प्रबंधित करें</string>
+    <string name="premium_unavailable">सदस्यता अभी उपलब्ध नहीं है।</string>
+    <string name="premium_pending">भुगतान लंबित है। Google Play की पुष्टि होते ही Premium शुरू हो जाएगा।</string>
+    <string name="premium_failed">खरीदारी पूरी नहीं हुई। कृपया फिर से कोशिश करें।</string>
+    <string name="premium_menu">बिना विज्ञापन: %1$s / महीना</string>
+    <string name="premium_skip_ads">Premium के साथ कोई विज्ञापन नहीं: %1$s / माह</string>
+    <string name="tribute_body_premium">Premium खिलाड़ी के रूप में आपको रेशम मार्ग के व्यापारियों का कर बिना विज्ञापन के मिलता है। हर बारी में एक बार।</string>
+    <string name="second_chance_body_premium">अपनी पिछली बारी शुरू से फिर खेलें। हर अभियान में एक बार।</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">आज की चुनौती</string>
+    <string name="daily_goal_provinces">बारी %2$d तक %1$d प्रांत अपने पास रखें</string>
+    <string name="daily_goal_treasury">बारी %2$d तक %1$d सोना जमा करें</string>
+    <string name="daily_goal_buildings">बारी %2$d तक %1$d इमारतें बनाएँ</string>
+    <string name="daily_play">खेलें</string>
+    <string name="daily_done_today">आज पूरी हुई</string>
+    <string name="daily_streak">सिलसिला: %1$d</string>
+    <string name="daily_chip_provinces">चुनौती: %1$d / %2$d प्रांत · बारी %3$d / %4$d</string>
+    <string name="daily_chip_treasury">चुनौती: %1$d / %2$d सोना · बारी %3$d / %4$d</string>
+    <string name="daily_chip_buildings">चुनौती: %1$d / %2$d इमारतें · बारी %3$d / %4$d</string>
+    <string name="daily_chip_done">आज की चुनौती पूरी</string>
+    <string name="daily_chip_failed">आज की चुनौती विफल</string>
+    <string name="daily_completed_toast">आज की चुनौती पूरी हुई!</string>
+    <string name="daily_failed_toast">बारियों की सीमा निकल गई: आज की चुनौती हाथ से गई। नई चुनौती कल आएगी।</string>
+    <string name="mastery_won">%1$s पर जीता</string>
+    <string name="mastery_none">अभी कोई जीत नहीं</string>
 </resources>

@@ -46,6 +46,7 @@ import fi.bookish.creations.arojen.tarinat.data.SaveMeta
 import fi.bookish.creations.arojen.tarinat.data.SaveRepository
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.game.FactionStyle
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.HudIconButton
@@ -128,6 +129,7 @@ fun SaveSlotCard(
 fun SaveGameDialog(slots: Map<Int, SaveMeta>, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     var confirmSlot by remember { mutableStateOf<Int?>(null) }
     Dialog(onDismissRequest = onDismiss) {
+        KeepFullScreen()
         GamePanel(Modifier.widthIn(max = 640.dp), alpha = 0.98f) {
             Row(Modifier.padding(start = 16.dp, end = 10.dp, top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.save_choose_slot), style = MaterialTheme.typography.headlineSmall, color = GoldBright, modifier = Modifier.weight(1f))

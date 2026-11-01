@@ -213,4 +213,14 @@
     <string name="rank_20">سلطنت ساز</string>
     <string name="rank_25">خانِ اعظم</string>
     <string name="rank_30">لیجنڈ</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">آج کا سوار</string>
+    <string name="achv_daily_challenge_first_desc">آج کا چیلنج مکمل کیا۔</string>
+    <string name="achv_daily_challenge_first_reward">روزانہ بیج</string>
+    <string name="achv_daily_challenge_ten_name">دس سویرے</string>
+    <string name="achv_daily_challenge_ten_desc">10 روزانہ چیلنج مکمل کیے۔</string>
+    <string name="achv_daily_challenge_streak_5_name">اٹوٹ زین</string>
+    <string name="achv_daily_challenge_streak_5_desc">لگاتار 5 دن روزانہ چیلنج مکمل کیا۔</string>
+    <string name="achv_daily_challenge_streak_5_reward">لقب: دنوں کا نگہبان</string>
 </resources>

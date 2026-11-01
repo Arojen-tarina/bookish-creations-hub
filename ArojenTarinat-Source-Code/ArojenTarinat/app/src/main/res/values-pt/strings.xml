@@ -214,4 +214,38 @@
     <string name="settings_title">Configurações</string>
     <string name="music_volume">Volume</string>
     <string name="cards_hide_hand">Ocultar cartas</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Nenhum anúncio. O tributo da Rota da Seda e a segunda chance vêm sem anúncio.</string>
+    <string name="premium_price">%1$s / mês</string>
+    <string name="premium_subscribe">Assinar</string>
+    <string name="premium_renews">Renova todo mês. Cancele quando quiser no Google Play.</string>
+    <string name="premium_active">Premium ativo: sem anúncios. Obrigado por apoiar o jogo!</string>
+    <string name="premium_manage">Gerenciar assinatura</string>
+    <string name="premium_unavailable">A assinatura não está disponível no momento.</string>
+    <string name="premium_pending">Pagamento pendente. O Premium começa assim que o Google Play confirmar.</string>
+    <string name="premium_failed">A compra não foi concluída. Tente novamente.</string>
+    <string name="premium_menu">Sem anúncios: %1$s / mês</string>
+    <string name="premium_skip_ads">Sem anúncios com o Premium: %1$s / mês</string>
+    <string name="tribute_body_premium">Como jogador Premium, você recebe o tributo dos mercadores da Rota da Seda sem anúncio. Uma vez por turno.</string>
+    <string name="second_chance_body_premium">Jogue de novo seu último turno desde o início. Uma vez por campanha.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Desafio diário</string>
+    <string name="daily_goal_provinces">Controle %1$d províncias até o turno %2$d</string>
+    <string name="daily_goal_treasury">Junte %1$d de ouro até o turno %2$d</string>
+    <string name="daily_goal_buildings">Tenha %1$d construções até o turno %2$d</string>
+    <string name="daily_play">Jogar</string>
+    <string name="daily_done_today">Concluído hoje</string>
+    <string name="daily_streak">Sequência: %1$d</string>
+    <string name="daily_chip_provinces">Diário: %1$d / %2$d províncias · turno %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Diário: %1$d / %2$d de ouro · turno %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Diário: %1$d / %2$d construções · turno %3$d / %4$d</string>
+    <string name="daily_chip_done">Desafio diário concluído</string>
+    <string name="daily_chip_failed">Desafio diário perdido</string>
+    <string name="daily_completed_toast">Desafio diário concluído!</string>
+    <string name="daily_failed_toast">O limite de turnos passou: o desafio diário foi perdido. Amanhã há um novo.</string>
+    <string name="mastery_won">Vencido no %1$s</string>
+    <string name="mastery_none">Ainda sem vitória</string>
 </resources>

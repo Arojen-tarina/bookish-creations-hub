@@ -32,6 +32,8 @@ data class SaveMeta(
      * default (left out of the file while it is 1) means the first format.
      */
     val version: Int = 1,
+    /** yyyy-MM-dd of the daily challenge this campaign plays, if it is one. */
+    val dailyDate: String? = null,
 )
 
 @Serializable
@@ -80,6 +82,7 @@ class SaveRepository(
                 provinces = state.provinces.count { it.ownerId == state.playerFactionId },
                 difficulty = state.difficulty,
                 version = FORMAT_VERSION,
+                dailyDate = state.challenge?.date,
             )
             val ok = runCatching {
                 dir.mkdirs()
@@ -132,6 +135,35 @@ class SaveRepository(
         val pending = handoff
         handoff = null
         return if (pending != null && pending.first == slot) pending.second else loadNow(slot)
+    }
+
+    /** Every readable save as its file's text (slot -> JSON), for the player's cloud copy. */
+    suspend fun exportAll(): Map<Int, String> = withContext(io) {
+        mutex.withLock {
+            (0..SLOTS).mapNotNull { slot -> runCatching { gameFile(slot).readText() }.getOrNull()?.let { slot to it } }.toMap()
+        }
+    }
+
+    /**
+     * Replaces this phone's saves with [files] (slot -> save file text) from the
+     * cloud copy. Files this version cannot read are skipped; slots not in [files] are cleared.
+     */
+    suspend fun importAll(files: Map<Int, String>) = withContext(io) {
+        mutex.withLock {
+            dir.mkdirs()
+            for (slot in 0..SLOTS) {
+                val text = files[slot]
+                val save = text?.let { runCatching { json.decodeFromString(SaveFile.serializer(), it) }.getOrNull() }
+                if (save == null || save.meta.version > FORMAT_VERSION || !save.state.isPlayable()) {
+                    gameFile(slot).delete()
+                    metaFile(slot).delete()
+                    continue
+                }
+                writeAtomically(gameFile(slot), text)
+                writeAtomically(metaFile(slot), json.encodeToString(SaveMeta.serializer(), save.meta))
+            }
+            _slots.value = (0..SLOTS).mapNotNull { slot -> readMeta(slot)?.let { slot to it } }.toMap()
+        }
     }
 
     /** Metadata for [slot]; null without a game file, or for a save written by a newer version of the app. */

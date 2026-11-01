@@ -213,4 +213,14 @@
     <string name="rank_20">Empire Builder</string>
     <string name="rank_25">Great Khan</string>
     <string name="rank_30">Legend</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Rider of the Day</string>
+    <string name="achv_daily_challenge_first_desc">Completed a daily challenge.</string>
+    <string name="achv_daily_challenge_first_reward">Daily Badge</string>
+    <string name="achv_daily_challenge_ten_name">Ten Dawns</string>
+    <string name="achv_daily_challenge_ten_desc">Completed 10 daily challenges.</string>
+    <string name="achv_daily_challenge_streak_5_name">Unbroken Saddle</string>
+    <string name="achv_daily_challenge_streak_5_desc">Completed daily challenges on 5 days in a row.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Title: Keeper of Days</string>
 </resources>

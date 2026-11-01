@@ -3,7 +3,7 @@
 The game rewritten in Kotlin and Jetpack Compose. It replaces the Capacitor (WebView) build on the same Play listing.
 
 - Package: `fi.bookish.creations.arojen.tarinat`
-- Version: versionCode 30 (the live WebView release is 19), versionName 2.0.0
+- Version: versionCode 40, versionName 2.1.4 (the live WebView release is 19; 30 was the first native build)
 - Supported: Android 7.0 (API 24) and newer; target and compile SDK 37
 
 ## 1. Open the project
@@ -54,12 +54,47 @@ R8 (code shrinking) runs on release builds and needs a few minutes. Its extra ke
 
 Never tap your own real ads, because AdMob counts that as invalid traffic. Test with `debug` or `preview`.
 
+A debug build started with `adb shell am start -n fi.bookish.creations.arojen.tarinat.dev/fi.bookish.creations.arojen.tarinat.MainActivity --ez premium true` acts as if Premium were active (`false` turns it off). Debug builds have their own app id, so Play sells them nothing; this is how to check the ad-free game there.
+
 ## 5. Play Console checklist for this update
 
 - **Ads:** the app contains ads (AdMob: banner, interstitial, rewarded interstitial, app open).
 - **Advertising ID:** declare that the app uses it. The Google Mobile Ads SDK adds the `AD_ID` permission.
 - **Data safety:** review the form against the Google Mobile Ads SDK's data disclosure and against the anonymous gameplay analytics. Analytics are sent to your Supabase only after the player agrees in the first-run dialog, use a random ID, and can be turned off in Settings.
 - **Consent:** the Google UMP consent form appears where the law requires it (EEA, UK). Configure the messages in AdMob under *Privacy & messaging*.
+- **Premium subscription (no ads):** create it under *Monetize with Play > Products > Subscriptions*. The ids must match the code (`billing/Premium.kt`):
+  - Product id: `premium`, name "Arojen Premium".
+  - Base plan id: `monthly`, auto-renewing, billing period 1 month. Suggested price: EUR 2.49, with Play's converted prices for other countries. You can change the price in Play Console at any time without a new app version.
+  - Optional: a free trial or an intro offer on the `monthly` base plan. The app picks it up by itself for players who are eligible.
+  - While it is active, the app shows no adverts of any kind, and the Silk Road tribute and the second chance are given without an advert. The offer appears in Settings and as a button on the main menu, once Play returns the product.
+  - To test buying without being charged, add your Google account under *Settings > License testing* and install the app from a testing track (internal testing is enough), so Play delivers it exactly as players get it.
+- **Accounts (version 2.1):** players can sign in with Google or with email and password, and can delete their account in the app (Settings > Account > Delete account). In *App content > Data safety* declare: email address (account management), user IDs, app activity (game progress, kept as a cloud copy), crash logs and diagnostics (Firebase Crashlytics), and audio (voice messages the player chooses to send in multiplayer chat). For the account deletion question, give a web page or email address where players can also ask for deletion.
+- **User-generated content:** multiplayer chat (text and 30-second voice messages) has Report and Mute on every message. Reports arrive in the `mp_reports` table in Supabase; review them there.
+- **Microphone and notifications:** the app asks for the microphone only when a player records a voice message, and for notifications (Android 13+) once on the main menu.
+
+## 5a. Online services (Supabase, Firebase, links)
+
+**Supabase** (project `qqzyibuwgdcjdjprtwky`). Everything below is already set up; keep it if you ever move the project.
+
+- SQL, run in this order from `supabase/sql/`:
+  1. `001_premium_subscriptions.sql`
+  2. `002_multiplayer.sql`
+  3. `003_analytics_new_events.sql` (must be in place before this version is live, or the database refuses its analytics)
+  4. `004_public_rooms.sql`
+  5. `005_accounts_cloud_save.sql`
+  6. `006_one_lobby_per_player.sql`
+- Authentication: anonymous sign-ins ON, Google provider ON (Web client `724101650976-ipc7…`), email ON, "Allow manual linking" ON.
+- Edge Functions in `supabase/functions/`:
+  - `verify-premium` checks subscriptions with Google Play. It needs the secret `GOOGLE_SERVICE_ACCOUNT_JSON`: the JSON key of a Google Cloud service account that Play Console lists under *Users and permissions* with "View financial data" and "Manage orders and subscriptions". Until that secret is set, the app trusts Play on the phone.
+  - `play-notifications` receives Play's real-time developer notifications. It is deployed with `--no-verify-jwt`. Set the secret `PLAY_RTDN_SECRET`, then point a Pub/Sub push subscription at `https://qqzyibuwgdcjdjprtwky.supabase.co/functions/v1/play-notifications?secret=<that secret>`.
+  - Deploy: `npx supabase functions deploy verify-premium --project-ref qqzyibuwgdcjdjprtwky --use-api`, and the same command with `--no-verify-jwt` for `play-notifications`.
+- Housekeeping: `select public.mp_cleanup()` removes rooms untouched for 14 days; schedule it with pg_cron. Voice files live in the `mp-audio` bucket and are removed in *Storage*.
+
+**Firebase** (project `tales-of-the-steppe`): `app/src/release/google-services.json` covers the Play package only, so Crashlytics, Google Analytics, push notifications (Cloud Messaging, topic `all`) and In-App Messaging run in the release build; debug and preview builds run without Firebase. Google Analytics and in-app message targeting follow the player's usage-analytics choice. Send campaigns from the Firebase console.
+
+**Invite links**: `cloudflare/worker.js` runs at `https://dl.arojentarinat.com/` (and still at `https://arojentarinat.juusohonkonen2004.workers.dev/`, so invites from version 2.1.0 keep working). It serves `/.well-known/assetlinks.json` and the `/join/ABC123` invite page, and sends everything else to the website `https://www.arojentarinat.com`. With the game installed, an invite link opens the game straight into that room. If the app is ever signed with another key, add that key's SHA-256 to `ASSET_LINKS` in the worker.
+
+**Google sign-in** needs an Android OAuth client in Google Cloud (project `tales-of-the-steppe`) for each package and signing key. For `fi.bookish.creations.arojen.tarinat`, add both the Play app signing SHA-1 and the upload key SHA-1. The Web client id is set in `gradle.properties` (`arojen.google.webClientId`).
 
 ## 6. What carries over from the WebView version
 

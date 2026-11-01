@@ -1,9 +1,13 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -17,10 +21,10 @@ android {
         applicationId = "fi.bookish.creations.arojen.tarinat"
         minSdk = 24
         targetSdk = 37
-        // The live WebView (Capacitor) release is versionCode 19. 30 leaves room for any build
+        // The live WebView (Capacitor) release is versionCode 19; 30 was the first native build, 36 adds online play.
         // the owner may still ship from the old project; every later release adds 1.
-        versionCode = 30
-        versionName = "2.0.0"
+        versionCode = 40
+        versionName = "2.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["appLabel"] = "@string/app_name"
@@ -30,6 +34,8 @@ android {
         val supabaseKey = providers.gradleProperty("arojen.supabase.key").getOrElse("")
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
+        val googleWebClientId = providers.gradleProperty("arojen.google.webClientId").getOrElse("")
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         // Google's sample ad units instead of the real ones (see ads/AdUnits.kt).
         buildConfigField("Boolean", "TEST_ADS", "false")
     }
@@ -79,6 +85,8 @@ android {
             buildConfigField("Boolean", "TEST_ADS", "true")
             signingConfig = signingConfigs.findByName("preview")
             matchingFallbacks += "release"
+            // No Firebase app for the .preview id, so there is nowhere to send its R8 mapping.
+            (this as ExtensionAware).extensions.configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
         }
     }
     compileOptions {
@@ -113,6 +121,21 @@ dependencies {
     implementation(libs.user.messaging.platform)
     implementation(libs.play.app.update)
     implementation(libs.play.review)
+    implementation(libs.play.billing)
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.realtime)
+    implementation(libs.supabase.storage)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services)
+    implementation(libs.googleid)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.inappmessaging)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
@@ -125,4 +148,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+}
+
+// google-services.json (src/release) covers the Play package only: debug and preview builds run without Firebase.
+googleServices {
+    missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN
 }

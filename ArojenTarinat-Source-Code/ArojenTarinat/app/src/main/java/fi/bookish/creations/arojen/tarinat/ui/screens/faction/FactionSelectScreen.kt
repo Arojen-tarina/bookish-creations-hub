@@ -49,12 +49,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import fi.bookish.creations.arojen.tarinat.R
+import fi.bookish.creations.arojen.tarinat.game.achievements.StatsTracker
 import fi.bookish.creations.arojen.tarinat.game.data.ACTIVE_FACTIONS
 import fi.bookish.creations.arojen.tarinat.game.data.FACTION_DATA_1206
 import fi.bookish.creations.arojen.tarinat.game.model.Difficulty
@@ -62,6 +65,7 @@ import fi.bookish.creations.arojen.tarinat.game.model.FactionId
 import fi.bookish.creations.arojen.tarinat.ui.components.BoardBackdrop
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButtonStyle
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.RoundIconButton
 import fi.bookish.creations.arojen.tarinat.ui.components.WordFitText
 import fi.bookish.creations.arojen.tarinat.ui.game.FactionStyle
@@ -131,7 +135,13 @@ private val Difficulty.color: Color
  * the new campaign takes its place.
  */
 @Composable
-fun FactionSelectScreen(replaces: String?, onStart: (FactionId, Difficulty) -> Unit, onBack: () -> Unit) {
+fun FactionSelectScreen(
+    replaces: String?,
+    onStart: (FactionId, Difficulty) -> Unit,
+    onBack: () -> Unit,
+    /** "faction:difficulty" keys the player has won with (PlayerStats.victoriesByFactionDifficulty). */
+    mastery: Set<String> = emptySet(),
+) {
     var selectedName by rememberSaveable { mutableStateOf(FactionId.MONGOL.name) }
     var difficultyName by rememberSaveable { mutableStateOf(Difficulty.NORMAL.name) }
     var showGuide by rememberSaveable { mutableStateOf(false) }
@@ -161,7 +171,7 @@ fun FactionSelectScreen(replaces: String?, onStart: (FactionId, Difficulty) -> U
                     for (row in ACTIVE_FACTIONS.chunked(2)) {
                         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             for (id in row) {
-                                RealmTile(REALMS.getValue(id), id == selected, Modifier.weight(1f).fillMaxHeight()) { selectedName = id.name }
+                                RealmTile(REALMS.getValue(id), id == selected, mastery, Modifier.weight(1f).fillMaxHeight()) { selectedName = id.name }
                             }
                         }
                     }
@@ -180,20 +190,27 @@ fun FactionSelectScreen(replaces: String?, onStart: (FactionId, Difficulty) -> U
     if (showGuide) HowToPlayDialog { showGuide = false }
 
     if (confirmReplace && replaces != null) {
-        Dialog(onDismissRequest = { confirmReplace = false }) {
-            GamePanel(Modifier.widthIn(max = 420.dp), alpha = 0.98f) {
-                Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(stringResource(R.string.new_game_replace_title), style = MaterialTheme.typography.headlineSmall, color = GoldBright, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(8.dp))
-                    Text(stringResource(R.string.new_game_replace_body, replaces), style = MaterialTheme.typography.bodyMedium, color = TextMid, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(16.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        GameButton(stringResource(R.string.save_cancel), { confirmReplace = false }, style = GameButtonStyle.Secondary)
-                        GameButton(stringResource(R.string.new_game_replace_yes), {
-                            confirmReplace = false
-                            onStart(selected, difficulty)
-                        })
-                    }
+        ReplaceCampaignDialog(replaces, onConfirm = {
+            confirmReplace = false
+            onStart(selected, difficulty)
+        }, onDismiss = { confirmReplace = false })
+    }
+}
+
+/** Asks before a new campaign takes the place of the running one ([replaces] describes it). */
+@Composable
+fun ReplaceCampaignDialog(replaces: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        KeepFullScreen()
+        GamePanel(Modifier.widthIn(max = 420.dp), alpha = 0.98f) {
+            Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(stringResource(R.string.new_game_replace_title), style = MaterialTheme.typography.headlineSmall, color = GoldBright, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.new_game_replace_body, replaces), style = MaterialTheme.typography.bodyMedium, color = TextMid, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    GameButton(stringResource(R.string.save_cancel), onDismiss, style = GameButtonStyle.Secondary)
+                    GameButton(stringResource(R.string.new_game_replace_yes), onConfirm)
                 }
             }
         }
@@ -219,7 +236,7 @@ private fun GuideButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun RealmTile(realm: RealmCard, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun RealmTile(realm: RealmCard, selected: Boolean, mastery: Set<String>, modifier: Modifier, onClick: () -> Unit) {
     val color = FactionStyle.color(realm.id)
     val shape = RoundedCornerShape(14.dp)
     val lift by animateFloatAsState(if (selected) 1f else 0f, label = "lift")
@@ -253,8 +270,26 @@ private fun RealmTile(realm: RealmCard, selected: Boolean, modifier: Modifier, o
             Spacer(Modifier.height(6.dp))
             WordFitText(stringResource(realm.id.nameRes), MaterialTheme.typography.titleMedium, TextHigh)
             realm.id.rulerRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = TextMid, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            Spacer(Modifier.height(4.dp))
+            MasteryStars(realm.id, mastery)
         }
         Box(Modifier.align(Alignment.BottomStart).padding(12.dp)) { ChallengeBadge(realm.challenge) }
+    }
+}
+
+/** One star per difficulty, lit once the player has won with this realm on it. */
+@Composable
+private fun MasteryStars(faction: FactionId, mastery: Set<String>) {
+    val won = Difficulty.entries.filter { StatsTracker.masteryKey(faction, it) in mastery }
+    val description = if (won.isEmpty()) {
+        stringResource(R.string.mastery_none)
+    } else {
+        stringResource(R.string.mastery_won, won.map { stringResource(it.labelRes) }.joinToString(", "))
+    }
+    Row(Modifier.semantics(mergeDescendants = true) { contentDescription = description }, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        for (d in Difficulty.entries) {
+            Icon(GameIcons.Star, null, tint = if (d in won) d.color else TextLow.copy(alpha = 0.45f), modifier = Modifier.size(14.dp))
+        }
     }
 }
 

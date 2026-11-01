@@ -214,4 +214,38 @@
     <string name="settings_title">Paramètres</string>
     <string name="music_volume">Volume</string>
     <string name="cards_hide_hand">Masquer les cartes</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">Aucune publicité. Le tribut de la Route de la soie et la seconde chance s’obtiennent sans publicité.</string>
+    <string name="premium_price">%1$s / mois</string>
+    <string name="premium_subscribe">S’abonner</string>
+    <string name="premium_renews">Renouvelé chaque mois. Résiliable à tout moment dans Google Play.</string>
+    <string name="premium_active">Premium est actif : aucune publicité. Merci de soutenir le jeu !</string>
+    <string name="premium_manage">Gérer l’abonnement</string>
+    <string name="premium_unavailable">L’abonnement n’est pas disponible pour le moment.</string>
+    <string name="premium_pending">Paiement en attente. Premium démarre dès que Google Play le confirme.</string>
+    <string name="premium_failed">L’achat n’a pas abouti. Veuillez réessayer.</string>
+    <string name="premium_menu">Sans publicité : %1$s / mois</string>
+    <string name="premium_skip_ads">Plus aucune pub avec Premium : %1$s / mois</string>
+    <string name="tribute_body_premium">En tant que joueur Premium, vous recevez le tribut des marchands de la Route de la soie sans publicité. Une fois par tour.</string>
+    <string name="second_chance_body_premium">Rejouez votre dernier tour depuis le début. Une fois par campagne.</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">Défi du jour</string>
+    <string name="daily_goal_provinces">Tenir %1$d provinces avant le tour %2$d</string>
+    <string name="daily_goal_treasury">Amasser %1$d or avant le tour %2$d</string>
+    <string name="daily_goal_buildings">Avoir %1$d bâtiments avant le tour %2$d</string>
+    <string name="daily_play">Jouer</string>
+    <string name="daily_done_today">Réussi aujourd’hui</string>
+    <string name="daily_streak">Série : %1$d</string>
+    <string name="daily_chip_provinces">Défi : %1$d / %2$d provinces · tour %3$d / %4$d</string>
+    <string name="daily_chip_treasury">Défi : %1$d / %2$d or · tour %3$d / %4$d</string>
+    <string name="daily_chip_buildings">Défi : %1$d / %2$d bâtiments · tour %3$d / %4$d</string>
+    <string name="daily_chip_done">Défi du jour réussi</string>
+    <string name="daily_chip_failed">Défi du jour échoué</string>
+    <string name="daily_completed_toast">Défi du jour réussi !</string>
+    <string name="daily_failed_toast">La limite de tours est dépassée : le défi du jour est perdu. Un nouveau défi arrive demain.</string>
+    <string name="mastery_won">Gagné en %1$s</string>
+    <string name="mastery_none">Pas encore gagné</string>
 </resources>

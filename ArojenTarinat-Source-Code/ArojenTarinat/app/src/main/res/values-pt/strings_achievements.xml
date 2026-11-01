@@ -213,4 +213,14 @@
     <string name="rank_20">Construtor de impérios</string>
     <string name="rank_25">Grão-Cã</string>
     <string name="rank_30">Lenda</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">Cavaleiro do dia</string>
+    <string name="achv_daily_challenge_first_desc">Concluiu um desafio diário.</string>
+    <string name="achv_daily_challenge_first_reward">Insígnia diária</string>
+    <string name="achv_daily_challenge_ten_name">Dez alvoradas</string>
+    <string name="achv_daily_challenge_ten_desc">Concluiu 10 desafios diários.</string>
+    <string name="achv_daily_challenge_streak_5_name">Sela inabalável</string>
+    <string name="achv_daily_challenge_streak_5_desc">Concluiu o desafio diário 5 dias seguidos.</string>
+    <string name="achv_daily_challenge_streak_5_reward">Título: Guardião dos dias</string>
 </resources>

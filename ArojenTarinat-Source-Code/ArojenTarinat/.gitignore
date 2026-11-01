@@ -22,3 +22,7 @@ keystore.properties
 keystore-preview.properties
 *.jks
 *.keystore
+
+# Build outputs
+/app/preview/
+/app/release/

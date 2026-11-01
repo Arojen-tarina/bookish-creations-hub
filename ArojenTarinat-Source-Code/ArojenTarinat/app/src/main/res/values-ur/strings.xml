@@ -212,4 +212,38 @@
     <string name="settings_title">ترتیبات</string>
     <string name="music_volume">آواز کی سطح</string>
     <string name="cards_hide_hand">کارڈ چھپائیں</string>
+
+    <!-- Premium: monthly subscription, no adverts at all -->
+    <string name="premium_title">Arojen Premium</string>
+    <string name="premium_desc">کوئی اشتہار نہیں۔ شاہراہِ ریشم کا خراج اور دوسرا موقع بغیر اشتہار کے ملتے ہیں۔</string>
+    <string name="premium_price">%1$s / ماہانہ</string>
+    <string name="premium_subscribe">سبسکرائب کریں</string>
+    <string name="premium_renews">ہر ماہ خود بخود تجدید ہوتی ہے۔ Google Play میں کسی بھی وقت منسوخ کریں۔</string>
+    <string name="premium_active">Premium فعال ہے: کوئی اشتہار نہیں۔ گیم کی حمایت کا شکریہ!</string>
+    <string name="premium_manage">سبسکرپشن کا انتظام</string>
+    <string name="premium_unavailable">سبسکرپشن اس وقت دستیاب نہیں ہے۔</string>
+    <string name="premium_pending">ادائیگی زیرِ التوا ہے۔ Google Play کی تصدیق ہوتے ہی Premium شروع ہو جائے گا۔</string>
+    <string name="premium_failed">خریداری مکمل نہیں ہوئی۔ براہِ کرم دوبارہ کوشش کریں۔</string>
+    <string name="premium_menu">بغیر اشتہار: %1$s / ماہانہ</string>
+    <string name="premium_skip_ads">Premium کے ساتھ کوئی اشتہار نہیں: %1$s ماہانہ</string>
+    <string name="tribute_body_premium">Premium کھلاڑی کے طور پر آپ کو شاہراہِ ریشم کے تاجروں کا خراج بغیر اشتہار کے ملتا ہے۔ ہر باری میں ایک بار۔</string>
+    <string name="second_chance_body_premium">اپنی آخری باری شروع سے دوبارہ کھیلیں۔ ہر مہم میں ایک بار۔</string>
+
+    <!-- Daily challenge and faction mastery (native) -->
+    <string name="daily_title">آج کا چیلنج</string>
+    <string name="daily_goal_provinces">باری %2$d تک %1$d صوبے اپنے پاس رکھیں</string>
+    <string name="daily_goal_treasury">باری %2$d تک %1$d سونا جمع کریں</string>
+    <string name="daily_goal_buildings">باری %2$d تک %1$d عمارتیں بنائیں</string>
+    <string name="daily_play">کھیلیں</string>
+    <string name="daily_done_today">آج مکمل ہو گیا</string>
+    <string name="daily_streak">سلسلہ: %1$d</string>
+    <string name="daily_chip_provinces">چیلنج: %1$d / %2$d صوبے · باری %3$d / %4$d</string>
+    <string name="daily_chip_treasury">چیلنج: %1$d / %2$d سونا · باری %3$d / %4$d</string>
+    <string name="daily_chip_buildings">چیلنج: %1$d / %2$d عمارتیں · باری %3$d / %4$d</string>
+    <string name="daily_chip_done">آج کا چیلنج مکمل</string>
+    <string name="daily_chip_failed">آج کا چیلنج ناکام</string>
+    <string name="daily_completed_toast">آج کا چیلنج مکمل ہو گیا!</string>
+    <string name="daily_failed_toast">باریوں کی حد گزر گئی: آج کا چیلنج ہاتھ سے نکل گیا۔ نیا چیلنج کل آئے گا۔</string>
+    <string name="mastery_won">%1$s پر جیتا</string>
+    <string name="mastery_none">ابھی کوئی جیت نہیں</string>
 </resources>

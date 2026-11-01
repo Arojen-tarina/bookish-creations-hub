@@ -1,5 +1,6 @@
 package fi.bookish.creations.arojen.tarinat.game.model
 
+import fi.bookish.creations.arojen.tarinat.game.challenge.DailyChallenge
 import kotlinx.serialization.Serializable
 
 /** Board coordinates of a province token (board space is 130 x 90 starting at y = 20). */
@@ -19,6 +20,7 @@ data class Province(
     val neighbors: List<String> = emptyList(),
     val baseTax: Int,
     val baseManpower: Int,
+    val supply: Int = 3,
     val tradeGood: TradeGood? = null,
     val hasSilkRoad: Boolean = false,
     val unrest: Int = 0,
@@ -41,6 +43,7 @@ data class Faction(
     val horses: Int,
     val cavalryBonus: Double,
     val taxBonus: Double,
+    val siegeBonus: Double,
     val isPlayer: Boolean,
 )
 
@@ -51,6 +54,10 @@ data class Army(
     val provinceId: String,
     val cavalry: Int,
     val infantry: Int,
+    val siege: Int,
+    /** 0..100 */
+    val morale: Int,
+    val supply: Int,
     val movementLeft: Int,
     val leaderBonus: Double = 0.0,
 ) {
@@ -165,6 +172,8 @@ data class BattleReport(
     val attackerWon: Boolean,
     val attackerLosses: UnitLosses,
     val defenderLosses: UnitLosses,
+    val attackerMoraleLoss: Int,
+    val defenderMoraleLoss: Int,
     val attackRoll: Int,
     val defenseRoll: Int,
     val attackerPower: Double,
@@ -220,6 +229,9 @@ data class GameState(
 
     /** Monotonic counter for generated army ids (keeps ids deterministic). */
     val nextId: Int = 1,
+
+    /** Set when this campaign is a daily challenge. */
+    val challenge: DailyChallenge? = null,
 ) {
     val player: Faction get() = factions.first { it.id == playerFactionId }
     fun province(id: String): Province? = provinces.firstOrNull { it.id == id }

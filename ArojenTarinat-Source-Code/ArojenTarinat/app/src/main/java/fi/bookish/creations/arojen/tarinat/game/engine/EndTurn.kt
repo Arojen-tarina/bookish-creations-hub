@@ -3,6 +3,7 @@ package fi.bookish.creations.arojen.tarinat.game.engine
 import fi.bookish.creations.arojen.tarinat.game.data.Rules
 import fi.bookish.creations.arojen.tarinat.game.data.VictoryTargets
 import fi.bookish.creations.arojen.tarinat.game.model.Army
+import fi.bookish.creations.arojen.tarinat.game.model.Card
 import fi.bookish.creations.arojen.tarinat.game.model.Faction
 import fi.bookish.creations.arojen.tarinat.game.model.FactionId
 import fi.bookish.creations.arojen.tarinat.game.model.GameState
@@ -15,25 +16,35 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Ends the player's turn: AI realms collect income and act, sieges resolve,
- * victory is checked, a card is drawn and the player's income is credited.
- */
-fun endTurn(prev: GameState, rng: GameRandom): GameState {
-    val player = prev.playerFactionId
-
-    val effects = prev.activeEffects
+/** Card effects lose a turn; expired ones go, and the running bonus totals follow. */
+private fun decayEffects(state: GameState): GameState {
+    val effects = state.activeEffects
         .map { if (it.remainingTurns == -1) it else it.copy(remainingTurns = it.remainingTurns - 1) }
         .filter { it.remainingTurns == -1 || it.remainingTurns > 0 }
     val totals = bonusTotals(effects)
-    var base = prev.copy(activeEffects = effects, attackBonus = totals.attack, defenseBonus = totals.defense, movementBonus = totals.movement)
+    return state.copy(activeEffects = effects, attackBonus = totals.attack, defenseBonus = totals.defense, movementBonus = totals.movement)
+}
+
+/**
+ * Ends the player's turn: AI realms collect income and act, supply and siege
+ * attrition apply, the Tribal Chief rallies nearby troops, victory is checked,
+ * a card is drawn and the player's income for the new turn is credited.
+ *
+ * In multiplayer [otherHumans] are the other players' realms: no AI moves or
+ * AI income for them; [seatRoundStart] does their own start of turn afterwards.
+ */
+fun endTurn(prev: GameState, rng: GameRandom, otherHumans: Set<FactionId> = emptySet()): GameState {
+    val player = prev.playerFactionId
+    val humans = otherHumans + player
+
+    var base = decayEffects(prev)
     val log = mutableListOf<TurnLogEntry>()
     var nextId = base.nextId
 
     // 1. AI income (the player's income is credited at the start of each turn).
     val multiplier = base.difficulty.aiIncomeMultiplier
     val factions = base.factions.map { f ->
-        if (f.id == player) {
+        if (f.id in humans) {
             f
         } else {
             val c = calculateResourceCollection(base, f.id)
@@ -50,7 +61,7 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
     fun provinceIndex(id: String) = provinces.indexOfFirst { it.id == id }
 
     for (faction in factions.toList()) {
-        if (faction.id == player) continue
+        if (faction.id in humans) continue
         val fIdx = factions.indexOfFirst { it.id == faction.id }
         for (action in calculateAiActions(faction, armies, provinces, base.relations)) {
             when (action.type) {
@@ -63,6 +74,8 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                     armies[targetIdx] = target.copy(
                         cavalry = target.cavalry + source.cavalry,
                         infantry = target.infantry + source.infantry,
+                        siege = target.siege + source.siege,
+                        morale = ((target.morale + source.morale) / 2.0).roundJs(),
                     )
                     armies = armies.filterTo(mutableListOf()) { it.id != action.armyId }
                     log += TurnLogEntry(TurnLogKind.MERGED_ARMIES, faction.id)
@@ -117,6 +130,9 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
                         provinceId = targetId,
                         cavalry = cavalry,
                         infantry = 6,
+                        siege = 0,
+                        morale = 70,
+                        supply = 20,
                         movementLeft = 0,
                         leaderBonus = 0.0,
                     )
@@ -128,19 +144,56 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
     }
     armies = armies.filterTo(mutableListOf()) { it.cavalry + it.infantry > 0 }
 
-    // 3. Reset army movement for the new turn.
+    // 3. Supply: oversized stacks lose morale and men; friendly land restores them.
+    armies = armies.mapTo(mutableListOf()) { army ->
+        val province = provinces.firstOrNull { it.id == army.provinceId } ?: return@mapTo army
+        val armySize = army.cavalry + army.infantry + army.siege
+        val supplyLimit = province.supply + province.terrain.supplyLimit
+        when {
+            armySize > supplyLimit -> {
+                val over = armySize - supplyLimit
+                val moraleLoss = min(15, over * 3)
+                val attritionChance = min(0.5, over * 0.08)
+                val cavLoss = if (rng.nextDouble() < attritionChance) max(1, floor(army.cavalry * 0.1).toInt()) else 0
+                val infLoss = if (rng.nextDouble() < attritionChance) max(1, floor(army.infantry * 0.1).toInt()) else 0
+                army.copy(
+                    morale = max(10, army.morale - moraleLoss),
+                    cavalry = max(0, army.cavalry - cavLoss),
+                    infantry = max(0, army.infantry - infLoss),
+                    supply = max(0, army.supply - over),
+                )
+            }
+            province.ownerId == army.ownerId -> army.copy(
+                morale = min(100, army.morale + 5),
+                supply = min(30, army.supply + supplyLimit),
+            )
+            else -> army.copy(supply = max(0, army.supply - 2))
+        }
+    }
     armies = armies
         .filter { it.cavalry + it.infantry > 0 }
         .mapTo(mutableListOf()) { it.copy(movementLeft = Rules.ARMY_MOVEMENT) }
 
-    // 4. The player's Chief falling costs gold and influence once.
+    // 4. Tribal Chief: troops sharing or bordering the Chief's province rally.
     val chiefLocations = armies.filter { it.isChief }.associate { it.ownerId to it.provinceId }
+    armies = armies.mapTo(mutableListOf()) { a ->
+        val chiefProvince = chiefLocations[a.ownerId]
+        when {
+            a.isChief || chiefProvince == null -> a
+            chiefProvince == a.provinceId -> a.copy(morale = min(100, a.morale + 5))
+            provinces.firstOrNull { it.id == chiefProvince }?.neighbors?.contains(a.provinceId) == true ->
+                a.copy(morale = min(100, a.morale + 1))
+            else -> a
+        }
+    }
+    // The player's Chief falling costs gold, influence and morale once.
     var chiefFell = false
     if (player !in chiefLocations && !prev.chiefLost && prev.armies.any { it.id == Army.chiefArmyId(player) }) {
         chiefFell = true
         val i = factions.indexOfFirst { it.id == player }
-        factions[i] = factions[i].copy(treasury = max(0, factions[i].treasury - 30))
-        base = base.copy(influence = max(0, base.influence - 15))
+        factions[i] = factions[i].copy(treasury = max(0, factions[i].treasury - CHIEF_FALL_GOLD))
+        armies = armies.mapTo(mutableListOf()) { if (it.ownerId == player) it.copy(morale = max(10, it.morale - 10)) else it }
+        base = base.copy(influence = max(0, base.influence - CHIEF_FALL_INFLUENCE))
         log += TurnLogEntry(TurnLogKind.PLAYER_CHIEF_FELL, player)
     }
 
@@ -176,15 +229,10 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
     }
 
     // 6. Victory and defeat
-    val outcome = checkVictory(base, player, factions.toList(), provinces, armies)
+    val outcome = checkVictory(base, player, factions.toList(), provinces, armies, otherHumans)
 
     // 7. Draw a card, reshuffling the discard pile when the deck runs out.
-    var deck = base.deck
-    var discard = base.discard
-    if (deck.isEmpty() && discard.isNotEmpty()) {
-        deck = rng.shuffled(discard)
-        discard = emptyList()
-    }
+    val (deck, discard) = deckForDraw(base, rng)
 
     val turnStart = activatePendingWars(
         base.copy(
@@ -215,6 +263,57 @@ fun endTurn(prev: GameState, rng: GameRandom): GameState {
     return applyResourceCollection(turnStart, player, calculateResourceCollection(turnStart, player))
 }
 
+private const val CHIEF_FALL_GOLD = 30
+private const val CHIEF_FALL_INFLUENCE = 15
+
+/** The deck to draw from: the shuffled discard pile once the deck is empty. */
+private fun deckForDraw(state: GameState, rng: GameRandom): Pair<List<Card>, List<Card>> =
+    if (state.deck.isEmpty() && state.discard.isNotEmpty()) rng.shuffled(state.discard) to emptyList() else state.deck to state.discard
+
+/**
+ * Multiplayer: what [endTurn] does for its own player at the round's end, for
+ * another player's seat. [view] is the advanced world (turn already counted,
+ * AI moved) with that seat's cards and resources loaded; [armiesBeforeAi] are
+ * the armies as the round's last seat ended (a Chief lost to the AI then costs).
+ */
+fun seatRoundStart(view: GameState, armiesBeforeAi: List<Army>, rng: GameRandom, otherHumans: Set<FactionId>): GameState {
+    val player = view.playerFactionId
+    var state = decayEffects(view)
+    var log = state.turnLog
+
+    var chiefFell = false
+    if (state.armies.none { it.id == Army.chiefArmyId(player) } && !state.chiefLost && armiesBeforeAi.any { it.id == Army.chiefArmyId(player) }) {
+        chiefFell = true
+        state = state.copy(
+            factions = state.factions.map { if (it.id == player) it.copy(treasury = max(0, it.treasury - CHIEF_FALL_GOLD)) else it },
+            armies = state.armies.map { if (it.ownerId == player) it.copy(morale = max(10, it.morale - 10)) else it },
+            influence = max(0, state.influence - CHIEF_FALL_INFLUENCE),
+        )
+        log = log + TurnLogEntry(TurnLogKind.PLAYER_CHIEF_FELL, player)
+    }
+
+    val outcome = checkVictory(state, player, state.factions, state.provinces, state.armies, otherHumans)
+    val (deck, discard) = deckForDraw(state, rng)
+    val turnStart = state.copy(
+        food = max(0, state.food),
+        deck = deck.drop(1),
+        discard = discard,
+        hand = state.hand + deck.take(1),
+        gameOver = outcome.gameOver,
+        winnerId = outcome.winnerId,
+        winCondition = outcome.winCondition,
+        chiefLost = state.chiefLost || chiefFell,
+        treasuryStreak = outcome.treasuryStreak,
+        turnLog = log,
+        resourcesCollected = false,
+        lastCollection = null,
+        attackBonus = 0,
+        defenseBonus = 0,
+        movementBonus = 0,
+    )
+    return applyResourceCollection(turnStart, player, calculateResourceCollection(turnStart, player))
+}
+
 /** AI assault on [target]: no card bonuses, and a win always takes the province. */
 private fun resolveAiAttack(
     attackerId: FactionId,
@@ -233,6 +332,7 @@ private fun resolveAiAttack(
     val defender = when {
         fieldDefender != null && garrison != null -> fieldDefender.copy(
             infantry = fieldDefender.infantry + garrison.infantry,
+            morale = max(fieldDefender.morale, garrison.morale),
         )
         else -> fieldDefender ?: garrison
     }
@@ -288,6 +388,7 @@ private fun checkVictory(
     factions: List<Faction>,
     provinces: List<Province>,
     armies: List<Army>,
+    otherHumans: Set<FactionId>,
 ): VictoryOutcome {
     val playerProvinces = provinces.count { it.ownerId == player }
     val playerArmies = armies.count { it.ownerId == player }
@@ -333,13 +434,13 @@ private fun checkVictory(
     // Defeat: no land and no armies left.
     if (!gameOver && playerArmies == 0 && playerProvinces == 0) win(null, null)
 
-    // AI realms win by the same military and economic rules.
-    val aiStreaks = factions.filter { it.id != player }.associate { f ->
+    // AI realms win by the same military and economic rules (other players are judged on their own seat).
+    val aiStreaks = factions.filter { it.id != player && it.id !in otherHumans }.associate { f ->
         f.id to if (f.treasury >= VictoryTargets.GOLD) (base.aiTreasuryStreaks[f.id] ?: 0) + 1 else 0
     }
     for (f in factions) {
         if (gameOver) break
-        if (f.id == player) continue
+        if (f.id == player || f.id in otherHumans) continue
         val owned = provinces.count { it.ownerId == f.id }
         val capitals = capitalsOf(f.id)
         val tookAllCapitals = capitals.isNotEmpty() && capitals.all { it.ownerId == f.id }

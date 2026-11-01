@@ -1,6 +1,7 @@
 package fi.bookish.creations.arojen.tarinat.analytics
 
 import fi.bookish.creations.arojen.tarinat.game.achievements.AchievementDef
+import fi.bookish.creations.arojen.tarinat.game.challenge.DailyChallenge
 import fi.bookish.creations.arojen.tarinat.game.model.BattleReport
 import fi.bookish.creations.arojen.tarinat.game.model.GameState
 import kotlinx.serialization.Serializable
@@ -36,6 +37,8 @@ object Events {
         "achievement_unlocked",
         "menu_interaction", "settings_changed",
         "experiment_assigned",
+        // Native app 2.0 (supabase/sql/003_analytics_new_events.sql adds them to the database).
+        "daily_challenge", "premium_purchased",
     )
 
     private fun event(name: String, body: JsonObjectBuilder.() -> Unit) = AnalyticsEvent(name, buildJsonObject(body))
@@ -116,6 +119,16 @@ object Events {
     }
 
     fun menuInteraction(target: String) = event("menu_interaction") { put("target", target) }
+
+    /** The day's challenge was completed, or its turn limit passed. */
+    fun dailyChallenge(challenge: DailyChallenge, completed: Boolean) = event("daily_challenge") {
+        put("date", challenge.date)
+        put("goal", challenge.goal.name.lowercase())
+        put("result", if (completed) "completed" else "failed")
+    }
+
+    /** A Premium subscription was bought in the app. */
+    fun premiumPurchased() = event("premium_purchased") {}
 
     fun settingsChanged(setting: String, value: String) = event("settings_changed") {
         put("setting", setting)

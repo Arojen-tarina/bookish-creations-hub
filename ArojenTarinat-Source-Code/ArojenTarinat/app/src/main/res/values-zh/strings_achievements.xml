@@ -213,4 +213,14 @@
     <string name="rank_20">帝国缔造者</string>
     <string name="rank_25">大汗</string>
     <string name="rank_30">传奇</string>
+
+    <!-- Daily challenge achievements (native) -->
+    <string name="achv_daily_challenge_first_name">今日骑手</string>
+    <string name="achv_daily_challenge_first_desc">完成了一次每日挑战。</string>
+    <string name="achv_daily_challenge_first_reward">每日徽章</string>
+    <string name="achv_daily_challenge_ten_name">十个黎明</string>
+    <string name="achv_daily_challenge_ten_desc">完成了 10 次每日挑战。</string>
+    <string name="achv_daily_challenge_streak_5_name">不断的马鞍</string>
+    <string name="achv_daily_challenge_streak_5_desc">连续 5 天完成每日挑战。</string>
+    <string name="achv_daily_challenge_streak_5_reward">称号：岁月守护者</string>
 </resources>

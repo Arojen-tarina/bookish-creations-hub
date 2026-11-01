@@ -95,7 +95,7 @@ val RewardKind.icon: ImageVector
  */
 @Composable
 fun AchievementCard(def: AchievementDef, unlockedAt: Long?, stats: PlayerStats, modifier: Modifier = Modifier) {
-    val text = ACHIEVEMENT_TEXT.getValue(def.id)
+    val text = ALL_ACHIEVEMENT_TEXT.getValue(def.id)
     val unlocked = unlockedAt != null
     val secret = def.hidden && !unlocked
     val accent = when {
@@ -215,7 +215,7 @@ fun AchievementToast(repo: AchievementRepository, modifier: Modifier = Modifier)
             Spacer(Modifier.width(10.dp))
             Text(stringResource(R.string.achv_banner_title), style = MaterialTheme.typography.labelMedium, color = accent)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(ACHIEVEMENT_TEXT.getValue(def.id).name), style = MaterialTheme.typography.titleSmall, color = TextHigh)
+            Text(stringResource(ALL_ACHIEVEMENT_TEXT.getValue(def.id).name), style = MaterialTheme.typography.titleSmall, color = TextHigh)
             Spacer(Modifier.width(10.dp))
             Text(ltr(stringResource(R.string.achv_points_badge, def.points)), style = MaterialTheme.typography.titleSmall, color = accent)
         }

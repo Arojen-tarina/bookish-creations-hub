@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import fi.bookish.creations.arojen.tarinat.R
 import fi.bookish.creations.arojen.tarinat.game.data.Rules
 import fi.bookish.creations.arojen.tarinat.game.engine.BuildBlock
-import fi.bookish.creations.arojen.tarinat.game.engine.attackPower
 import fi.bookish.creations.arojen.tarinat.game.engine.buildBlocker
 import fi.bookish.creations.arojen.tarinat.game.engine.defenseBreakdown
 import fi.bookish.creations.arojen.tarinat.game.engine.fortDurabilityOrFull
@@ -134,11 +133,19 @@ private fun ProvinceStats(game: GameState, p: Province) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         StatTile(Modifier.weight(1f), { ResourceIcon(ResourceKind.GOLD) }, p.baseTax.toString(), stringResource(R.string.ui_taxes))
         StatTile(Modifier.weight(1f), { ResourceIcon(ResourceKind.MANPOWER) }, p.baseManpower.toString(), stringResource(R.string.ui_manpower))
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         StatTile(
             Modifier.weight(1f),
             { Icon(GameIcons.Shield, null, tint = Jade, modifier = Modifier.size(18.dp)) },
             plus(formatNumber(defense.total)),
             stringResource(R.string.ui_defense),
+        )
+        StatTile(
+            Modifier.weight(1f),
+            { Icon(GameIcons.Flag, null, tint = Color(0xFFD8B4FE), modifier = Modifier.size(18.dp)) },
+            p.supply.toString(),
+            stringResource(R.string.ui_supply),
         )
     }
     if (p.fortLevel > 0) {
@@ -241,7 +248,7 @@ private fun ArmyList(game: GameState, armies: List<Army>, selectedArmyId: String
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                         UnitCount(GameIcons.Horseshoe, army.cavalry)
                         UnitCount(GameIcons.Sword, army.infantry)
-                        UnitCount(GameIcons.Swords, army.attackPower(if (mine) game.attackBonus else 0), stringResource(R.string.battle_attack_label))
+                        UnitCount(GameIcons.Catapult, army.siege)
                         if (mine) {
                             Spacer(Modifier.weight(1f))
                             Text(
@@ -252,6 +259,13 @@ private fun ArmyList(game: GameState, armies: List<Army>, selectedArmyId: String
                         }
                     }
                     Spacer(Modifier.size(6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.ui_morale), style = MaterialTheme.typography.bodySmall, color = TextMid)
+                        Spacer(Modifier.width(8.dp))
+                        ProgressBar(army.morale / 100f, Gold, Modifier.weight(1f), height = 5.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text("${army.morale}%", style = MaterialTheme.typography.bodySmall, color = TextMid)
+                    }
                     if (mine && selected != null && !isSelected && selected.ownerId == player) {
                         Spacer(Modifier.size(8.dp))
                         SmallActionButton(stringResource(R.string.ui_merge_armies), GameIcons.Merge, enabled = true) {
@@ -403,9 +417,9 @@ private fun StatTile(modifier: Modifier, icon: @Composable () -> Unit, value: St
 }
 
 @Composable
-private fun UnitCount(icon: ImageVector, count: Int, description: String? = null) {
+private fun UnitCount(icon: ImageVector, count: Int) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, description, tint = TextMid, modifier = Modifier.size(16.dp))
+        Icon(icon, null, tint = TextMid, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(4.dp))
         Text(count.toString(), style = MaterialTheme.typography.labelLarge, color = TextHigh)
     }

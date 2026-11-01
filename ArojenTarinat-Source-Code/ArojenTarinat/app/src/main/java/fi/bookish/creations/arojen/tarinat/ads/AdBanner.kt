@@ -23,12 +23,13 @@ import com.google.android.gms.ads.AdView
 /**
  * An anchored adaptive banner as wide as its slot. It takes no room until an ad
  * has loaded (no empty box when there is no ad or no network), pauses with the
- * screen and is destroyed when the screen goes.
+ * screen and is destroyed when the screen goes. Premium players never see one.
  */
 @Composable
 fun AdBanner(ads: Ads, unitId: String, modifier: Modifier = Modifier) {
     val ready by ads.ready.collectAsStateWithLifecycle()
-    if (!ready) return
+    val adFree by ads.adFree.collectAsStateWithLifecycle()
+    if (!ready || adFree) return
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val width = maxWidth.value.toInt()
         val context = LocalContext.current

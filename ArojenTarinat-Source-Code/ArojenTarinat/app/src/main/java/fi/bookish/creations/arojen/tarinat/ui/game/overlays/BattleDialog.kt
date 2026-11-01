@@ -58,6 +58,7 @@ import fi.bookish.creations.arojen.tarinat.game.model.Army
 import fi.bookish.creations.arojen.tarinat.game.model.BattleReport
 import fi.bookish.creations.arojen.tarinat.game.model.FactionId
 import fi.bookish.creations.arojen.tarinat.ui.components.GameButton
+import fi.bookish.creations.arojen.tarinat.ui.components.KeepFullScreen
 import fi.bookish.creations.arojen.tarinat.ui.components.signed
 import fi.bookish.creations.arojen.tarinat.ui.game.FactionStyle
 import fi.bookish.creations.arojen.tarinat.ui.game.hud.GamePanel
@@ -125,6 +126,7 @@ fun BattleDialog(
     }
 
     Dialog(onDismissRequest = { if (phase == BattlePhase.Result) onClose() else skip() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        KeepFullScreen()
         Box(
             Modifier
                 .fillMaxSize()
