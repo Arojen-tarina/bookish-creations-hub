@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">أدخل بريدًا إلكترونيًا صالحًا.</string>
     <string name="acct_err_no_google">لم يُعثر على حساب Google على هذا الهاتف.</string>
     <string name="acct_err_google">فشل تسجيل الدخول عبر Google. حاول مرة أخرى.</string>
+    <string name="acct_err_cloud_unreadable">تعذّر قراءة الحفظ السحابي، لذلك لم يُستبدل. سجّل الخروج أو احذف الحساب لبدء حفظ سحابي جديد.</string>
+    <string name="acct_cloud_unreadable_notice">تعذّر قراءة حفظك السحابي وبقي كما هو. لن يُرفع تقدم هذا الهاتف.</string>
 </resources>

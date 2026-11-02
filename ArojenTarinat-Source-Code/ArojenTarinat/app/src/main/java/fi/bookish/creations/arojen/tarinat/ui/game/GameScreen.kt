@@ -37,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
@@ -100,6 +101,7 @@ import fi.bookish.creations.arojen.tarinat.ui.multiplayer.PlayersButton
 import fi.bookish.creations.arojen.tarinat.ui.multiplayer.PlayersSheet
 import fi.bookish.creations.arojen.tarinat.ui.multiplayer.TurnBanner
 import fi.bookish.creations.arojen.tarinat.ui.screens.saves.SaveGameDialog
+import fi.bookish.creations.arojen.tarinat.ui.theme.Gold
 import fi.bookish.creations.arojen.tarinat.ui.theme.Ink900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -243,6 +245,14 @@ fun GameScreen(
             ui.selectedArmyId != null -> viewModel.clearSelection()
             else -> pauseOpen = true
         }
+    }
+
+    // Placed after every hook above: the early return must not change the hook order.
+    if (ui.loading) {
+        Box(Modifier.fillMaxSize().background(Ink900), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Gold)
+        }
+        return
     }
 
     Box(Modifier.fillMaxSize().background(Ink900)) {

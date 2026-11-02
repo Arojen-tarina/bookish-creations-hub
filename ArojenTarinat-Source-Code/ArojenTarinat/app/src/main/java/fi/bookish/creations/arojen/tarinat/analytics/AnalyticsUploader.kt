@@ -1,5 +1,6 @@
 package fi.bookish.creations.arojen.tarinat.analytics
 
+import fi.bookish.creations.arojen.tarinat.network.supabasePost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -8,8 +9,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 
 /**
  * One row of the analytics_events table (see the original's supabase/migrations).
@@ -50,28 +49,25 @@ class SupabaseAnalyticsUploader(private val baseUrl: String, private val apiKey:
     private val json = Json { encodeDefaults = true }
 
     override suspend fun insert(rows: List<AnalyticsRow>): AnalyticsUploader.Result = withContext(Dispatchers.IO) {
-        val connection = URL("$baseUrl/rest/v1/analytics_events").openConnection() as HttpURLConnection
+        val requestBody = json.encodeToString(ListSerializer(AnalyticsRow.serializer()), rows).toByteArray()
         try {
-            connection.requestMethod = "POST"
-            connection.connectTimeout = 10_000
-            connection.readTimeout = 20_000
-            connection.doOutput = true
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("apikey", apiKey)
-            connection.setRequestProperty("Authorization", "Bearer $apiKey")
-            connection.setRequestProperty("Prefer", "return=minimal")
-            connection.outputStream.use { it.write(json.encodeToString(ListSerializer(AnalyticsRow.serializer()), rows).toByteArray()) }
-            when (connection.responseCode) {
-                in 200..299 -> AnalyticsUploader.Result.SENT
-                // Rate limits and timeouts may pass; anything else in 4xx is about the rows themselves.
-                408, 429 -> AnalyticsUploader.Result.FAILED
-                in 400..499 -> AnalyticsUploader.Result.REFUSED
-                else -> AnalyticsUploader.Result.FAILED
+            supabasePost(
+                "$baseUrl/rest/v1/analytics_events",
+                apiKey,
+                requestBody,
+                readTimeoutMs = 20_000,
+                extraHeaders = mapOf("Prefer" to "return=minimal"),
+            ) { connection ->
+                when (connection.responseCode) {
+                    in 200..299 -> AnalyticsUploader.Result.SENT
+                    // Rate limits and timeouts may pass; anything else in 4xx is about the rows themselves.
+                    408, 429 -> AnalyticsUploader.Result.FAILED
+                    in 400..499 -> AnalyticsUploader.Result.REFUSED
+                    else -> AnalyticsUploader.Result.FAILED
+                }
             }
         } catch (_: IOException) {
             AnalyticsUploader.Result.FAILED
-        } finally {
-            connection.disconnect()
         }
     }
 }

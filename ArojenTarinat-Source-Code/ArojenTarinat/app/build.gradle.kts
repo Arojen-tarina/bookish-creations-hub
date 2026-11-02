@@ -99,6 +99,10 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        // Analytics logs through android.util.Log; unit tests get default return values instead of "not mocked" errors.
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {

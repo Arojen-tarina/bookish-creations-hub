@@ -3,7 +3,8 @@ package fi.bookish.creations.arojen.tarinat.analytics
 import android.util.Log
 import fi.bookish.creations.arojen.tarinat.BuildConfig
 import fi.bookish.creations.arojen.tarinat.data.AnalyticsConsent
-import fi.bookish.creations.arojen.tarinat.data.SettingsRepository
+import fi.bookish.creations.arojen.tarinat.data.AnalyticsSettings
+import fi.bookish.creations.arojen.tarinat.data.writeTextAtomically
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +49,7 @@ internal data class StoredEvent(
  * fails on the network stays for the next try.
  */
 class Analytics(
-    private val settings: SettingsRepository,
+    private val settings: AnalyticsSettings,
     private val uploader: AnalyticsUploader?,
     private val bufferFile: File,
     private val scope: CoroutineScope,
@@ -59,6 +60,8 @@ class Analytics(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val mutex = Mutex()
+    // Serializes uploads so two flushes never send the same head batch twice. Always taken before [mutex].
+    private val flushMutex = Mutex()
     // "2.0.0", or "2.0.0-dev" / "2.0.0-preview" from test builds, so their rows are easy to leave out.
     private val appVersion = BuildConfig.VERSION_NAME.take(20)
 
@@ -179,15 +182,17 @@ class Analytics(
     /** Sends what is waiting, batch by batch, until the buffer is empty or a batch cannot go out. */
     suspend fun flush() {
         val upload = uploader ?: return
-        while (true) {
-            val batch = mutex.withLock { if (consented) withIo { readBuffer().take(FLUSH_BATCH_SIZE) } else emptyList() }
-            if (batch.isEmpty()) return
-            val result = upload.insert(batch.map(::row))
-            if (BuildConfig.DEBUG) Log.d(TAG, "${batch.size} events: $result (${batch.joinToString { it.name }})")
-            when (result) {
-                AnalyticsUploader.Result.SENT, AnalyticsUploader.Result.REFUSED ->
-                    mutex.withLock { withIo { writeBuffer(readBuffer().drop(batch.size)) } }
-                AnalyticsUploader.Result.FAILED -> return
+        flushMutex.withLock {
+            while (true) {
+                val batch = mutex.withLock { if (consented) withIo { readBuffer().take(FLUSH_BATCH_SIZE) } else emptyList() }
+                if (batch.isEmpty()) return
+                val result = upload.insert(batch.map(::row))
+                if (BuildConfig.DEBUG) Log.d(TAG, "${batch.size} events: $result (${batch.joinToString { it.name }})")
+                when (result) {
+                    AnalyticsUploader.Result.SENT, AnalyticsUploader.Result.REFUSED ->
+                        mutex.withLock { withIo { writeBuffer(readBuffer().drop(batch.size)) } }
+                    AnalyticsUploader.Result.FAILED -> return
+                }
             }
         }
     }
@@ -210,12 +215,7 @@ class Analytics(
                 bufferFile.delete()
                 return
             }
-            val tmp = File(bufferFile.parentFile, bufferFile.name + ".tmp")
-            tmp.writeText(json.encodeToString(ListSerializer(StoredEvent.serializer()), events))
-            if (!tmp.renameTo(bufferFile)) {
-                bufferFile.delete()
-                tmp.renameTo(bufferFile)
-            }
+            bufferFile.writeTextAtomically(json.encodeToString(ListSerializer(StoredEvent.serializer()), events))
         }
     }
 

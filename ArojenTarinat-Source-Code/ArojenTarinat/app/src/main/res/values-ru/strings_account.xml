@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Введите корректный адрес почты.</string>
     <string name="acct_err_no_google">На телефоне не найден аккаунт Google.</string>
     <string name="acct_err_google">Не удалось войти через Google. Попробуйте ещё раз.</string>
+    <string name="acct_err_cloud_unreadable">Облачное сохранение не читается, поэтому оно не было заменено. Выйдите из аккаунта или удалите его, чтобы начать новое облачное сохранение.</string>
+    <string name="acct_cloud_unreadable_notice">Не удалось прочитать облачное сохранение, и оно оставлено без изменений. Прогресс с этого телефона не загружается.</string>
 </resources>

@@ -120,12 +120,13 @@ class SaveRepositoryTest {
     }
 
     @Test
-    fun `handoff is used once, then the file is read`() = runTest {
+    fun `handoff is used once and never read from the file`() = runTest {
         val r = repo()
         val later = endTurn(game, Mulberry32(9))
         r.save(1, game)
         r.handOff(1, later)
-        assertEquals(later, r.takeOrLoad(1))
-        assertEquals(game, r.takeOrLoad(1))
+        assertEquals(later, r.takeHandoff(1))
+        assertNull(r.takeHandoff(1))
+        assertEquals(game, r.load(1))
     }
 }

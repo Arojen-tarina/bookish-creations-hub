@@ -62,6 +62,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -87,9 +88,11 @@ data class GameUiState(
     val eliminated: Boolean = false,
     /** Multiplayer: the player on turn left or sat idle too long, so this player may pass their turn. */
     val canSkipAbsent: Boolean = false,
+    /** The saved campaign is still being read from disk; a placeholder stands in until it is. */
+    val loading: Boolean = false,
 ) {
     /** The player may act on the board now. */
-    val canAct: Boolean get() = !processingTurn && waitingFor == null && !eliminated
+    val canAct: Boolean get() = !processingTurn && waitingFor == null && !eliminated && !loading
 }
 
 enum class Tone { Positive, Negative, Neutral }
@@ -122,7 +125,11 @@ class GameViewModel(
     /** Multiplayer: the server version of the game the screen shows. */
     private var appliedVersion = session?.snapshot?.value?.version ?: -1
 
-    private val _ui = MutableStateFlow(GameUiState(game = initialGame(), waitingFor = session?.let { multiplayerWaiting(it.snapshot.value) }))
+    /** The save this screen restores on start: after process death, or one the load screen did not hand over. */
+    private val slotToRestore: Int? = if (session != null) null else
+        savedStateHandle.get<Int>(KEY_RESUME_SLOT) ?: route.loadSlot.takeIf { it != GameRoute.NEW_GAME }
+
+    private val _ui = MutableStateFlow(initialUi())
     val ui: StateFlow<GameUiState> = _ui.asStateFlow()
 
     /** The campaign as the current turn began: what a second chance goes back to. */
@@ -132,25 +139,48 @@ class GameViewModel(
     private var pendingDefeat: GameState? = null
 
     /**
-     * A loaded save, or a new campaign. After process death the screen resumes
-     * from the autosave instead of silently starting over.
+     * The first state the screen shows. A save the load screen already decoded
+     * is used as is. One that must be read from disk is loaded in the background
+     * (see [restoreSlot]), so the main thread never waits on the file.
      */
-    private fun initialGame(): GameState {
+    private fun initialUi(): GameUiState {
         session?.let { s ->
-            val me = s.myFaction
-            val shared = s.snapshot.value?.game
-            if (me != null && shared != null) return shared.viewFor(me)
-            // Until the room's game arrives (after process death) a blank start stands in, behind "connecting".
-            return startGame(me ?: FactionId.MONGOL, Difficulty.NORMAL, Mulberry32(0))
+            return GameUiState(game = sessionGame(s), waitingFor = multiplayerWaiting(s.snapshot.value))
         }
-        val resume = savedStateHandle.get<Int>(KEY_RESUME_SLOT)
-        val slot = resume ?: route.loadSlot.takeIf { it != GameRoute.NEW_GAME }
-        slot?.let { s ->
-            saves.takeOrLoad(s)?.let {
-                analytics.track(Events.gameLoaded(s), Events.gameStart(it, isContinue = true))
-                return it
-            }
+        slotToRestore?.let { slot ->
+            saves.takeHandoff(slot)?.let { return GameUiState(game = resumed(slot, it)) }
+            return GameUiState(game = placeholderGame(), loading = true)
         }
+        return GameUiState(game = newGame())
+    }
+
+    private fun sessionGame(s: RoomSession): GameState {
+        val me = s.myFaction
+        val shared = s.snapshot.value?.game
+        if (me != null && shared != null) return shared.viewFor(me)
+        // Until the room's game arrives (after process death) a blank start stands in, behind "connecting".
+        return placeholderGame(me ?: FactionId.MONGOL)
+    }
+
+    /** Stands in for a game that is not read yet; the player cannot act on it. */
+    private fun placeholderGame(faction: FactionId = FactionId.MONGOL) = startGame(faction, Difficulty.NORMAL, Mulberry32(0))
+
+    private fun resumed(slot: Int, state: GameState): GameState {
+        analytics.track(Events.gameLoaded(slot), Events.gameStart(state, isContinue = true))
+        return state
+    }
+
+    /** Reads the save in [slot] off the main thread and shows it in place of the placeholder. A save that cannot be read starts a new campaign. */
+    private fun restoreSlot(slot: Int) {
+        viewModelScope.launch {
+            val restored = saves.load(slot)
+            val game = restored?.let { resumed(slot, it) } ?: newGame()
+            turnStart = game
+            _ui.update { it.copy(game = game, loading = false) }
+        }
+    }
+
+    private fun newGame(): GameState {
         val fresh = if (route.daily) {
             val setup = DailyChallenges.forDate(LocalDate.now())
             // The seed makes the map and the decks the same for everyone today; play itself stays random.
@@ -179,10 +209,11 @@ class GameViewModel(
 
     /** Called when the app goes to the background. */
     fun autosaveNow() {
-        if (!_ui.value.processingTurn) autosave(game)
+        if (!_ui.value.processingTurn && !_ui.value.loading) autosave(game)
     }
 
     fun saveToSlot(slot: Int) {
+        if (_ui.value.loading) return
         val state = game
         viewModelScope.launch {
             if (saves.save(slot, state)) {
@@ -196,10 +227,11 @@ class GameViewModel(
 
     init {
         session?.let(::followRoom)
-        // Every state change feeds the lifetime stats behind achievements.
+        slotToRestore?.takeIf { _ui.value.loading }?.let(::restoreSlot)
+        // Every state change feeds the lifetime stats behind achievements. The placeholder shown while a save is read is not a real state.
         viewModelScope.launch {
             var prev: GameState? = null
-            _ui.map { it.game }.distinctUntilChanged().collect { next ->
+            _ui.filter { !it.loading }.map { it.game }.distinctUntilChanged().collect { next ->
                 // A second chance steps back in time: that is not a sequence of real events.
                 val before = prev?.takeIf { next.turn >= it.turn }
                 prev = next

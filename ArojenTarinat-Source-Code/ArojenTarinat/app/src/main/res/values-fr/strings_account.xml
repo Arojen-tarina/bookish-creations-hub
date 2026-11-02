@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Saisissez une adresse e-mail valide.</string>
     <string name="acct_err_no_google">Aucun compte Google trouvé sur ce téléphone.</string>
     <string name="acct_err_google">La connexion Google a échoué. Veuillez réessayer.</string>
+    <string name="acct_err_cloud_unreadable">La sauvegarde cloud est illisible, elle n\'a donc pas été remplacée. Déconnectez-vous ou supprimez le compte pour démarrer une nouvelle sauvegarde cloud.</string>
+    <string name="acct_cloud_unreadable_notice">Votre sauvegarde cloud n\'a pas pu être lue et a été conservée telle quelle. La progression sur ce téléphone n\'est pas envoyée.</string>
 </resources>

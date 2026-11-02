@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -32,11 +33,18 @@ data class Settings(
 
 private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+/** The analytics part of the settings, as [fi.bookish.creations.arojen.tarinat.analytics.Analytics] uses it (faked in tests). */
+interface AnalyticsSettings {
+    val settings: Flow<Settings>
+    suspend fun recordAnalyticsOpen(today: String, newClientId: () -> String): AnalyticsIdentity
+    suspend fun forgetAnalyticsDays()
+}
+
 /** Player preferences. The language is not stored here: Android keeps the per-app locale itself. */
-class SettingsRepository(context: Context, scope: CoroutineScope) {
+class SettingsRepository(context: Context, scope: CoroutineScope) : AnalyticsSettings {
     private val store = context.applicationContext.settingsStore
 
-    val settings: StateFlow<Settings> = store.data
+    override val settings: StateFlow<Settings> = store.data
         .map { p ->
             Settings(
                 musicVolume = p[MUSIC_VOLUME] ?: Settings.DEFAULT_MUSIC_VOLUME,
@@ -55,7 +63,7 @@ class SettingsRepository(context: Context, scope: CoroutineScope) {
      * anonymous client id (created on first use), the first-open day and the set
      * of active days, as the original's retention.ts kept them.
      */
-    suspend fun recordAnalyticsOpen(today: String, newClientId: () -> String): AnalyticsIdentity {
+    override suspend fun recordAnalyticsOpen(today: String, newClientId: () -> String): AnalyticsIdentity {
         var identity: AnalyticsIdentity? = null
         store.edit { p ->
             val clientId = p[ANALYTICS_CLIENT_ID] ?: newClientId().also { p[ANALYTICS_CLIENT_ID] = it }
@@ -69,7 +77,7 @@ class SettingsRepository(context: Context, scope: CoroutineScope) {
     }
 
     /** Withdrawn consent: the locally kept usage history goes too (the original did the same). */
-    suspend fun forgetAnalyticsDays() {
+    override suspend fun forgetAnalyticsDays() {
         store.edit { it.remove(ANALYTICS_ACTIVE_DAYS) }
     }
 

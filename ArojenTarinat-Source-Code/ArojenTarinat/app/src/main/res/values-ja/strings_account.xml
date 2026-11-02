@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">有効なメールアドレスを入力してください。</string>
     <string name="acct_err_no_google">この端末に Google アカウントが見つかりません。</string>
     <string name="acct_err_google">Google でのログインに失敗しました。もう一度お試しください。</string>
+    <string name="acct_err_cloud_unreadable">クラウドセーブを読み取れないため、置き換えませんでした。サインアウトするかアカウントを削除すると、新しいクラウドセーブを開始できます。</string>
+    <string name="acct_cloud_unreadable_notice">クラウドセーブを読み取れなかったため、そのまま残しています。このスマホの進行状況はアップロードされません。</string>
 </resources>

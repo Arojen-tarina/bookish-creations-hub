@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">সঠিক ইমেইল ঠিকানা দিন।</string>
     <string name="acct_err_no_google">এই ফোনে কোনো Google অ্যাকাউন্ট পাওয়া যায়নি।</string>
     <string name="acct_err_google">Google সাইন ইন হয়নি। আবার চেষ্টা করুন।</string>
+    <string name="acct_err_cloud_unreadable">ক্লাউড সেভ পড়া যাচ্ছে না, তাই এটি বদলানো হয়নি। নতুন ক্লাউড সেভ শুরু করতে সাইন আউট করুন বা অ্যাকাউন্ট মুছুন।</string>
+    <string name="acct_cloud_unreadable_notice">আপনার ক্লাউড সেভ পড়া যায়নি এবং তা অপরিবর্তিত রাখা হয়েছে। এই ফোনের অগ্রগতি আপলোড হবে না।</string>
 </resources>

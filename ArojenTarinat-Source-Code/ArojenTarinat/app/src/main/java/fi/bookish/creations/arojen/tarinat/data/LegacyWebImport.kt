@@ -2,6 +2,7 @@ package fi.bookish.creations.arojen.tarinat.data
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -22,8 +23,11 @@ import kotlinx.serialization.json.floatOrNull
 import kotlinx.serialization.json.longOrNull
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.IOException
 import java.util.Locale
 import kotlin.coroutines.resume
+
+private const val TAG = "LegacyWebImport"
 
 /**
  * What the old WebView version of the game kept in localStorage. Checksummed
@@ -159,7 +163,12 @@ class LegacyWebImport(
         if (!File(context.dataDir, "app_webview").exists()) return settings.markLegacyImportDone()
         // No WebView right now (it may be updating): try again next launch.
         val data = LegacyWebReader.read(context) ?: return
-        achievements.importLegacy(data.stats, data.unlocks)
+        try {
+            achievements.importLegacy(data.stats, data.unlocks)
+        } catch (e: IOException) {
+            // The stats file is not saved; the rest of the import still goes ahead.
+            Log.e(TAG, "Could not save imported stats", e)
+        }
         settings.importLegacy(data)
         // Last, because changing the language recreates the screen.
         data.language?.takeIf { assetLanguage(it) == it }?.let { applyLanguage(it) }

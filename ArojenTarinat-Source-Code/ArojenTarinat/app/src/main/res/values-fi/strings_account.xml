@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Anna kelvollinen sähköpostiosoite.</string>
     <string name="acct_err_no_google">Puhelimesta ei löytynyt Google-tiliä.</string>
     <string name="acct_err_google">Google-kirjautuminen ei onnistunut. Yritä uudelleen.</string>
+    <string name="acct_err_cloud_unreadable">Pilvitallennusta ei voi lukea, joten sitä ei korvattu. Kirjaudu ulos tai poista tili aloittaaksesi uuden pilvitallennuksen.</string>
+    <string name="acct_cloud_unreadable_notice">Pilvitallennusta ei voitu lukea, ja se on jätetty ennalleen. Tämän puhelimen edistymistä ei ladata pilveen.</string>
 </resources>

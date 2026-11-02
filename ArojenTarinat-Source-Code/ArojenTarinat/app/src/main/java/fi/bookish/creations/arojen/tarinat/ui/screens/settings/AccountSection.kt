@@ -59,6 +59,7 @@ private fun accountErrorRes(reason: String): Int = when (reason) {
     "no_google_account" -> R.string.acct_err_no_google
     "google_failed" -> R.string.acct_err_google
     "network" -> R.string.mp_err_network
+    "cloud_unreadable" -> R.string.acct_err_cloud_unreadable
     else -> R.string.mp_err_generic
 }
 
@@ -112,6 +113,15 @@ fun AccountSection(account: Account) {
             color = TextLow,
             modifier = Modifier.padding(top = 2.dp),
         )
+        if (state.cloudUnreadable) {
+            Text(
+                stringResource(R.string.acct_cloud_unreadable_notice),
+                style = MaterialTheme.typography.labelSmall,
+                color = Rust,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
             GameButton(stringResource(R.string.acct_backup_now), { run(R.string.acct_saved) { account.backupNow() } }, Modifier.weight(1f), GameButtonStyle.Secondary, enabled = !busy, compact = true)
             GameButton(stringResource(R.string.acct_sign_out), { run { account.signOut() } }, Modifier.weight(1f), GameButtonStyle.Secondary, enabled = !busy, compact = true)

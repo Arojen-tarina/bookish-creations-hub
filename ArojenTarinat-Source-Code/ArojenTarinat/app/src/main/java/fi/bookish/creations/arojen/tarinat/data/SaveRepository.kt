@@ -86,8 +86,8 @@ class SaveRepository(
             )
             val ok = runCatching {
                 dir.mkdirs()
-                writeAtomically(gameFile(slot), json.encodeToString(SaveFile.serializer(), SaveFile(meta, state)))
-                writeAtomically(metaFile(slot), json.encodeToString(SaveMeta.serializer(), meta))
+                gameFile(slot).writeTextAtomically(json.encodeToString(SaveFile.serializer(), SaveFile(meta, state)))
+                metaFile(slot).writeTextAtomically(json.encodeToString(SaveMeta.serializer(), meta))
             }.isSuccess
             if (ok) _slots.update { it + (slot to meta) }
             ok
@@ -107,7 +107,7 @@ class SaveRepository(
         }
     }
 
-    /** Blocking read, for restoring a game after process death. */
+    /** Blocking read. Kept for callers that cannot suspend; prefer [load] on the main thread. */
     fun loadNow(slot: Int): GameState? = runCatching {
         json.decodeFromString(SaveFile.serializer(), gameFile(slot).readText())
     }.getOrNull()?.takeIf { it.meta.version <= FORMAT_VERSION && it.state.isPlayable() }?.state
@@ -130,11 +130,11 @@ class SaveRepository(
         handoff = slot to state
     }
 
-    /** The handed-off game for [slot] (consumed), or a fresh read from disk. */
-    fun takeOrLoad(slot: Int): GameState? {
+    /** The handed-off game for [slot] (consumed), or null. Never reads the disk. */
+    fun takeHandoff(slot: Int): GameState? {
         val pending = handoff
         handoff = null
-        return if (pending != null && pending.first == slot) pending.second else loadNow(slot)
+        return if (pending != null && pending.first == slot) pending.second else null
     }
 
     /** Every readable save as its file's text (slot -> JSON), for the player's cloud copy. */
@@ -159,8 +159,8 @@ class SaveRepository(
                     metaFile(slot).delete()
                     continue
                 }
-                writeAtomically(gameFile(slot), text)
-                writeAtomically(metaFile(slot), json.encodeToString(SaveMeta.serializer(), save.meta))
+                gameFile(slot).writeTextAtomically(text)
+                metaFile(slot).writeTextAtomically(json.encodeToString(SaveMeta.serializer(), save.meta))
             }
             _slots.value = (0..SLOTS).mapNotNull { slot -> readMeta(slot)?.let { slot to it } }.toMap()
         }
@@ -178,15 +178,6 @@ class SaveRepository(
 
     private fun gameFile(slot: Int) = File(dir, if (slot == AUTOSAVE) "autosave.json" else "slot_$slot.json")
     private fun metaFile(slot: Int) = File(dir, if (slot == AUTOSAVE) "autosave.meta.json" else "slot_$slot.meta.json")
-
-    private fun writeAtomically(target: File, text: String) {
-        val tmp = File(target.parentFile, target.name + ".tmp")
-        tmp.writeText(text)
-        if (!tmp.renameTo(target)) {
-            target.delete()
-            check(tmp.renameTo(target)) { "could not move save into place" }
-        }
-    }
 
     companion object {
         const val AUTOSAVE = 0

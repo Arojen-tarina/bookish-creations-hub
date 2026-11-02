@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Introduce un correo válido.</string>
     <string name="acct_err_no_google">No se encontró ninguna cuenta de Google en este teléfono.</string>
     <string name="acct_err_google">El inicio de sesión con Google no funcionó. Inténtalo de nuevo.</string>
+    <string name="acct_err_cloud_unreadable">No se puede leer la copia en la nube, así que no se ha reemplazado. Cierra la sesión o elimina la cuenta para empezar una nueva copia en la nube.</string>
+    <string name="acct_cloud_unreadable_notice">No se pudo leer tu copia en la nube y se ha mantenido sin cambios. El progreso de este teléfono no se sube.</string>
 </resources>

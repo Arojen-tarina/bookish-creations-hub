@@ -24,6 +24,7 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.IDToken
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +44,16 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 /** Who is signed in on this phone. A guest (anonymous account) has no [provider]. */
-data class AccountState(val provider: String? = null, val email: String? = null, val lastBackupAt: Long = 0L) {
+data class AccountState(
+    val provider: String? = null,
+    val email: String? = null,
+    val lastBackupAt: Long = 0L,
+    /**
+     * The cloud copy exists but cannot be read (e.g. written by an incompatible version). It is left untouched:
+     * no automatic or manual backup replaces it until the player signs out or deletes the account.
+     */
+    val cloudUnreadable: Boolean = false,
+) {
     val signedIn: Boolean get() = provider != null
 }
 
@@ -52,6 +62,13 @@ data class CloudChoice(val cloudLevel: Int, val cloudSavedAt: Long)
 
 /** A failed account action; [reason] picks the message ("cancelled" means the player backed out). */
 class AccountException(val reason: String, cause: Throwable? = null) : Exception(reason, cause)
+
+/** What the cloud holds for this account. [Unreadable] is distinct from [None] so an unreadable copy is never overwritten. */
+private sealed interface CloudCopy {
+    data object None : CloudCopy
+    data object Unreadable : CloudCopy
+    class Readable(val bundle: ProgressBundle) : CloudCopy
+}
 
 @Serializable
 private data class ProgressBundle(
@@ -164,7 +181,7 @@ class Account(
         client.auth.signInAnonymously()
         _choice.value = null
         refreshState()
-        _state.value = _state.value.copy(lastBackupAt = 0L)
+        _state.value = _state.value.copy(lastBackupAt = 0L, cloudUnreadable = false)
     }
 
     /** Deletes the account and its cloud copy for good (the phone keeps its own progress). */
@@ -174,7 +191,7 @@ class Account(
         client.auth.signInAnonymously()
         _choice.value = null
         refreshState()
-        _state.value = _state.value.copy(lastBackupAt = 0L)
+        _state.value = _state.value.copy(lastBackupAt = 0L, cloudUnreadable = false)
     }
 
     // ---------------------------------------------------------------- cloud copy
@@ -184,12 +201,16 @@ class Account(
         refreshState()
         val cloud = downloadCloud()
         val local = localBundle()
-        when {
-            cloud == null -> backupNow()
-            local.isEmpty() -> applyCloud(cloud)
-            else -> {
-                cloudCopy = cloud
-                _choice.value = CloudChoice(levelOf(cloud), cloud.savedAt)
+        _state.value = _state.value.copy(cloudUnreadable = cloud == CloudCopy.Unreadable)
+        when (cloud) {
+            CloudCopy.None -> backupNow()
+            CloudCopy.Unreadable -> Unit
+            is CloudCopy.Readable -> when {
+                local.isEmpty() -> applyCloud(cloud.bundle)
+                else -> {
+                    cloudCopy = cloud.bundle
+                    _choice.value = CloudChoice(levelOf(cloud.bundle), cloud.bundle.savedAt)
+                }
             }
         }
     }
@@ -197,14 +218,18 @@ class Account(
     /** The player's answer to [choice]. */
     suspend fun keep(cloud: Boolean) = act {
         val copy = cloudCopy
-        if (cloud && copy != null) applyCloud(copy) else backupNow()
         cloudCopy = null
         _choice.value = null
+        if (cloud && copy != null) applyCloud(copy) else backupNow()
     }
 
-    /** Uploads this phone's progress (when signed in). */
+    /**
+     * Uploads this phone's progress (when signed in).
+     * @throws AccountException with reason "cloud_unreadable" when the cloud copy must be kept as it is.
+     */
     suspend fun backupNow() {
         if (!_state.value.signedIn || _choice.value != null) return
+        if (_state.value.cloudUnreadable) throw AccountException("cloud_unreadable")
         lock.withLock {
             val user = client.auth.currentUserOrNull() ?: return
             val bundle = localBundle()
@@ -219,10 +244,11 @@ class Account(
         scope.launch { runCatching { backupNow() } }
     }
 
-    private suspend fun downloadCloud(): ProgressBundle? {
-        val user = client.auth.currentUserOrNull() ?: return null
-        val row = client.from(TABLE).select { filter { eq("user_id", user.id) } }.decodeSingleOrNull<ProgressRow>() ?: return null
-        return runCatching { decode(row.data) }.getOrNull()
+    private suspend fun downloadCloud(): CloudCopy {
+        val user = client.auth.currentUserOrNull() ?: return CloudCopy.None
+        val row = client.from(TABLE).select { filter { eq("user_id", user.id) } }.decodeSingleOrNull<ProgressRow>() ?: return CloudCopy.None
+        val bundle = runCatching { decode(row.data) }.getOrNull() ?: return CloudCopy.Unreadable
+        return CloudCopy.Readable(bundle)
     }
 
     private suspend fun applyCloud(cloud: ProgressBundle) {
@@ -281,6 +307,8 @@ class Account(
         try {
             block()
         } catch (e: AccountException) {
+            throw e
+        } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             val text = e.message.orEmpty()

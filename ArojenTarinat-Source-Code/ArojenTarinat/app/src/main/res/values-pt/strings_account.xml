@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Digite um e-mail válido.</string>
     <string name="acct_err_no_google">Nenhuma conta Google encontrada neste celular.</string>
     <string name="acct_err_google">O login com Google não funcionou. Tente novamente.</string>
+    <string name="acct_err_cloud_unreadable">Não é possível ler o salvamento na nuvem, por isso ele não foi substituído. Saia da conta ou exclua-a para começar um novo salvamento na nuvem.</string>
+    <string name="acct_cloud_unreadable_notice">Não foi possível ler o seu salvamento na nuvem e ele foi mantido sem alterações. O progresso deste telefone não é enviado.</string>
 </resources>

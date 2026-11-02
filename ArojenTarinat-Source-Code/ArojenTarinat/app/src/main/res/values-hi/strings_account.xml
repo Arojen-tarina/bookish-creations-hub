@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">सही ईमेल पता डालें।</string>
     <string name="acct_err_no_google">इस फ़ोन पर कोई Google खाता नहीं मिला।</string>
     <string name="acct_err_google">Google साइन इन नहीं हुआ। फिर से कोशिश करें।</string>
+    <string name="acct_err_cloud_unreadable">क्लाउड सेव पढ़ा नहीं जा सकता, इसलिए उसे बदला नहीं गया। नया क्लाउड सेव शुरू करने के लिए साइन आउट करें या खाता हटाएं।</string>
+    <string name="acct_cloud_unreadable_notice">आपका क्लाउड सेव पढ़ा नहीं जा सका और जैसा था वैसा ही रखा गया है। इस फ़ोन की प्रगति अपलोड नहीं होगी।</string>
 </resources>

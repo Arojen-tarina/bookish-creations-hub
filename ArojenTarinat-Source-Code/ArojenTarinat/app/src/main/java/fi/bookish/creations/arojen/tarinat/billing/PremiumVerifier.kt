@@ -9,9 +9,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import fi.bookish.creations.arojen.tarinat.network.supabasePost
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 
 /** Asks the server about one subscription purchase; the app's Premium follows Google's answer when there is one. */
 fun interface PremiumVerifier {
@@ -26,29 +25,19 @@ fun interface PremiumVerifier {
  */
 class SupabasePremiumVerifier(private val baseUrl: String, private val apiKey: String) : PremiumVerifier {
     override suspend fun isActive(purchaseToken: String): Boolean? = withContext(Dispatchers.IO) {
-        val connection = URL("$baseUrl/functions/v1/verify-premium").openConnection() as HttpURLConnection
+        val requestBody = buildJsonObject { put("purchaseToken", purchaseToken) }.toString().toByteArray()
         try {
-            connection.requestMethod = "POST"
-            connection.connectTimeout = 10_000
-            connection.readTimeout = 20_000
-            connection.doOutput = true
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("apikey", apiKey)
-            connection.setRequestProperty("Authorization", "Bearer $apiKey")
-            connection.outputStream.use { out ->
-                out.write(buildJsonObject { put("purchaseToken", purchaseToken) }.toString().toByteArray())
+            supabasePost("$baseUrl/functions/v1/verify-premium", apiKey, requestBody, readTimeoutMs = 20_000) { connection ->
+                if (connection.responseCode != 200) return@supabasePost null
+                val body = Json.parseToJsonElement(connection.inputStream.bufferedReader().use { it.readText() }).jsonObject
+                if (body["configured"]?.jsonPrimitive?.booleanOrNull != true) null else body["active"]?.jsonPrimitive?.booleanOrNull
             }
-            if (connection.responseCode != 200) return@withContext null
-            val body = Json.parseToJsonElement(connection.inputStream.bufferedReader().use { it.readText() }).jsonObject
-            if (body["configured"]?.jsonPrimitive?.booleanOrNull != true) null else body["active"]?.jsonPrimitive?.booleanOrNull
         } catch (_: IOException) {
             null
         } catch (_: SerializationException) {
             null
         } catch (_: IllegalArgumentException) {
             null
-        } finally {
-            connection.disconnect()
         }
     }
 }

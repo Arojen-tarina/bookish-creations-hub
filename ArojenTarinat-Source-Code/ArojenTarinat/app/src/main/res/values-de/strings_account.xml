@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Gib eine gültige E-Mail-Adresse ein.</string>
     <string name="acct_err_no_google">Auf diesem Handy wurde kein Google-Konto gefunden.</string>
     <string name="acct_err_google">Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut.</string>
+    <string name="acct_err_cloud_unreadable">Die Cloud-Speicherung kann nicht gelesen werden und wurde daher nicht ersetzt. Melde dich ab oder lösche das Konto, um eine neue Cloud-Speicherung zu beginnen.</string>
+    <string name="acct_cloud_unreadable_notice">Deine Cloud-Speicherung konnte nicht gelesen werden und wurde unverändert belassen. Fortschritt auf diesem Gerät wird nicht hochgeladen.</string>
 </resources>

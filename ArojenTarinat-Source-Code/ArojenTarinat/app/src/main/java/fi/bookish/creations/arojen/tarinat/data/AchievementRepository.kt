@@ -2,6 +2,7 @@ package fi.bookish.creations.arojen.tarinat.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import fi.bookish.creations.arojen.tarinat.game.achievements.ALL_ACHIEVEMENTS
 import fi.bookish.creations.arojen.tarinat.game.achievements.AchievementDef
@@ -25,6 +26,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 
 /**
  * Unlocked achievements and lifetime stats.
@@ -38,6 +40,7 @@ class AchievementRepository(
     context: Context,
     scope: CoroutineScope,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val prefs: SharedPreferences = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val statsFile = File(context.applicationContext.filesDir, "player_stats.json")
@@ -71,7 +74,16 @@ class AchievementRepository(
     private val pending = Channel<(PlayerStats) -> PlayerStats>(Channel.UNLIMITED)
 
     init {
-        scope.launch { for (change in pending) update(change) }
+        scope.launch {
+            for (change in pending) {
+                try {
+                    update(change)
+                } catch (e: IOException) {
+                    // The change is kept in memory; the loop must go on for the next ones.
+                    Log.e(TAG, "Could not save player stats", e)
+                }
+            }
+        }
     }
 
     /** Queues a stat change; safe to call from the UI thread and outlives the calling screen. */
@@ -86,66 +98,61 @@ class AchievementRepository(
         }
     }
 
-    /** Applies [change] to the lifetime stats, saves them, and unlocks anything newly earned. */
+    /**
+     * Applies [change] to the lifetime stats, saves them, and unlocks anything newly earned.
+     * Throws IOException when the stats could not be saved; the unlocks are saved and announced regardless.
+     */
     suspend fun update(change: (PlayerStats) -> PlayerStats) = withContext(io) {
         mutex.withLock {
             val next = change(_stats.value)
-            if (next != _stats.value) {
-                _stats.value = next
-                writeStats(next)
-            }
+            val statsChanged = next != _stats.value
+            if (statsChanged) _stats.value = next
             val earned = StatsTracker.newlyMet(next, _unlocked.value.keys)
             if (earned.isNotEmpty()) {
-                val now = System.currentTimeMillis()
+                val now = clock()
                 val all = _unlocked.value + earned.associate { it.id to now }
                 writeUnlocked(all)
                 _unlocked.value = all
                 _unannounced.update { it + earned }
                 earned.forEach { _newlyUnlocked.tryEmit(it to next) }
             }
+            if (statsChanged) writeStats(next)
         }
     }
 
     /**
      * Takes over the old WebView version's lifetime stats (when this app has
      * none yet) and the unlocks it kept in its web store. Imported unlocks were
-     * earned long ago, so they get no banner.
+     * earned long ago, so they get no banner. Throws IOException when the stats could not be saved.
      */
     suspend fun importLegacy(stats: PlayerStats?, unlocks: Map<String, Long>) = withContext(io) {
         mutex.withLock {
-            if (stats != null && _stats.value == PlayerStats()) {
-                _stats.value = stats
-                writeStats(stats)
-            }
-            val merged = mergeUnlocks(_unlocked.value, unlocks, known, System.currentTimeMillis())
+            val merged = mergeUnlocks(_unlocked.value, unlocks, known, clock())
             if (merged != _unlocked.value) {
                 writeUnlocked(merged)
                 _unlocked.value = merged
             }
+            if (stats != null && _stats.value == PlayerStats()) {
+                _stats.value = stats
+                writeStats(stats)
+            }
         }
     }
 
-    /** Takes the progress of the player's cloud copy as this phone's (signing in on a new phone). */
+    /** Takes the progress of the player's cloud copy as this phone's (signing in on a new phone). Throws IOException when the stats could not be saved. */
     suspend fun replaceAll(stats: PlayerStats, unlocks: Map<String, Long>) = withContext(io) {
         mutex.withLock {
-            val now = System.currentTimeMillis()
+            val now = clock()
             val clean = unlocks.filter { (id, at) -> id in known && at in 1..now }
             _stats.value = stats
-            writeStats(stats)
             _unlocked.value = clean
             writeUnlocked(clean)
+            writeStats(stats)
         }
     }
 
     private fun writeStats(stats: PlayerStats) {
-        runCatching {
-            val tmp = File(statsFile.parentFile, statsFile.name + ".tmp")
-            tmp.writeText(json.encodeToString(PlayerStats.serializer(), stats))
-            if (!tmp.renameTo(statsFile)) {
-                statsFile.delete()
-                tmp.renameTo(statsFile)
-            }
-        }
+        statsFile.writeTextAtomically(json.encodeToString(PlayerStats.serializer(), stats))
     }
 
     private fun readUnlocked(): Map<String, Long> {
@@ -156,7 +163,7 @@ class AchievementRepository(
                 for (id in obj.keys()) {
                     // Ignore ids this version does not know and impossible timestamps.
                     val at = obj.optLong(id, 0L)
-                    if (id in known && at > 0L && at <= System.currentTimeMillis()) put(id, at)
+                    if (id in known && at > 0L && at <= clock()) put(id, at)
                 }
             }
         }.getOrDefault(emptyMap())
@@ -169,6 +176,7 @@ class AchievementRepository(
     }
 
     private companion object {
+        const val TAG = "AchievementRepository"
         const val PREFS_NAME = "achievements_prefs"
         const val KEY_UNLOCKED = "unlocked_achievements"
     }

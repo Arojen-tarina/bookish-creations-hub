@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Masukkan alamat email yang valid.</string>
     <string name="acct_err_no_google">Tidak ada akun Google di ponsel ini.</string>
     <string name="acct_err_google">Masuk dengan Google gagal. Coba lagi.</string>
+    <string name="acct_err_cloud_unreadable">Simpanan cloud tidak dapat dibaca, jadi tidak diganti. Keluar atau hapus akun untuk memulai simpanan cloud baru.</string>
+    <string name="acct_cloud_unreadable_notice">Simpanan cloud Anda tidak dapat dibaca dan tetap dibiarkan. Kemajuan di ponsel ini tidak diunggah.</string>
 </resources>

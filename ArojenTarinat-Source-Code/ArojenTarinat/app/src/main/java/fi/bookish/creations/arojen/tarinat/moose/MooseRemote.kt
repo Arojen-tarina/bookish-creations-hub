@@ -1,12 +1,11 @@
 package fi.bookish.creations.arojen.tarinat.moose
 
+import fi.bookish.creations.arojen.tarinat.network.supabasePost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 
 /**
  * The original game's "moose-chat" Supabase function, which answers with an LLM
@@ -32,26 +31,18 @@ class MooseRemote(private val baseUrl: String, private val apiKey: String) {
 
     /** The reply, or null when the function cannot be reached or has nothing to say. */
     suspend fun reply(message: String, language: String, history: List<Turn>): String? = withContext(Dispatchers.IO) {
-        val connection = URL("$baseUrl/functions/v1/moose-chat").openConnection() as HttpURLConnection
+        val requestBody = json.encodeToString(Request(message, language, history)).toByteArray()
         try {
-            connection.requestMethod = "POST"
-            connection.connectTimeout = 10_000
-            connection.readTimeout = 25_000
-            connection.doOutput = true
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("apikey", apiKey)
-            connection.setRequestProperty("Authorization", "Bearer $apiKey")
-            connection.outputStream.use { it.write(json.encodeToString(Request(message, language, history)).toByteArray()) }
-            if (connection.responseCode !in 200..299) return@withContext null
-            val body = connection.inputStream.bufferedReader().use { it.readText() }
-            json.decodeFromString<Response>(body).reply?.let(::withoutEmoji)?.takeIf { it.isNotEmpty() }
+            supabasePost("$baseUrl/functions/v1/moose-chat", apiKey, requestBody, readTimeoutMs = 25_000) { connection ->
+                if (connection.responseCode !in 200..299) return@supabasePost null
+                val body = connection.inputStream.bufferedReader().use { it.readText() }
+                json.decodeFromString<Response>(body).reply?.let(::withoutEmoji)?.takeIf { it.isNotEmpty() }
+            }
         } catch (_: IOException) {
             null
         } catch (_: IllegalArgumentException) {
             // Malformed reply body.
             null
-        } finally {
-            connection.disconnect()
         }
     }
 }

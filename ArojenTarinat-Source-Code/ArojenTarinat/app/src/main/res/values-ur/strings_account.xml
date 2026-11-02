@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">درست ای میل درج کریں۔</string>
     <string name="acct_err_no_google">اس فون پر کوئی Google اکاؤنٹ نہیں ملا۔</string>
     <string name="acct_err_google">Google سائن ان نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="acct_err_cloud_unreadable">کلاؤڈ محفوظ شدہ ڈیٹا پڑھا نہیں جا سکتا، اس لیے اسے تبدیل نہیں کیا گیا۔ نیا کلاؤڈ سیو شروع کرنے کے لیے سائن آؤٹ کریں یا اکاؤنٹ حذف کریں۔</string>
+    <string name="acct_cloud_unreadable_notice">آپ کا کلاؤڈ سیو پڑھا نہیں جا سکا اور اسے جوں کا توں رکھا گیا ہے۔ اس فون کی پیش رفت اپلوڈ نہیں ہوگی۔</string>
 </resources>

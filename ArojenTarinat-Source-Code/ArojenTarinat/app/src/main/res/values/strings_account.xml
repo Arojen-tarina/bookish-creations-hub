@@ -32,4 +32,6 @@
     <string name="acct_err_bad_email">Enter a valid email address.</string>
     <string name="acct_err_no_google">No Google account was found on this phone.</string>
     <string name="acct_err_google">Google sign-in did not work. Please try again.</string>
+    <string name="acct_err_cloud_unreadable">The cloud save cannot be read, so it was not replaced. Sign out or delete the account to start a new cloud save.</string>
+    <string name="acct_cloud_unreadable_notice">Your cloud save could not be read and has been kept unchanged. Progress on this phone is not uploaded.</string>
 </resources>
