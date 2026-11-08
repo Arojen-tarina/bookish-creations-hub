@@ -13,6 +13,7 @@ The ZIP is English only: AchievementsLocalizations.csv is optional and is left o
 Run from the ArojenTarinat root: python3 tools/play-achievements/build_play_achievements.py
 """
 
+import argparse
 import csv
 import math
 import re
@@ -178,9 +179,17 @@ def make_icon(path, entry, index):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--limit", type=int, help="Only build the first N achievements into a test ZIP")
+    args = parser.parse_args()
+
     entries = parse_catalog()
     if len(entries) != 87:
         sys.exit(f"Expected 87 achievements in the catalog, found {len(entries)}")
+    out_zip = OUT_ZIP
+    if args.limit:
+        entries = entries[:args.limit]
+        out_zip = OUT_ZIP.with_name(f"ArojenTarinat-play-achievements-test{args.limit}.zip")
     english = read_strings("values")
 
     metadata_rows, icon_rows = [], []
@@ -231,12 +240,12 @@ def main():
             make_icon(icon_path, entry, index)
             files.append(icon_path)
 
-        OUT_ZIP.parent.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(OUT_ZIP, "w", zipfile.ZIP_DEFLATED) as zf:
+        out_zip.parent.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
             for path in files:
                 zf.write(path, arcname=path.name)
 
-    print(f"Wrote {OUT_ZIP.relative_to(ROOT)}: {len(entries)} achievements, "
+    print(f"Wrote {out_zip.relative_to(ROOT)}: {len(entries)} achievements, "
           f"English only (en-US), {len(files)} files")
 
 
