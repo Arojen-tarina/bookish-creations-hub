@@ -36,7 +36,7 @@ ATLEAST_RE = re.compile(r"check = atLeast\((\d+)\)")
 
 # Values folder -> Play Console locale code. Only Finnish is translated here, next to the English default.
 LOCALES = {
-    "values-fi": "fi-FI",
+    "values-fi": "fi",
 }
 # Default locale of the Play listing; Name and Description in the metadata CSV use it.
 DEFAULT_LOCALE = "en-US"
@@ -215,7 +215,7 @@ def main():
         local_names = {}
         for entry, meta in zip(entries, metadata_rows):
             aid = entry["id"]
-            loc_name = FI_NAME_OVERRIDES.get(aid, strings[f"achv_{aid}_name"]) if code == "fi-FI" else strings[f"achv_{aid}_name"]
+            loc_name = FI_NAME_OVERRIDES.get(aid, strings[f"achv_{aid}_name"]) if code == "fi" else strings[f"achv_{aid}_name"]
             loc_desc = strings[f"achv_{aid}_desc"]
             if loc_name == MASKED_NAME:
                 continue
