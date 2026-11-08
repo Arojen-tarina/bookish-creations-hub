@@ -50,6 +50,17 @@ NAME_OVERRIDES = {
     "hidden_night_owl": "Night Owl",
 }
 
+# Several achievements share one in-game condition and therefore one English text; Play needs unique descriptions.
+DESC_OVERRIDES = {
+    "early_all_buildings_started": "Start every type of building at least once.",
+    "collect_all_buildings": "Own at least one of every building type.",
+    "hidden_underdog": "Claim victory on the hard difficulty setting.",
+    "skill_hard_win": "Prove your mastery by winning on hard difficulty.",
+    "challenge_hard_difficulty": "Take on the hard difficulty and emerge victorious.",
+    "skill_no_province_lost": "Win a game without any province falling.",
+    "challenge_defensive_master": "Hold every province and win without losing one.",
+}
+
 NAME_MAX, DESC_MAX = 100, 500
 
 CATEGORY_COLORS = {
@@ -158,6 +169,11 @@ def make_icon(path, entry, index):
     inner = inset + 80
     draw.ellipse([inner, inner, big - 1 - inner, big - 1 - inner], outline=(255, 255, 255, 90), width=24)
     draw_shape(draw, SHAPES[index % len(SHAPES)], c, big * 0.22)
+    # Seven dots encode the index in binary, so every icon image differs (87 achievements < 2**7).
+    for bit in range(7):
+        x, y, r = c + (bit - 3) * 100, c + 600, 35
+        fill = (255, 255, 255, 255) if (index >> bit) & 1 else (255, 255, 255, 60)
+        draw.ellipse([x - r, y - r, x + r, y + r], fill=fill)
     img.resize((512, 512), Image.LANCZOS).save(path, "PNG", optimize=True)
 
 
@@ -172,7 +188,7 @@ def main():
     for order, entry in enumerate(entries, start=1):
         aid = entry["id"]
         name = NAME_OVERRIDES.get(aid, english[f"achv_{aid}_name"])
-        desc = english[f"achv_{aid}_desc"]
+        desc = DESC_OVERRIDES.get(aid, english[f"achv_{aid}_desc"])
         check_text("Name", name, NAME_MAX)
         check_text("Description", desc, DESC_MAX)
         for field, value in (("Name", name), ("Description", desc)):
