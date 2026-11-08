@@ -34,22 +34,22 @@ DEF_RE = re.compile(
 )
 ATLEAST_RE = re.compile(r"check = atLeast\((\d+)\)")
 
-# Values folder -> Play Console locale code (codes from the Play "supported languages" table).
-# ar, bn and ur are not in that table, so they are left out until enabled in the Console.
+# Values folder -> Play Console locale code. Only Finnish is translated here, next to the English default.
 LOCALES = {
-    "values-de": "de-DE",
-    "values-es": "es-ES",
     "values-fi": "fi-FI",
-    "values-fr": "fr-FR",
-    "values-hi": "hi",
-    "values-in": "id",
-    "values-ja": "ja-JP",
-    "values-pt": "pt-BR",
-    "values-ru": "ru",
-    "values-zh": "zh-CN",
 }
 # Default locale of the Play listing; Name and Description in the metadata CSV use it.
 DEFAULT_LOCALE = "en-US"
+
+# Finnish translation of lifetime_ten_games is identical to challenge_ten_wins, and Play requires unique names per locale.
+FI_NAME_OVERRIDES = {
+    "lifetime_ten_games": "Kokenut pelaaja",
+}
+
+# Play requires the total of all points to be under 2000. Catalog points are scaled by this factor,
+# then rounded to the nearest 5 (minimum 5), so every value stays valid.
+POINTS_SCALE = 0.5
+POINTS_TOTAL_MAX = 2000
 
 # Hidden achievements show "???" in the app until unlocked, but Play needs unique names.
 # Their translations stay "???" in the app, so those locale rows are skipped and Play falls back to the default name.
@@ -118,6 +118,10 @@ def read_strings(values_dir):
         text = re.sub(r"(?<=\d),(?=\d{3}\b)", "", text)
         out[name] = text
     return out
+
+
+def play_points(points):
+    return max(5, 5 * round(points * POINTS_SCALE / 5))
 
 
 def check_text(label, value, limit):
@@ -190,27 +194,36 @@ def main():
         if name in names:
             sys.exit(f"Duplicate achievement name {name!r}: {names[name]} and {aid}")
         names[name] = aid
-        if entry["points"] % 5 or not 5 <= entry["points"] <= 200:
+        points = play_points(entry["points"])
+        if points % 5 or not 5 <= points <= 200:
             sys.exit(f"{aid}: points must be a multiple of 5 between 5 and 200")
 
         incremental = entry["steps"] is not None and entry["steps"] > 1
         initial = "Hidden" if entry["hidden"] else "Revealed"
         metadata_rows.append([
             name, desc, str(incremental), str(entry["steps"]) if incremental else "",
-            initial, entry["points"], order,
+            initial, points, order,
         ])
         icon_rows.append([name, f"{aid}.png"])
 
+    total_points = sum(row[5] for row in metadata_rows)
+    if total_points >= POINTS_TOTAL_MAX:
+        sys.exit(f"Total points {total_points} must be under {POINTS_TOTAL_MAX}")
+
     for values_dir, code in LOCALES.items():
         strings = read_strings(values_dir)
+        local_names = {}
         for entry, meta in zip(entries, metadata_rows):
             aid = entry["id"]
-            loc_name = strings[f"achv_{aid}_name"]
+            loc_name = FI_NAME_OVERRIDES.get(aid, strings[f"achv_{aid}_name"]) if code == "fi-FI" else strings[f"achv_{aid}_name"]
             loc_desc = strings[f"achv_{aid}_desc"]
             if loc_name == MASKED_NAME:
                 continue
             check_text(f"{code} name {aid}", loc_name, NAME_MAX)
             check_text(f"{code} description {aid}", loc_desc, DESC_MAX)
+            if loc_name in local_names:
+                sys.exit(f"{code}: duplicate name {loc_name!r} for {local_names[loc_name]} and {aid}")
+            local_names[loc_name] = aid
             locale_rows.append([meta[0], loc_name, loc_desc, code])
 
     with tempfile.TemporaryDirectory() as tmp:
