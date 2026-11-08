@@ -2,12 +2,13 @@
 
 Inputs (read from the repo):
   - game/achievements/AchievementCatalog.kt and NativeAchievements.kt (ids, category, difficulty, points, threshold)
-  - res/values*/strings_achievements.xml (names and descriptions per locale)
+  - res/values/strings_achievements.xml (English names and descriptions, the en-US default locale)
 
 Output: store/play-achievements/ArojenTarinat-play-achievements.zip
 
 Format follows https://developer.android.com/games/pgs/integrate-achievements
 (no header rows, no commas in Name/Description, flat ZIP, PNG icons of 512x512).
+The ZIP is English only: AchievementsLocalizations.csv is optional and is left out.
 
 Run from the ArojenTarinat root: python3 tools/play-achievements/build_play_achievements.py
 """
@@ -34,25 +35,12 @@ DEF_RE = re.compile(
 )
 ATLEAST_RE = re.compile(r"check = atLeast\((\d+)\)")
 
-# Values folder -> Play Console locale code. Only Finnish is translated here, next to the English default.
-LOCALES = {
-    "values-fi": "fi",
-}
-# Default locale of the Play listing; Name and Description in the metadata CSV use it.
-DEFAULT_LOCALE = "en-US"
-
-# Finnish translation of lifetime_ten_games is identical to challenge_ten_wins, and Play requires unique names per locale.
-FI_NAME_OVERRIDES = {
-    "lifetime_ten_games": "Kokenut pelaaja",
-}
-
 # Play requires the total of all points to be under 2000. Catalog points are scaled by this factor,
 # then rounded to the nearest 5 (minimum 5), so every value stays valid.
 POINTS_SCALE = 0.5
 POINTS_TOTAL_MAX = 2000
 
 # Hidden achievements show "???" in the app until unlocked, but Play needs unique names.
-# Their translations stay "???" in the app, so those locale rows are skipped and Play falls back to the default name.
 NAME_OVERRIDES = {
     "hidden_comeback": "Phoenix",
     "hidden_underdog": "Underdog",
@@ -61,7 +49,6 @@ NAME_OVERRIDES = {
     "hidden_diplomat_spy": "Master Diplomat",
     "hidden_night_owl": "Night Owl",
 }
-MASKED_NAME = "???"
 
 NAME_MAX, DESC_MAX = 100, 500
 
@@ -180,7 +167,7 @@ def main():
         sys.exit(f"Expected 87 achievements in the catalog, found {len(entries)}")
     english = read_strings("values")
 
-    metadata_rows, icon_rows, locale_rows = [], [], []
+    metadata_rows, icon_rows = [], []
     names = {}
     for order, entry in enumerate(entries, start=1):
         aid = entry["id"]
@@ -210,22 +197,6 @@ def main():
     if total_points >= POINTS_TOTAL_MAX:
         sys.exit(f"Total points {total_points} must be under {POINTS_TOTAL_MAX}")
 
-    for values_dir, code in LOCALES.items():
-        strings = read_strings(values_dir)
-        local_names = {}
-        for entry, meta in zip(entries, metadata_rows):
-            aid = entry["id"]
-            loc_name = FI_NAME_OVERRIDES.get(aid, strings[f"achv_{aid}_name"]) if code == "fi" else strings[f"achv_{aid}_name"]
-            loc_desc = strings[f"achv_{aid}_desc"]
-            if loc_name == MASKED_NAME:
-                continue
-            check_text(f"{code} name {aid}", loc_name, NAME_MAX)
-            check_text(f"{code} description {aid}", loc_desc, DESC_MAX)
-            if loc_name in local_names:
-                sys.exit(f"{code}: duplicate name {loc_name!r} for {local_names[loc_name]} and {aid}")
-            local_names[loc_name] = aid
-            locale_rows.append([meta[0], loc_name, loc_desc, code])
-
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
         files = []
@@ -237,7 +208,6 @@ def main():
             files.append(path)
 
         write_csv("AchievementsMetadata.csv", metadata_rows)
-        write_csv("AchievementsLocalizations.csv", locale_rows)
         write_csv("AchievementsIconsMappings.csv", icon_rows)
 
         for index, entry in enumerate(entries):
@@ -251,7 +221,7 @@ def main():
                 zf.write(path, arcname=path.name)
 
     print(f"Wrote {OUT_ZIP.relative_to(ROOT)}: {len(entries)} achievements, "
-          f"{len(LOCALES)} translated locales (default {DEFAULT_LOCALE}), {len(files)} files")
+          f"English only (en-US), {len(files)} files")
 
 
 if __name__ == "__main__":
